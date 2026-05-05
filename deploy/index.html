@@ -3980,7 +3980,7 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
     <button class="cel-btn" id="celBtn">¡Continuar!</button>
   </div>
 </div>
-<button class="gm-fab" id="gmFab" title="Panel GM">GM</button>
+<button class="gm-fab" id="gmFab" title="Panel GM" style="display:none">GM</button>
 
 <div class="gm-overlay hide" id="gmOverlay">
   <div class="gm-panel">
@@ -12564,7 +12564,13 @@ function gmStatus(msg) {
   if (el) { el.textContent = '✓ ' + msg; setTimeout(() => { if (el) el.textContent = ''; }, 2200); }
 }
 
-function openGM()  { syncGMInputs(); document.getElementById('gmOverlay').classList.remove('hide'); document.getElementById('gmFab').classList.add('gm-on'); }
+const GM_OWNER = 'juanlarrain10@gmail.com';
+function isGMOwner() { return sbUser?.email === GM_OWNER; }
+function updateGMVisibility() {
+  document.getElementById('gmFab').style.display = isGMOwner() ? '' : 'none';
+  if (!isGMOwner()) closeGM();
+}
+function openGM()  { if (!isGMOwner()) return; syncGMInputs(); document.getElementById('gmOverlay').classList.remove('hide'); document.getElementById('gmFab').classList.add('gm-on'); }
 function closeGM() { document.getElementById('gmOverlay').classList.add('hide'); document.getElementById('gmFab').classList.remove('gm-on'); }
 
 function syncGMInputs() {
@@ -13747,6 +13753,7 @@ async function onUserLoggedIn(migrate) {
   day  = loadDay(cur);
   hideAuthOverlay();
   updateAuthChip();
+  updateGMVisibility();
   enterAppAfterAuth();
 }
 
@@ -13867,6 +13874,7 @@ async function signOut() {
     clearLocalData();
     char = loadChar(); day = loadDay(cur);
     updateAuthChip();
+    updateGMVisibility();
     showAuthOverlay();
   }
 }
@@ -13879,6 +13887,7 @@ function continueAsGuest() {
   sbUser = null;
   hideAuthOverlay();
   updateAuthChip();
+  updateGMVisibility();
   enterAppAfterAuth();
 }
 
