@@ -2980,8 +2980,12 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .auth-guest-btn:hover { border-color:var(--purp2); color:var(--txt); }
 
 .auth-switch { text-align:center; font-size:.78rem; color:var(--dim); }
-.auth-switch span { color:var(--purp2); cursor:pointer; font-weight:700; }
-.auth-switch span:hover { text-decoration:underline; }
+.auth-switch-btn {
+  background:none; border:none; padding:0;
+  color:var(--purp2); cursor:pointer; font-weight:700;
+  font-family:inherit; font-size:inherit;
+}
+.auth-switch-btn:hover { text-decoration:underline; }
 
 .auth-migrate-row {
   display:flex; align-items:center; gap:9px;
@@ -3298,7 +3302,7 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
       <button class="auth-btn" id="authSubmit" onclick="handleAuthSubmit()">Iniciar sesión</button>
       <div class="auth-or">— o —</div>
       <button class="auth-guest-btn" id="authGuest" onclick="continueAsGuest()">Continuar como invitado →</button>
-      <div class="auth-switch">¿No tienes cuenta? <span id="authSwitch" onclick="switchAuthMode()">Crear cuenta</span></div>
+      <div class="auth-switch">¿No tienes cuenta? <button type="button" id="authSwitch" class="auth-switch-btn" onclick="switchAuthMode()">Crear cuenta</button></div>
     </div>
     <div id="authWelcome" class="hide" style="text-align:center;padding:4px 0 8px">
       <div style="font-size:2.2rem;margin-bottom:12px">👋</div>
@@ -13890,13 +13894,18 @@ function showAuthError(msg, color) {
 function switchAuthMode() {
   authMode = authMode === 'login' ? 'register' : 'login';
   const reg = authMode === 'register';
-  document.getElementById('authTitle').textContent   = reg ? 'Crear cuenta'    : 'Iniciar sesión';
-  document.getElementById('authSubmit').textContent  = reg ? 'Crear cuenta'    : 'Iniciar sesión';
-  document.getElementById('authSwitch').textContent  = reg ? 'Ya tengo cuenta' : 'Crear cuenta';
-  document.querySelector('.auth-switch').childNodes[0].textContent = reg ? '¿Ya tienes cuenta? ' : '¿No tienes cuenta? ';
-  document.getElementById('authMigrateRow').classList.toggle('hide', !reg);
-  document.getElementById('authPass').autocomplete = reg ? 'new-password' : 'current-password';
-  document.getElementById('authError').classList.add('hide');
+  const titleEl   = document.getElementById('authTitle');
+  const submitEl  = document.getElementById('authSubmit');
+  const switchEl  = document.getElementById('authSwitch');
+  const switchDiv = document.querySelector('.auth-switch');
+  const passEl    = document.getElementById('authPass');
+  if (titleEl)  titleEl.textContent  = reg ? 'Crear cuenta'    : 'Iniciar sesión';
+  if (submitEl) submitEl.textContent = reg ? 'Crear cuenta'    : 'Iniciar sesión';
+  if (switchEl) switchEl.textContent = reg ? 'Ya tengo cuenta' : 'Crear cuenta';
+  if (switchDiv?.childNodes[0]) switchDiv.childNodes[0].textContent = reg ? '¿Ya tienes cuenta? ' : '¿No tienes cuenta? ';
+  document.getElementById('authMigrateRow')?.classList.toggle('hide', !reg);
+  if (passEl) passEl.autocomplete = reg ? 'new-password' : 'current-password';
+  document.getElementById('authError')?.classList.add('hide');
 }
 
 function updateAuthChip() {
