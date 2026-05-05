@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\balance-mensual\\\\index.html\")",
+      "Bash(start \"\" \"https://app.netlify.com/drop\")",
+      "Bash(grep -n \"^<\\\\/div>$\\\\|^<\\\\/div>\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\")",
+      "Bash(awk -F: '$2>2410 && $2<2450')",
+      "Bash(grep -v \"^\\\\s*//\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\" -Directory)",
+      "Bash(Select-Object Name)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\" -Directory | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\\\\Androgynous Bases\" -Directory | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\\\\lpc-more-weapons\" -Directory | ForEach-Object { $_.Name })",
+      "Bash(python3 -c ' *)",
+      "Bash(node --check \"/c/Users/juanl/OneDrive/Escritorio/Proyectos/habit-rpg.html\")",
+      "Bash(cmd /c \"dir /b \\\\\"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\\\\Androgynous Bases\\\\Ivory\\\\\"\")",
+      "Bash(cmd /c 'if exist \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\\\\Androgynous Bases\\\\__TRACKED_VAR__\\\\idle.png\" \\(echo OK: __TRACKED_VAR__\\) else \\(echo MISSING: __TRACKED_VAR__\\)')",
+      "Bash(cmd /c 'if exist \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\\\\lpc-hair\\\\_build\\\\__TRACKED_VAR__\\\\s.png\" \\(echo OK: __TRACKED_VAR__\\) else \\(echo MISSING: __TRACKED_VAR__\\)')",
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\" -Force)"
+    ]
+  }
+}
