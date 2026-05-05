@@ -2999,6 +2999,20 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .auth-form.hide { display:none; }
 #authForm.hide { display:none; }
 #authWelcome.hide { display:none; }
+.auth-title.hide { display:none; }
+#authTabs.hide { display:none; }
+.auth-tabs {
+  display:flex; gap:4px; margin-bottom:20px;
+  background:var(--s2); border-radius:10px; padding:4px;
+}
+.auth-tab {
+  flex:1; padding:9px 12px; border-radius:7px; border:none;
+  background:transparent; color:var(--dim);
+  font-family:inherit; font-size:.82rem; font-weight:700;
+  cursor:pointer; transition:all .15s;
+}
+.auth-tab.active { background:var(--purp); color:#fff; }
+.auth-tab:not(.active):hover { background:rgba(255,255,255,.06); color:var(--txt); }
 
 .auth-spinner {
   width:34px; height:34px; border-radius:50%;
@@ -3290,7 +3304,11 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   <div class="auth-card">
     <div class="auth-logo">⚔️ HabitRPG</div>
     <div class="auth-game-name">Tu aventura en la nube</div>
-    <div class="auth-title" id="authTitle">Iniciar sesión</div>
+    <div class="auth-title hide" id="authTitle">Bienvenido de vuelta</div>
+    <div class="auth-tabs" id="authTabs">
+      <button type="button" class="auth-tab active" id="tabLogin" onclick="setAuthTab('login')">Iniciar sesión</button>
+      <button type="button" class="auth-tab" id="tabRegister" onclick="setAuthTab('register')">Crear cuenta</button>
+    </div>
     <div id="authForm">
       <input class="auth-input" id="authEmail" type="email" placeholder="Correo electrónico" autocomplete="email" />
       <input class="auth-input" id="authPass" type="password" placeholder="Contraseña" autocomplete="current-password" />
@@ -3302,7 +3320,6 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
       <button class="auth-btn" id="authSubmit" onclick="handleAuthSubmit()">Iniciar sesión</button>
       <div class="auth-or">— o —</div>
       <button class="auth-guest-btn" id="authGuest" onclick="continueAsGuest()">Continuar como invitado →</button>
-      <div class="auth-switch">¿No tienes cuenta? <button type="button" id="authSwitch" class="auth-switch-btn" onclick="switchAuthMode()">Crear cuenta</button></div>
     </div>
     <div id="authWelcome" class="hide" style="text-align:center;padding:4px 0 8px">
       <div style="font-size:2.2rem;margin-bottom:12px">👋</div>
@@ -13714,7 +13731,9 @@ async function initAuth() {
 
 function showWelcomeBack(user) {
   document.getElementById('authForm').classList.add('hide');
+  document.getElementById('authTabs')?.classList.add('hide');
   document.getElementById('authLoading').classList.add('hide');
+  document.getElementById('authTitle').classList.remove('hide');
   document.getElementById('authTitle').textContent = 'Bienvenido de vuelta';
   document.getElementById('authWelcomeEmail').textContent = user.email;
   document.getElementById('authWelcome').classList.remove('hide');
@@ -13865,7 +13884,7 @@ function continueAsGuest() {
 
 function showAuthOverlay() {
   document.getElementById('authOverlay').classList.remove('hide');
-  document.getElementById('authTitle').textContent = 'Iniciar sesión';
+  setAuthTab('login');
   showAuthForm();
 }
 function hideAuthOverlay() {
@@ -13873,6 +13892,8 @@ function hideAuthOverlay() {
 }
 function showAuthForm() {
   document.getElementById('authForm').classList.remove('hide');
+  document.getElementById('authTabs')?.classList.remove('hide');
+  document.getElementById('authTitle').classList.add('hide');
   document.getElementById('authWelcome').classList.add('hide');
   document.getElementById('authLoading').classList.add('hide');
   document.getElementById('authError').classList.add('hide');
@@ -13882,6 +13903,7 @@ function showAuthForm() {
 }
 function showAuthLoading(txt) {
   document.getElementById('authForm').classList.add('hide');
+  document.getElementById('authTabs')?.classList.add('hide');
   document.getElementById('authLoading').classList.remove('hide');
   if (txt) document.getElementById('authLoadingTxt').textContent = txt;
 }
@@ -13891,22 +13913,19 @@ function showAuthError(msg, color) {
   el.classList.remove('hide');
 }
 
-function switchAuthMode() {
-  authMode = authMode === 'login' ? 'register' : 'login';
-  const reg = authMode === 'register';
-  const titleEl   = document.getElementById('authTitle');
-  const submitEl  = document.getElementById('authSubmit');
-  const switchEl  = document.getElementById('authSwitch');
-  const switchDiv = document.querySelector('.auth-switch');
-  const passEl    = document.getElementById('authPass');
-  if (titleEl)  titleEl.textContent  = reg ? 'Crear cuenta'    : 'Iniciar sesión';
-  if (submitEl) submitEl.textContent = reg ? 'Crear cuenta'    : 'Iniciar sesión';
-  if (switchEl) switchEl.textContent = reg ? 'Ya tengo cuenta' : 'Crear cuenta';
-  if (switchDiv?.childNodes[0]) switchDiv.childNodes[0].textContent = reg ? '¿Ya tienes cuenta? ' : '¿No tienes cuenta? ';
+function setAuthTab(mode) {
+  authMode = mode;
+  const reg = mode === 'register';
+  document.getElementById('tabLogin')?.classList.toggle('active', !reg);
+  document.getElementById('tabRegister')?.classList.toggle('active', reg);
+  const submitEl = document.getElementById('authSubmit');
+  if (submitEl) submitEl.textContent = reg ? 'Crear cuenta' : 'Iniciar sesión';
   document.getElementById('authMigrateRow')?.classList.toggle('hide', !reg);
+  const passEl = document.getElementById('authPass');
   if (passEl) passEl.autocomplete = reg ? 'new-password' : 'current-password';
   document.getElementById('authError')?.classList.add('hide');
 }
+function switchAuthMode() { setAuthTab(authMode === 'login' ? 'register' : 'login'); }
 
 function updateAuthChip() {
   const chip = document.getElementById('authUserChip');
@@ -14235,7 +14254,8 @@ setInterval(applyNightMode, 60000);
 try {
   document.getElementById('authSubmit')?.addEventListener('click', handleAuthSubmit);
   document.getElementById('authGuest')?.addEventListener('click', () => continueAsGuest());
-  document.getElementById('authSwitch')?.addEventListener('click', switchAuthMode);
+  document.getElementById('tabLogin')?.addEventListener('click', () => setAuthTab('login'));
+  document.getElementById('tabRegister')?.addEventListener('click', () => setAuthTab('register'));
   document.getElementById('btnSignOut')?.addEventListener('click', signOut);
   document.getElementById('authContinue')?.addEventListener('click', () => onUserLoggedIn(false));
   document.getElementById('authDiffAccount')?.addEventListener('click', _authDiffAccount);
