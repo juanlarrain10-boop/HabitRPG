@@ -2404,6 +2404,24 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .dg-tag { font-size: .63rem; font-weight: 700; flex-shrink: 0; }
 .dg-tag.done { color: #34d399; }
 .dg-tag.locked { color: var(--mut); }
+/* Dungeon mission-completion visual states */
+.dg-card.dg-mission-locked {
+  border-color: rgba(239,68,68,.22) !important;
+  background: rgba(239,68,68,.05);
+}
+.dg-card.dg-mission-locked .dg-enter-btn {
+  background: rgba(100,30,30,.5) !important; color: rgba(239,68,68,.45) !important;
+  border: 1px solid rgba(239,68,68,.18); cursor: not-allowed; box-shadow: none;
+}
+.dg-card.dg-mission-locked .dg-enter-btn:hover { opacity: 1; }
+.dg-card.dg-mission-full {
+  border-color: rgba(232,176,32,.38) !important;
+  box-shadow: 0 0 12px rgba(232,176,32,.12);
+}
+.dg-card.dg-mission-full .dg-enter-btn:not(.boss-enter) {
+  background: linear-gradient(135deg, var(--gold), #d97706) !important;
+  color: #0c0c18 !important; box-shadow: 0 2px 10px rgba(232,176,32,.32);
+}
 /* Combat */
 .combat-screen { background: var(--s1); border: 1.5px solid var(--bd); border-radius: 16px; overflow: hidden; }
 .combat-topbar {
@@ -9348,6 +9366,12 @@ function renderAdvZone(el) {
   if (!zone) { adv.view='map'; renderAdv(); return; }
   const st = getAdvStatus();
 
+  // Sequential-order non-boss dungeons for progressive unlock
+  const normalDgs = zone.dungeons.filter(d => !d.isBoss);
+  // Mission completion visual class (applied only to non-sequence-locked cards)
+  const missionCls = st.pct < 0.5  ? 'dg-mission-locked' :
+                     st.pct >= 1.0 ? 'dg-mission-full'   : '';
+
   let html = `<div class="adv-zone-header">
     <button class="adv-back-btn" id="advBack">← Mapa</button>
     <div class="adv-zone-nm">${zone.icon} ${zone.name}</div>
@@ -9355,25 +9379,37 @@ function renderAdvZone(el) {
   <div class="dungeon-list">`;
 
   zone.dungeons.forEach(dg => {
-    const done   = !!char.dungeonsCompleted[dg.id];
-    const needsClearOk = !dg.needsClear || dg.needsClear.every(id => char.dungeonsCompleted[id]);
-    const locked = !needsClearOk;
-    const canPlay = st.remaining > 0;
-    const boss   = !!dg.isBoss;
+    const done = !!char.dungeonsCompleted[dg.id];
+    const boss = !!dg.isBoss;
+
+    // Bug-fix 2: strict sequential lock — each normal dungeon requires the previous completed
+    let seqLocked = false;
+    if (!boss) {
+      const idx = normalDgs.findIndex(d => d.id === dg.id);
+      if (idx > 0) seqLocked = !char.dungeonsCompleted[normalDgs[idx - 1].id];
+    }
+    // Boss dungeons keep explicit needsClear logic
+    const bossLocked = boss && !!dg.needsClear && !dg.needsClear.every(id => char.dungeonsCompleted[id]);
+    const locked = seqLocked || bossLocked;
+
     const enemyNames = dg.seq.slice(0,-1).map(k => ENEMIES[k]?.name || k).join(', ');
     const bossName   = ENEMIES[dg.seq[dg.seq.length-1]]?.name || '';
 
     let actionHtml;
     if (locked) {
-      actionHtml = `<span class="dg-tag locked">🔒 Completa anteriores</span>`;
+      const lockMsg = seqLocked ? '🔒 Completa el anterior' : '🔒 Completa anteriores';
+      actionHtml = `<span class="dg-tag locked">${lockMsg}</span>`;
     } else {
+      // Bug-fix 1: no disabled attr — enterDungeon silently no-ops when remaining=0
       const btnClass = boss ? 'dg-enter-btn boss-enter' : 'dg-enter-btn';
-      actionHtml = `<button class="${btnClass}" data-dgid="${dg.id}" ${!canPlay?'disabled':''}>
+      actionHtml = `<button class="${btnClass}" data-dgid="${dg.id}">
         ${done ? '↺ Rejugar' : '▶ Entrar'}
       </button>`;
     }
 
-    html += `<div class="dg-card ${locked?'dg-locked-card':(done?'dg-done-card':'dg-avail')} ${boss?'dg-boss-card':''}">
+    const cardState = locked ? 'dg-locked-card' : done ? 'dg-done-card' : 'dg-avail';
+    // Bug-fix 3: mission-state class on non-locked cards changes card color + button style
+    html += `<div class="dg-card ${cardState} ${boss?'dg-boss-card':''} ${locked?'':missionCls}">
       <div class="dg-ico">${dg.icon}</div>
       <div class="dg-info">
         <div class="dg-name">${boss?'👑 ':''} ${dg.name}</div>
@@ -9388,7 +9424,8 @@ function renderAdvZone(el) {
   html += `</div>`;
   el.innerHTML = html;
   el.querySelector('#advBack').addEventListener('click', () => { adv.view='map'; renderAdv(); });
-  el.querySelectorAll('.dg-enter-btn:not([disabled])').forEach(btn => {
+  // Bug-fix 1: attach to ALL enter buttons, not just :not([disabled]) — enterDungeon guards internally
+  el.querySelectorAll('.dg-enter-btn').forEach(btn => {
     btn.addEventListener('click', () => enterDungeon(btn.dataset.dgid));
   });
 }
