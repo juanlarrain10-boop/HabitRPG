@@ -16,7 +16,11 @@
       "Bash(cmd /c \"dir /b \\\\\"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\\\\Androgynous Bases\\\\Ivory\\\\\"\")",
       "Bash(cmd /c 'if exist \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\\\\Androgynous Bases\\\\__TRACKED_VAR__\\\\idle.png\" \\(echo OK: __TRACKED_VAR__\\) else \\(echo MISSING: __TRACKED_VAR__\\)')",
       "Bash(cmd /c 'if exist \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\Sprites\\\\lpc-hair\\\\_build\\\\__TRACKED_VAR__\\\\s.png\" \\(echo OK: __TRACKED_VAR__\\) else \\(echo MISSING: __TRACKED_VAR__\\)')",
-      "PowerShell(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\" -Force)"
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\" -Force)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(cp habit-rpg.html deploy/index.html)"
     ]
   }
 }
