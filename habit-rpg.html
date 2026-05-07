@@ -2917,8 +2917,8 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 
 /* ── AUTH OVERLAY ───────────────────────── */
 .auth-overlay {
-  position:fixed; inset:0; z-index:3000;
-  background:var(--bg);
+  position:fixed; inset:0; z-index:10001;
+  background:var(--bg); pointer-events:all;
   display:flex; align-items:center; justify-content:center;
   padding:20px; transition:opacity .3s;
 }
@@ -13703,11 +13703,13 @@ async function initAuth() {
     return;
   }
 
-  // Timeout fallback: if session check hangs, always show the form within 4s
   const _authFallback = setTimeout(() => {
     const form = document.getElementById('authForm');
-    if (form && form.classList.contains('hide')) showAuthForm();
-  }, 4000);
+    if (form && form.classList.contains('hide')) {
+      showAuthForm();
+      document.getElementById('authTabs')?.classList.remove('hide');
+    }
+  }, 1500);
 
   showAuthLoading('Verificando sesión...');
   let session = null;
@@ -13912,7 +13914,6 @@ function showAuthForm() {
 }
 function showAuthLoading(txt) {
   document.getElementById('authForm').classList.add('hide');
-  document.getElementById('authTabs')?.classList.add('hide');
   document.getElementById('authLoading').classList.remove('hide');
   if (txt) document.getElementById('authLoadingTxt').textContent = txt;
 }
