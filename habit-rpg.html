@@ -3500,7 +3500,7 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .char-panel {
   position: fixed !important;
   inset: 0 !important;
-  z-index: 850 !important;
+  z-index: 960 !important;
   background: var(--bg) !important;
   overflow-y: auto !important;
   padding: 0 20px 90px !important;
@@ -15133,10 +15133,14 @@ function syncCharStrip() {
   const isMax = char.level >= 99;
   const next  = isMax ? 1 : xpToNext(char.level);
   const pct   = isMax ? 100 : Math.min(100, (char.xp / next) * 100);
-  document.getElementById('csLevel').textContent  = `Nv.${char.level}`;
-  document.getElementById('csXpFill').style.width = pct + '%';
-  document.getElementById('csXpText').textContent = isMax ? 'MAX' : `${char.xp}/${next} XP`;
-  document.getElementById('csGold').textContent   = `🪙 ${(char.gold || 0).toLocaleString()}`;
+  const lvlEl  = document.getElementById('csLevel');
+  const fillEl = document.getElementById('csXpFill');
+  const txtEl  = document.getElementById('csXpText');
+  const goldEl = document.getElementById('csGold');
+  if (lvlEl)  lvlEl.textContent  = 'Nv.' + char.level;
+  if (fillEl) fillEl.style.width = pct + '%';
+  if (txtEl)  txtEl.textContent  = isMax ? 'MAX' : char.xp + '/' + next + ' XP';
+  if (goldEl) goldEl.textContent = '🪙 ' + (char.gold || 0).toLocaleString();
   const inner = document.getElementById('csAvatarInner');
   if (inner) {
     inner.innerHTML = '';
@@ -15145,31 +15149,49 @@ function syncCharStrip() {
 }
 
 function setBottomTab(id) {
-  document.querySelectorAll('.bn-tab').forEach(t => t.classList.remove('active'));
-  const el = document.getElementById(id);
+  document.querySelectorAll('.bn-tab').forEach(function(t) { t.classList.remove('active'); });
+  var el = document.getElementById(id);
   if (el) el.classList.add('active');
 }
 
+function closeMoreDrawer() {
+  var d   = document.getElementById('moreDrawer');
+  var b   = document.getElementById('moreBackdrop');
+  var btn = document.getElementById('bnMore');
+  if (d)   d.classList.remove('open');
+  if (b)   b.classList.remove('open');
+  if (btn) btn.classList.remove('active');
+}
+
+function openMoreDrawer() {
+  var d   = document.getElementById('moreDrawer');
+  var b   = document.getElementById('moreBackdrop');
+  var btn = document.getElementById('bnMore');
+  if (d)   d.classList.add('open');
+  if (b)   b.classList.add('open');
+  if (btn) btn.classList.add('active');
+}
+
 function goHome() {
-  ['advOverlay', 'shopOverlay'].forEach(id => {
-    const el = document.getElementById(id);
+  ['advOverlay', 'shopOverlay'].forEach(function(id) {
+    var el = document.getElementById(id);
     if (el) el.classList.add('hide');
   });
-  const panel = document.getElementById('charPanel');
-  if (panel) { panel.classList.remove('profile-open'); }
+  var panel = document.getElementById('charPanel');
+  if (panel) panel.classList.remove('profile-open');
   closeMoreDrawer();
   document.body.style.overflow = '';
   setBottomTab('bnHome');
 }
 
 function openProfile() {
-  const panel = document.getElementById('charPanel');
+  var panel = document.getElementById('charPanel');
   if (!panel) return;
   closeMoreDrawer();
   panel.classList.add('profile-open');
   document.body.style.overflow = 'hidden';
   setBottomTab('bnProfile');
-  const emailEl = document.getElementById('profileUserEmail');
+  var emailEl = document.getElementById('profileUserEmail');
   if (emailEl) {
     emailEl.textContent = (typeof sbUser !== 'undefined' && sbUser && sbUser.email)
       ? sbUser.email : 'Invitado';
@@ -15177,57 +15199,40 @@ function openProfile() {
 }
 
 function closeProfile() {
-  const panel = document.getElementById('charPanel');
-  if (!panel) return;
-  panel.classList.remove('profile-open');
+  var panel = document.getElementById('charPanel');
+  if (panel) panel.classList.remove('profile-open');
   document.body.style.overflow = '';
   setBottomTab('bnHome');
 }
 
-function openMoreDrawer() {
-  document.getElementById('moreDrawer').classList.add('open');
-  document.getElementById('moreBackdrop').classList.add('open');
-  document.getElementById('bnMore').classList.add('active');
+// Dedicated nav wrappers — avoids fragile function reassignment
+function navAdv() {
+  closeMoreDrawer();
+  openAdventure();
+  setBottomTab('bnAdv');
 }
 
-function closeMoreDrawer() {
-  const drawer   = document.getElementById('moreDrawer');
-  const backdrop = document.getElementById('moreBackdrop');
-  const btn      = document.getElementById('bnMore');
-  if (drawer)   drawer.classList.remove('open');
-  if (backdrop) backdrop.classList.remove('open');
-  if (btn)      btn.classList.remove('active');
+function navShop() {
+  closeMoreDrawer();
+  openShop();
+  setBottomTab('bnShop');
 }
 
-// Mobile date navigation
-document.getElementById('mTopBtnPrev').addEventListener('click', () => {
-  cur = shiftKey(cur, -1); day = loadDay(cur); renderAll();
-});
-document.getElementById('mTopBtnNext').addEventListener('click', () => {
-  if (cur < todayKey()) { cur = shiftKey(cur, 1); day = loadDay(cur); renderAll(); }
-});
-document.getElementById('mTopBtnToday').addEventListener('click', () => {
-  cur = todayKey(); day = loadDay(cur); renderAll();
-});
+// Bind all event listeners with null guards so a missing element never crashes init
+(function bindMobileListeners() {
+  function on(id, fn) { var el = document.getElementById(id); if (el) el.addEventListener('click', fn); }
 
-// Profile sign-out
-document.getElementById('profileSignOutBtn').addEventListener('click', () => {
-  const btn = document.getElementById('btnSignOut');
-  if (btn) btn.click();
-});
+  on('mTopBtnPrev',  function() { cur = shiftKey(cur, -1); day = loadDay(cur); renderAll(); });
+  on('mTopBtnNext',  function() { if (cur < todayKey()) { cur = shiftKey(cur, 1); day = loadDay(cur); renderAll(); } });
+  on('mTopBtnToday', function() { cur = todayKey(); day = loadDay(cur); renderAll(); });
+  on('profileSignOutBtn', function() { var b = document.getElementById('btnSignOut'); if (b) b.click(); });
 
-// Wrap adventure + shop open/close to sync bottom tab state
-const _origOpenAdv = openAdventure;
-openAdventure = function() { _origOpenAdv(); setBottomTab('bnAdv'); closeMoreDrawer(); };
-const _origCloseAdv = closeAdventure;
-closeAdventure = function() { _origCloseAdv(); setBottomTab('bnHome'); };
+  // Sync close buttons back to home tab
+  var _ca = closeAdventure, _cs = closeShop;
+  closeAdventure = function() { _ca(); setBottomTab('bnHome'); };
+  closeShop      = function() { _cs(); setBottomTab('bnHome'); };
+}());
 
-const _origOpenShop = openShop;
-openShop = function() { _origOpenShop(); setBottomTab('bnShop'); closeMoreDrawer(); };
-const _origCloseShop = closeShop;
-closeShop = function() { _origCloseShop(); setBottomTab('bnHome'); };
-
-// Default active tab on load
 setBottomTab('bnHome');
 
 // ── Start: check auth session or go guest ──
@@ -15240,11 +15245,11 @@ initAuth();
     <span class="bn-icon">🏠</span>
     <span class="bn-label">Inicio</span>
   </button>
-  <button class="bn-tab" id="bnAdv" onclick="openAdventure()">
+  <button class="bn-tab" id="bnAdv" onclick="navAdv()">
     <span class="bn-icon">⚔️</span>
     <span class="bn-label">Aventura</span>
   </button>
-  <button class="bn-tab" id="bnShop" onclick="openShop()">
+  <button class="bn-tab" id="bnShop" onclick="navShop()">
     <span class="bn-icon">🏪</span>
     <span class="bn-label">Tienda</span>
   </button>
