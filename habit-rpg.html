@@ -2937,10 +2937,19 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .auth-overlay {
   position:fixed; inset:0; z-index:10001;
   background:var(--bg); pointer-events:all;
-  display:flex; align-items:center; justify-content:center;
+  display:flex; align-items:flex-start; justify-content:center;
   padding:20px; transition:opacity .3s;
+  overflow-y:auto;
 }
+@media (min-height:680px) { .auth-overlay { align-items:center; } }
 .auth-overlay.hide { opacity:0; pointer-events:none; visibility:hidden; }
+@media (max-height:580px) {
+  .auth-card { padding:18px 18px; }
+  .auth-game-name { margin-bottom:12px; }
+  .auth-tabs { margin-bottom:12px; }
+  .auth-input { margin-bottom:7px; padding:9px 12px; }
+  .auth-guest-btn { margin-bottom:10px; }
+}
 
 .auth-card {
   width:100%; max-width:420px;
@@ -3574,6 +3583,21 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .cs-gold    { font-size: .72rem; font-weight: 700; color: var(--gold2); }
 .cs-tap-hint { font-size: .42rem; color: var(--mut); }
 
+/* ── Quick-nav row (Aventura / Tienda / Perfil shortcuts) ── */
+.quick-nav-row {
+  display: flex; gap: 8px; padding: 10px 16px 0;
+}
+.qnr-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 10px 6px; border-radius: 10px;
+  background: var(--s2); border: 1px solid var(--bd2);
+  color: var(--dim); font-family: inherit; font-size: .72rem; font-weight: 700;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.qnr-btn:hover  { border-color: var(--purp2); color: var(--txt); background: var(--s3); }
+.qnr-btn:active { background: var(--purpg); color: var(--purp2); }
+
 /* ── Habits area adjustments ── */
 .habits-area {
   padding: 12px 16px 20px !important;
@@ -4004,6 +4028,13 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
         <div class="cs-gold" id="csGold">🪙 0</div>
         <div class="cs-tap-hint">Ver perfil ›</div>
       </div>
+    </div>
+
+    <!-- Quick-nav shortcuts -->
+    <div class="quick-nav-row">
+      <button class="qnr-btn" onclick="navAdv()">⚔️ Aventura</button>
+      <button class="qnr-btn" onclick="navShop()">🏪 Tienda</button>
+      <button class="qnr-btn" onclick="openProfile()">👤 Perfil</button>
     </div>
 
     <!-- Daily personalized greeting -->
