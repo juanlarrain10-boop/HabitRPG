@@ -3478,6 +3478,221 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 }
 .help-tip { font-size:.8rem; color:var(--dim); line-height:1.65; padding:2px 0; }
 .help-tip b { color:var(--bien); }
+
+/* ═══════════════════════════════════════════
+   MOBILE-FIRST REDESIGN
+   ═══════════════════════════════════════════ */
+
+/* Hide old header completely */
+.hdr { display: none !important; }
+.auth-user-chip { display: none; }
+
+/* App container — single column, max 480px, centered */
+.app {
+  display: block !important;
+  max-width: 480px !important;
+  margin: 0 auto !important;
+  min-height: 100dvh;
+  padding-bottom: 60px;
+}
+
+/* char-panel becomes full-screen profile overlay */
+.char-panel {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 850 !important;
+  background: var(--bg) !important;
+  overflow-y: auto !important;
+  padding: 0 20px 90px !important;
+  display: none !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  border-right: none !important;
+  height: 100dvh !important;
+  width: 100% !important;
+}
+.char-panel.profile-open {
+  display: flex !important;
+  animation: mobileSlideUp .22s ease both;
+}
+
+/* ── Mobile top bar ── */
+.mobile-topbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  background: rgba(8,8,16,.96); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--bd);
+  position: sticky; top: 0; z-index: 100;
+}
+.mobile-topbar-logo {
+  font-family: var(--pxfont); font-size: .52rem;
+  background: linear-gradient(90deg,var(--purp2),var(--gold2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  white-space: nowrap; flex-shrink: 0;
+}
+.mtb-date-nav {
+  display: flex; align-items: center; gap: 6px;
+  flex: 1; justify-content: center;
+}
+.mtb-date-center { text-align: center; min-width: 110px; }
+.mtb-date-big { font-size: .78rem; font-weight: 600; }
+.mtb-date-sm  { font-size: .55rem; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
+.mtb-today-btn {
+  font-size: .52rem; font-weight: 700; padding: 5px 10px; border-radius: 20px;
+  background: var(--purpg); color: var(--purp2);
+  border: 1px solid rgba(139,92,246,.3); cursor: pointer;
+  font-family: inherit; flex-shrink: 0; white-space: nowrap; min-height: 34px;
+}
+
+/* ── Compact character strip ── */
+.char-strip {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px;
+  background: var(--s1); border-bottom: 1px solid var(--bd);
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: background .12s;
+}
+.char-strip:active { background: var(--s2); }
+.cs-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg,var(--purp),var(--gold));
+  padding: 2px; flex-shrink: 0;
+}
+.cs-avatar-inner {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: var(--s1); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.cs-info { flex: 1; min-width: 0; }
+.cs-name-row { display: flex; align-items: baseline; gap: 7px; margin-bottom: 3px; }
+.cs-name  { font-size: .78rem; font-weight: 700; color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cs-level { font-size: .45rem; color: var(--purp2); font-family: var(--pxfont); white-space: nowrap; }
+.cs-xp-wrap { height: 4px; background: var(--s3); border-radius: 2px; overflow: hidden; margin-bottom: 2px; }
+.cs-xp-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg,var(--purp),var(--gold)); transition: width .4s; }
+.cs-xp-text { font-size: .5rem; color: var(--dim); }
+.cs-right   { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+.cs-gold    { font-size: .72rem; font-weight: 700; color: var(--gold2); }
+.cs-tap-hint { font-size: .42rem; color: var(--mut); }
+
+/* ── Habits area adjustments ── */
+.habits-area {
+  padding: 12px 16px 20px !important;
+  max-width: 100% !important;
+  gap: 16px !important;
+}
+
+/* ── Touch targets ── */
+.habit-row { padding: 13px 14px !important; min-height: 52px; }
+.btn-add-m { min-height: 48px !important; font-size: .82rem !important; }
+.mission-controls input { min-height: 48px !important; font-size: .9rem !important; }
+.cat-sel    { min-height: 48px !important; font-size: .85rem !important; }
+.wbtn-a, .wbtn-s { min-height: 44px !important; min-width: 44px !important; }
+.sect-title { font-size: .95rem !important; }
+
+/* ── Profile overlay chrome ── */
+.profile-topbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 4px;
+  background: rgba(8,8,16,.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--bd);
+  margin: 0 -20px 8px;
+  padding-left: 20px; padding-right: 20px;
+}
+.profile-topbar-title {
+  font-family: var(--pxfont); font-size: .55rem; color: var(--purp2);
+}
+.profile-close-btn {
+  background: none; border: 1px solid var(--bd2); border-radius: 8px;
+  color: var(--dim); padding: 7px 14px; cursor: pointer;
+  font-family: inherit; font-size: .75rem; transition: background .15s;
+}
+.profile-close-btn:active { background: var(--s2); }
+.profile-auth-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0;
+  border-top: 1px solid var(--bd);
+  margin-top: 4px;
+}
+.profile-user-email { font-size: .7rem; color: var(--dim); word-break: break-all; }
+.profile-signout-btn {
+  background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25);
+  border-radius: 8px; color: #ef4444; padding: 8px 14px;
+  cursor: pointer; font-family: inherit; font-size: .75rem; white-space: nowrap;
+  margin-left: 12px; flex-shrink: 0;
+}
+
+/* ── Bottom navigation ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
+  background: rgba(8,8,16,.96); backdrop-filter: blur(20px);
+  border-top: 1px solid var(--bd);
+  display: flex; align-items: stretch; height: 60px;
+  max-width: 480px; margin: 0 auto;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.bn-tab {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 3px;
+  background: none; border: none; color: var(--dim); cursor: pointer;
+  padding: 6px 4px 8px; transition: color .15s; font-family: inherit;
+  -webkit-tap-highlight-color: transparent; position: relative;
+}
+.bn-tab:active { background: rgba(255,255,255,.05); }
+.bn-tab.active { color: var(--purp2); }
+.bn-tab.active::after {
+  content: ''; position: absolute; top: 0; left: 25%; right: 25%;
+  height: 2px; background: var(--purp2); border-radius: 0 0 2px 2px;
+}
+.bn-icon  { font-size: 1.25rem; line-height: 1; }
+.bn-label { font-size: .38rem; font-family: var(--pxfont); letter-spacing: .03em; line-height: 1; }
+
+/* ── More drawer ── */
+.more-backdrop {
+  position: fixed; inset: 0; z-index: 870;
+  background: rgba(0,0,0,.55);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.more-backdrop.open { opacity: 1; pointer-events: all; }
+
+.more-drawer {
+  position: fixed; bottom: 60px; left: 0; right: 0; z-index: 880;
+  max-width: 480px; margin: 0 auto;
+  background: var(--s1); border-top: 1px solid var(--bd2);
+  border-radius: 20px 20px 0 0;
+  padding: 6px 16px 20px;
+  transform: translateY(110%);
+  transition: transform .28s cubic-bezier(.25,.46,.45,.94);
+  box-shadow: 0 -8px 40px rgba(0,0,0,.6);
+}
+.more-drawer.open { transform: translateY(0); }
+.more-handle {
+  width: 40px; height: 4px; border-radius: 2px;
+  background: var(--bd2); margin: 8px auto 14px;
+}
+.more-drawer-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+.more-item {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  padding: 16px 8px;
+  background: var(--s2); border: 1px solid var(--bd); border-radius: 14px;
+  cursor: pointer; color: var(--txt); font-family: inherit;
+  transition: background .15s; -webkit-tap-highlight-color: transparent;
+}
+.more-item:active { background: var(--s3); }
+.more-item-icon  { font-size: 1.35rem; }
+.more-item-label { font-size: .38rem; font-family: var(--pxfont); color: var(--dim); text-align: center; }
+
+/* ── FAB positions above bottom nav ── */
+.gm-fab   { bottom: 128px !important; right: 16px !important; }
+.help-fab { bottom: 74px !important; right: 16px !important; }
+
+@keyframes mobileSlideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
 <body>
@@ -3698,7 +3913,11 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 <div class="app">
 
   <!-- ── CHARACTER PANEL ── -->
-  <aside class="char-panel">
+  <aside class="char-panel" id="charPanel">
+    <div class="profile-topbar">
+      <span class="profile-topbar-title">⚔️ Perfil</span>
+      <button class="profile-close-btn" onclick="closeProfile()">✕ Cerrar</button>
+    </div>
 
     <div class="char-top">
       <div class="av-portrait" id="avatarWrap">
@@ -3744,10 +3963,48 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
       </div>
     </div>
 
+    <div class="profile-auth-row">
+      <span class="profile-user-email" id="profileUserEmail">—</span>
+      <button class="profile-signout-btn" id="profileSignOutBtn">Cerrar sesión</button>
+    </div>
+
   </aside>
 
   <!-- ── HABITS ── -->
   <div class="habits-area">
+
+    <!-- Mobile top bar -->
+    <div class="mobile-topbar">
+      <span class="mobile-topbar-logo">HabitRPG</span>
+      <div class="mtb-date-nav">
+        <button class="btn-nav" id="mTopBtnPrev">&#8249;</button>
+        <div class="mtb-date-center">
+          <div class="mtb-date-big" id="mTopDateBig">—</div>
+          <div class="mtb-date-sm"  id="mTopDateSm">—</div>
+        </div>
+        <button class="btn-nav" id="mTopBtnNext">&#8250;</button>
+      </div>
+      <button class="mtb-today-btn" id="mTopBtnToday">Hoy</button>
+    </div>
+
+    <!-- Compact character strip -->
+    <div class="char-strip" onclick="openProfile()" role="button" aria-label="Ver perfil">
+      <div class="cs-avatar" id="csAvatarRing">
+        <div class="cs-avatar-inner" id="csAvatarInner"></div>
+      </div>
+      <div class="cs-info">
+        <div class="cs-name-row">
+          <span class="cs-name" id="csName">Aventurero</span>
+          <span class="cs-level" id="csLevel">Nv.1</span>
+        </div>
+        <div class="cs-xp-wrap"><div class="cs-xp-fill" id="csXpFill" style="width:0%"></div></div>
+        <div class="cs-xp-text" id="csXpText">0/200 XP</div>
+      </div>
+      <div class="cs-right">
+        <div class="cs-gold" id="csGold">🪙 0</div>
+        <div class="cs-tap-hint">Ver perfil ›</div>
+      </div>
+    </div>
 
     <!-- Daily personalized greeting -->
     <div id="dailyGreeting"></div>
@@ -8041,9 +8298,18 @@ function _refreshAparienciaAvatar() {
 
 function renderHeader() {
   const d = parseKey(cur);
-  document.getElementById('dateBig').textContent = `${d.getDate()} de ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-  document.getElementById('dateSm').textContent  = DAYS[d.getDay()];
-  document.getElementById('btnNext').disabled    = cur >= todayKey();
+  const dateStr = `${d.getDate()} de ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  const dayStr  = DAYS[d.getDay()];
+  const isToday = cur >= todayKey();
+  document.getElementById('dateBig').textContent = dateStr;
+  document.getElementById('dateSm').textContent  = dayStr;
+  document.getElementById('btnNext').disabled    = isToday;
+  const mBig  = document.getElementById('mTopDateBig');
+  const mSm   = document.getElementById('mTopDateSm');
+  const mNext = document.getElementById('mTopBtnNext');
+  if (mBig)  mBig.textContent = dateStr;
+  if (mSm)   mSm.textContent  = dayStr;
+  if (mNext) mNext.disabled   = isToday;
 }
 
 // ═══════════════════════════════════════════
@@ -8983,6 +9249,7 @@ function renderAll() {
   renderSleep();
   renderBienestar();
   try { renderPsyedCard(); } catch(e) {}
+  syncCharStrip();
 }
 
 // ═══════════════════════════════════════════
@@ -14855,8 +15122,173 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// ═══════════════════════════════════════════
+// MOBILE NAVIGATION
+// ═══════════════════════════════════════════
+
+function syncCharStrip() {
+  const csName = document.getElementById('csName');
+  if (!csName) return;
+  csName.textContent = char.name || 'Aventurero';
+  const isMax = char.level >= 99;
+  const next  = isMax ? 1 : xpToNext(char.level);
+  const pct   = isMax ? 100 : Math.min(100, (char.xp / next) * 100);
+  document.getElementById('csLevel').textContent  = `Nv.${char.level}`;
+  document.getElementById('csXpFill').style.width = pct + '%';
+  document.getElementById('csXpText').textContent = isMax ? 'MAX' : `${char.xp}/${next} XP`;
+  document.getElementById('csGold').textContent   = `🪙 ${(char.gold || 0).toLocaleString()}`;
+  const inner = document.getElementById('csAvatarInner');
+  if (inner) {
+    inner.innerHTML = '';
+    inner.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 40));
+  }
+}
+
+function setBottomTab(id) {
+  document.querySelectorAll('.bn-tab').forEach(t => t.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+function goHome() {
+  ['advOverlay', 'shopOverlay'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hide');
+  });
+  const panel = document.getElementById('charPanel');
+  if (panel) { panel.classList.remove('profile-open'); }
+  closeMoreDrawer();
+  document.body.style.overflow = '';
+  setBottomTab('bnHome');
+}
+
+function openProfile() {
+  const panel = document.getElementById('charPanel');
+  if (!panel) return;
+  closeMoreDrawer();
+  panel.classList.add('profile-open');
+  document.body.style.overflow = 'hidden';
+  setBottomTab('bnProfile');
+  const emailEl = document.getElementById('profileUserEmail');
+  if (emailEl) {
+    emailEl.textContent = (typeof sbUser !== 'undefined' && sbUser && sbUser.email)
+      ? sbUser.email : 'Invitado';
+  }
+}
+
+function closeProfile() {
+  const panel = document.getElementById('charPanel');
+  if (!panel) return;
+  panel.classList.remove('profile-open');
+  document.body.style.overflow = '';
+  setBottomTab('bnHome');
+}
+
+function openMoreDrawer() {
+  document.getElementById('moreDrawer').classList.add('open');
+  document.getElementById('moreBackdrop').classList.add('open');
+  document.getElementById('bnMore').classList.add('active');
+}
+
+function closeMoreDrawer() {
+  const drawer   = document.getElementById('moreDrawer');
+  const backdrop = document.getElementById('moreBackdrop');
+  const btn      = document.getElementById('bnMore');
+  if (drawer)   drawer.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('open');
+  if (btn)      btn.classList.remove('active');
+}
+
+// Mobile date navigation
+document.getElementById('mTopBtnPrev').addEventListener('click', () => {
+  cur = shiftKey(cur, -1); day = loadDay(cur); renderAll();
+});
+document.getElementById('mTopBtnNext').addEventListener('click', () => {
+  if (cur < todayKey()) { cur = shiftKey(cur, 1); day = loadDay(cur); renderAll(); }
+});
+document.getElementById('mTopBtnToday').addEventListener('click', () => {
+  cur = todayKey(); day = loadDay(cur); renderAll();
+});
+
+// Profile sign-out
+document.getElementById('profileSignOutBtn').addEventListener('click', () => {
+  const btn = document.getElementById('btnSignOut');
+  if (btn) btn.click();
+});
+
+// Wrap adventure + shop open/close to sync bottom tab state
+const _origOpenAdv = openAdventure;
+openAdventure = function() { _origOpenAdv(); setBottomTab('bnAdv'); closeMoreDrawer(); };
+const _origCloseAdv = closeAdventure;
+closeAdventure = function() { _origCloseAdv(); setBottomTab('bnHome'); };
+
+const _origOpenShop = openShop;
+openShop = function() { _origOpenShop(); setBottomTab('bnShop'); closeMoreDrawer(); };
+const _origCloseShop = closeShop;
+closeShop = function() { _origCloseShop(); setBottomTab('bnHome'); };
+
+// Default active tab on load
+setBottomTab('bnHome');
+
 // ── Start: check auth session or go guest ──
 initAuth();
 </script>
+
+<!-- ── BOTTOM NAVIGATION ── -->
+<nav class="bottom-nav">
+  <button class="bn-tab active" id="bnHome" onclick="goHome()">
+    <span class="bn-icon">🏠</span>
+    <span class="bn-label">Inicio</span>
+  </button>
+  <button class="bn-tab" id="bnAdv" onclick="openAdventure()">
+    <span class="bn-icon">⚔️</span>
+    <span class="bn-label">Aventura</span>
+  </button>
+  <button class="bn-tab" id="bnShop" onclick="openShop()">
+    <span class="bn-icon">🏪</span>
+    <span class="bn-label">Tienda</span>
+  </button>
+  <button class="bn-tab" id="bnProfile" onclick="openProfile()">
+    <span class="bn-icon">👤</span>
+    <span class="bn-label">Perfil</span>
+  </button>
+  <button class="bn-tab" id="bnMore" onclick="openMoreDrawer()">
+    <span class="bn-icon">☰</span>
+    <span class="bn-label">Más</span>
+  </button>
+</nav>
+
+<!-- ── MORE DRAWER ── -->
+<div class="more-backdrop" id="moreBackdrop" onclick="closeMoreDrawer()"></div>
+<div class="more-drawer" id="moreDrawer">
+  <div class="more-handle"></div>
+  <div class="more-drawer-grid">
+    <button class="more-item" onclick="openStory(); closeMoreDrawer()">
+      <span class="more-item-icon">📖</span>
+      <span class="more-item-label">Historia</span>
+    </button>
+    <button class="more-item" onclick="openDiary(); closeMoreDrawer()">
+      <span class="more-item-icon">📜</span>
+      <span class="more-item-label">Diario</span>
+    </button>
+    <button class="more-item" onclick="openAchievements(); closeMoreDrawer()">
+      <span class="more-item-icon">🏆</span>
+      <span class="more-item-label">Logros</span>
+    </button>
+    <button class="more-item" onclick="openWellness(); closeMoreDrawer()">
+      <span class="more-item-icon">🧘</span>
+      <span class="more-item-label">Bienestar</span>
+    </button>
+    <button class="more-item" onclick="openWheel(); closeMoreDrawer()">
+      <span class="more-item-icon">🗺️</span>
+      <span class="more-item-label">Rueda</span>
+    </button>
+    <button class="more-item" onclick="openApoyo(); closeMoreDrawer()">
+      <span class="more-item-icon">💙</span>
+      <span class="more-item-label">Apoyo</span>
+    </button>
+  </div>
+</div>
+
 </body>
 </html>
