@@ -3295,6 +3295,171 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .combat-vol-btn:hover { background:rgba(255,255,255,.07); color:var(--txt); }
 .combat-vol-btn.sfx-on  { color:#60a5fa; border-color:rgba(96,165,250,.4); }
 .combat-vol-btn.music-on{ color:#a78bfa; border-color:rgba(167,139,250,.4); }
+
+/* ── WELCOME TUTORIAL OVERLAY ─────────────── */
+.tut-overlay {
+  position:fixed; inset:0; z-index:9999;
+  background:rgba(5,5,10,.94);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px; animation:tutFadeIn .3s ease both;
+}
+.tut-overlay.hide { display:none; }
+@keyframes tutFadeIn { from{opacity:0} to{opacity:1} }
+.tut-card {
+  width:100%; max-width:460px;
+  background:linear-gradient(145deg,#0d0d1a,#141428);
+  border:2px solid var(--rpg-frame2);
+  border-radius:22px; padding:32px 28px 26px;
+  box-shadow:0 0 0 1px rgba(232,176,32,.13),0 32px 80px rgba(0,0,0,.75),
+             inset 0 1px 0 rgba(255,255,255,.05);
+  position:relative; overflow:hidden;
+  animation:tutSlideUp .35s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes tutSlideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
+.tut-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,transparent,var(--rpg-gold),var(--rpg-gold2),var(--rpg-gold),transparent);
+  border-radius:22px 22px 0 0;
+}
+.tut-skip {
+  position:absolute; top:14px; right:14px;
+  background:none; border:1px solid rgba(255,255,255,.12);
+  border-radius:8px; color:var(--dim); font-size:.72rem;
+  padding:5px 12px; cursor:pointer; font-family:inherit; transition:all .15s;
+}
+.tut-skip:hover { color:var(--txt); border-color:rgba(255,255,255,.3); }
+.tut-counter {
+  font-family:var(--pxfont); font-size:.46rem; color:var(--dim);
+  text-align:center; margin-bottom:18px; letter-spacing:.12em;
+}
+.tut-icon {
+  font-size:3rem; text-align:center; margin-bottom:12px;
+  filter:drop-shadow(0 0 16px rgba(232,176,32,.45));
+}
+.tut-title {
+  font-family:var(--pxfont); font-size:.74rem; color:var(--rpg-gold2);
+  text-align:center; margin-bottom:14px; line-height:1.5;
+  text-shadow:0 0 22px rgba(232,176,32,.4);
+}
+.tut-body {
+  font-size:.88rem; color:var(--txt); line-height:1.72;
+  text-align:center; margin-bottom:16px;
+}
+.tut-body b { color:var(--gold2); }
+.tut-tip {
+  background:rgba(139,92,246,.1); border:1px solid rgba(139,92,246,.22);
+  border-radius:10px; padding:10px 14px;
+  font-size:.78rem; color:var(--purp2); text-align:center;
+  margin-bottom:22px; line-height:1.5;
+}
+.tut-dots { display:flex; justify-content:center; gap:8px; margin-bottom:20px; }
+.tut-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--bd2); transition:all .25s;
+}
+.tut-dot.active {
+  background:var(--rpg-gold); width:22px; border-radius:4px;
+  box-shadow:0 0 10px rgba(232,176,32,.5);
+}
+.tut-nav { display:flex; gap:10px; align-items:center; }
+.tut-prev-btn {
+  flex:0 0 auto; padding:10px 18px; border-radius:11px;
+  background:rgba(255,255,255,.05); border:1px solid var(--bd2);
+  color:var(--dim); font-family:inherit; font-size:.82rem; cursor:pointer;
+  transition:all .15s;
+}
+.tut-prev-btn:hover { background:rgba(255,255,255,.1); color:var(--txt); }
+.tut-next-btn {
+  flex:1; padding:12px 20px; border-radius:11px;
+  background:linear-gradient(135deg,var(--purp),#5b21b6);
+  border:none; color:#fff; font-family:var(--pxfont); font-size:.58rem;
+  cursor:pointer; transition:all .18s;
+  box-shadow:0 4px 18px rgba(139,92,246,.38);
+}
+.tut-next-btn:hover { transform:translateY(-2px); box-shadow:0 7px 22px rgba(139,92,246,.5); }
+
+/* ── HELP FAB BUTTON ─────────────────────── */
+.help-fab {
+  position:fixed; bottom:72px; right:16px; z-index:500;
+  width:44px; height:44px; border-radius:50%;
+  background:linear-gradient(135deg,var(--rpg-frame),var(--rpg-frame2));
+  border:2px solid var(--rpg-gold); color:var(--rpg-gold);
+  font-size:1.15rem; font-weight:900; cursor:pointer; line-height:1;
+  box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 12px rgba(232,176,32,.18);
+  transition:all .2s; font-family:inherit;
+  display:flex; align-items:center; justify-content:center;
+}
+.help-fab:hover {
+  transform:scale(1.09);
+  box-shadow:0 6px 22px rgba(0,0,0,.6),0 0 20px rgba(232,176,32,.38);
+  border-color:var(--rpg-gold2);
+}
+
+/* ── HELP OVERLAY ────────────────────────── */
+.help-overlay {
+  position:fixed; inset:0; z-index:9000;
+  background:rgba(5,5,10,.88); backdrop-filter:blur(3px);
+  display:flex; align-items:center; justify-content:center; padding:16px;
+}
+.help-overlay.hide { display:none; }
+.help-scroll {
+  width:100%; max-width:540px; max-height:88vh;
+  overflow-y:auto; overflow-x:hidden;
+  background:linear-gradient(160deg,#10100e,#0d0d18);
+  border:2px solid var(--rpg-frame2);
+  border-radius:18px; padding:28px 22px 24px;
+  box-shadow:0 0 0 1px rgba(232,176,32,.15),0 40px 90px rgba(0,0,0,.8);
+  position:relative;
+}
+.help-scroll::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,transparent,var(--rpg-gold),var(--rpg-gold2),var(--rpg-gold),transparent);
+  border-radius:18px 18px 0 0; pointer-events:none;
+}
+.help-close {
+  position:absolute; top:13px; right:13px;
+  width:32px; height:32px; border-radius:50%;
+  background:rgba(255,255,255,.06); border:1px solid var(--bd2);
+  color:var(--dim); font-size:1rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .15s;
+}
+.help-close:hover { background:rgba(255,255,255,.13); color:var(--txt); }
+.help-hdr { text-align:center; margin-bottom:22px; padding-top:4px; }
+.help-hdr-icon { font-size:2rem; margin-bottom:4px; }
+.help-hdr-title {
+  font-family:var(--pxfont); font-size:.65rem; color:var(--rpg-gold2);
+  letter-spacing:.1em;
+}
+.help-sec { margin-bottom:20px; }
+.help-sec-title {
+  font-family:var(--pxfont); font-size:.52rem; color:var(--purp2);
+  letter-spacing:.07em; margin-bottom:10px;
+  padding-bottom:6px; border-bottom:1px solid rgba(139,92,246,.2);
+}
+.help-p { font-size:.82rem; color:var(--dim); line-height:1.72; margin-bottom:8px; }
+.help-p b { color:var(--txt); }
+.help-tbl {
+  width:100%; border-collapse:collapse; font-size:.78rem; margin-bottom:8px;
+}
+.help-tbl th {
+  background:rgba(139,92,246,.12); color:var(--purp2);
+  font-family:var(--pxfont); font-size:.42rem; letter-spacing:.05em;
+  padding:7px 10px; text-align:left; border-bottom:1px solid var(--bd);
+}
+.help-tbl td {
+  padding:7px 10px; border-bottom:1px solid rgba(255,255,255,.04);
+  color:var(--txt); vertical-align:top;
+}
+.help-tbl tr:last-child td { border-bottom:none; }
+.td-xp  { color:var(--purp2); font-weight:700; }
+.td-gold { color:var(--gold2); font-weight:700; }
+.help-tips {
+  background:rgba(34,211,238,.06); border:1px solid rgba(34,211,238,.14);
+  border-radius:10px; padding:14px 16px;
+}
+.help-tip { font-size:.8rem; color:var(--dim); line-height:1.65; padding:2px 0; }
+.help-tip b { color:var(--bien); }
 </style>
 </head>
 <body>
@@ -3428,6 +3593,23 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
     <div class="ob-nav">
       <button class="ob-skip-btn" id="obSkipBtn" style="display:none">Saltar →</button>
       <button class="ob-next-btn" id="obNextBtn" disabled>Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── WELCOME TUTORIAL OVERLAY ── -->
+<div class="tut-overlay hide" id="tutOverlay">
+  <div class="tut-card">
+    <button class="tut-skip" onclick="closeTutorial()">Saltar ×</button>
+    <div class="tut-counter"><span id="tutCurrent">1</span> / <span id="tutTotal">5</span></div>
+    <div class="tut-icon" id="tutIcon">📋</div>
+    <div class="tut-title" id="tutTitle"></div>
+    <div class="tut-body" id="tutBody"></div>
+    <div class="tut-tip" id="tutTip"></div>
+    <div class="tut-dots" id="tutDots"></div>
+    <div class="tut-nav">
+      <button class="tut-prev-btn" id="tutPrev" style="display:none" onclick="tutPrev()">← Atrás</button>
+      <button class="tut-next-btn" id="tutNext" onclick="tutNext()">Siguiente →</button>
     </div>
   </div>
 </div>
@@ -3981,6 +4163,68 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   </div>
 </div>
 <button class="gm-fab" id="gmFab" title="Panel GM" style="display:none">GM</button>
+<button class="help-fab" id="helpFab" title="Guía del aventurero" onclick="openHelp()">?</button>
+
+<!-- ── HELP OVERLAY ── -->
+<div class="help-overlay hide" id="helpOverlay">
+  <div class="help-scroll">
+    <button class="help-close" onclick="closeHelp()">×</button>
+    <div class="help-hdr">
+      <div class="help-hdr-icon">📜</div>
+      <div class="help-hdr-title">Guía del Aventurero</div>
+    </div>
+
+    <div class="help-sec">
+      <div class="help-sec-title">⭐ Ganar XP y subir de nivel</div>
+      <p class="help-p">Cada hábito completado te da <b>Puntos de Experiencia (XP)</b>. Al llenar la barra de XP <b>subes de nivel</b>, mejorando tus estadísticas: Fuerza, Mente, Vitalidad y Disciplina. Tu <b>clase</b> determina qué stats crecen más.</p>
+    </div>
+
+    <div class="help-sec">
+      <div class="help-sec-title">💰 Ganar monedas de oro</div>
+      <p class="help-p">Completa hábitos y <b>gana combates</b> para obtener oro. Úsalo en la <b>Tienda</b> para armas, armaduras y objetos que potencian tu personaje en batalla.</p>
+      <table class="help-tbl">
+        <tr><th>Tipo de tarea</th><th>XP aprox.</th><th>Oro aprox.</th></tr>
+        <tr><td>Hábito normal</td><td class="td-xp">15–40 XP</td><td class="td-gold">3–10 🪙</td></tr>
+        <tr><td>Hábito difícil</td><td class="td-xp">40–100 XP</td><td class="td-gold">10–28 🪙</td></tr>
+        <tr><td>Misión diaria completada</td><td class="td-xp">+bonus</td><td class="td-gold">+10–30 🪙</td></tr>
+        <tr><td>Victoria en combate</td><td class="td-xp">+bonus XP</td><td class="td-gold">+20–60 🪙</td></tr>
+      </table>
+      <p class="help-p">Tu clase multiplica el XP en sus categorías afines. Mantener una <b>racha</b> también da bonus.</p>
+    </div>
+
+    <div class="help-sec">
+      <div class="help-sec-title">⚔️ Dungeons y Modo Aventura</div>
+      <p class="help-p">Completa <b>misiones diarias</b> para desbloquear dungeons. Dentro encontrarás oleadas de enemigos con un jefe final. La dificultad escala con tu nivel y equipamiento.</p>
+      <p class="help-p">• <b>Misiones normales</b> — se renuevan cada día<br>
+         • <b>Dungeons</b> — se desbloquean completando misiones del día<br>
+         • <b>Jefes épicos</b> — requieren nivel alto y buen equipo<br>
+         • <b>Resultado</b> — tus stats (Fuerza, Vitalidad) determinan el combate</p>
+    </div>
+
+    <div class="help-sec">
+      <div class="help-sec-title">🔮 Subclases — cómo desbloquearlas</div>
+      <p class="help-p">Las subclases se desbloquean manteniendo <b>hábitos consistentes</b> y alcanzando <b>niveles específicos</b>. Cada subclase tiene bonificaciones únicas que amplifican tu estilo de juego.</p>
+      <p class="help-p">• <b>Guerrero</b> → Berserker · Campeón · Paladín<br>
+         • <b>Mago</b> → Archimago · Nigromante · Elementalista<br>
+         • <b>Asesino</b> → Sicario · Sombra · Duelista<br>
+         • <b>Monje</b> → Maestro Zen · Guardián · Curandero<br>
+         • <b>Druida</b> → Chamán · Guardabosques · Alquimista</p>
+      <p class="help-p">Revisa la sección <b>Perfil → Subclases</b> para ver los requisitos exactos de tu clase.</p>
+    </div>
+
+    <div class="help-sec">
+      <div class="help-sec-title">💡 Tips útiles</div>
+      <div class="help-tips">
+        <div class="help-tip">• <b>Racha diaria</b> — días consecutivos dan bonus de XP acumulativo</div>
+        <div class="help-tip">• <b>Equipa tu personaje</b> — armas y armaduras mejoran tus stats en combate</div>
+        <div class="help-tip">• <b>Organiza tu día</b> — revisa el organizador cada mañana para no perder hábitos</div>
+        <div class="help-tip">• <b>Monje / Druida</b> — obtienen XP extra en hábitos de bienestar mental</div>
+        <div class="help-tip">• <b>Guerrero / Bárbaro</b> — XP extra en hábitos de fuerza y salud física</div>
+        <div class="help-tip">• <b>Perfil</b> — toca tu personaje para ver estadísticas, equipo y progreso detallado</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="gm-overlay hide" id="gmOverlay">
   <div class="gm-panel">
@@ -14168,6 +14412,7 @@ function obFinish() {
   hideOnboarding();
   renderAll();
   applySubclassAura();
+  maybeShowTutorial();
 }
 
 function getOnboardingXPMul(cat) {
@@ -14479,6 +14724,98 @@ function equipScreenSelectSlot(slot) {
 
 document.getElementById('equipOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('equipOverlay')) closeEquipScreen();
+});
+
+// ── WELCOME TUTORIAL ──────────────────────────────────────────────────────
+const TUT_SLIDES = [
+  {
+    icon: '📋',
+    title: 'El Organizador del Día',
+    body: 'Cada día el juego genera <b>tareas personalizadas</b> según tu perfil. Completar tus hábitos diarios es la base de todo: ganas XP, oro y avanzas en tu aventura. ¡Cada hábito te acerca más a tu mejor versión!',
+    tip: '💡 Los hábitos se renuevan cada día a medianoche'
+  },
+  {
+    icon: '⭐',
+    title: 'XP y Niveles',
+    body: 'Cada hábito completado te da <b>Puntos de Experiencia (XP)</b>. Al llenar la barra <b>subes de nivel</b>, mejorando tus estadísticas: Fuerza, Mente, Vitalidad y Disciplina. Tu clase determina qué stats crecen más.',
+    tip: '💡 Mantener una racha diaria multiplica el XP ganado'
+  },
+  {
+    icon: '💰',
+    title: 'Monedas de Oro',
+    body: 'Completar hábitos y <b>ganar combates</b> te da monedas de oro. Úsalas en la <b>Tienda</b> para comprar armas, armaduras y objetos que potencian tu personaje en batalla.',
+    tip: '💡 Las victorias en dungeon dan bonus de oro adicional'
+  },
+  {
+    icon: '⚔️',
+    title: 'Modo Aventura',
+    body: 'Completa <b>misiones diarias</b> para desbloquear dungeons. Dentro encontrarás oleadas de enemigos y jefes épicos. Tus estadísticas y equipamiento determinan el resultado del combate.',
+    tip: '💡 Las misiones del día se renuevan cada mañana'
+  },
+  {
+    icon: '🔮',
+    title: 'Subclases Secretas',
+    body: 'Al alcanzar <b>niveles altos</b> y mantener hábitos consistentes podrás desbloquear <b>subclases especiales</b>. Cada una tiene habilidades únicas que amplifican tu estilo de juego.',
+    tip: '💡 Toca el botón ? en pantalla para ver los requisitos'
+  }
+];
+
+let _tutSlide = 0;
+
+function maybeShowTutorial() {
+  if (localStorage.getItem('hrpg_tutorial_seen')) return;
+  _tutSlide = 0;
+  _renderTutSlide();
+  document.getElementById('tutOverlay').classList.remove('hide');
+}
+
+function _renderTutSlide() {
+  const s = TUT_SLIDES[_tutSlide];
+  const total = TUT_SLIDES.length;
+  document.getElementById('tutIcon').textContent = s.icon;
+  document.getElementById('tutTitle').textContent = s.title;
+  document.getElementById('tutBody').innerHTML = s.body;
+  document.getElementById('tutTip').textContent = s.tip;
+  document.getElementById('tutCurrent').textContent = _tutSlide + 1;
+  document.getElementById('tutTotal').textContent = total;
+  document.getElementById('tutPrev').style.display = _tutSlide > 0 ? '' : 'none';
+  const nextBtn = document.getElementById('tutNext');
+  if (nextBtn) nextBtn.textContent = _tutSlide < total - 1 ? 'Siguiente →' : '¡Comenzar aventura!';
+  const dotsEl = document.getElementById('tutDots');
+  if (dotsEl) {
+    dotsEl.innerHTML = TUT_SLIDES.map((_, i) =>
+      `<div class="tut-dot${i === _tutSlide ? ' active' : ''}"></div>`
+    ).join('');
+  }
+}
+
+function tutNext() {
+  if (_tutSlide < TUT_SLIDES.length - 1) {
+    _tutSlide++;
+    _renderTutSlide();
+  } else {
+    closeTutorial();
+  }
+}
+
+function tutPrev() {
+  if (_tutSlide > 0) { _tutSlide--; _renderTutSlide(); }
+}
+
+function closeTutorial() {
+  localStorage.setItem('hrpg_tutorial_seen', '1');
+  document.getElementById('tutOverlay').classList.add('hide');
+}
+
+// ── HELP OVERLAY ──────────────────────────────────────────────────────────
+function openHelp()  { document.getElementById('helpOverlay').classList.remove('hide'); }
+function closeHelp() { document.getElementById('helpOverlay').classList.add('hide'); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeHelp();
+    if (!document.getElementById('tutOverlay').classList.contains('hide')) closeTutorial();
+  }
 });
 
 // ── Start: check auth session or go guest ──
