@@ -20,7 +20,13 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(cp habit-rpg.html deploy/index.html)"
+      "Bash(cp habit-rpg.html deploy/index.html)",
+      "Bash(Copy-Item -Force \"habit-rpg.html\" \"deploy/index.html\")",
+      "PowerShell(Copy-Item -Force \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\")",
+      "PowerShell(git -C \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\" add habit-rpg.html deploy/index.html)",
+      "PowerShell(git -C \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\" status --short)",
+      "PowerShell(git -C \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\" commit -m $msg)",
+      "PowerShell(git -C \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\" push origin main)"
     ]
   }
 }
