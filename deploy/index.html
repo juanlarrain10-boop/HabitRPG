@@ -7,6 +7,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#7c3aed">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HabitRPG">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -3858,6 +3865,45 @@ button:active:not(:disabled),
   transition: transform 80ms ease, filter 80ms ease !important;
 }
 
+/* === PWA — INSTALL BANNER & NOTIFICATION SETTINGS === */
+.install-banner {
+  position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%);
+  width: calc(100% - 24px); max-width: 448px;
+  background: linear-gradient(135deg, #1e1040 0%, #0f0f2a 100%);
+  border: 1px solid rgba(124,58,237,.45);
+  border-radius: 18px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 36px rgba(0,0,0,.55), 0 0 0 1px rgba(124,58,237,.1);
+  z-index: 9500; animation: pwaSlideUp .3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+@keyframes pwaSlideUp {
+  from { opacity:0; transform: translateX(-50%) translateY(18px); }
+  to   { opacity:1; transform: translateX(-50%) translateY(0); }
+}
+.install-banner.hide { display: none !important; }
+.ib-icon  { font-size: 2rem; flex-shrink: 0; }
+.ib-text  { flex: 1; min-width: 0; }
+.ib-title { font-size: .74rem; font-weight: 700; color: var(--txt); margin-bottom: 2px; }
+.ib-desc  { font-size: .62rem; color: var(--dim); line-height: 1.4; }
+.ib-btns  { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+.ib-install { background: var(--purp2); color: #fff; border: none; border-radius: 9px; padding: 8px 14px; font-family: inherit; font-size: .68rem; font-weight: 700; cursor: pointer; touch-action: manipulation; white-space: nowrap; }
+.ib-dismiss { background: transparent; color: var(--dim); border: 1px solid var(--bd2); border-radius: 9px; padding: 6px 10px; font-family: inherit; font-size: .65rem; cursor: pointer; touch-action: manipulation; white-space: nowrap; }
+
+/* Notification + Install section inside Profile panel */
+.pwa-section { margin-top: 14px; padding: 14px; background: var(--s2); border: 1px solid var(--bd2); border-radius: 14px; }
+.pwa-section-title { font-size: .7rem; font-weight: 700; color: var(--txt); margin-bottom: 12px; }
+.pwa-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.pwa-row:last-child { margin-bottom: 0; }
+.pwa-lbl { font-size: .64rem; color: var(--dim); flex: 1; line-height: 1.4; }
+.pwa-toggle { width: 42px; height: 24px; background: var(--bd2); border: none; border-radius: 12px; position: relative; cursor: pointer; transition: background .2s; touch-action: manipulation; flex-shrink: 0; }
+.pwa-toggle.on { background: var(--purp2); }
+.pwa-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: left .2s; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.pwa-toggle.on::after { left: 21px; }
+.pwa-time { background: var(--s3); border: 1px solid var(--bd2); border-radius: 8px; color: var(--txt); font-family: inherit; font-size: .7rem; padding: 5px 8px; width: 96px; touch-action: manipulation; }
+.pwa-status { font-size: .59rem; color: var(--mut); margin-top: -4px; margin-bottom: 6px; }
+.pwa-big-btn { width: 100%; padding: 11px; background: linear-gradient(135deg, #5b21b6, #7c3aed); color: #fff; border: none; border-radius: 11px; font-family: inherit; font-size: .72rem; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+.pwa-big-btn:disabled { opacity: .45; cursor: default; }
 </style>
 </head>
 <body>
@@ -4125,6 +4171,27 @@ button:active:not(:disabled),
       <div class="log-title">XP de Hoy</div>
       <div class="log-list" id="logList">
         <div class="no-log">Completa hábitos para ganar XP</div>
+      </div>
+    </div>
+
+    <!-- PWA: install + notifications -->
+    <div class="pwa-section">
+      <div class="pwa-section-title">📱 App &amp; Notificaciones</div>
+
+      <div class="pwa-row">
+        <span class="pwa-lbl">Instalar HabitRPG como app</span>
+        <button class="pwa-big-btn" id="pwaProfileInstallBtn" style="width:auto;padding:8px 14px;font-size:.65rem">⬇️ Instalar</button>
+      </div>
+
+      <div class="pwa-row">
+        <span class="pwa-lbl">Recordatorio diario de hábitos</span>
+        <button class="pwa-toggle" id="pwaNotifToggle" aria-label="Activar recordatorio"></button>
+      </div>
+      <div class="pwa-status" id="pwaNotifStatus">Activa para recibir recordatorios</div>
+
+      <div class="pwa-row" id="pwaTimeRow" style="display:none">
+        <span class="pwa-lbl">Hora del recordatorio</span>
+        <input type="time" class="pwa-time" id="pwaTimeInput" value="20:00">
       </div>
     </div>
 
@@ -8371,6 +8438,7 @@ function checkLevelUp() {
     checkPetUnlock();
     checkAllSubclassUnlocks();
     SFX.levelUp();
+    pwaNotify('⬆️ ¡Subiste al nivel ' + char.level + '!', '¡Felicidades, aventurero! Nuevo nivel desbloqueado.', 'levelup');
     // Milestone tracking
     if (char.level === 2) addMilestone('first_level', 'Primera subida de nivel', '⬆️');
     if ([10,20,30,40,50,60,70,80,90,99].includes(char.level))
@@ -9831,6 +9899,11 @@ function renderAdvMap(el) {
   // Daily portal — appears silently when: dungeon day + 100% missions + not yet done
   const portalVisible = isDungeonDay(cur) && st.pct >= 1.0 && !day.dailyDungeonDone;
   if (portalVisible) {
+    const _dpKey = 'pwa_portal_notif_' + cur;
+    if (!localStorage.getItem(_dpKey)) {
+      localStorage.setItem(_dpKey, '1');
+      pwaNotify('🌀 ¡Mazmorra misteriosa desbloqueada!', '¡Completaste tus misiones! El portal del día te espera.', 'dungeon');
+    }
     const dd2     = getDailyDungeon(cur);
     const levelOk = char.level >= dd2.t.minLevel;
     html += `<div class="daily-portal">
@@ -15511,11 +15584,238 @@ function navShop() {
   closeShop      = function() { _cs(); setBottomTab('bnHome'); };
 }());
 
+// ═══════════════════════════════════════════════════════════════════════════
+//  PWA — Service Worker, Install Prompt, Push Notifications
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── 1. Register Service Worker ──────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then(reg => {
+        window._swReg = reg;
+        // Register periodic background sync if supported
+        if ('periodicSync' in reg) {
+          navigator.permissions.query({ name: 'periodic-background-sync' })
+            .then(status => {
+              if (status.state === 'granted') {
+                reg.periodicSync.register('habitrpg-daily', { minInterval: 86400000 }).catch(() => {});
+              }
+            }).catch(() => {});
+        }
+      }).catch(() => {});
+  });
+}
+
+// ── 2. Notification helper ───────────────────────────────────────────────────
+function pwaNotify(title, body, tag) {
+  if (Notification.permission !== 'granted') return;
+  const reg = window._swReg;
+  if (reg) {
+    reg.active?.postMessage({ type: 'SHOW_NOTIFICATION', title, body, tag: 'habitrpg-' + (tag || 'msg') });
+  } else {
+    new Notification(title, { body, icon: '/icons/icon-192.png', tag: 'habitrpg-' + (tag || 'msg'), badge: '/icons/icon-192.png' });
+  }
+}
+
+// Save notification config to SW cache so periodic sync can read it
+function _pwaSaveConfig() {
+  const cfg = {
+    reminderEnabled: localStorage.getItem('pwa_notif_on') === '1',
+    reminderTime:    localStorage.getItem('pwa_notif_time') || '20:00',
+    lastNotified:    localStorage.getItem('pwa_notif_last') || '',
+  };
+  navigator.serviceWorker?.ready.then(reg => reg.active?.postMessage({ type: 'SAVE_CONFIG', config: cfg })).catch(() => {});
+}
+
+// ── 3. Daily reminder scheduler (in-app, fires when app is open) ──────────────
+function _pwaScheduleReminder() {
+  if (window._pwaReminderTimer) clearTimeout(window._pwaReminderTimer);
+  if (localStorage.getItem('pwa_notif_on') !== '1') return;
+  if (Notification.permission !== 'granted') return;
+
+  const [h, m] = (localStorage.getItem('pwa_notif_time') || '20:00').split(':').map(Number);
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+  if (target <= now) target.setDate(target.getDate() + 1); // tomorrow if already past
+
+  const ms = target - now;
+  window._pwaReminderTimer = setTimeout(() => {
+    const todayKey = new Date().toISOString().slice(0, 10);
+    if (localStorage.getItem('pwa_notif_last') !== todayKey) {
+      localStorage.setItem('pwa_notif_last', todayKey);
+      pwaNotify('⚔️ HabitRPG — Recordatorio diario', '¡No olvides completar tus hábitos de hoy, aventurero!', 'daily');
+    }
+    _pwaScheduleReminder(); // reschedule for tomorrow
+  }, ms);
+}
+
+// ── 4. Install prompt (Android/Chrome) ──────────────────────────────────────
+let _pwaPromptEvent = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _pwaPromptEvent = e;
+
+  // Track usage and show banner after 2 visits
+  const count = parseInt(localStorage.getItem('pwa_use_count') || '0') + 1;
+  localStorage.setItem('pwa_use_count', count);
+  if (count >= 2 && !localStorage.getItem('pwa_banner_dismissed')) {
+    setTimeout(() => _pwaShowBanner(), 3000);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  _pwaHideBanner();
+  _pwaUpdateInstallButtons(true);
+  localStorage.setItem('pwa_installed', '1');
+});
+
+function _pwaShowBanner() {
+  const banner = document.getElementById('pwaInstallBanner');
+  if (!banner) return;
+  // iOS detection: show manual instructions instead
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isInStandalone) return;
+  if (isIOS) {
+    const desc = document.getElementById('ibDesc');
+    if (desc) desc.textContent = 'Toca el botón Compartir (↑) y luego "Agregar a pantalla de inicio".';
+    const btn = document.getElementById('ibInstallBtn');
+    if (btn) btn.style.display = 'none';
+  }
+  banner.classList.remove('hide');
+}
+
+function _pwaHideBanner() {
+  const banner = document.getElementById('pwaInstallBanner');
+  if (banner) banner.classList.add('hide');
+}
+
+function _pwaInstall() {
+  if (!_pwaPromptEvent) return;
+  _pwaPromptEvent.prompt();
+  _pwaPromptEvent.userChoice.then(choice => {
+    if (choice.outcome === 'accepted') { _pwaHideBanner(); localStorage.setItem('pwa_installed', '1'); }
+    _pwaPromptEvent = null;
+  });
+}
+
+function _pwaUpdateInstallButtons(installed) {
+  const btns = [document.getElementById('pwaProfileInstallBtn')];
+  btns.forEach(btn => {
+    if (!btn) return;
+    if (installed || window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+      btn.textContent = '✅ App instalada';
+      btn.disabled = true;
+    }
+  });
+}
+
+// Banner button wires
+document.getElementById('ibInstallBtn')?.addEventListener('click', _pwaInstall);
+document.getElementById('ibDismissBtn')?.addEventListener('click', () => {
+  _pwaHideBanner();
+  localStorage.setItem('pwa_banner_dismissed', '1');
+});
+document.getElementById('pwaProfileInstallBtn')?.addEventListener('click', () => {
+  if (_pwaPromptEvent) { _pwaInstall(); }
+  else {
+    // iOS: show banner with instructions
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) _pwaShowBanner();
+    else quickToast('📱', 'Instalar app', 'Usa el menú del navegador → "Instalar aplicación" o "Agregar a pantalla de inicio"');
+  }
+});
+
+// ── 5. Notification settings UI ─────────────────────────────────────────────
+function _pwaInitNotifUI() {
+  const toggle    = document.getElementById('pwaNotifToggle');
+  const status    = document.getElementById('pwaNotifStatus');
+  const timeRow   = document.getElementById('pwaTimeRow');
+  const timeInput = document.getElementById('pwaTimeInput');
+  if (!toggle) return;
+
+  function syncUI() {
+    const on   = localStorage.getItem('pwa_notif_on') === '1';
+    const perm = Notification.permission;
+    toggle.classList.toggle('on', on && perm === 'granted');
+    if (timeRow) timeRow.style.display = (on && perm === 'granted') ? '' : 'none';
+    if (status) {
+      if (perm === 'denied')          status.textContent = '🚫 Notificaciones bloqueadas en ajustes del navegador';
+      else if (!on)                   status.textContent = 'Activa para recibir recordatorios diarios';
+      else if (perm !== 'granted')    status.textContent = 'Toca el toggle para pedir permiso';
+      else                            status.textContent = '✅ Notificaciones activas';
+    }
+    if (timeInput) timeInput.value = localStorage.getItem('pwa_notif_time') || '20:00';
+  }
+
+  toggle.addEventListener('click', async () => {
+    const isOn = localStorage.getItem('pwa_notif_on') === '1';
+    if (!isOn) {
+      // Request permission
+      if (Notification.permission === 'default') {
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') { syncUI(); return; }
+      }
+      if (Notification.permission === 'granted') {
+        localStorage.setItem('pwa_notif_on', '1');
+        _pwaScheduleReminder();
+        _pwaSaveConfig();
+      }
+    } else {
+      localStorage.setItem('pwa_notif_on', '0');
+      if (window._pwaReminderTimer) clearTimeout(window._pwaReminderTimer);
+      _pwaSaveConfig();
+    }
+    syncUI();
+  });
+
+  if (timeInput) {
+    timeInput.addEventListener('change', () => {
+      localStorage.setItem('pwa_notif_time', timeInput.value);
+      _pwaScheduleReminder();
+      _pwaSaveConfig();
+    });
+  }
+
+  syncUI();
+}
+
+// iOS: auto-show banner after 2 visits if standalone not active
+(function _pwaIOSCheck() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIOS && !isStandalone && !localStorage.getItem('pwa_banner_dismissed')) {
+    const count = parseInt(localStorage.getItem('pwa_use_count') || '0') + 1;
+    localStorage.setItem('pwa_use_count', count);
+    if (count >= 2) setTimeout(_pwaShowBanner, 3500);
+  }
+}());
+
+// Init on DOM ready
+_pwaUpdateInstallButtons();
+_pwaInitNotifUI();
+_pwaScheduleReminder();
+
 setBottomTab('bnHome');
 
 // ── Start: check auth session or go guest ──
 initAuth();
 </script>
+
+<!-- ── PWA INSTALL BANNER ── -->
+<div class="install-banner hide" id="pwaInstallBanner" role="dialog" aria-label="Instalar app">
+  <div class="ib-icon">⚔️</div>
+  <div class="ib-text">
+    <div class="ib-title">Instalar HabitRPG</div>
+    <div class="ib-desc" id="ibDesc">Instálala como app para acceso rápido y notificaciones.</div>
+  </div>
+  <div class="ib-btns">
+    <button class="ib-install" id="ibInstallBtn">Instalar</button>
+    <button class="ib-dismiss" id="ibDismissBtn">Ahora no</button>
+  </div>
+</div>
 
 <!-- ── BOTTOM NAVIGATION ── -->
 <nav class="bottom-nav">

@@ -1,0 +1,50 @@
+{
+  "name": "HabitRPG",
+  "short_name": "HabitRPG",
+  "description": "Convierte tus hábitos diarios en aventuras épicas",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#080810",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "categories": ["games", "lifestyle", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Aventura",
+      "short_name": "Aventura",
+      "description": "Ir a aventuras y dungeons",
+      "url": "/?tab=aventura",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Hábitos de hoy",
+      "short_name": "Hábitos",
+      "description": "Ver hábitos del día",
+      "url": "/?tab=habitos",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
