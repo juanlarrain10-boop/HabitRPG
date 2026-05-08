@@ -3736,6 +3736,128 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* === MOBILE TOUCH UX === */
+
+/* 1. Eliminate 300ms tap delay on all interactive elements */
+button, a, [role="button"],
+input[type="checkbox"], input[type="range"],
+.btn, .tab-btn, .qnr-btn, .bottom-nav-btn,
+.bn-tab, .habit-row, .hchk, .more-item,
+.char-strip, .zone-card, .equip-slot,
+.skill-card, .adv-back-btn, .btn-add-m,
+.btn-del, .wbtn-a, .wbtn-s,
+.profile-close-btn, .profile-signout-btn,
+.combat-vol-btn, .mtb-today-btn,
+.rpg-menu-item, .nav-tab {
+  touch-action: manipulation;
+}
+
+/* 2. Eliminate tap highlight flash on Android */
+button, a, [role="button"],
+input[type="checkbox"], input[type="range"],
+.btn, .tab-btn, .qnr-btn, .bottom-nav-btn,
+.bn-tab, .habit-row, .hchk, .more-item,
+.char-strip, .zone-card, .equip-slot,
+.skill-card, .adv-back-btn, .btn-add-m,
+.btn-del, .wbtn-a, .wbtn-s,
+.profile-close-btn, .profile-signout-btn,
+.combat-vol-btn, .mtb-today-btn,
+.rpg-menu-item, .nav-tab {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 3. Minimum touch target sizes */
+button, .btn, .tab-btn,
+.adv-back-btn, .btn-add-m,
+.profile-close-btn, .profile-signout-btn,
+.combat-vol-btn, .mtb-today-btn,
+.more-item {
+  min-height: 44px;
+}
+
+/* Bottom nav: 48px minimum */
+.bn-tab {
+  min-height: 48px;
+}
+
+/* Habit checkbox: 44×44px touch target */
+.hchk {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 10px !important;
+  font-size: 1rem !important;
+}
+
+/* Skill/combat cards: 52px minimum */
+.skill-card {
+  min-height: 52px !important;
+}
+
+/* 4. Instant visual feedback on tap — transition 80ms */
+button:active:not(:disabled),
+.btn:active:not(:disabled),
+.adv-back-btn:active,
+.btn-add-m:active,
+.btn-del:active,
+.wbtn-a:active:not(:disabled),
+.wbtn-s:active:not(:disabled),
+.profile-close-btn:active,
+.profile-signout-btn:active,
+.combat-vol-btn:active,
+.mtb-today-btn:active,
+.equip-slot:active {
+  transform: scale(0.94);
+  filter: brightness(0.88);
+  transition: transform 80ms ease, filter 80ms ease;
+}
+
+/* Bottom nav: scale(0.90) on active */
+.bn-tab:active {
+  transform: scale(0.90);
+  transition: transform 80ms ease;
+}
+
+/* Quest/zone card press effect */
+.zone-card:active:not(.zone-locked) {
+  transform: scale(0.97) !important;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,.25);
+  transition: transform 80ms ease, box-shadow 80ms ease;
+}
+
+/* Habit row press effect */
+.habit-row:active {
+  transform: scale(0.98);
+  transition: transform 80ms ease;
+}
+
+/* Habit checkbox press: scale(0.88) */
+.hchk:active {
+  transform: scale(0.88) !important;
+  transition: transform 80ms ease !important;
+}
+
+/* Quick-nav buttons: already has :active, augment with scale */
+.qnr-btn:active {
+  transform: scale(0.94);
+  transition: transform 80ms ease, background 80ms ease, color 80ms ease;
+}
+
+/* More-drawer items */
+.more-item:active {
+  transform: scale(0.95);
+  transition: transform 80ms ease, background 80ms ease;
+}
+
+/* Skill/combat card: replace existing translateY(0) active with proper feedback */
+.skill-card:active:not(:disabled) {
+  transform: scale(0.85) translateY(1px) !important;
+  filter: brightness(1.15) !important;
+  transition: transform 80ms ease, filter 80ms ease !important;
+}
+
 </style>
 </head>
 <body>

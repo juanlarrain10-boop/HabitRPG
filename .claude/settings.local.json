@@ -27,7 +27,8 @@
       "PowerShell(git -C \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\" status --short)",
       "PowerShell(git -C \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\" commit -m $msg)",
       "PowerShell(git -C \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\" push origin main)",
-      "Bash(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\" -Force)"
+      "Bash(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\" -Force)",
+      "Bash(Copy-Item -Path \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" -Destination \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\" -Force)"
     ]
   }
 }
