@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>HabitRPG</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2960,11 +2960,26 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   position:fixed; inset:0; z-index:10001;
   background:var(--bg); pointer-events:all;
   display:flex; align-items:flex-start; justify-content:center;
-  padding:20px; transition:opacity .3s;
-  overflow-y:auto;
+  /* Safe area for iOS notch/Dynamic Island in standalone mode */
+  padding: max(env(safe-area-inset-top, 20px), 20px)
+           max(env(safe-area-inset-right, 16px), 16px)
+           max(env(safe-area-inset-bottom, 20px), 20px)
+           max(env(safe-area-inset-left, 16px), 16px);
+  transition:opacity .3s;
+  /* overflow: hidden on the fixed container — iOS fix for
+     position:fixed + overflow-y:auto swallowing touch events */
+  overflow: hidden;
 }
 @media (min-height:680px) { .auth-overlay { align-items:center; } }
 .auth-overlay.hide { opacity:0; pointer-events:none; visibility:hidden; }
+
+/* Auth card handles its own scroll on very small screens */
+.auth-card {
+  max-height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
 @media (max-height:580px) {
   .auth-card { padding:18px 18px; }
   .auth-game-name { margin-bottom:12px; }
@@ -3790,7 +3805,6 @@ button:not(:disabled), .btn:not(:disabled),
 .combat-vol-btn, .mtb-today-btn {
   transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
 }
 button:active:not(:disabled), .btn:active:not(:disabled),
 .adv-back-btn:active, .btn-add-m:active, .btn-del:active,
@@ -3801,18 +3815,16 @@ button:active:not(:disabled), .btn:active:not(:disabled),
   transition: transform 80ms cubic-bezier(0.4, 0, 1, 1);
 }
 
-/* --- Bottom nav tabs (Duolingo: subtle scale + spring) --- */
+/* --- Bottom nav tabs --- */
 .bn-tab {
   transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
               color 150ms ease;
-  will-change: transform;
 }
 .bn-tab:active { transform: scale(0.91); transition: transform 80ms cubic-bezier(0.4,0,1,1); }
 
 /* --- Equip slots --- */
 .equip-slot {
   transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
 }
 .equip-slot:active { transform: scale(0.93); transition: transform 80ms cubic-bezier(0.4,0,1,1); }
 
@@ -3837,7 +3849,6 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 /* --- Habit checkbox (bigger spring: bounce on complete!) --- */
 .hchk {
   transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-  will-change: transform;
 }
 .hchk:active {
   transform: scale(0.82) !important;
@@ -3866,7 +3877,6 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 .skill-card:not(:disabled) {
   transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
 }
 .skill-card:active:not(:disabled) {
   transform: scale(0.91) translateY(2px) !important;

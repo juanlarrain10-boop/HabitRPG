@@ -1,10 +1,10 @@
 // Run with: node gen-icons.js
-// Generates icon-192.png and icon-512.png using pure Node.js (no deps)
+// Generates icon-192.png and icon-512.png
 const zlib = require('zlib');
 const fs   = require('fs');
 const path = require('path');
 
-// ─── CRC32 ───────────────────────────────────────────────────────────────────
+// ─── CRC32 ────────────────────────────────────────────────────────────────────
 const CRC_TABLE = new Uint32Array(256);
 for (let n = 0; n < 256; n++) {
   let c = n;
@@ -24,109 +24,137 @@ function pngChunk(type, data) {
   return Buffer.concat([len, t, data, crcBuf]);
 }
 
-// ─── PNG encoder ─────────────────────────────────────────────────────────────
+// ─── PNG encoder ──────────────────────────────────────────────────────────────
 function makePNG(w, h, getPixel) {
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(w, 0); ihdr.writeUInt32BE(h, 4);
-  ihdr[8]=8; ihdr[9]=6; // RGBA
+  ihdr[8] = 8; ihdr[9] = 6; // RGBA
   const raw = [];
   for (let y = 0; y < h; y++) {
     raw.push(0); // filter None
     for (let x = 0; x < w; x++) {
-      const [r,g,b,a] = getPixel(x, y, w, h);
-      raw.push(r&255, g&255, b&255, a&255);
+      const [r, g, b, a] = getPixel(x, y, w, h);
+      raw.push(r & 255, g & 255, b & 255, a & 255);
     }
   }
   const idat = zlib.deflateSync(Buffer.from(raw), { level: 6 });
   return Buffer.concat([
-    Buffer.from([137,80,78,71,13,10,26,10]),
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
     pngChunk('IHDR', ihdr),
     pngChunk('IDAT', idat),
     pngChunk('IEND', Buffer.alloc(0)),
   ]);
 }
 
-// ─── Icon pixel function ──────────────────────────────────────────────────────
-function drawHabitRPG(x, y, W, H) {
-  const cx = W / 2, cy = H / 2;
-  const S  = W / 192; // scale factor
+// ─── Pixel helper ─────────────────────────────────────────────────────────────
+function lerp(a, b, t) { return Math.round(a + (b - a) * Math.max(0, Math.min(1, t))); }
 
-  // ── Background: radial gradient, deep purple ──
-  const dx = (x - cx) / cx, dy = (y - cy) / cy;
-  const dist = Math.sqrt(dx*dx + dy*dy); // 0 (center) … ~1.41 (corner)
-  const t = Math.min(dist / 1.1, 1);
-  const bgR = Math.round(40 * (1-t) + 6  * t);
-  const bgG = Math.round(15 * (1-t) + 6  * t);
-  const bgB = Math.round(80 * (1-t) + 14 * t);
+// ─── Icon design: bold sword on deep purple ────────────────────────────────────
+// Designed to be clearly visible at 48×48dp (Android) and 60×60pt (iOS)
+// Uses a thick sword, strong contrast, padded safe zone for maskable use
+function drawIcon(x, y, W, H) {
+  const cx = W / 2;
+  const cy = H / 2;
+  const S  = W / 192; // scale
 
-  // ── Sword geometry (scaled to W) ──
-  // Blade: centered column with pointed tip
-  const bladeW  = Math.round(10 * S);
-  const bladeT  = Math.round(30 * S);   // top of straight part
-  const bladeB  = Math.round(110 * S);  // bottom of straight part
-  const tipT    = Math.round(14 * S);   // tip apex
-  const bx1 = cx - bladeW/2, bx2 = cx + bladeW/2;
+  // ── Background: rich purple radial gradient ──────────────────────────────
+  const dx = (x - cx) / (W * 0.6);
+  const dy = (y - cy) / (H * 0.6);
+  const d  = Math.min(Math.sqrt(dx * dx + dy * dy), 1);
 
-  // Guard: horizontal bar
-  const guardW  = Math.round(50 * S);
-  const guardH  = Math.round(9  * S);
+  // Center: #3b1578 (mid purple), edge: #0a0614 (near black)
+  const bgR = lerp(59, 10, d);
+  const bgG = lerp(21, 6, d);
+  const bgB = lerp(120, 20, d);
+
+  // ── Sword geometry (thicker, bolder — minimum 20px blade at 192px) ──────
+  const bladeW  = Math.round(20 * S);   // thick blade
+  const tipTop  = Math.round(20 * S);   // top of tip
+  const bladeT  = Math.round(40 * S);   // top of straight blade
+  const bladeB  = Math.round(120 * S);  // bottom of blade
+  const guardW  = Math.round(72 * S);   // wide guard
+  const guardH  = Math.round(14 * S);   // tall guard
   const guardY1 = bladeB;
   const guardY2 = guardY1 + guardH;
-  const gx1 = cx - guardW/2, gx2 = cx + guardW/2;
-
-  // Handle
-  const handleW = Math.round(9  * S);
-  const handleH = Math.round(32 * S);
+  const handleW = Math.round(16 * S);   // thick handle
+  const handleH = Math.round(36 * S);
   const handleY1 = guardY2;
   const handleY2 = handleY1 + handleH;
-  const hx1 = cx - handleW/2, hx2 = cx + handleW/2;
+  const pommelR = Math.round(14 * S);   // round pommel radius
+  const pommelCY = handleY2 + pommelR;
 
-  // Pommel
-  const pommelW = Math.round(16 * S);
-  const pommelH = Math.round(11 * S);
-  const pommelY1 = handleY2;
-  const pommelY2 = pommelY1 + pommelH;
-  const px1 = cx - pommelW/2, px2 = cx + pommelW/2;
+  const bx1 = cx - bladeW / 2, bx2 = cx + bladeW / 2;
+  const gx1 = cx - guardW / 2, gx2 = cx + guardW / 2;
+  const hx1 = cx - handleW / 2, hx2 = cx + handleW / 2;
 
-  // Tip check (tapered above bladeT down to point at tipT)
+  // Tip: tapers from bladeW at bladeT to 0 at tipTop
   let inTip = false;
-  if (y >= tipT && y < bladeT) {
-    const progress = (y - tipT) / (bladeT - tipT);
+  if (y >= tipTop && y < bladeT) {
+    const progress = (y - tipTop) / (bladeT - tipTop);
     const hw = (bladeW / 2) * progress;
     inTip = x >= cx - hw && x <= cx + hw;
   }
+
   const inBlade  = x >= bx1 && x <= bx2 && y >= bladeT && y <= bladeB;
   const inGuard  = x >= gx1 && x <= gx2 && y >= guardY1 && y <= guardY2;
   const inHandle = x >= hx1 && x <= hx2 && y >= handleY1 && y <= handleY2;
-  const inPommel = x >= px1 && x <= px2 && y >= pommelY1 && y <= pommelY2;
-  const isSword  = inTip || inBlade || inGuard || inHandle || inPommel;
+
+  // Round pommel using circle test
+  const pdx = x - cx, pdy = y - pommelCY;
+  const inPommel = (pdx * pdx + pdy * pdy) <= pommelR * pommelR;
+
+  const isSword = inTip || inBlade || inGuard || inHandle || inPommel;
 
   if (isSword) {
-    // Gold sword: highlight on left edge
-    const leftEdge = inBlade ? bx1 : (inGuard ? gx1 : hx1);
-    const ww = inBlade ? bladeW : (inGuard ? guardW : handleW);
-    const highlight = (x - leftEdge) / ww < 0.3;
-    if (highlight) return [255, 236, 160, 255];
-    return [218, 162, 28, 255];
+    // Gold palette: highlight (left 30%), mid gold, dark edge
+    let localX, width;
+    if (inBlade || inTip) { localX = x - bx1; width = bladeW; }
+    else if (inGuard)     { localX = x - gx1; width = guardW; }
+    else if (inHandle)    { localX = x - hx1; width = handleW; }
+    else                  { localX = x - (cx - pommelR); width = pommelR * 2; }
+
+    const t = width > 0 ? (localX / width) : 0.5;
+
+    // Three-stop gradient: highlight (t<0.25) → gold (t<0.75) → shadow (t>=0.75)
+    let r, g, b;
+    if (t < 0.25) {
+      // highlight: #fff6c0 → #f0c040
+      const tt = t / 0.25;
+      r = lerp(255, 240, tt); g = lerp(246, 192, tt); b = lerp(192, 64, tt);
+    } else if (t < 0.75) {
+      // gold: #f0c040 → #c8890a
+      const tt = (t - 0.25) / 0.5;
+      r = lerp(240, 200, tt); g = lerp(192, 137, tt); b = lerp(64, 10, tt);
+    } else {
+      // shadow: #c8890a → #7a5200
+      const tt = (t - 0.75) / 0.25;
+      r = lerp(200, 122, tt); g = lerp(137, 82, tt); b = lerp(10, 0, tt);
+    }
+
+    // Add a subtle center line shine on blade
+    if ((inBlade || inTip) && Math.abs(x - cx) <= S) {
+      r = Math.min(255, r + 30); g = Math.min(255, g + 20); b = Math.min(255, b + 40);
+    }
+
+    return [r, g, b, 255];
   }
 
-  // ── Purple glow around sword ──
-  // Distance from nearest sword pixel (approximate by proximity to guide lines)
-  const dBlade  = (x >= bx1 && x <= bx2) ? Math.min(Math.abs(y-bladeT), Math.abs(y-bladeB)) : Math.hypot(Math.max(bx1-x, 0, x-bx2), Math.max(bladeT-y, 0, y-bladeB));
-  const dGuard  = (x >= gx1 && x <= gx2) ? Math.min(Math.abs(y-guardY1), Math.abs(y-guardY2)) : Math.hypot(Math.max(gx1-x, 0, x-gx2), Math.max(guardY1-y, 0, y-guardY2));
-  const nearDist = Math.min(dBlade, dGuard);
-  const glow = Math.max(0, 1 - nearDist / (18 * S));
+  // ── Purple glow around sword ─────────────────────────────────────────────
+  // Distance to nearest sword pixel (simplified: distance to blade center column)
+  const distToSword = Math.max(0, Math.abs(x - cx) - bladeW / 2 - 2 * S);
+  const glowRadius  = 18 * S;
+  const glow        = distToSword < glowRadius ? (1 - distToSword / glowRadius) * 0.55 : 0;
 
-  const r = Math.min(255, Math.round(bgR + glow * 100));
-  const g = Math.min(255, Math.round(bgG + glow * 30));
-  const b = Math.min(255, Math.round(bgB + glow * 140));
+  const r = Math.min(255, bgR + Math.round(glow * 80));
+  const g = Math.min(255, bgG + Math.round(glow * 20));
+  const b = Math.min(255, bgB + Math.round(glow * 120));
   return [r, g, b, 255];
 }
 
 // ─── Generate ─────────────────────────────────────────────────────────────────
 const outDir = __dirname;
 [192, 512].forEach(sz => {
-  const buf = makePNG(sz, sz, drawHabitRPG);
+  const buf = makePNG(sz, sz, drawIcon);
   fs.writeFileSync(path.join(outDir, `icon-${sz}.png`), buf);
   console.log(`✓ icon-${sz}.png  (${buf.length} bytes)`);
 });
