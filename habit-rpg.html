@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>HabitRPG</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#7c3aed">
@@ -3061,6 +3061,21 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .auth-loading { display:flex; flex-direction:column; align-items:center; gap:16px; color:var(--dim); font-size:.85rem; padding:10px 0; }
 .auth-loading.hide { display:none; }
 .auth-form.hide { display:none; }
+
+.auth-net-warn {
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  font-size:.74rem; color:#f59e0b; background:rgba(245,158,11,.1);
+  border:1px solid rgba(245,158,11,.25); border-radius:9px;
+  padding:8px 12px; margin-bottom:12px; line-height:1.4;
+  text-align:center;
+}
+.auth-net-warn.hide { display:none; }
+.auth-retry-btn {
+  width:100%; padding:10px; border-radius:10px; border:1px solid var(--purp2);
+  background:transparent; color:var(--purp2); font-family:inherit; font-size:.82rem;
+  font-weight:700; cursor:pointer; margin-bottom:10px; touch-action:manipulation;
+}
+.auth-retry-btn.hide { display:none; }
 #authForm.hide { display:none; }
 #authWelcome.hide { display:none; }
 .auth-title.hide { display:none; }
@@ -3944,6 +3959,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     <div class="auth-logo">⚔️ HabitRPG</div>
     <div class="auth-game-name">Tu aventura en la nube</div>
     <div class="auth-title hide" id="authTitle">Bienvenido de vuelta</div>
+    <div class="auth-net-warn hide" id="authNetWarn">⚠️ Sin conexión a internet — solo puedes continuar como invitado</div>
     <div class="auth-tabs" id="authTabs">
       <button type="button" class="auth-tab active" id="tabLogin" onclick="setAuthTab('login')">Iniciar sesión</button>
       <button type="button" class="auth-tab" id="tabRegister" onclick="setAuthTab('register')">Crear cuenta</button>
@@ -3952,6 +3968,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <input class="auth-input" id="authEmail" type="email" placeholder="Correo electrónico" autocomplete="email" />
       <input class="auth-input" id="authPass" type="password" placeholder="Contraseña" autocomplete="current-password" />
       <div class="auth-error hide" id="authError"></div>
+      <button class="auth-retry-btn hide" id="authRetry" type="button" onclick="_authRetry()">↻ Reintentar conexión</button>
       <label class="auth-migrate-row hide" id="authMigrateRow">
         <input type="checkbox" id="authMigrate" checked />
         Importar mi progreso local a esta cuenta
@@ -14604,9 +14621,16 @@ let sbUser   = null;
 let authMode = 'login';
 
 function initSupabase() {
-  if (!SUPABASE_URL.includes('TUPROYECTO') && typeof supabase !== 'undefined') {
-    try { sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON); } catch(e) {}
+  if (SUPABASE_URL.includes('TUPROYECTO')) return;
+  if (typeof supabase === 'undefined') {
+    console.warn('[HabitRPG] Supabase SDK no disponible — CDN o archivo local no cargó.');
+    return;
   }
+  try {
+    sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+    });
+  } catch(e) { console.error('[HabitRPG] createClient error:', e); }
 }
 
 async function _authDiffAccount() {
@@ -14618,16 +14642,40 @@ async function _authDiffAccount() {
   showAuthOverlay();
 }
 
+function _authUpdateNetWarn() {
+  const warn = document.getElementById('authNetWarn');
+  if (!warn) return;
+  const offline = !navigator.onLine;
+  warn.classList.toggle('hide', !offline);
+  const emailEl  = document.getElementById('authEmail');
+  const passEl   = document.getElementById('authPass');
+  const submitEl = document.getElementById('authSubmit');
+  if (emailEl)  emailEl.disabled  = offline || !sbClient;
+  if (passEl)   passEl.disabled   = offline || !sbClient;
+  if (submitEl) submitEl.disabled = offline || !sbClient;
+}
+window.addEventListener('online',  _authUpdateNetWarn);
+window.addEventListener('offline', _authUpdateNetWarn);
+
+function _authRetry() {
+  document.getElementById('authRetry')?.classList.add('hide');
+  document.getElementById('authError')?.classList.add('hide');
+  handleAuthSubmit();
+}
+
 async function initAuth() {
   initSupabase();
+  _authUpdateNetWarn();
 
-  // Auth overlay is always visible at start — never skip it automatically.
-  // If Supabase is not configured, just show the form (guest button still works).
   if (!sbClient) {
     showAuthForm();
-    showAuthError('Modo sin conexión — solo puedes continuar como invitado.', '#facc15');
-    document.getElementById('authEmail').disabled = true;
-    document.getElementById('authPass').disabled  = true;
+    if (!navigator.onLine) {
+      document.getElementById('authNetWarn')?.classList.remove('hide');
+    } else {
+      showAuthError('No se pudo conectar con el servidor. Recarga la página.', '#facc15');
+    }
+    document.getElementById('authEmail').disabled  = true;
+    document.getElementById('authPass').disabled   = true;
     document.getElementById('authSubmit').disabled = true;
     return;
   }
@@ -14638,7 +14686,7 @@ async function initAuth() {
       showAuthForm();
       document.getElementById('authTabs')?.classList.remove('hide');
     }
-  }, 1500);
+  }, 3000);
 
   showAuthLoading('Verificando sesión...');
   let session = null;
@@ -14709,18 +14757,22 @@ async function handleAuthSubmit() {
   if (password.length < 6)  { showAuthError('La contraseña debe tener al menos 6 caracteres.'); return; }
 
   document.getElementById('authSubmit').disabled = true;
-  showAuthLoading('Un momento...');
+  document.getElementById('authRetry')?.classList.add('hide');
+  document.getElementById('authError')?.classList.add('hide');
 
-  try {
-    let err;
+  const doRequest = async () => {
     if (authMode === 'login') {
+      showAuthLoading('Iniciando sesión...');
       const res = await sbClient.auth.signInWithPassword({ email, password });
-      err = res.error;
-      if (!err) { sbUser = res.data.user; await onUserLoggedIn(false); }
+      if (res.error) { showAuthForm(); showAuthError(translateAuthError(res.error.message)); return true; }
+      sbUser = res.data.user;
+      await onUserLoggedIn(false);
+      return true;
     } else {
+      showAuthLoading('Creando cuenta...');
       const res = await sbClient.auth.signUp({ email, password });
-      err = res.error;
-      if (!err && res.data.user) {
+      if (res.error) { showAuthForm(); showAuthError(translateAuthError(res.error.message)); return true; }
+      if (res.data.user) {
         sbUser = res.data.user;
         if (res.data.session) {
           await onUserLoggedIn(migrate);
@@ -14728,21 +14780,38 @@ async function handleAuthSubmit() {
           showAuthForm();
           showAuthError('Cuenta creada. Revisa tu correo y confirma tu cuenta para continuar.', '#34d399');
         }
-      } else if (!err) {
+      } else {
         showAuthForm();
         showAuthError('No se pudo crear la cuenta. Es posible que este correo ya esté registrado.', '#facc15');
       }
+      return true;
     }
-    if (err) { showAuthForm(); showAuthError(translateAuthError(err.message)); }
-  } catch(e) {
-    showAuthForm();
-    showAuthError('Error de conexión. Verifica tu internet e intenta de nuevo.');
+  };
+
+  let done = false;
+  try { done = await doRequest(); } catch(e) { done = false; }
+
+  if (!done) {
+    // First attempt failed with a network exception — wait and retry once
+    showAuthLoading('Sin respuesta. Reintentando...');
+    await new Promise(r => setTimeout(r, 2500));
+    try { done = await doRequest(); } catch(e) { done = false; }
+    if (!done) {
+      showAuthForm();
+      const msg = !navigator.onLine
+        ? 'Sin conexión a internet. Conéctate e intenta de nuevo.'
+        : 'Error de conexión con el servidor. Verifica tu internet e intenta de nuevo.';
+      showAuthError(msg);
+      document.getElementById('authRetry')?.classList.remove('hide');
+    }
   }
+
   document.getElementById('authSubmit').disabled = false;
 }
 
 function translateAuthError(msg) {
   if (!msg) return 'Error desconocido. Intenta de nuevo.';
+  const m = msg.toLowerCase();
   if (msg.includes('Invalid login credentials'))      return 'Correo o contraseña incorrectos.';
   if (msg.includes('Email not confirmed'))            return 'Confirma tu correo primero. Revisa tu bandeja de entrada.';
   if (msg.includes('User already registered'))        return 'Este correo ya tiene una cuenta. Inicia sesión.';
@@ -14750,7 +14819,11 @@ function translateAuthError(msg) {
   if (msg.includes('signup_disabled'))                return 'El registro está temporalmente desactivado.';
   if (msg.includes('over_email_send_rate_limit'))     return 'Demasiados intentos. Espera unos minutos e intenta de nuevo.';
   if (msg.includes('rate limit'))                     return 'Demasiados intentos. Espera unos minutos e intenta de nuevo.';
-  if (msg.includes('network') || msg.includes('fetch')) return 'Error de red. Verifica tu conexión.';
+  if (msg.includes('Anonymous sign-ins are disabled'))return 'El acceso anónimo no está disponible.';
+  if (msg.includes('email_address_not_authorized'))   return 'Este correo no está autorizado. Usa otro correo.';
+  if (msg.includes('weak_password'))                  return 'Contraseña muy débil. Usa al menos 8 caracteres con letras y números.';
+  if (msg.includes('AuthRetryableFetchError') || m.includes('fetch') || m.includes('network') || m.includes('failed to fetch'))
+    return 'Error de red. Verifica tu conexión a internet.';
   return msg;
 }
 

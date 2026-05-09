@@ -36,7 +36,9 @@
       "Bash(git -C \"c:/Users/juanl/OneDrive/Escritorio/Proyectos\" ls-files --others --ignored --exclude-standard -- deploy/icons/)",
       "Bash(git -C \"c:/Users/juanl/OneDrive/Escritorio/Proyectos\" ls-files deploy/icons/)",
       "Bash(node \"c:/Users/juanl/OneDrive/Escritorio/Proyectos/deploy/icons/gen-icons.js\")",
-      "Bash(node -e \"const fs=require\\('fs'\\); const b=fs.readFileSync\\('c:/Users/juanl/OneDrive/Escritorio/Proyectos/deploy/icons/icon-192.png'\\); console.log\\('icon-192.png valid PNG:', b.slice\\(0,4\\).equals\\(Buffer.from\\([137,80,78,71]\\)\\)\\); const b2=fs.readFileSync\\('c:/Users/juanl/OneDrive/Escritorio/Proyectos/deploy/icons/icon-512.png'\\); console.log\\('icon-512.png valid PNG:', b2.slice\\(0,4\\).equals\\(Buffer.from\\([137,80,78,71]\\)\\)\\);\")"
+      "Bash(node -e \"const fs=require\\('fs'\\); const b=fs.readFileSync\\('c:/Users/juanl/OneDrive/Escritorio/Proyectos/deploy/icons/icon-192.png'\\); console.log\\('icon-192.png valid PNG:', b.slice\\(0,4\\).equals\\(Buffer.from\\([137,80,78,71]\\)\\)\\); const b2=fs.readFileSync\\('c:/Users/juanl/OneDrive/Escritorio/Proyectos/deploy/icons/icon-512.png'\\); console.log\\('icon-512.png valid PNG:', b2.slice\\(0,4\\).equals\\(Buffer.from\\([137,80,78,71]\\)\\)\\);\")",
+      "Bash(mkdir \"C:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\js\")",
+      "Bash(curl -L \"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js\" -o \"C:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\js\\\\supabase.min.js\" --silent --show-error)"
     ]
   }
 }
