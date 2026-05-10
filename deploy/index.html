@@ -14924,7 +14924,16 @@ async function handleAuthSubmit() {
 
   // Guard: sbClient must exist before we attempt any auth request
   if (!sbClient) {
-    _log('handleAuthSubmit: sbClient null al intentar login');
+    _log('handleAuthSubmit: sbClient null — reintentando initSupabase...');
+    initSupabase();
+    for (let i = 0; i < 15; i++) {
+      await new Promise(r => setTimeout(r, 200));
+      if (sbClient) break;
+    }
+    _log('handleAuthSubmit: tras espera sbClient=' + !!sbClient);
+  }
+  if (!sbClient) {
+    _log('handleAuthSubmit: sbClient null definitivo, abortando');
     showAuthError('Error: cliente no inicializado — recarga la app.');
     return;
   }
@@ -16141,6 +16150,9 @@ setBottomTab('bnHome');
 
 // ── Start: check auth session or go guest ──
 initAuth();
+
+// Safari safety net: re-run initSupabase after 500ms in case SDK wasn't ready on first call
+setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSupabase'); initSupabase(); } }, 500);
 </script>
 
 <!-- ── PWA INSTALL BANNER ── -->
