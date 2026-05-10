@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>HabitRPG</title>
-<script src="/js/supabase.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#7c3aed">
@@ -14752,9 +14752,15 @@ function initSupabase() {
     delete opts.credentials;
     return fetch(url, opts).finally(() => clearTimeout(timer));
   };
-  _log('initSupabase: UA=' + navigator.userAgent.slice(0, 60));
+  _log('initSupabase: UA=' + navigator.userAgent.slice(0, 80));
+  // In some environments the SDK registers as window.supabase instead of supabase
+  const _sdk = (typeof supabase !== 'undefined' && supabase) || (typeof window !== 'undefined' && window.supabase);
+  if (!_sdk || typeof _sdk.createClient !== 'function') {
+    _log('initSupabase: createClient no disponible en sdk=' + typeof _sdk);
+    return;
+  }
   try {
-    sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+    sbClient = _sdk.createClient(SUPABASE_URL, SUPABASE_ANON, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -14802,7 +14808,20 @@ function _authRetry() {
 }
 
 async function initAuth() {
-  _log('initAuth: start, online=' + navigator.onLine + ' standalone=' + (window.matchMedia('(display-mode: standalone)').matches || !!navigator.standalone));
+  const _isStandalone = window.matchMedia('(display-mode: standalone)').matches || !!navigator.standalone;
+  _log('initAuth: start, online=' + navigator.onLine + ' standalone=' + _isStandalone + ' sdk=' + typeof supabase);
+
+  // Safety net: wait up to 3s for the SDK if it's not defined yet (Safari timing edge case)
+  if (typeof supabase === 'undefined') {
+    _log('initAuth: supabase undefined — esperando hasta 3s...');
+    let waited = 0;
+    while (typeof supabase === 'undefined' && waited < 3000) {
+      await new Promise(r => setTimeout(r, 200));
+      waited += 200;
+    }
+    _log('initAuth: espera completada (' + waited + 'ms), sdk=' + typeof supabase);
+  }
+
   initSupabase();
   _authUpdateNetWarn();
 

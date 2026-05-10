@@ -1,6 +1,6 @@
 // HabitRPG Service Worker
-const CACHE_NAME  = 'habitrpg-v3';
-const CORE_ASSETS = ['/', '/index.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/js/supabase.min.js'];
+const CACHE_NAME  = 'habitrpg-v4';
+const CORE_ASSETS = ['/', '/index.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 // ─── Install ──────────────────────────────────────────────────────────────────
 self.addEventListener('install', e => {
