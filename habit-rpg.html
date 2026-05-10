@@ -14684,6 +14684,7 @@ function _diagToggle() {
 function _diagRefresh() {
   const standalone = window.matchMedia('(display-mode: standalone)').matches || !!navigator.standalone;
   const sdk    = typeof supabase !== 'undefined';
+  const hasCc  = sdk && typeof supabase.createClient === 'function';
   const client = !!sbClient;
   const online = navigator.onLine;
   const set = (id, txt, cls) => {
@@ -14691,13 +14692,30 @@ function _diagRefresh() {
     if (!el) return;
     el.textContent = txt; el.className = cls || '';
   };
-  set('diagSdk',    sdk    ? '✅ OK'           : '❌ undefined',  sdk    ? 'auth-diag-ok' : 'auth-diag-err');
-  set('diagClient', client ? '✅ inicializado' : '❌ null',       client ? 'auth-diag-ok' : 'auth-diag-err');
+  set('diagSdk',    sdk
+    ? (hasCc ? '✅ OK (createClient ✓)' : '⚠️ cargado pero createClient ausente')
+    : '❌ undefined',
+    sdk && hasCc ? 'auth-diag-ok' : 'auth-diag-err');
+  set('diagClient', client
+    ? '✅ inicializado'
+    : (sdk && hasCc ? '❌ null — createClient falló (ver log)' : '❌ null'),
+    client ? 'auth-diag-ok' : 'auth-diag-err');
   set('diagNet',    online ? '✅ online'        : '❌ offline',    online ? 'auth-diag-ok' : 'auth-diag-err');
   set('diagMode',   standalone ? '📱 standalone' : '🌐 browser', 'auth-diag-warn');
   set('diagUrl',    SUPABASE_URL.replace('https://', ''), '');
+
+  // Force-call initSupabase if client still null (diagnostic re-attempt)
+  if (!client && sdk && hasCc) {
+    _log('diagRefresh: sbClient null, reintentando initSupabase...');
+    initSupabase();
+    if (sbClient) {
+      set('diagClient', '✅ inicializado (tras reintento)', 'auth-diag-ok');
+      _authUpdateNetWarn();
+    }
+  }
+
   const el = document.getElementById('diagLog');
-  if (el) el.textContent = _diagLogs.slice(-20).join('\n');
+  if (el) el.textContent = _diagLogs.slice(-25).join('\n');
 }
 
 async function _diagTest() {
@@ -14730,50 +14748,29 @@ async function _diagTest() {
 }
 
 function initSupabase() {
-  _log('initSupabase: supabase=' + typeof supabase + ' url=' + SUPABASE_URL.slice(8, 30) + '…');
-  if (SUPABASE_URL.includes('TUPROYECTO')) {
-    _log('initSupabase: placeholder URL — omitiendo');
-    return;
-  }
+  _log('initSupabase: llamada. typeof supabase=' + typeof supabase);
+
   if (typeof supabase === 'undefined') {
-    _log('initSupabase: SDK undefined — archivo local no cargó');
-    console.warn('[HabitRPG] Supabase SDK no disponible — CDN o archivo local no cargó.');
+    _log('initSupabase: ERROR — SDK no disponible');
+    console.error('[HabitRPG] SDK no disponible');
     return;
   }
-  // Safari-compatible fetch: 15s timeout via AbortController, no credentials for cross-origin
-  const _sbFetch = (url, options = {}) => {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => {
-      _log('_sbFetch: TIMEOUT 15s — ' + String(url).slice(0, 70));
-      ctrl.abort();
-    }, 15000);
-    const opts = Object.assign({}, options, { signal: ctrl.signal });
-    // Safari iOS: explicit credentials omission prevents unexpected CORS preflight failures
-    delete opts.credentials;
-    return fetch(url, opts).finally(() => clearTimeout(timer));
-  };
-  _log('initSupabase: UA=' + navigator.userAgent.slice(0, 80));
-  // In some environments the SDK registers as window.supabase instead of supabase
-  const _sdk = (typeof supabase !== 'undefined' && supabase) || (typeof window !== 'undefined' && window.supabase);
-  if (!_sdk || typeof _sdk.createClient !== 'function') {
-    _log('initSupabase: createClient no disponible en sdk=' + typeof _sdk);
-    return;
-  }
+
   try {
-    sbClient = _sdk.createClient(SUPABASE_URL, SUPABASE_ANON, {
+    sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
       auth: {
         persistSession: true,
+        storage: window.localStorage,
         autoRefreshToken: true,
         detectSessionInUrl: false,
-        flowType: 'implicit',         // PKCE puede fallar en Safari PWA standalone
-        storage: window.localStorage, // explícito — evita problemas con sessionStorage en Safari
+        flowType: 'implicit',
       },
-      global: { fetch: _sbFetch },
     });
-    _log('initSupabase: createClient OK (implicit, localStorage, timeout=15s)');
+    _log('initSupabase: sbClient creado=' + (sbClient !== null));
+    console.log('[HabitRPG] sbClient creado:', sbClient !== null);
   } catch(e) {
-    _log('initSupabase: createClient ERROR: ' + e.message);
-    console.error('[HabitRPG] createClient error:', e);
+    _log('initSupabase: createClient EXCEPCIÓN: ' + e.message);
+    console.error('[HabitRPG] Error createClient:', e.message, e);
   }
 }
 
