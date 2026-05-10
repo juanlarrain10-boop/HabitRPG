@@ -3076,6 +3076,35 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   font-weight:700; cursor:pointer; margin-bottom:10px; touch-action:manipulation;
 }
 .auth-retry-btn.hide { display:none; }
+
+.auth-diag { margin-top:14px; border-top:1px solid var(--bd); padding-top:10px; }
+.auth-diag-toggle {
+  background:none; border:none; color:var(--dim); font-size:.68rem;
+  cursor:pointer; padding:0; font-family:inherit; text-decoration:underline;
+  touch-action:manipulation;
+}
+.auth-diag-panel {
+  font-size:.67rem; font-family:monospace; color:var(--dim);
+  background:var(--bg); border:1px solid var(--bd); border-radius:8px;
+  padding:10px 12px; margin-top:8px; line-height:1.9;
+}
+.auth-diag-panel.hide { display:none; }
+.auth-diag-row { display:flex; justify-content:space-between; gap:6px; border-bottom:1px solid rgba(255,255,255,.04); padding:1px 0; }
+.auth-diag-ok  { color:#34d399; }
+.auth-diag-err { color:#f87171; }
+.auth-diag-warn { color:#f59e0b; }
+.auth-diag-test {
+  margin-top:8px; width:100%; padding:6px 8px;
+  background:var(--s3); border:1px solid var(--bd2); border-radius:6px;
+  color:var(--dim); font-family:monospace; font-size:.66rem; cursor:pointer;
+  touch-action:manipulation;
+}
+.auth-diag-log {
+  margin-top:6px; font-size:.58rem; max-height:110px; overflow-y:auto;
+  white-space:pre-wrap; word-break:break-all; color:var(--dim);
+  background:rgba(0,0,0,.3); border-radius:5px; padding:6px 8px;
+  line-height:1.6;
+}
 #authForm.hide { display:none; }
 #authWelcome.hide { display:none; }
 .auth-title.hide { display:none; }
@@ -3988,6 +4017,19 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     <div class="auth-loading hide" id="authLoading">
       <div class="auth-spinner"></div>
       <div id="authLoadingTxt">Cargando tu aventura...</div>
+    </div>
+    <div class="auth-diag">
+      <button class="auth-diag-toggle" type="button" onclick="_diagToggle()">🔍 Diagnóstico de conexión</button>
+      <div class="auth-diag-panel hide" id="authDiagPanel">
+        <div class="auth-diag-row">SDK Supabase<span id="diagSdk">—</span></div>
+        <div class="auth-diag-row">Cliente (sbClient)<span id="diagClient">—</span></div>
+        <div class="auth-diag-row">Internet<span id="diagNet">—</span></div>
+        <div class="auth-diag-row">Modo PWA<span id="diagMode">—</span></div>
+        <div class="auth-diag-row">Supabase URL<span id="diagUrl">—</span></div>
+        <button class="auth-diag-test" type="button" onclick="_diagTest()">▶ Probar conexión Supabase</button>
+        <div id="diagTestResult" style="margin-top:5px;word-break:break-all;font-size:.64rem;"></div>
+        <div class="auth-diag-log" id="diagLog"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -14620,17 +14662,113 @@ let sbClient = null;
 let sbUser   = null;
 let authMode = 'login';
 
+// ── Diagnostic log ring-buffer ────────────────
+const _diagLogs = [];
+function _log(msg) {
+  const t = new Date().toISOString().slice(11, 23);
+  const entry = '[' + t + '] ' + msg;
+  _diagLogs.push(entry);
+  if (_diagLogs.length > 60) _diagLogs.shift();
+  console.log('[HabitRPG]', msg);
+  const el = document.getElementById('diagLog');
+  if (el) el.textContent = _diagLogs.slice(-20).join('\n');
+}
+
+function _diagToggle() {
+  const panel = document.getElementById('authDiagPanel');
+  if (!panel) return;
+  const wasHidden = panel.classList.toggle('hide');
+  if (!wasHidden) _diagRefresh();
+}
+
+function _diagRefresh() {
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || !!navigator.standalone;
+  const sdk    = typeof supabase !== 'undefined';
+  const client = !!sbClient;
+  const online = navigator.onLine;
+  const set = (id, txt, cls) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = txt; el.className = cls || '';
+  };
+  set('diagSdk',    sdk    ? '✅ OK'           : '❌ undefined',  sdk    ? 'auth-diag-ok' : 'auth-diag-err');
+  set('diagClient', client ? '✅ inicializado' : '❌ null',       client ? 'auth-diag-ok' : 'auth-diag-err');
+  set('diagNet',    online ? '✅ online'        : '❌ offline',    online ? 'auth-diag-ok' : 'auth-diag-err');
+  set('diagMode',   standalone ? '📱 standalone' : '🌐 browser', 'auth-diag-warn');
+  set('diagUrl',    SUPABASE_URL.replace('https://', ''), '');
+  const el = document.getElementById('diagLog');
+  if (el) el.textContent = _diagLogs.slice(-20).join('\n');
+}
+
+async function _diagTest() {
+  const btn    = document.querySelector('.auth-diag-test');
+  const result = document.getElementById('diagTestResult');
+  if (!result) return;
+  if (btn) btn.disabled = true;
+  result.textContent = '⏳ Probando...'; result.className = '';
+  const url = SUPABASE_URL + '/auth/v1/health';
+  const t0 = Date.now();
+  _log('diagTest: GET ' + url);
+  try {
+    const r = await fetch(url, {
+      method: 'GET', mode: 'cors', cache: 'no-store',
+      headers: { 'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + SUPABASE_ANON },
+    });
+    const ms = Date.now() - t0;
+    _log('diagTest: HTTP ' + r.status + ' en ' + ms + 'ms');
+    result.textContent = r.ok
+      ? '✅ Supabase OK (HTTP ' + r.status + ', ' + ms + 'ms)'
+      : '⚠️ HTTP ' + r.status + ' (' + ms + 'ms)';
+    result.className = r.ok ? 'auth-diag-ok' : 'auth-diag-warn';
+  } catch(e) {
+    const ms = Date.now() - t0;
+    _log('diagTest: ERROR ' + e.name + ': ' + e.message);
+    result.textContent = '❌ ' + e.name + ': ' + e.message + ' (' + ms + 'ms)';
+    result.className = 'auth-diag-err';
+  }
+  if (btn) btn.disabled = false;
+}
+
 function initSupabase() {
-  if (SUPABASE_URL.includes('TUPROYECTO')) return;
+  _log('initSupabase: supabase=' + typeof supabase + ' url=' + SUPABASE_URL.slice(8, 30) + '…');
+  if (SUPABASE_URL.includes('TUPROYECTO')) {
+    _log('initSupabase: placeholder URL — omitiendo');
+    return;
+  }
   if (typeof supabase === 'undefined') {
+    _log('initSupabase: SDK undefined — archivo local no cargó');
     console.warn('[HabitRPG] Supabase SDK no disponible — CDN o archivo local no cargó.');
     return;
   }
+  // Safari-compatible fetch: 15s timeout via AbortController, no credentials for cross-origin
+  const _sbFetch = (url, options = {}) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => {
+      _log('_sbFetch: TIMEOUT 15s — ' + String(url).slice(0, 70));
+      ctrl.abort();
+    }, 15000);
+    const opts = Object.assign({}, options, { signal: ctrl.signal });
+    // Safari iOS: explicit credentials omission prevents unexpected CORS preflight failures
+    delete opts.credentials;
+    return fetch(url, opts).finally(() => clearTimeout(timer));
+  };
+  _log('initSupabase: UA=' + navigator.userAgent.slice(0, 60));
   try {
     sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+        flowType: 'implicit',         // PKCE puede fallar en Safari PWA standalone
+        storage: window.localStorage, // explícito — evita problemas con sessionStorage en Safari
+      },
+      global: { fetch: _sbFetch },
     });
-  } catch(e) { console.error('[HabitRPG] createClient error:', e); }
+    _log('initSupabase: createClient OK (implicit, localStorage, timeout=15s)');
+  } catch(e) {
+    _log('initSupabase: createClient ERROR: ' + e.message);
+    console.error('[HabitRPG] createClient error:', e);
+  }
 }
 
 async function _authDiffAccount() {
@@ -14664,10 +14802,12 @@ function _authRetry() {
 }
 
 async function initAuth() {
+  _log('initAuth: start, online=' + navigator.onLine + ' standalone=' + (window.matchMedia('(display-mode: standalone)').matches || !!navigator.standalone));
   initSupabase();
   _authUpdateNetWarn();
 
   if (!sbClient) {
+    _log('initAuth: sbClient null — mostrando form deshabilitado');
     showAuthForm();
     if (!navigator.onLine) {
       document.getElementById('authNetWarn')?.classList.remove('hide');
@@ -14681,6 +14821,7 @@ async function initAuth() {
   }
 
   const _authFallback = setTimeout(() => {
+    _log('initAuth: fallback timeout — mostrando form');
     const form = document.getElementById('authForm');
     if (form && form.classList.contains('hide')) {
       showAuthForm();
@@ -14689,11 +14830,19 @@ async function initAuth() {
   }, 3000);
 
   showAuthLoading('Verificando sesión...');
+  _log('initAuth: getSession...');
   let session = null;
   try {
-    const { data } = await sbClient.auth.getSession().catch(() => ({ data:{ session:null } }));
+    const { data } = await sbClient.auth.getSession().catch(e => {
+      _log('initAuth: getSession catch: ' + e.message);
+      return { data:{ session:null } };
+    });
     session = data?.session || null;
-  } catch(e) { session = null; }
+    _log('initAuth: getSession → session=' + (session ? session.user?.email : 'null'));
+  } catch(e) {
+    _log('initAuth: getSession exception: ' + e.message);
+    session = null;
+  }
   clearTimeout(_authFallback);
 
   if (session) {
@@ -14704,6 +14853,7 @@ async function initAuth() {
   }
 
   sbClient.auth.onAuthStateChange((event) => {
+    _log('authStateChange: ' + event);
     if (event === 'SIGNED_OUT') {
       sbUser = null;
       clearLocalData();
@@ -14756,22 +14906,45 @@ async function handleAuthSubmit() {
   if (!email || !password) { showAuthError('Completa todos los campos.'); return; }
   if (password.length < 6)  { showAuthError('La contraseña debe tener al menos 6 caracteres.'); return; }
 
+  // Guard: sbClient must exist before we attempt any auth request
+  if (!sbClient) {
+    _log('handleAuthSubmit: sbClient null al intentar login');
+    showAuthError('Error: cliente no inicializado — recarga la app.');
+    return;
+  }
+
+  _log('handleAuthSubmit: mode=' + authMode + ' email=' + email + ' online=' + navigator.onLine);
+
   document.getElementById('authSubmit').disabled = true;
   document.getElementById('authRetry')?.classList.add('hide');
   document.getElementById('authError')?.classList.add('hide');
 
-  const doRequest = async () => {
+  // Formats a Supabase error for display: friendly translation + raw code always appended
+  const _fmtSbError = (err) => {
+    const status  = err.status  || '';
+    const code    = err.code    || '';
+    const message = err.message || 'sin mensaje';
+    const raw = [status, code].filter(Boolean).join('/');
+    _log('sbError: status=' + status + ' code=' + code + ' msg=' + message);
+    const friendly = translateAuthError(message, code);
+    return friendly + (raw ? ' [' + raw + ']' : '');
+  };
+
+  const doRequest = async (attempt) => {
+    _log('doRequest #' + attempt + ': inicio, sbClient=' + !!sbClient + ' online=' + navigator.onLine);
     if (authMode === 'login') {
-      showAuthLoading('Iniciando sesión...');
+      showAuthLoading('Iniciando sesión…');
       const res = await sbClient.auth.signInWithPassword({ email, password });
-      if (res.error) { showAuthForm(); showAuthError(translateAuthError(res.error.message)); return true; }
+      if (res.error) { showAuthForm(); showAuthError(_fmtSbError(res.error)); return true; }
+      _log('signIn OK: user=' + res.data.user?.id);
       sbUser = res.data.user;
       await onUserLoggedIn(false);
       return true;
     } else {
-      showAuthLoading('Creando cuenta...');
+      showAuthLoading('Creando cuenta…');
       const res = await sbClient.auth.signUp({ email, password });
-      if (res.error) { showAuthForm(); showAuthError(translateAuthError(res.error.message)); return true; }
+      _log('signUp: error=' + (res.error?.code || 'none') + ' user=' + (res.data?.user?.id || 'none'));
+      if (res.error) { showAuthForm(); showAuthError(_fmtSbError(res.error)); return true; }
       if (res.data.user) {
         sbUser = res.data.user;
         if (res.data.session) {
@@ -14789,19 +14962,36 @@ async function handleAuthSubmit() {
   };
 
   let done = false;
-  try { done = await doRequest(); } catch(e) { done = false; }
+  let lastErr = null;
+  try {
+    done = await doRequest(1);
+  } catch(e) {
+    lastErr = e;
+    _log('doRequest #1 excepción: ' + e.name + ': ' + e.message);
+    done = false;
+  }
 
   if (!done) {
-    // First attempt failed with a network exception — wait and retry once
-    showAuthLoading('Sin respuesta. Reintentando...');
+    showAuthLoading('Sin respuesta. Reintentando…');
     await new Promise(r => setTimeout(r, 2500));
-    try { done = await doRequest(); } catch(e) { done = false; }
+    try {
+      done = await doRequest(2);
+    } catch(e) {
+      lastErr = e;
+      _log('doRequest #2 excepción: ' + e.name + ': ' + e.message);
+      done = false;
+    }
     if (!done) {
       showAuthForm();
-      const msg = !navigator.onLine
-        ? 'Sin conexión a internet. Conéctate e intenta de nuevo.'
-        : 'Error de conexión con el servidor. Verifica tu internet e intenta de nuevo.';
-      showAuthError(msg);
+      const offline = !navigator.onLine;
+      let errMsg = 'Error de red';
+      if (lastErr) {
+        errMsg += ' — ' + lastErr.name + ': ' + lastErr.message;
+      } else if (offline) {
+        errMsg += ' — sin conexión a internet';
+      }
+      _log('login fallido tras 2 intentos: ' + errMsg);
+      showAuthError(errMsg);
       document.getElementById('authRetry')?.classList.remove('hide');
     }
   }
@@ -14809,22 +14999,24 @@ async function handleAuthSubmit() {
   document.getElementById('authSubmit').disabled = false;
 }
 
-function translateAuthError(msg) {
+function translateAuthError(msg, code) {
   if (!msg) return 'Error desconocido. Intenta de nuevo.';
   const m = msg.toLowerCase();
-  if (msg.includes('Invalid login credentials'))      return 'Correo o contraseña incorrectos.';
-  if (msg.includes('Email not confirmed'))            return 'Confirma tu correo primero. Revisa tu bandeja de entrada.';
-  if (msg.includes('User already registered'))        return 'Este correo ya tiene una cuenta. Inicia sesión.';
-  if (msg.includes('Password should be'))             return 'La contraseña debe tener al menos 6 caracteres.';
-  if (msg.includes('signup_disabled'))                return 'El registro está temporalmente desactivado.';
-  if (msg.includes('over_email_send_rate_limit'))     return 'Demasiados intentos. Espera unos minutos e intenta de nuevo.';
-  if (msg.includes('rate limit'))                     return 'Demasiados intentos. Espera unos minutos e intenta de nuevo.';
-  if (msg.includes('Anonymous sign-ins are disabled'))return 'El acceso anónimo no está disponible.';
-  if (msg.includes('email_address_not_authorized'))   return 'Este correo no está autorizado. Usa otro correo.';
-  if (msg.includes('weak_password'))                  return 'Contraseña muy débil. Usa al menos 8 caracteres con letras y números.';
-  if (msg.includes('AuthRetryableFetchError') || m.includes('fetch') || m.includes('network') || m.includes('failed to fetch'))
+  if (msg.includes('Invalid login credentials'))       return 'Correo o contraseña incorrectos.';
+  if (msg.includes('Email not confirmed'))             return 'Confirma tu correo primero. Revisa tu bandeja de entrada.';
+  if (msg.includes('User already registered'))         return 'Este correo ya tiene una cuenta. Inicia sesión.';
+  if (msg.includes('Password should be'))              return 'La contraseña debe tener al menos 6 caracteres.';
+  if (msg.includes('signup_disabled'))                 return 'El registro está temporalmente desactivado.';
+  if (msg.includes('over_email_send_rate_limit'))      return 'Demasiados intentos. Espera unos minutos e intenta de nuevo.';
+  if (msg.includes('rate limit'))                      return 'Demasiados intentos. Espera unos minutos e intenta de nuevo.';
+  if (msg.includes('Anonymous sign-ins are disabled')) return 'El acceso anónimo no está disponible.';
+  if (msg.includes('email_address_not_authorized'))    return 'Este correo no está autorizado. Usa otro correo.';
+  if (msg.includes('weak_password'))                   return 'Contraseña muy débil. Usa al menos 8 caracteres con letras y números.';
+  if (msg.includes('AuthRetryableFetchError') || m.includes('failed to fetch') || m.includes('networkerror'))
     return 'Error de red. Verifica tu conexión a internet.';
-  return msg;
+  // Unknown error — show code for diagnosis
+  const suffix = code ? ' [' + code + ']' : '';
+  return msg + suffix;
 }
 
 async function loadUserDataFromSupabase() {
