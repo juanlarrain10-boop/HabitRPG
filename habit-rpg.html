@@ -9879,9 +9879,9 @@ function getAdvStatus() {
   const total = day.morning.length + day.missions.length;
   const pct   = total > 0 ? done / total : 0;
   const xpT   = day.xpToday || 0;
-  let available = 0;
-  if (pct >= 0.5 && pct < 1.0) available = 1;
-  if (pct >= 1.0)               available = 3;
+  let available = 1;
+  if (pct >= 0.5) available = 2;
+  if (pct >= 1.0) available = 4;
   const played    = day.dungeonsPlayed || 0;
   let remaining   = Math.max(0, available - played);
   if (gm && gm.infiniteDungeons) { remaining = 99; }
@@ -9960,26 +9960,29 @@ function renderAdvMap(el) {
       <span class="adv-dg-badge ${st.remaining===0?'empty':''}">
         ⚔️ ${st.remaining} / ${st.available} dungeon${st.available!==1?'s':''} hoy
       </span>`;
-  if (st.remaining === 0 && st.available === 0) {
-    const needPct = Math.ceil((0.5 - st.pct) * st.total);
-    html += `<span style="font-size:.65rem;color:var(--dim)">${Math.round(st.pct*100)}% completado</span>`;
-    html += `</div><div class="adv-lock-banner">🔒 Completa al menos el <b>50%</b> de tus misiones de hoy para acceder a los dungeons.<br>`;
-    if (needPct > 0) html += `Faltan <b>${needPct} misión${needPct!==1?'es':''}</b> para desbloquear.`;
-    html += `</div>`;
-  } else if (st.remaining === 0 && st.played >= st.available) {
-    if (st.available === 1) {
-      const need3 = Math.ceil((1.0 - st.pct) * st.total);
+  if (st.remaining === 0) {
+    if (st.available === 4) {
+      html += `</div><div class="adv-lock-banner" style="background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.2);color:#6ee7b7">✅ ¡Completaste todos tus dungeons de hoy! Vuelve mañana.</div>`;
+    } else if (st.available === 2) {
+      const need4 = Math.ceil((1.0 - st.pct) * st.total);
       html += `</div><div class="adv-lock-banner" style="background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.2);color:#6ee7b7">
-        ✅ Dungeon de hoy completado. Completa el <b>100%</b> de misiones para desbloquear 3 dungeons.
-        ${need3 > 0 ? `<br>Faltan <b>${need3} misión${need3!==1?'es':''}</b>.` : ''}
+        ✅ 2 dungeons completados. Completa el <b>100%</b> de misiones para desbloquear 4 dungeons.
+        ${need4 > 0 ? `<br>Faltan <b>${need4} misión${need4!==1?'es':''}</b>.` : ''}
       </div>`;
     } else {
-      html += `</div><div class="adv-lock-banner" style="background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.2);color:#6ee7b7">✅ ¡Completaste todos tus dungeons de hoy! Vuelve mañana.</div>`;
+      const need2 = Math.ceil((0.5 - st.pct) * st.total);
+      html += `</div><div class="adv-lock-banner" style="background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.2);color:#6ee7b7">
+        ✅ Dungeon completado. Completa el <b>50%</b> de misiones para desbloquear 2 dungeons.
+        ${need2 > 0 ? `<br>Faltan <b>${need2} misión${need2!==1?'es':''}</b>.` : ''}
+      </div>`;
     }
   } else {
-    if (st.pct >= 0.5 && st.pct < 1.0) {
-      const need3 = Math.ceil((1.0 - st.pct) * st.total);
-      html += `<span style="font-size:.63rem;color:var(--dim)">Completa <b>${need3} misión${need3!==1?'es':''}</b> más → 3 dungeons</span>`;
+    if (st.pct < 0.5) {
+      const need2 = Math.ceil((0.5 - st.pct) * st.total);
+      html += `<span style="font-size:.63rem;color:var(--dim)">Completa <b>${need2} misión${need2!==1?'es':''}</b> más → 2 dungeons</span>`;
+    } else if (st.pct < 1.0) {
+      const need4 = Math.ceil((1.0 - st.pct) * st.total);
+      html += `<span style="font-size:.63rem;color:var(--dim)">Completa <b>${need4} misión${need4!==1?'es':''}</b> más → 4 dungeons</span>`;
     }
     html += `</div>`;
   }
@@ -15900,6 +15903,13 @@ function navShop() {
   on('mTopBtnToday', function() { cur = todayKey(); day = loadDay(cur); renderAll(); });
   on('profileSignOutBtn', function() { var b = document.getElementById('btnSignOut'); if (b) b.click(); });
 
+  // Bottom navigation — all tabs wired here, onclick removed from HTML
+  on('bnHome',    goHome);
+  on('bnAdv',     navAdv);
+  on('bnShop',    navShop);
+  on('bnProfile', openProfile);
+  on('bnMore',    openMoreDrawer);
+
   // Sync close buttons back to home tab
   var _ca = closeAdventure, _cs = closeShop;
   closeAdventure = function() { _ca(); setBottomTab('bnHome'); };
@@ -16060,7 +16070,7 @@ document.getElementById('pwaProfileInstallBtn')?.addEventListener('click', () =>
     quickToast('📱', 'Instalar app', 'Toca el menú del navegador (⋮) y elige "Instalar aplicación" o "Agregar a pantalla de inicio"');
   }
 });
-// ibInstallBtn y ibDismissBtn usan onclick en el HTML (están después del </script>)
+// ibInstallBtn y ibDismissBtn usan onclick en el HTML
 
 // ── 5. Notification + Install UI ────────────────────────────────────────────
 const _notifSupported = (typeof Notification !== 'undefined');
@@ -16170,23 +16180,23 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 
 <!-- ── BOTTOM NAVIGATION ── -->
 <nav class="bottom-nav">
-  <button class="bn-tab active" id="bnHome" onclick="goHome()">
+  <button class="bn-tab active" id="bnHome">
     <span class="bn-icon">🏠</span>
     <span class="bn-label">Inicio</span>
   </button>
-  <button class="bn-tab" id="bnAdv" onclick="navAdv()">
+  <button class="bn-tab" id="bnAdv">
     <span class="bn-icon">⚔️</span>
     <span class="bn-label">Aventura</span>
   </button>
-  <button class="bn-tab" id="bnShop" onclick="navShop()">
+  <button class="bn-tab" id="bnShop">
     <span class="bn-icon">🏪</span>
     <span class="bn-label">Tienda</span>
   </button>
-  <button class="bn-tab" id="bnProfile" onclick="openProfile()">
+  <button class="bn-tab" id="bnProfile">
     <span class="bn-icon">👤</span>
     <span class="bn-label">Perfil</span>
   </button>
-  <button class="bn-tab" id="bnMore" onclick="openMoreDrawer()">
+  <button class="bn-tab" id="bnMore">
     <span class="bn-icon">☰</span>
     <span class="bn-label">Más</span>
   </button>
