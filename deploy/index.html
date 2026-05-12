@@ -3583,7 +3583,7 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   max-width: 480px !important;
   margin: 0 auto !important;
   min-height: 100dvh;
-  padding-bottom: 60px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 /* char-panel becomes full-screen profile overlay */
@@ -3727,32 +3727,29 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   margin-left: 12px; flex-shrink: 0;
 }
 
-/* ── Bottom navigation ── */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
-  background: rgba(8,8,16,.96); backdrop-filter: blur(20px);
-  border-top: 1px solid var(--bd);
-  display: flex; align-items: stretch; height: 60px;
-  max-width: 480px; margin: 0 auto;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+/* ── Menu FAB ── */
+.fab-menu {
+  position: fixed;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  right: 16px; z-index: 900;
+  display: flex; align-items: center; gap: 7px;
+  padding: 0 20px; height: 52px;
+  background: linear-gradient(135deg, var(--purp2), #7c3aed);
+  border: 1.5px solid rgba(167,139,250,.45);
+  border-radius: 26px;
+  color: #fff; font-family: inherit; cursor: pointer;
+  box-shadow: 0 4px 22px rgba(124,58,237,.55);
+  transition: transform .15s, box-shadow .15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none; -webkit-user-select: none;
 }
-.bn-tab {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 3px;
-  background: none; border: none; color: var(--dim); cursor: pointer;
-  padding: 6px 4px 8px; transition: color .15s; font-family: inherit;
-  -webkit-tap-highlight-color: transparent; position: relative;
-}
-.bn-tab:active { background: rgba(255,255,255,.05); }
-.bn-tab.active { color: var(--purp2); }
-.bn-tab.active::after {
-  content: ''; position: absolute; top: 0; left: 25%; right: 25%;
-  height: 2px; background: var(--purp2); border-radius: 0 0 2px 2px;
-}
-.bn-icon  { font-size: 1.25rem; line-height: 1; }
-.bn-label { font-size: .38rem; font-family: var(--pxfont); letter-spacing: .03em; line-height: 1; }
+.fab-menu:active { transform: scale(0.94); box-shadow: 0 2px 12px rgba(124,58,237,.4); }
+.fab-menu.active { background: linear-gradient(135deg, #6d28d9, #7c3aed); }
+.fab-menu-icon  { font-size: 1.1rem; }
+.fab-menu-label { font-family: var(--pxfont); font-size: .68rem; letter-spacing: .06em; }
 
-/* ── More drawer ── */
+/* ── Menu drawer ── */
 .more-backdrop {
   position: fixed; inset: 0; z-index: 870;
   background: rgba(0,0,0,.55);
@@ -3762,14 +3759,15 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .more-backdrop.open { opacity: 1; pointer-events: all; }
 
 .more-drawer {
-  position: fixed; bottom: 60px; left: 0; right: 0; z-index: 880;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 880;
   max-width: 480px; margin: 0 auto;
   background: var(--s1); border-top: 1px solid var(--bd2);
   border-radius: 20px 20px 0 0;
-  padding: 6px 16px 20px;
+  padding: 6px 16px calc(20px + env(safe-area-inset-bottom, 0px));
   transform: translateY(110%);
   transition: transform .28s cubic-bezier(.25,.46,.45,.94);
   box-shadow: 0 -8px 40px rgba(0,0,0,.6);
+  max-height: 85vh; overflow-y: auto;
 }
 .more-drawer.open { transform: translateY(0); }
 .more-handle {
@@ -3777,22 +3775,23 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   background: var(--bd2); margin: 8px auto 14px;
 }
 .more-drawer-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
 }
 .more-item {
   display: flex; flex-direction: column; align-items: center; gap: 7px;
-  padding: 16px 8px;
+  padding: 18px 8px; min-height: 72px;
   background: var(--s2); border: 1px solid var(--bd); border-radius: 14px;
   cursor: pointer; color: var(--txt); font-family: inherit;
   transition: background .15s; -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .more-item:active { background: var(--s3); }
-.more-item-icon  { font-size: 1.35rem; }
-.more-item-label { font-size: .38rem; font-family: var(--pxfont); color: var(--dim); text-align: center; }
+.more-item-icon  { font-size: 1.5rem; }
+.more-item-label { font-size: .42rem; font-family: var(--pxfont); color: var(--dim); text-align: center; }
 
-/* ── FAB positions above bottom nav ── */
-.gm-fab   { bottom: 128px !important; right: 16px !important; }
-.help-fab { bottom: 74px !important; right: 16px !important; }
+/* ── FAB stack above menu FAB ── */
+.gm-fab   { bottom: 148px !important; right: 16px !important; }
+.help-fab { bottom: 82px  !important; right: 16px !important; }
 
 @keyframes mobileSlideUp {
   from { opacity: 0; transform: translateY(28px); }
@@ -15831,7 +15830,7 @@ function setBottomTab(id) {
 function closeMoreDrawer() {
   var d   = document.getElementById('moreDrawer');
   var b   = document.getElementById('moreBackdrop');
-  var btn = document.getElementById('bnMore');
+  var btn = document.getElementById('fabMenu');
   if (d)   d.classList.remove('open');
   if (b)   b.classList.remove('open');
   if (btn) btn.classList.remove('active');
@@ -15840,7 +15839,7 @@ function closeMoreDrawer() {
 function openMoreDrawer() {
   var d   = document.getElementById('moreDrawer');
   var b   = document.getElementById('moreBackdrop');
-  var btn = document.getElementById('bnMore');
+  var btn = document.getElementById('fabMenu');
   if (d)   d.classList.add('open');
   if (b)   b.classList.add('open');
   if (btn) btn.classList.add('active');
@@ -16173,35 +16172,33 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
   </div>
 </div>
 
-<!-- ── BOTTOM NAVIGATION ── -->
-<nav class="bottom-nav">
-  <button class="bn-tab active" id="bnHome" onclick="goHome()">
-    <span class="bn-icon">🏠</span>
-    <span class="bn-label">Inicio</span>
-  </button>
-  <button class="bn-tab" id="bnAdv" onclick="navAdv()">
-    <span class="bn-icon">⚔️</span>
-    <span class="bn-label">Aventura</span>
-  </button>
-  <button class="bn-tab" id="bnShop" onclick="navShop()">
-    <span class="bn-icon">🏪</span>
-    <span class="bn-label">Tienda</span>
-  </button>
-  <button class="bn-tab" id="bnProfile" onclick="openProfile()">
-    <span class="bn-icon">👤</span>
-    <span class="bn-label">Perfil</span>
-  </button>
-  <button class="bn-tab" id="bnMore" onclick="openMoreDrawer()">
-    <span class="bn-icon">☰</span>
-    <span class="bn-label">Más</span>
-  </button>
-</nav>
+<!-- ── MENU FAB ── -->
+<button class="fab-menu" id="fabMenu" onclick="openMoreDrawer()">
+  <span class="fab-menu-icon">☰</span>
+  <span class="fab-menu-label">Menú</span>
+</button>
 
-<!-- ── MORE DRAWER ── -->
+<!-- ── MENU DRAWER ── -->
 <div class="more-backdrop" id="moreBackdrop" onclick="closeMoreDrawer()"></div>
 <div class="more-drawer" id="moreDrawer">
   <div class="more-handle"></div>
   <div class="more-drawer-grid">
+    <button class="more-item" onclick="goHome()">
+      <span class="more-item-icon">🏠</span>
+      <span class="more-item-label">Inicio</span>
+    </button>
+    <button class="more-item" onclick="navAdv()">
+      <span class="more-item-icon">⚔️</span>
+      <span class="more-item-label">Aventura</span>
+    </button>
+    <button class="more-item" onclick="navShop()">
+      <span class="more-item-icon">🏪</span>
+      <span class="more-item-label">Tienda</span>
+    </button>
+    <button class="more-item" onclick="openProfile()">
+      <span class="more-item-icon">👤</span>
+      <span class="more-item-label">Perfil</span>
+    </button>
     <button class="more-item" onclick="openStory(); closeMoreDrawer()">
       <span class="more-item-icon">📖</span>
       <span class="more-item-label">Historia</span>
