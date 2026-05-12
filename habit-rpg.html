@@ -4066,28 +4066,114 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 .st-reset { padding: 6px 13px; border-radius: 8px; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: #f87171; font-size: .6rem; cursor: pointer; touch-action: manipulation; }
 
 /* ══════ CHARACTER STATE ══════ */
-.cs-avatar-wrap { position: relative; flex-shrink: 0; }
+.cs-avatar-wrap {
+  position: relative; flex-shrink: 0;
+  transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+}
 .cs-avatar-wrap .cs-avatar { transition: box-shadow .5s; }
+.cs-avatar-wrap .cs-avatar-inner { transition: filter .5s; }
+
+/* ── BRILLANTE: más grande, aura dorada intensa, doble anillo giratorio ── */
+.cs-avatar-wrap.state-brillante { transform: scale(1.28); }
 .cs-avatar-wrap.state-brillante .cs-avatar {
-  box-shadow: 0 0 0 2px #f59e0b, 0 0 18px #f59e0b, 0 0 36px rgba(245,158,11,.35);
-  animation: csBrillante 2.2s ease-in-out infinite;
+  box-shadow:
+    0 0 0 3px #fbbf24,
+    0 0 22px #f59e0b,
+    0 0 50px #f59e0b,
+    0 0 90px rgba(245,158,11,.65);
+  animation: csBrillante 1.5s ease-in-out infinite;
 }
-.cs-avatar-wrap.state-cansado .cs-avatar {
-  box-shadow: 0 0 0 2px #475569;
+.cs-avatar-wrap.state-brillante::before {
+  content: '';
+  position: absolute; inset: -9px; border-radius: 50%;
+  border: 2px dashed rgba(251,191,36,.9);
+  animation: csRingRotate 3.5s linear infinite;
+  pointer-events: none;
 }
-.cs-avatar-wrap.state-cansado .cs-avatar-inner { filter: saturate(0.35) brightness(0.75); }
-.cs-avatar-wrap.state-critico .cs-avatar {
-  box-shadow: 0 0 0 2px #7f1d1d, 0 0 16px rgba(239,68,68,.4);
-  animation: csCritico 1.6s ease-in-out infinite;
+.cs-avatar-wrap.state-brillante::after {
+  content: '';
+  position: absolute; inset: -17px; border-radius: 50%;
+  border: 1px solid rgba(245,158,11,.45);
+  box-shadow: 0 0 10px rgba(245,158,11,.35);
+  animation: csRingRotate 7s linear infinite reverse;
+  pointer-events: none;
 }
 @keyframes csBrillante {
-  0%,100% { box-shadow: 0 0 0 2px #f59e0b, 0 0 18px #f59e0b, 0 0 36px rgba(245,158,11,.35); }
-  50%      { box-shadow: 0 0 0 3px #fbbf24, 0 0 28px #fbbf24, 0 0 56px rgba(251,191,36,.55); }
+  0%,100% { box-shadow: 0 0 0 3px #fbbf24, 0 0 22px #f59e0b, 0 0 50px #f59e0b, 0 0 90px rgba(245,158,11,.65); }
+  50%      { box-shadow: 0 0 0 5px #fde68a, 0 0 40px #fbbf24, 0 0 80px #f59e0b, 0 0 135px rgba(245,158,11,.9); }
+}
+@keyframes csRingRotate { to { transform: rotate(360deg); } }
+
+/* ── CANSADO: más pequeño, inclinado, muy desaturado, ojeras ── */
+.cs-avatar-wrap.state-cansado {
+  transform: scale(0.8) rotate(-9deg);
+  transform-origin: bottom center;
+}
+.cs-avatar-wrap.state-cansado .cs-avatar {
+  box-shadow: 0 0 0 2px #1e293b, 0 3px 10px rgba(0,0,0,.5);
+  animation: csDroop 3.5s ease-in-out infinite;
+}
+.cs-avatar-wrap.state-cansado .cs-avatar-inner {
+  filter: saturate(0.08) brightness(0.58) sepia(0.45);
+}
+/* sombra de ojeras */
+.cs-avatar-wrap.state-cansado::before {
+  content: '';
+  position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(ellipse 80% 40% at 50% 65%, rgba(15,23,42,.55) 0%, transparent 70%);
+  pointer-events: none; z-index: 2;
+}
+@keyframes csDroop {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(3px); }
+}
+
+/* ── CRÍTICO: temblor, aura roja intensa, anillo expansivo ── */
+.cs-avatar-wrap.state-critico {
+  animation: csShake .45s ease-in-out infinite;
+}
+.cs-avatar-wrap.state-critico .cs-avatar {
+  box-shadow:
+    0 0 0 3px #dc2626,
+    0 0 20px rgba(220,38,38,.95),
+    0 0 48px rgba(239,68,68,.75),
+    0 0 85px rgba(239,68,68,.45);
+  animation: csCritico .85s ease-in-out infinite;
+}
+.cs-avatar-wrap.state-critico::before {
+  content: '';
+  position: absolute; inset: -7px; border-radius: 50%;
+  border: 2px solid rgba(220,38,38,.8);
+  animation: csCriticoPulse .85s ease-in-out infinite;
+  pointer-events: none;
 }
 @keyframes csCritico {
-  0%,100% { box-shadow: 0 0 0 2px #7f1d1d, 0 0 12px rgba(239,68,68,.35); }
-  50%      { box-shadow: 0 0 0 2px #dc2626, 0 0 22px rgba(239,68,68,.55); }
+  0%,100% { box-shadow: 0 0 0 3px #dc2626, 0 0 20px rgba(220,38,38,.95), 0 0 48px rgba(239,68,68,.75), 0 0 85px rgba(239,68,68,.45); }
+  50%      { box-shadow: 0 0 0 5px #ef4444, 0 0 35px rgba(239,68,68,1), 0 0 75px rgba(239,68,68,.95), 0 0 120px rgba(239,68,68,.6); }
 }
+@keyframes csShake {
+  0%,100% { transform: translateX(0) rotate(0deg); }
+  15%      { transform: translateX(-3px) rotate(-1.2deg); }
+  30%      { transform: translateX(3px) rotate(1.2deg); }
+  45%      { transform: translateX(-2px) rotate(-.6deg); }
+  60%      { transform: translateX(2px) rotate(.6deg); }
+  75%      { transform: translateX(-1px); }
+}
+@keyframes csCriticoPulse {
+  0%,100% { inset: -7px; opacity: .8; }
+  50%      { inset: -16px; opacity: .12; }
+}
+
+/* Pantalla levemente oscurecida en estado crítico */
+#csStateTint {
+  position: fixed; inset: 0; z-index: 2;
+  pointer-events: none; display: none;
+  background: radial-gradient(ellipse at center, transparent 25%, rgba(160,0,0,.2) 100%);
+  animation: csTintPulse 1.7s ease-in-out infinite;
+}
+#csStateTint.active { display: block; }
+@keyframes csTintPulse { 0%,100% { opacity: .65; } 50% { opacity: 1; } }
+
 .cs-state-badge {
   position: absolute; bottom: -3px; right: -3px;
   width: 17px; height: 17px; border-radius: 50%;
@@ -4096,10 +4182,11 @@ button:active:not(:disabled), .btn:active:not(:disabled),
   cursor: pointer; z-index: 3;
   touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
-.cs-state-badge.state-brillante { background: #f59e0b; }
+.cs-state-badge.state-brillante { background: #f59e0b; animation: csBadgePulse 1.5s ease-in-out infinite; }
 .cs-state-badge.state-normal    { background: #22d3ee; }
-.cs-state-badge.state-cansado   { background: #64748b; }
-.cs-state-badge.state-critico   { background: #dc2626; }
+.cs-state-badge.state-cansado   { background: #334155; }
+.cs-state-badge.state-critico   { background: #dc2626; animation: csBadgePulse .85s ease-in-out infinite; }
+@keyframes csBadgePulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.35); } }
 
 /* ══════ MENTOR LETTER ══════ */
 .mentor-overlay {
@@ -4649,6 +4736,9 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       </div>
       <button class="mtb-today-btn" id="mTopBtnToday">Hoy</button>
     </div>
+
+    <!-- Screen tint for critical character state -->
+    <div id="csStateTint"></div>
 
     <!-- Compact character strip -->
     <div class="char-strip" onclick="openProfile()" role="button" aria-label="Ver perfil">
@@ -16759,12 +16849,14 @@ function updateCharacterStateUI() {
   var state  = getCharacterState();
   var wrap   = document.getElementById('csAvatarWrap');
   var badge  = document.getElementById('csStateBadge');
+  var tint   = document.getElementById('csStateTint');
   if (!wrap || !badge) return;
 
   wrap.className = 'cs-avatar-wrap state-' + state;
   badge.className = 'cs-state-badge state-' + state;
   var icons = { brillante:'✨', normal:'⚡', cansado:'😴', critico:'🆘' };
   badge.textContent = icons[state];
+  if (tint) tint.classList.toggle('active', state === 'critico');
 }
 
 // ═══════════════════════════════════════════
