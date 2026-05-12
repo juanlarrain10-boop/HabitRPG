@@ -3980,9 +3980,8 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 
 /* ══════ SKILL TREE ══════ */
 .st-overlay {
-  position: fixed; inset: 0; z-index: 950;
-  max-width: 480px; margin: 0 auto;
-  display: flex; flex-direction: column;
+  position: fixed; inset: 0; z-index: 970;
+  display: none; flex-direction: column;
   background: #030309;
   background-image:
     radial-gradient(1px 1px at 5% 12%,  rgba(255,255,255,.55) 0%,transparent 100%),
@@ -3996,10 +3995,8 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     radial-gradient(1px 1px at 55% 48%, rgba(255,255,255,.5) 0%,transparent 100%),
     radial-gradient(1.5px 1.5px at 93% 78%, rgba(255,255,255,.5) 0%,transparent 100%),
     #030309;
-  transform: translateX(100%);
-  transition: transform .3s cubic-bezier(.25,.46,.45,.94);
 }
-.st-overlay.open { transform: translateX(0); }
+.st-overlay.open { display: flex; animation: mobileSlideUp .22s ease both; }
 .st-header {
   flex-shrink: 0; display: flex; align-items: center; gap: 8px;
   padding: 14px 14px 8px;
@@ -4067,6 +4064,262 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 .st-dp-btn.no   { background: rgba(255,255,255,.06); color: var(--dim); cursor: default; }
 .st-bottom-row { flex-shrink: 0; display: flex; justify-content: flex-end; padding: 5px 14px 6px; }
 .st-reset { padding: 6px 13px; border-radius: 8px; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: #f87171; font-size: .6rem; cursor: pointer; touch-action: manipulation; }
+
+/* ══════ CHARACTER STATE ══════ */
+.cs-avatar-wrap { position: relative; flex-shrink: 0; }
+.cs-avatar-wrap .cs-avatar { transition: box-shadow .5s; }
+.cs-avatar-wrap.state-brillante .cs-avatar {
+  box-shadow: 0 0 0 2px #f59e0b, 0 0 18px #f59e0b, 0 0 36px rgba(245,158,11,.35);
+  animation: csBrillante 2.2s ease-in-out infinite;
+}
+.cs-avatar-wrap.state-cansado .cs-avatar {
+  box-shadow: 0 0 0 2px #475569;
+}
+.cs-avatar-wrap.state-cansado .cs-avatar-inner { filter: saturate(0.35) brightness(0.75); }
+.cs-avatar-wrap.state-critico .cs-avatar {
+  box-shadow: 0 0 0 2px #7f1d1d, 0 0 16px rgba(239,68,68,.4);
+  animation: csCritico 1.6s ease-in-out infinite;
+}
+@keyframes csBrillante {
+  0%,100% { box-shadow: 0 0 0 2px #f59e0b, 0 0 18px #f59e0b, 0 0 36px rgba(245,158,11,.35); }
+  50%      { box-shadow: 0 0 0 3px #fbbf24, 0 0 28px #fbbf24, 0 0 56px rgba(251,191,36,.55); }
+}
+@keyframes csCritico {
+  0%,100% { box-shadow: 0 0 0 2px #7f1d1d, 0 0 12px rgba(239,68,68,.35); }
+  50%      { box-shadow: 0 0 0 2px #dc2626, 0 0 22px rgba(239,68,68,.55); }
+}
+.cs-state-badge {
+  position: absolute; bottom: -3px; right: -3px;
+  width: 17px; height: 17px; border-radius: 50%;
+  border: 2px solid var(--bg);
+  font-size: .62rem; line-height: 13px; text-align: center;
+  cursor: pointer; z-index: 3;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.cs-state-badge.state-brillante { background: #f59e0b; }
+.cs-state-badge.state-normal    { background: #22d3ee; }
+.cs-state-badge.state-cansado   { background: #64748b; }
+.cs-state-badge.state-critico   { background: #dc2626; }
+
+/* ══════ MENTOR LETTER ══════ */
+.mentor-overlay {
+  position: fixed; inset: 0; z-index: 980;
+  background: rgba(0,0,0,.82); backdrop-filter: blur(12px);
+  display: none; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.mentor-overlay.open { display: flex; animation: fadeInFast .3s ease both; }
+@keyframes fadeInFast { from { opacity:0 } to { opacity:1 } }
+
+.mentor-letter {
+  width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto;
+  background: linear-gradient(165deg, #1e1507 0%, #14100a 60%, #1a1208 100%);
+  border: 1px solid rgba(212,169,106,.4);
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(212,169,106,.12), 0 24px 60px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.04);
+  animation: letterUnfold .45s cubic-bezier(.25,.46,.45,.94) both;
+  transform-origin: top center;
+}
+@keyframes letterUnfold {
+  from { opacity:0; transform: scaleY(.6) translateY(-20px); }
+  to   { opacity:1; transform: scaleY(1) translateY(0); }
+}
+.mentor-seal {
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px 20px 8px;
+  font-size: 2.4rem;
+  filter: drop-shadow(0 0 12px rgba(212,169,106,.5));
+}
+.mentor-letter-title {
+  text-align: center; font-family: var(--pxfont);
+  font-size: .44rem; letter-spacing: .12em;
+  color: #d4a96a; padding: 0 20px 4px;
+}
+.mentor-letter-week {
+  text-align: center; font-size: .65rem; color: rgba(212,169,106,.55);
+  padding-bottom: 14px; border-bottom: 1px solid rgba(212,169,106,.15);
+  margin: 0 20px 14px;
+}
+.mentor-letter-stats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; padding: 0 20px 14px;
+}
+.mentor-stat-card {
+  background: rgba(212,169,106,.06); border: 1px solid rgba(212,169,106,.15);
+  border-radius: 8px; padding: 8px 10px;
+  text-align: center;
+}
+.mentor-stat-val { font-family: var(--pxfont); font-size: .6rem; color: #d4a96a; }
+.mentor-stat-lbl { font-size: .59rem; color: rgba(212,169,106,.55); margin-top: 3px; }
+.mentor-letter-body {
+  padding: 0 20px 14px; border-top: 1px solid rgba(212,169,106,.08);
+  padding-top: 14px;
+}
+.mentor-letter-greeting {
+  font-size: .82rem; color: #d4a96a; font-style: italic; margin-bottom: 10px;
+}
+.mentor-letter-para {
+  font-size: .75rem; line-height: 1.7; color: rgba(255,255,255,.75);
+  margin-bottom: 10px;
+}
+.mentor-letter-reflection {
+  background: rgba(212,169,106,.07); border-left: 3px solid rgba(212,169,106,.4);
+  border-radius: 0 6px 6px 0; padding: 10px 12px; margin-bottom: 10px;
+  font-size: .72rem; line-height: 1.65; color: rgba(255,255,255,.7);
+  font-style: italic;
+}
+.mentor-letter-challenge {
+  background: rgba(139,92,246,.08); border: 1px solid rgba(139,92,246,.25);
+  border-radius: 8px; padding: 10px 12px; margin-bottom: 14px;
+}
+.mentor-letter-challenge-ttl {
+  font-family: var(--pxfont); font-size: .42rem; color: #a78bfa; margin-bottom: 5px; letter-spacing: .08em;
+}
+.mentor-letter-challenge-txt {
+  font-size: .72rem; color: rgba(255,255,255,.75); line-height: 1.6;
+}
+.mentor-letter-sign {
+  text-align: right; font-size: .7rem; color: rgba(212,169,106,.6);
+  font-style: italic; padding: 0 20px;
+  border-top: 1px solid rgba(212,169,106,.1); padding-top: 12px; margin-bottom: 14px;
+}
+.mentor-letter-btns {
+  display: flex; gap: 8px; padding: 0 20px 18px;
+}
+.mentor-btn-diary {
+  flex: 1; padding: 10px; border-radius: 9px;
+  background: rgba(212,169,106,.12); border: 1px solid rgba(212,169,106,.3);
+  color: #d4a96a; font-size: .65rem; cursor: pointer; font-family: inherit;
+  touch-action: manipulation;
+}
+.mentor-btn-close {
+  padding: 10px 16px; border-radius: 9px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  color: var(--dim); font-size: .65rem; cursor: pointer; font-family: inherit;
+  touch-action: manipulation;
+}
+
+/* ══════ GREMIO ══════ */
+.guild-overlay {
+  position: fixed; inset: 0; z-index: 960;
+  background: rgba(6,6,14,.97); backdrop-filter: blur(20px);
+  overflow-y: auto; display: none; justify-content: center;
+  padding: 0 0 60px;
+}
+.guild-overlay.open { display: flex; animation: mobileSlideUp .22s ease both; }
+.guild-wrap { width: 100%; max-width: 480px; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+.guild-hd {
+  position: sticky; top: 0; z-index: 2;
+  background: rgba(6,6,14,.96); backdrop-filter: blur(14px);
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px 12px; border-bottom: 1px solid var(--bd);
+}
+.guild-back {
+  background: rgba(255,255,255,.08); border: none; border-radius: 8px;
+  color: #e2e8f0; font-size: .9rem; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; touch-action: manipulation;
+}
+.guild-hd-title { font-family: var(--pxfont); font-size: .48rem; letter-spacing: .1em; color: #fbbf24; flex: 1; }
+.guild-hd-code {
+  font-size: .58rem; color: var(--dim); background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1); border-radius: 6px; padding: 3px 8px;
+  cursor: pointer; touch-action: manipulation;
+}
+.guild-body { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+/* No-guild state */
+.guild-welcome {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 16px; padding: 40px 16px; text-align: center; flex: 1;
+}
+.guild-welcome-icon { font-size: 3.5rem; }
+.guild-welcome-title { font-family: var(--pxfont); font-size: .56rem; color: #fbbf24; letter-spacing: .08em; }
+.guild-welcome-sub { font-size: .78rem; color: var(--dim); line-height: 1.6; max-width: 280px; }
+.guild-welcome-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 280px; }
+.guild-btn-create {
+  padding: 13px; border-radius: 10px; border: none; cursor: pointer; font-family: inherit;
+  background: linear-gradient(135deg,#b45309,#d97706); color: #fff; font-size: .72rem; font-weight: 700;
+  touch-action: manipulation;
+}
+.guild-btn-join {
+  padding: 13px; border-radius: 10px; cursor: pointer; font-family: inherit;
+  background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.3);
+  color: #fbbf24; font-size: .72rem;
+  touch-action: manipulation;
+}
+.guild-form-card {
+  background: var(--s1); border: 1px solid var(--bd); border-radius: 12px;
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.guild-form-title { font-family: var(--pxfont); font-size: .46rem; color: #fbbf24; }
+.guild-input {
+  width: 100%; padding: 10px 12px; border-radius: 8px; box-sizing: border-box;
+  background: var(--bg); border: 1px solid var(--bd2); color: var(--txt);
+  font-family: inherit; font-size: .82rem;
+}
+.guild-input:focus { outline: none; border-color: #fbbf24; }
+.guild-form-submit {
+  padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-family: inherit;
+  background: linear-gradient(135deg,#b45309,#d97706); color: #fff; font-size: .7rem;
+  touch-action: manipulation;
+}
+.guild-cancel-btn {
+  background: none; border: none; color: var(--dim); font-size: .7rem; cursor: pointer;
+  font-family: inherit; padding: 4px; touch-action: manipulation;
+}
+
+/* Leaderboard */
+.guild-section-title {
+  font-family: var(--pxfont); font-size: .44rem; color: #fbbf24; letter-spacing: .08em; margin-bottom: 8px;
+}
+.guild-board { display: flex; flex-direction: column; gap: 6px; }
+.guild-member-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--s1); border: 1px solid var(--bd);
+  border-radius: 10px; padding: 10px 12px;
+}
+.guild-member-row.me { border-color: rgba(251,191,36,.3); background: rgba(251,191,36,.04); }
+.guild-rank-badge {
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; font-weight: 700;
+}
+.guild-rank-1 { background: #f59e0b; color: #000; }
+.guild-rank-2 { background: #94a3b8; color: #000; }
+.guild-rank-3 { background: #92400e; color: #fff; }
+.guild-rank-n { background: rgba(255,255,255,.08); color: var(--dim); font-size: .6rem; }
+.guild-member-name { flex: 1; font-size: .8rem; color: var(--txt); }
+.guild-member-cls  { font-size: .7rem; color: var(--dim); }
+.guild-member-pct  { font-family: var(--pxfont); font-size: .5rem; color: #fbbf24; }
+.guild-member-bar-wrap { flex: 1; height: 4px; background: rgba(255,255,255,.06); border-radius: 2px; max-width: 80px; }
+.guild-member-bar { height: 100%; background: #f59e0b; border-radius: 2px; transition: width .4s; }
+
+/* Chat */
+.guild-chat-box {
+  flex: 1; min-height: 160px; max-height: 240px; overflow-y: auto;
+  background: var(--bg); border: 1px solid var(--bd);
+  border-radius: 10px; padding: 10px;
+  display: flex; flex-direction: column; gap: 6px;
+  scrollbar-width: thin;
+}
+.guild-msg { font-size: .72rem; line-height: 1.55; }
+.guild-msg-name { font-weight: 700; color: #fbbf24; margin-right: 5px; }
+.guild-msg-me .guild-msg-name { color: #a78bfa; }
+.guild-msg-text { color: rgba(255,255,255,.75); }
+.guild-msg-time { font-size: .58rem; color: var(--dim); margin-left: 4px; }
+.guild-chat-input-row { display: flex; gap: 8px; margin-top: 6px; }
+.guild-chat-input {
+  flex: 1; padding: 9px 11px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--bd2); color: var(--txt);
+  font-family: inherit; font-size: .78rem;
+}
+.guild-chat-input:focus { outline: none; border-color: #fbbf24; }
+.guild-chat-send {
+  padding: 9px 14px; border-radius: 8px; border: none;
+  background: #d97706; color: #fff; font-size: .75rem; cursor: pointer;
+  touch-action: manipulation;
+}
 </style>
 </head>
 <body>
@@ -4399,8 +4652,11 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 
     <!-- Compact character strip -->
     <div class="char-strip" onclick="openProfile()" role="button" aria-label="Ver perfil">
-      <div class="cs-avatar" id="csAvatarRing">
-        <div class="cs-avatar-inner" id="csAvatarInner"></div>
+      <div class="cs-avatar-wrap" id="csAvatarWrap">
+        <div class="cs-avatar" id="csAvatarRing">
+          <div class="cs-avatar-inner" id="csAvatarInner"></div>
+        </div>
+        <div class="cs-state-badge" id="csStateBadge" onclick="event.stopPropagation();showCharStateMsg()" title="Estado del personaje">⚡</div>
       </div>
       <div class="cs-info">
         <div class="cs-name-row">
@@ -8519,6 +8775,7 @@ function defChar() {
     dailyDungeonHistory: { totalCompleted: 0, bestTier: null },
     masteryPoints: 0,
     skillTree: {},
+    guildId: null,
   };
 }
 
@@ -8682,6 +8939,7 @@ function loadChar() {
     if (!c.dailyDungeonHistory || typeof c.dailyDungeonHistory !== 'object') c.dailyDungeonHistory = { totalCompleted:0, bestTier:null };
     if (typeof c.masteryPoints !== 'number') c.masteryPoints = 0;
     if (!c.skillTree || typeof c.skillTree !== 'object') c.skillTree = {};
+    if (!('guildId' in c)) c.guildId = null;
     return c;
   } catch { return defChar(); }
 }
@@ -8695,6 +8953,7 @@ function saveDay() {
   localStorage.setItem('hrpg_day_'+cur, JSON.stringify(day));
   if (cur === todayKey()) { try { checkSubclassProgressToday(); } catch(e){} }
   if (typeof sbUser !== 'undefined' && sbUser) syncDayToSupabase(cur).catch(() => {});
+  if (cur === todayKey()) { try { guildSyncProgress(); } catch(e){} }
 }
 
 let char = loadChar();
@@ -14895,6 +15154,54 @@ const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 //   alter table hrpg_days  enable row level security;
 //   create policy "own" on hrpg_chars using (auth.uid()=user_id) with check (auth.uid()=user_id);
 //   create policy "own" on hrpg_days  using (auth.uid()=user_id) with check (auth.uid()=user_id);
+//
+// SQL ADICIONAL para el sistema de Gremio (ejecutar en Supabase → SQL Editor):
+//
+//   create table if not exists hrpg_guilds (
+//     id uuid default gen_random_uuid() primary key,
+//     name text not null,
+//     code text not null unique,
+//     created_by uuid references auth.users(id) on delete set null,
+//     created_at timestamptz default now()
+//   );
+//   create table if not exists hrpg_guild_members (
+//     guild_id uuid references hrpg_guilds(id) on delete cascade,
+//     user_id uuid references auth.users(id) on delete cascade,
+//     display_name text not null default 'Aventurero',
+//     char_class text not null default 'guerrero',
+//     joined_at timestamptz default now(),
+//     primary key (guild_id, user_id)
+//   );
+//   create table if not exists hrpg_guild_progress (
+//     guild_id uuid references hrpg_guilds(id) on delete cascade,
+//     user_id uuid references auth.users(id) on delete cascade,
+//     day_key text not null,
+//     day_pct integer not null default 0,
+//     updated_at timestamptz default now(),
+//     primary key (guild_id, user_id, day_key)
+//   );
+//   create table if not exists hrpg_guild_messages (
+//     id uuid default gen_random_uuid() primary key,
+//     guild_id uuid references hrpg_guilds(id) on delete cascade,
+//     user_id uuid references auth.users(id) on delete set null,
+//     display_name text not null,
+//     message text not null,
+//     created_at timestamptz default now()
+//   );
+//   alter table hrpg_guilds         enable row level security;
+//   alter table hrpg_guild_members  enable row level security;
+//   alter table hrpg_guild_progress enable row level security;
+//   alter table hrpg_guild_messages enable row level security;
+//   create policy "guild_read"  on hrpg_guilds         for select using (true);
+//   create policy "guild_ins"   on hrpg_guilds         for insert with check (auth.uid()=created_by);
+//   create policy "member_read" on hrpg_guild_members  for select using (true);
+//   create policy "member_ins"  on hrpg_guild_members  for insert with check (auth.uid()=user_id);
+//   create policy "prog_read"   on hrpg_guild_progress for select using (true);
+//   create policy "prog_upd"    on hrpg_guild_progress for all   using (auth.uid()=user_id) with check (auth.uid()=user_id);
+//   create policy "msg_read"    on hrpg_guild_messages for select using (true);
+//   create policy "msg_ins"     on hrpg_guild_messages for insert with check (auth.uid()=user_id);
+//   -- Enable realtime for guild messages:
+//   alter publication supabase_realtime add table hrpg_guild_messages;
 
 let sbClient = null;
 let sbUser   = null;
@@ -16055,6 +16362,7 @@ function syncCharStrip() {
     inner.innerHTML = '';
     inner.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 40));
   }
+  updateCharacterStateUI();
 }
 
 function setBottomTab(id) {
@@ -16396,6 +16704,554 @@ function addMasteryPoint(source) {
   quickToast('✨', '¡Punto de Maestría!', 'Ve al Árbol de Habilidades');
   var el = document.getElementById('stMPCount');
   if (el) el.textContent = char.masteryPoints;
+}
+
+// ═══════════════════════════════════════════
+// CHARACTER STATE
+// ═══════════════════════════════════════════
+
+function getCharacterState() {
+  var days = loadAllDays(7);
+  if (!days.length) return 'normal';
+
+  var pcts = days.map(function(d){ return getDayMissionStats(d.data).pct; });
+  var avg  = pcts.reduce(function(a,b){ return a+b; }, 0) / pcts.length;
+
+  // Crítico: 3+ consecutive recent days with 0%
+  var zeroDays = 0;
+  for (var i = pcts.length - 1; i >= 0; i--) {
+    if (pcts[i] === 0) zeroDays++;
+    else break;
+  }
+  if (zeroDays >= 3) return 'critico';
+
+  // Check avg sleep hours from last 7 days
+  var sleepVals = days.map(function(d){
+    return parseSleepHours(d.data.bedtime, d.data.waketime);
+  }).filter(function(h){ return h !== null; });
+  var avgSleep = sleepVals.length ? sleepVals.reduce(function(a,b){return a+b;},0) / sleepVals.length : 7;
+
+  if (avg < 40 || avgSleep < 6) return 'cansado';
+
+  // Brillante: all 7 days (minimum 5 days recorded) above 70%
+  if (days.length >= 5 && pcts.every(function(p){ return p >= 70; })) return 'brillante';
+
+  return 'normal';
+}
+
+var _charStateMessages = {
+  brillante: '✨ ¡Me siento increíble! Esta semana fue excepcional.',
+  normal:    '⚔️ Vamos bien. Sigamos construyendo.',
+  cansado:   '😴 Necesito descansar un poco más. Cuídame.',
+  critico:   '🆘 Necesito tu ayuda. Llevamos días sin actuar.'
+};
+
+function showCharStateMsg() {
+  var state = getCharacterState();
+  quickToast(
+    state === 'brillante' ? '✨' : state === 'normal' ? '⚔️' : state === 'cansado' ? '😴' : '🆘',
+    char.name || 'Tu personaje',
+    _charStateMessages[state]
+  );
+}
+
+function updateCharacterStateUI() {
+  var state  = getCharacterState();
+  var wrap   = document.getElementById('csAvatarWrap');
+  var badge  = document.getElementById('csStateBadge');
+  if (!wrap || !badge) return;
+
+  wrap.className = 'cs-avatar-wrap state-' + state;
+  badge.className = 'cs-state-badge state-' + state;
+  var icons = { brillante:'✨', normal:'⚡', cansado:'😴', critico:'🆘' };
+  badge.textContent = icons[state];
+}
+
+// ═══════════════════════════════════════════
+// MENTOR LETTER
+// ═══════════════════════════════════════════
+
+function _getISOWeek(d) {
+  var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  var dayNum = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+  var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return date.getUTCFullYear() + '-W' + String(Math.ceil((((date - yearStart) / 86400000) + 1) / 7)).padStart(2, '0');
+}
+
+function _getLastWeekDays() {
+  var today  = new Date();
+  var result = [];
+  for (var i = 7; i >= 1; i--) {
+    var d = new Date(today);
+    d.setDate(today.getDate() - i);
+    var k = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    result.push(k);
+  }
+  return result;
+}
+
+function generateMentorLetterData() {
+  var keys = _getLastWeekDays();
+  var entries = keys.map(function(k){
+    try { var raw = localStorage.getItem('hrpg_day_'+k); return raw ? { key:k, data:JSON.parse(raw) } : null; }
+    catch(e){ return null; }
+  }).filter(Boolean);
+
+  if (entries.length < 2) return null; // not enough data
+
+  var pcts  = entries.map(function(e){ return getDayMissionStats(e.data).pct; });
+  var avgPct = Math.round(pcts.reduce(function(a,b){return a+b;},0) / pcts.length);
+
+  var bestIdx  = pcts.indexOf(Math.max.apply(null,pcts));
+  var worstIdx = pcts.indexOf(Math.min.apply(null,pcts));
+  var dayNames = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+  function dayName(k) {
+    var d = new Date(k+'T12:00:00');
+    return dayNames[d.getDay()];
+  }
+
+  // Avg wellness from checkin scores
+  var wellScores = entries.map(function(e){
+    var s = 0, n = 0;
+    if (e.data.checkinMorn && e.data.checkinMorn.score) { s += e.data.checkinMorn.score; n++; }
+    if (e.data.checkinEven && e.data.checkinEven.score) { s += e.data.checkinEven.score; n++; }
+    return n ? s/n : null;
+  }).filter(function(v){ return v !== null; });
+  var avgWellness = wellScores.length ? Math.round(wellScores.reduce(function(a,b){return a+b;},0)/wellScores.length*10)/10 : null;
+
+  // Best/worst habit (by completion rate across the week)
+  var habitCount = {};
+  var habitTotal = {};
+  entries.forEach(function(e){
+    (e.data.missions||[]).forEach(function(m){
+      habitCount[m.label] = (habitCount[m.label]||0) + (m.done?1:0);
+      habitTotal[m.label] = (habitTotal[m.label]||0) + 1;
+    });
+  });
+  var habitRates = Object.keys(habitTotal).filter(function(h){ return habitTotal[h] >= 2; }).map(function(h){
+    return { h:h, rate: habitCount[h]/habitTotal[h] };
+  }).sort(function(a,b){ return b.rate - a.rate; });
+  var bestHabit  = habitRates.length ? habitRates[0].h : null;
+  var worstHabit = habitRates.length > 1 ? habitRates[habitRates.length-1].h : null;
+
+  // Body text based on avg performance
+  var bodies = {
+    brillante: 'Esta semana ha sido extraordinaria. Has demostrado que cuando decides mostrarte para ti mismo, el mundo entero se acomoda. Cada hábito cumplido fue una pequeña victoria que se acumuló hasta convertirse en algo que vale la pena celebrar. Eso no es casualidad — es el resultado de tus decisiones diarias.',
+    bien: 'Has tenido una semana sólida. No todos los días fueron perfectos, y eso está bien — la perfección no es el objetivo, la consistencia sí lo es. Lo que más me importa es que seguiste apareciendo. Eso es lo que construye el carácter.',
+    regular: 'Esta semana tuvo sus desafíos. Algunos días fueron difíciles y la energía no acompañó. Pero algo en ti siguió intentándolo, y eso tiene mucho valor. No subestimes el esfuerzo invisible que hiciste en los días difíciles — ese también cuenta.',
+    dificil: 'Sé que esta semana no fue fácil. Hay momentos en que el cuerpo y la mente nos piden que bajemos el ritmo. Eso también es información importante: algo necesita atención. Mi función no es juzgarte — es estar aquí contigo y ayudarte a encontrar el camino de regreso.'
+  };
+  var bodyKey = avgPct >= 70 ? 'brillante' : avgPct >= 50 ? 'bien' : avgPct >= 30 ? 'regular' : 'dificil';
+
+  var reflections = [
+    'La consistencia supera a la intensidad. No se trata de dar el 100% cada día — sino de aparecer cada día con lo que tienes disponible.',
+    'En psicología llamamos "distorsión todo-o-nada" a creer que un mal día significa fracaso. El progreso real no es lineal: tiene altos, bajos y mesetas.',
+    'Cada vez que repetís un hábito, el camino neuronal se vuelve más ancho y más automático. Incluso los días difíciles dejan huella positiva en tu cerebro.',
+    'El descanso no es el opuesto del progreso — es parte fundamental de él. Tu sistema nervioso necesita pausas para consolidar lo aprendido.',
+    'La autocompasión no es debilidad: es la base desde la cual uno puede seguir intentando. Trátate como tratarías a alguien que quieres mucho.'
+  ];
+  var challenges = [
+    'Esta semana: elige un hábito que te cueste y hazlo lo primero de la mañana durante 3 días seguidos.',
+    'Esta semana: escribe en el diario cada noche, aunque sea una sola frase. La reflexión diaria cambia cómo procesas el día.',
+    'Esta semana: cuando sientas ganas de saltear un hábito, pausá 5 segundos antes de decidir. Ese espacio es tuyo.',
+    'Esta semana: celebra en voz alta (o por escrito) cada hábito que completes. El elogio interno construye motivación genuina.',
+    'Esta semana: comparte tu progreso con alguien de confianza. La responsabilidad social potencia los hábitos de manera notable.'
+  ];
+
+  var seed = avgPct + entries.length;
+  var reflection = reflections[seed % reflections.length];
+  var challenge  = challenges[(seed + 1) % challenges.length];
+
+  return {
+    avgPct:     avgPct,
+    bestDay:    entries.length > bestIdx  ? dayName(entries[bestIdx].key)  : '—',
+    worstDay:   entries.length > worstIdx ? dayName(entries[worstIdx].key) : '—',
+    bestPct:    pcts[bestIdx]  || 0,
+    worstPct:   pcts[worstIdx] || 0,
+    avgWellness:avgWellness,
+    bestHabit:  bestHabit,
+    worstHabit: worstHabit,
+    body:       bodies[bodyKey],
+    reflection: reflection,
+    challenge:  challenge,
+    weekKey:    _getISOWeek(new Date()),
+    daysCount:  entries.length
+  };
+}
+
+var _mentorLetterData = null;
+
+function openMentorLetter(data) {
+  _mentorLetterData = data;
+  var el = document.getElementById('mentorOverlay');
+  if (!el) return;
+
+  var wellStr = data.avgWellness !== null ? data.avgWellness + '/5' : 'Sin datos';
+  var bestH   = data.bestHabit  ? '"' + data.bestHabit  + '"' : 'Sin datos suficientes';
+  var worstH  = data.worstHabit ? '"' + data.worstHabit + '"' : 'Sin datos suficientes';
+
+  document.getElementById('mentorLetterContent').innerHTML =
+    '<div class="mentor-seal">🦉</div>'
+    + '<div class="mentor-letter-title">Carta del Mentor · El Guía</div>'
+    + '<div class="mentor-letter-week">Semana del ' + data.weekKey + ' · ' + data.daysCount + ' días registrados</div>'
+    + '<div class="mentor-letter-stats">'
+    +   '<div class="mentor-stat-card"><div class="mentor-stat-val">' + data.avgPct + '%</div><div class="mentor-stat-lbl">Promedio semanal</div></div>'
+    +   '<div class="mentor-stat-card"><div class="mentor-stat-val">' + wellStr + '</div><div class="mentor-stat-lbl">Bienestar promedio</div></div>'
+    +   '<div class="mentor-stat-card"><div class="mentor-stat-val">🌟 ' + data.bestDay + ' (' + data.bestPct + '%)</div><div class="mentor-stat-lbl">Mejor día</div></div>'
+    +   '<div class="mentor-stat-card"><div class="mentor-stat-val">💪 ' + data.worstDay + ' (' + data.worstPct + '%)</div><div class="mentor-stat-lbl">Día más difícil</div></div>'
+    + '</div>'
+    + '<div class="mentor-letter-body">'
+    +   '<div class="mentor-letter-greeting">Querido ' + (char.name || 'aventurero') + ',</div>'
+    +   '<div class="mentor-letter-para">' + data.body + '</div>'
+    + (bestH !== 'Sin datos suficientes' ? '<div class="mentor-letter-para">Tu hábito más consistente fue ' + bestH + ' — eso habla de tus prioridades reales.</div>' : '')
+    +   '<div class="mentor-letter-reflection">💭 ' + data.reflection + '</div>'
+    +   '<div class="mentor-letter-challenge"><div class="mentor-letter-challenge-ttl">✦ Desafío de la semana</div><div class="mentor-letter-challenge-txt">' + data.challenge + '</div></div>'
+    + '</div>'
+    + '<div class="mentor-letter-sign">Con cariño y confianza,<br>— El Guía 🦉</div>'
+    + '<div class="mentor-letter-btns">'
+    +   '<button class="mentor-btn-diary" onclick="saveMentorLetterToDiary()">📖 Guardar en Diario</button>'
+    +   '<button class="mentor-btn-close" onclick="closeMentorLetter()">Cerrar</button>'
+    + '</div>';
+
+  el.classList.add('open');
+}
+
+function closeMentorLetter() {
+  var el = document.getElementById('mentorOverlay');
+  if (el) el.classList.remove('open');
+}
+
+function saveMentorLetterToDiary() {
+  if (!_mentorLetterData) return;
+  var d   = _mentorLetterData;
+  var journal = getJournal();
+  var key = 'mentor_' + d.weekKey;
+  if (!journal.find(function(e){ return e.date === key; })) {
+    journal.unshift({
+      date: key,
+      dayFeeling: '📜 Carta del Mentor — ' + d.weekKey
+        + '\n\n' + d.body
+        + '\n\n💭 ' + d.reflection
+        + '\n\n✦ Desafío: ' + d.challenge,
+      learned: 'Promedio semanal: ' + d.avgPct + '% | Mejor día: ' + d.bestDay + ' (' + d.bestPct + '%)',
+      extra: '',
+      savedAt: Date.now(),
+      isMentorLetter: true
+    });
+    saveJournal(journal);
+    quickToast('📖', 'Guardado en el Diario', 'Puedes releer la carta en tu historial');
+  }
+  closeMentorLetter();
+}
+
+function checkAndShowMentorLetter() {
+  var today = new Date();
+  if (today.getDay() !== 1) return; // Only on Monday
+  var weekKey = _getISOWeek(today);
+  var shownKey = 'hrpg_mentor_shown_' + weekKey;
+  if (localStorage.getItem(shownKey)) return; // Already shown this week
+  var data = generateMentorLetterData();
+  if (!data) return;
+  localStorage.setItem(shownKey, '1');
+  setTimeout(function(){ openMentorLetter(data); }, 2200); // Short delay after load
+}
+
+// ═══════════════════════════════════════════
+// GREMIO
+// ═══════════════════════════════════════════
+
+var _guildData   = null; // current guild record
+var _guildRealtime = null;
+
+function _guildCode() {
+  return (char.guildId || null);
+}
+
+async function openGuild() {
+  closeMoreDrawer();
+  document.getElementById('guildOverlay').classList.add('open');
+  await _guildLoad();
+}
+function closeGuild() {
+  document.getElementById('guildOverlay').classList.remove('open');
+  if (_guildRealtime) { try { _guildRealtime.unsubscribe(); } catch(e){} _guildRealtime = null; }
+}
+
+async function _guildLoad() {
+  var body = document.getElementById('guildBody');
+  if (!body) return;
+
+  if (!sbClient || !sbUser) {
+    body.innerHTML = '<div class="guild-welcome"><div class="guild-welcome-icon">🔒</div><div class="guild-welcome-title">Inicia sesión</div><div class="guild-welcome-sub">Necesitas una cuenta para unirte a un gremio y competir con amigos.</div></div>';
+    return;
+  }
+
+  if (!char.guildId) {
+    _guildShowWelcome();
+    return;
+  }
+
+  // Load guild from Supabase
+  try {
+    var res = await sbClient.from('hrpg_guilds').select('*').eq('id', char.guildId).single();
+    if (res.error || !res.data) { char.guildId = null; saveChar(); _guildShowWelcome(); return; }
+    _guildData = res.data;
+    await _guildRender();
+  } catch(e) {
+    body.innerHTML = '<div class="guild-welcome"><div class="guild-welcome-sub">Error cargando el gremio. Intenta de nuevo.</div></div>';
+  }
+}
+
+function _guildShowWelcome(mode) {
+  var body = document.getElementById('guildBody');
+  if (!mode) {
+    body.innerHTML = '<div class="guild-welcome">'
+      + '<div class="guild-welcome-icon">⚔️</div>'
+      + '<div class="guild-welcome-title">Gremio</div>'
+      + '<div class="guild-welcome-sub">Compite semanalmente con hasta 4 amigos. El que más hábitos cumpla gana un ítem especial de gremio.</div>'
+      + '<div class="guild-welcome-btns">'
+      + '<button class="guild-btn-create" onclick="_guildShowWelcome(\'create\')">✦ Crear Gremio</button>'
+      + '<button class="guild-btn-join"   onclick="_guildShowWelcome(\'join\')">Unirse con código</button>'
+      + '</div></div>';
+  } else if (mode === 'create') {
+    body.innerHTML = '<div class="guild-body"><div class="guild-form-card">'
+      + '<div class="guild-form-title">Crear Gremio</div>'
+      + '<input class="guild-input" id="guildNameInput" placeholder="Nombre del gremio" maxlength="28"/>'
+      + '<button class="guild-form-submit" onclick="_guildCreate()">Crear</button>'
+      + '<button class="guild-cancel-btn" onclick="_guildShowWelcome()">Cancelar</button>'
+      + '</div></div>';
+  } else if (mode === 'join') {
+    body.innerHTML = '<div class="guild-body"><div class="guild-form-card">'
+      + '<div class="guild-form-title">Unirse a un Gremio</div>'
+      + '<input class="guild-input" id="guildCodeInput" placeholder="Código de 6 letras" maxlength="6" style="text-transform:uppercase"/>'
+      + '<button class="guild-form-submit" onclick="_guildJoin()">Unirse</button>'
+      + '<button class="guild-cancel-btn" onclick="_guildShowWelcome()">Cancelar</button>'
+      + '</div></div>';
+  }
+}
+
+function _guildMakeCode() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code = '';
+  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+async function _guildCreate() {
+  var nameEl = document.getElementById('guildNameInput');
+  var name = (nameEl ? nameEl.value.trim() : '');
+  if (!name) { quickToast('⚠️','Nombre requerido','Escribe un nombre para tu gremio'); return; }
+  if (!sbClient || !sbUser) return;
+
+  var code = _guildMakeCode();
+  try {
+    var res = await sbClient.from('hrpg_guilds').insert({
+      name: name, code: code, created_by: sbUser.id
+    }).select().single();
+    if (res.error) throw res.error;
+    _guildData = res.data;
+    await sbClient.from('hrpg_guild_members').insert({
+      guild_id: res.data.id, user_id: sbUser.id,
+      display_name: char.name || 'Aventurero', char_class: char.class || 'guerrero'
+    });
+    char.guildId = res.data.id;
+    saveChar();
+    await _guildRender();
+    quickToast('⚔️', '¡Gremio creado!', 'Código: ' + code + ' — compártelo con tus amigos');
+  } catch(e) {
+    quickToast('❌', 'Error', e.message || 'No se pudo crear el gremio');
+  }
+}
+
+async function _guildJoin() {
+  var codeEl = document.getElementById('guildCodeInput');
+  var code = (codeEl ? codeEl.value.trim().toUpperCase() : '');
+  if (code.length !== 6) { quickToast('⚠️','Código inválido','El código debe tener 6 caracteres'); return; }
+  if (!sbClient || !sbUser) return;
+
+  try {
+    var res = await sbClient.from('hrpg_guilds').select('*').eq('code', code).single();
+    if (res.error || !res.data) { quickToast('❌','Gremio no encontrado','Verifica el código e intenta de nuevo'); return; }
+
+    // Check member count
+    var countRes = await sbClient.from('hrpg_guild_members').select('user_id',{count:'exact'}).eq('guild_id',res.data.id);
+    if ((countRes.count || 0) >= 5) { quickToast('❌','Gremio lleno','Este gremio ya tiene 5 miembros'); return; }
+
+    await sbClient.from('hrpg_guild_members').upsert({
+      guild_id: res.data.id, user_id: sbUser.id,
+      display_name: char.name || 'Aventurero', char_class: char.class || 'guerrero'
+    }, { onConflict: 'guild_id,user_id' });
+
+    _guildData = res.data;
+    char.guildId = res.data.id;
+    saveChar();
+    await _guildRender();
+    quickToast('⚔️','¡Unido al gremio!', res.data.name);
+  } catch(e) {
+    quickToast('❌','Error', e.message || 'No se pudo unir al gremio');
+  }
+}
+
+async function _guildRender() {
+  var body   = document.getElementById('guildBody');
+  var hd     = document.getElementById('guildHd');
+  if (!_guildData) return;
+
+  // Update header
+  if (hd) {
+    document.getElementById('guildHdTitle').textContent = _guildData.name;
+    document.getElementById('guildHdCode').textContent  = 'Código: ' + _guildData.code;
+  }
+
+  // Get members + weekly progress
+  var weekStart = _getWeekStart();
+  var weekEnd   = _getWeekEnd();
+
+  var membRes = await sbClient.from('hrpg_guild_members').select('*').eq('guild_id',_guildData.id);
+  var members = membRes.data || [];
+
+  var progRes = await sbClient.from('hrpg_guild_progress')
+    .select('*').eq('guild_id',_guildData.id)
+    .gte('day_key', weekStart).lte('day_key', weekEnd);
+  var progRows = progRes.data || [];
+
+  // Compute week avg per member
+  var memberStats = members.map(function(m) {
+    var rows = progRows.filter(function(r){ return r.user_id === m.user_id; });
+    var avg  = rows.length ? Math.round(rows.reduce(function(a,r){return a+r.day_pct;},0)/rows.length) : 0;
+    return { name:m.display_name, cls:m.char_class, userId:m.user_id, avg:avg, days:rows.length };
+  }).sort(function(a,b){ return b.avg - a.avg; });
+
+  // Load messages
+  var msgRes = await sbClient.from('hrpg_guild_messages')
+    .select('*').eq('guild_id',_guildData.id)
+    .order('created_at',{ascending:true}).limit(50);
+  var messages = msgRes.data || [];
+
+  // Render
+  var rankEmoji = ['🥇','🥈','🥉'];
+  var boardHTML = memberStats.map(function(m, i) {
+    var isMe = sbUser && m.userId === sbUser.id;
+    var rankCls = i < 3 ? 'guild-rank-' + (i+1) : 'guild-rank-n';
+    return '<div class="guild-member-row' + (isMe?' me':'') + '">'
+      + '<div class="guild-rank-badge ' + rankCls + '">' + (i<3?rankEmoji[i]:i+1) + '</div>'
+      + '<div class="guild-member-name">' + m.name + (isMe?' (Tú)':'') + '</div>'
+      + '<div class="guild-member-cls">' + _guildCls(m.cls) + '</div>'
+      + '<div class="guild-member-bar-wrap"><div class="guild-member-bar" style="width:'+m.avg+'%"></div></div>'
+      + '<div class="guild-member-pct">' + m.avg + '%</div>'
+      + '</div>';
+  }).join('');
+
+  var msgsHTML = messages.length ? messages.map(function(msg) {
+    var isMe = sbUser && msg.user_id === sbUser.id;
+    var t = new Date(msg.created_at);
+    var time = t.getHours() + ':' + String(t.getMinutes()).padStart(2,'0');
+    return '<div class="guild-msg' + (isMe?' guild-msg-me':'') + '">'
+      + '<span class="guild-msg-name">' + msg.display_name + '</span>'
+      + '<span class="guild-msg-text">' + _escapeHtml(msg.message) + '</span>'
+      + '<span class="guild-msg-time">' + time + '</span>'
+      + '</div>';
+  }).join('') : '<div style="color:var(--dim);font-size:.7rem;text-align:center;padding:12px">Sé el primero en escribir</div>';
+
+  body.innerHTML = '<div class="guild-section-title">⚔️ Tabla de posiciones — Esta semana</div>'
+    + '<div class="guild-board">' + boardHTML + '</div>'
+    + '<div class="guild-section-title" style="margin-top:4px">💬 Chat del Gremio</div>'
+    + '<div class="guild-chat-box" id="guildChatBox">' + msgsHTML + '</div>'
+    + '<div class="guild-chat-input-row">'
+    + '<input class="guild-chat-input" id="guildChatInput" placeholder="Escribe un mensaje..." maxlength="140" onkeydown="if(event.key===\'Enter\')_guildSendMsg()"/>'
+    + '<button class="guild-chat-send" onclick="_guildSendMsg()">▶</button>'
+    + '</div>';
+
+  // Scroll chat to bottom
+  setTimeout(function(){
+    var cb = document.getElementById('guildChatBox');
+    if (cb) cb.scrollTop = cb.scrollHeight;
+  }, 100);
+
+  // Subscribe to realtime messages
+  if (_guildRealtime) { try { _guildRealtime.unsubscribe(); } catch(e){} }
+  if (sbClient.channel) {
+    _guildRealtime = sbClient.channel('guild_' + _guildData.id)
+      .on('postgres_changes',{ event:'INSERT', schema:'public', table:'hrpg_guild_messages', filter:'guild_id=eq.'+_guildData.id },
+        function(payload) { _guildAppendMsg(payload.new); })
+      .subscribe();
+  }
+}
+
+function _guildCls(cls) {
+  var icons = { guerrero:'⚔️',mago:'🔮',monje:'🥋',asesino:'🗡️',druida:'🌿',barbaro:'🪓',arquero:'🏹' };
+  return icons[cls] || '⚔️';
+}
+
+function _escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function _guildAppendMsg(msg) {
+  var box = document.getElementById('guildChatBox');
+  if (!box) return;
+  var isMe = sbUser && msg.user_id === sbUser.id;
+  var t = new Date(msg.created_at);
+  var time = t.getHours() + ':' + String(t.getMinutes()).padStart(2,'0');
+  var div = document.createElement('div');
+  div.className = 'guild-msg' + (isMe?' guild-msg-me':'');
+  div.innerHTML = '<span class="guild-msg-name">' + msg.display_name + '</span>'
+    + '<span class="guild-msg-text">' + _escapeHtml(msg.message) + '</span>'
+    + '<span class="guild-msg-time">' + time + '</span>';
+  // Remove empty placeholder if present
+  var empty = box.querySelector('div[style]');
+  if (empty) empty.remove();
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+async function _guildSendMsg() {
+  var inp = document.getElementById('guildChatInput');
+  if (!inp || !sbClient || !sbUser || !char.guildId) return;
+  var text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  try {
+    await sbClient.from('hrpg_guild_messages').insert({
+      guild_id: char.guildId, user_id: sbUser.id,
+      display_name: char.name || 'Aventurero', message: text
+    });
+  } catch(e) { quickToast('❌','Error','No se pudo enviar el mensaje'); }
+}
+
+function _getWeekStart() {
+  var d = new Date();
+  var day = d.getDay() || 7;
+  d.setDate(d.getDate() - day + 1);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function _getWeekEnd() {
+  var d = new Date();
+  var day = d.getDay() || 7;
+  d.setDate(d.getDate() - day + 7);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+async function guildSyncProgress() {
+  if (!sbClient || !sbUser || !char.guildId) return;
+  var todayData = loadDay(todayKey());
+  var pct = getDayMissionStats(todayData).pct;
+  try {
+    await sbClient.from('hrpg_guild_progress').upsert({
+      guild_id: char.guildId, user_id: sbUser.id, day_key: todayKey(), day_pct: pct
+    }, { onConflict: 'guild_id,user_id,day_key' });
+  } catch(e) {}
+}
+
+function _guildCopyCode() {
+  if (!_guildData) return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(_guildData.code).then(function(){
+      quickToast('📋','Código copiado',_guildData.code + ' — compártelo con tus amigos');
+    });
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -17012,6 +17868,7 @@ function stResetTree() {
 }
 
 setBottomTab('bnHome');
+try { checkAndShowMentorLetter(); } catch(e) {}
 
 // ── Start: check auth session or go guest ──
 initAuth();
@@ -17030,6 +17887,25 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
   <div class="ib-btns">
     <button class="ib-install" id="ibInstallBtn" onclick="_pwaInstall()">Instalar</button>
     <button class="ib-dismiss" id="ibDismissBtn" onclick="_pwaHideBanner();localStorage.setItem('pwa_banner_dismissed','1')">Ahora no</button>
+  </div>
+</div>
+
+<!-- ── MENTOR LETTER OVERLAY ── -->
+<div class="mentor-overlay" id="mentorOverlay" onclick="if(event.target===this)closeMentorLetter()">
+  <div class="mentor-letter">
+    <div id="mentorLetterContent"></div>
+  </div>
+</div>
+
+<!-- ── GUILD OVERLAY ── -->
+<div class="guild-overlay" id="guildOverlay">
+  <div class="guild-wrap">
+    <div class="guild-hd" id="guildHd">
+      <button class="guild-back" onclick="closeGuild()">←</button>
+      <span class="guild-hd-title" id="guildHdTitle">Gremio</span>
+      <span class="guild-hd-code" id="guildHdCode" onclick="_guildCopyCode()"></span>
+    </div>
+    <div class="guild-body" id="guildBody"></div>
   </div>
 </div>
 
@@ -17117,6 +17993,10 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
     <button class="more-item" onclick="openSkillTree()">
       <span class="more-item-icon">🌟</span>
       <span class="more-item-label">Árbol</span>
+    </button>
+    <button class="more-item" onclick="openGuild()">
+      <span class="more-item-icon">⚔️</span>
+      <span class="more-item-label">Gremio</span>
     </button>
   </div>
 </div>
