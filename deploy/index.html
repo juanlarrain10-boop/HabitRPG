@@ -3977,6 +3977,96 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 .pwa-status { font-size: .59rem; color: var(--mut); margin-top: -4px; margin-bottom: 6px; }
 .pwa-big-btn { width: 100%; padding: 11px; background: linear-gradient(135deg, #5b21b6, #7c3aed); color: #fff; border: none; border-radius: 11px; font-family: inherit; font-size: .72rem; font-weight: 700; cursor: pointer; touch-action: manipulation; }
 .pwa-big-btn:disabled { opacity: .45; cursor: default; }
+
+/* ══════ SKILL TREE ══════ */
+.st-overlay {
+  position: fixed; inset: 0; z-index: 950;
+  max-width: 480px; margin: 0 auto;
+  display: flex; flex-direction: column;
+  background: #030309;
+  background-image:
+    radial-gradient(1px 1px at 5% 12%,  rgba(255,255,255,.55) 0%,transparent 100%),
+    radial-gradient(1px 1px at 18% 68%, rgba(255,255,255,.45) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 33% 30%, rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 47% 85%, rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 62% 10%, rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 75% 55%, rgba(255,255,255,.55) 0%,transparent 100%),
+    radial-gradient(1px 1px at 88% 32%, rgba(255,255,255,.45) 0%,transparent 100%),
+    radial-gradient(1px 1px at 12% 90%, rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 55% 48%, rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 93% 78%, rgba(255,255,255,.5) 0%,transparent 100%),
+    #030309;
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.25,.46,.45,.94);
+}
+.st-overlay.open { transform: translateX(0); }
+.st-header {
+  flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+  padding: 14px 14px 8px;
+  background: rgba(3,3,9,.85);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.st-back {
+  background: rgba(255,255,255,.08); border: none; border-radius: 8px;
+  color: #e2e8f0; font-size: 1rem; width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.st-back:active { background: rgba(255,255,255,.15); }
+.st-title { font-family: var(--pxfont); font-size: .52rem; letter-spacing: .1em; color: #c4b5fd; flex: 1; }
+.st-mp {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(124,58,237,.2); border: 1px solid rgba(167,139,250,.35);
+  border-radius: 10px; padding: 5px 12px;
+  font-size: .72rem; font-weight: 700; color: #a78bfa;
+}
+.st-tabs {
+  flex-shrink: 0; display: flex; gap: 4px; overflow-x: auto;
+  padding: 7px 10px 5px; border-bottom: 1px solid rgba(255,255,255,.06);
+  scrollbar-width: none;
+}
+.st-tabs::-webkit-scrollbar { display: none; }
+.st-tab {
+  flex-shrink: 0; padding: 5px 12px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04);
+  color: var(--dim); font-size: .52rem; font-family: var(--pxfont);
+  letter-spacing: .05em; cursor: pointer;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: all .15s; white-space: nowrap;
+}
+.st-tab.active { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); color: #fff; }
+.st-wrap {
+  flex: 1; overflow: auto; position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+.st-svg { display: block; }
+.st-panel {
+  flex-shrink: 0; background: rgba(3,3,9,.97);
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding: 14px 16px calc(env(safe-area-inset-bottom, 0px) + 12px);
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height .25s ease, opacity .2s ease;
+}
+.st-panel.open { max-height: 260px; opacity: 1; }
+.st-dp-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.st-dp-icon { font-size: 1.6rem; line-height: 1; }
+.st-dp-info { flex: 1; }
+.st-dp-name { font-family: var(--pxfont); font-size: .56rem; letter-spacing: .06em; margin-bottom: 3px; }
+.st-dp-zone { font-size: .62rem; color: var(--dim); }
+.st-dp-desc { font-size: .78rem; line-height: 1.55; color: var(--txt); margin-bottom: 10px; }
+.st-dp-foot { display: flex; align-items: center; gap: 10px; }
+.st-dp-cost { font-size: .7rem; color: #a78bfa; flex: 1; }
+.st-dp-btn {
+  padding: 10px 18px; border-radius: 10px; border: none; font-family: var(--pxfont);
+  font-size: .5rem; letter-spacing: .06em; cursor: pointer;
+  touch-action: manipulation; white-space: nowrap;
+}
+.st-dp-btn.can  { background: linear-gradient(135deg,#5b21b6,#7c3aed); color: #fff; }
+.st-dp-btn.done { background: rgba(52,211,153,.15); border: 1px solid rgba(52,211,153,.4); color: #34d399; cursor: default; }
+.st-dp-btn.no   { background: rgba(255,255,255,.06); color: var(--dim); cursor: default; }
+.st-bottom-row { flex-shrink: 0; display: flex; justify-content: flex-end; padding: 5px 14px 6px; }
+.st-reset { padding: 6px 13px; border-radius: 8px; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: #f87171; font-size: .6rem; cursor: pointer; touch-action: manipulation; }
 </style>
 </head>
 <body>
@@ -8427,6 +8517,8 @@ function defChar() {
     onboarding: { occupation:'', living:'', goal:'', areas:[], lifestyle:'', consistency:'', mental:'' },
     onboardingDone: false,
     dailyDungeonHistory: { totalCompleted: 0, bestTier: null },
+    masteryPoints: 0,
+    skillTree: {},
   };
 }
 
@@ -8588,6 +8680,8 @@ function loadChar() {
     if (!c.subclassDayChecks || typeof c.subclassDayChecks !== 'object') c.subclassDayChecks = {};
     if (!c.crisisStreak || typeof c.crisisStreak !== 'object') c.crisisStreak = { count:0, lastDate:'' };
     if (!c.dailyDungeonHistory || typeof c.dailyDungeonHistory !== 'object') c.dailyDungeonHistory = { totalCompleted:0, bestTier:null };
+    if (typeof c.masteryPoints !== 'number') c.masteryPoints = 0;
+    if (!c.skillTree || typeof c.skillTree !== 'object') c.skillTree = {};
     return c;
   } catch { return defChar(); }
 }
@@ -8666,6 +8760,7 @@ function checkLevelUp() {
     checkPetUnlock();
     checkAllSubclassUnlocks();
     SFX.levelUp();
+    addMasteryPoint('level');
     pwaNotify('⬆️ ¡Subiste al nivel ' + char.level + '!', '¡Felicidades, aventurero! Nuevo nivel desbloqueado.', 'levelup');
     // Milestone tracking
     if (char.level === 2) addMilestone('first_level', 'Primera subida de nivel', '⬆️');
@@ -13395,6 +13490,7 @@ function updateHabitStreak() {
   if (char.habitStreak.lastDate === cur) return;
   char.habitStreak.count = char.habitStreak.lastDate === yst ? char.habitStreak.count + 1 : 1;
   char.habitStreak.lastDate = cur;
+  if (char.habitStreak.count % 7 === 0) addMasteryPoint('streak');
   saveChar();
   checkAchievement('racha_fuego');
   checkAchievement('dia_perfecto');
@@ -16290,6 +16386,631 @@ _pwaUpdateInstallButtons();
 _pwaInitNotifUI();
 _pwaScheduleReminder();
 
+// ═══════════════════════════════════════════
+// MASTERY POINTS
+// ═══════════════════════════════════════════
+
+function addMasteryPoint(source) {
+  char.masteryPoints = (char.masteryPoints || 0) + 1;
+  saveChar();
+  quickToast('✨', '¡Punto de Maestría!', 'Ve al Árbol de Habilidades');
+  var el = document.getElementById('stMPCount');
+  if (el) el.textContent = char.masteryPoints;
+}
+
+// ═══════════════════════════════════════════
+// SKILL TREE
+// ═══════════════════════════════════════════
+
+const _SP = {
+  z1: [[75,58],[155,112],[75,175],[155,235],[75,300],[155,360],[75,420],[155,472],[82,528],[155,532],[108,582]],
+  z2: [[385,58],[305,112],[385,175],[305,235],[385,300],[305,360],[385,420],[305,472],[378,528],[305,532],[352,582]],
+  zc: [[165,606],[230,624],[295,606]],
+  z3: [[150,668],[310,668],[230,722],[145,782],[315,782],[230,838],[230,892],[155,942],[305,942],[230,990],[230,1040]]
+};
+
+const SKILL_TREE_DATA = (function() {
+  function buildZ1(prefix, nodes) {
+    const ids = nodes.map(function(_,i){ return prefix+'_z1n'+i; });
+    return nodes.map(function(n,i){
+      const pos = _SP.z1[i];
+      return Object.assign({ id:ids[i], x:pos[0], y:pos[1], req: i===0?[]:[ids[i-1]] }, n);
+    });
+  }
+  function buildZ2(prefix, nodes) {
+    const ids = nodes.map(function(_,i){ return prefix+'_z2n'+i; });
+    return nodes.map(function(n,i){
+      const pos = _SP.z2[i];
+      return Object.assign({ id:ids[i], x:pos[0], y:pos[1], req: i===0?[]:[ids[i-1]] }, n);
+    });
+  }
+  function buildZC(prefix, nodes, z1uid, z2uid) {
+    const ids = [prefix+'_cr0', prefix+'_cr1', prefix+'_cr2'];
+    return [
+      Object.assign({ id:ids[0], x:_SP.zc[0][0], y:_SP.zc[0][1], req:[z1uid], connects:[ids[1]] }, nodes[0]),
+      Object.assign({ id:ids[1], x:_SP.zc[1][0], y:_SP.zc[1][1], req:[], reqTotal:12, connects:[ids[0],ids[2]] }, nodes[1]),
+      Object.assign({ id:ids[2], x:_SP.zc[2][0], y:_SP.zc[2][1], req:[z2uid], connects:[ids[1]] }, nodes[2]),
+    ];
+  }
+  function buildZ3(prefix, nodes, c0id, c2id) {
+    const ids = nodes.map(function(_,i){ return prefix+'_z3n'+i; });
+    return nodes.map(function(n,i){
+      const pos = _SP.z3[i];
+      var req=[], reqAny;
+      if      (i===0)  req=[c0id];
+      else if (i===1)  req=[c2id];
+      else if (i===2) {req=[];reqAny=[ids[0],ids[1]];}
+      else if (i===3)  req=[ids[2]];
+      else if (i===4)  req=[ids[2]];
+      else if (i===5)  req=[ids[3],ids[4]];
+      else if (i===6)  req=[ids[5]];
+      else if (i===7)  req=[ids[6]];
+      else if (i===8)  req=[ids[6]];
+      else if (i===9) {req=[];reqAny=[ids[7],ids[8]];}
+      else if (i===10) req=[ids[9]];
+      var obj = Object.assign({ id:ids[i], x:pos[0], y:pos[1], req:req }, n);
+      if (reqAny) obj.reqAny = reqAny;
+      return obj;
+    });
+  }
+
+  // ─── GUERRERO ───
+  var g1 = buildZ1('g',[
+    {name:'+10% Ataque',         icon:'⚔️',type:'stat',   cost:1,desc:'Tus ataques físicos aumentan un 10% permanentemente.'},
+    {name:'+15 HP Máximo',       icon:'❤️',type:'stat',   cost:1,desc:'Tu vida máxima aumenta en 15 puntos.'},
+    {name:'Golpe Sagrado',       icon:'✨',type:'skill',  cost:2,desc:'Ataque que cura el 10% de tu HP al impactar.'},
+    {name:'+10% Defensa',        icon:'🛡️',type:'stat',   cost:1,desc:'Tu defensa física aumenta un 10%.'},
+    {name:'Aura de Luz',         icon:'💫',type:'skill',  cost:2,desc:'Reduces el daño recibido un 15% durante 3 turnos.'},
+    {name:'+20 HP Máximo',       icon:'❤️',type:'stat',   cost:1,desc:'Tu vida máxima aumenta 20 puntos más.'},
+    {name:'Bendición',           icon:'🙏',type:'skill',  cost:2,desc:'Cura el 30% de tu HP máximo al instante.'},
+    {name:'+10% Resist. Mágica', icon:'🔮',type:'stat',   cost:1,desc:'Resistencia mágica aumentada un 10%.'},
+    {name:'Escudo Divino',       icon:'🌟',type:'skill',  cost:3,desc:'Eres inmune al próximo ataque que recibirías.'},
+    {name:'+15% Ataque',         icon:'⚔️',type:'stat',   cost:1,desc:'Potencia de ataque físico aumentada un 15% más.'},
+    {name:'Juicio Divino',       icon:'☀️',type:'ultimate',cost:5,desc:'ULTIMATE PALADÍN — Golpe devastador que inflige daño masivo y restaura todo tu HP.'},
+  ]);
+  var g2 = buildZ2('g',[
+    {name:'+15% Ataque',         icon:'⚔️',type:'stat',   cost:1,desc:'Poder de ataque aumentado un 15%.'},
+    {name:'+10% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Velocidad de combate aumentada un 10%.'},
+    {name:'Furia',               icon:'🔥',type:'skill',  cost:2,desc:'Daño +25% pero defensa −15% durante 3 turnos.'},
+    {name:'+10% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Probabilidad de golpe crítico aumentada un 10%.'},
+    {name:'Sed de Sangre',       icon:'🩸',type:'skill',  cost:2,desc:'Recuperas el 15% de tu HP al eliminar un enemigo.'},
+    {name:'+20% Ataque',         icon:'⚔️',type:'stat',   cost:1,desc:'Potencia de ataque físico aumentada un 20% más.'},
+    {name:'Modo Berserker',      icon:'💥',type:'skill',  cost:3,desc:'Tu daño se duplica durante 2 turnos.'},
+    {name:'+15% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Probabilidad de crítico aumentada un 15% adicional.'},
+    {name:'Instinto Animal',     icon:'🐺',type:'skill',  cost:2,desc:'Tu evasión aumenta un 25% durante 2 turnos.'},
+    {name:'+10% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Velocidad adicional aumentada un 10%.'},
+    {name:'Apocalipsis',         icon:'💀',type:'ultimate',cost:5,desc:'ULTIMATE BERSERKER — Atacas 5 veces seguidas con daño completo.'},
+  ]);
+  var gc = buildZC('g',[
+    {name:'+10% Todos los Stats',icon:'✨',type:'cross',  cost:2,desc:'Todos tus stats base aumentan un 10% permanentemente.'},
+    {name:'Grito de Guerra',     icon:'📣',type:'cross',  cost:3,desc:'Ataque y defensa aumentan 20% durante 2 turnos.'},
+    {name:'+15% HP Máximo',      icon:'❤️',type:'cross',  cost:2,desc:'Tu HP máximo total aumenta un 15%.'},
+  ],'g_z1n10','g_z2n10');
+  var g3 = buildZ3('g',[
+    {name:'+20 HP Máximo',       icon:'❤️',type:'stat',   cost:1,desc:'Vida máxima aumentada en 20 puntos.'},
+    {name:'+15% Defensa',        icon:'🛡️',type:'stat',   cost:1,desc:'Defensa física aumentada un 15%.'},
+    {name:'Fortaleza',           icon:'🏰',type:'skill',  cost:2,desc:'Tu defensa aumenta un 40% durante 3 turnos.'},
+    {name:'+10% Resistencia',    icon:'🔰',type:'stat',   cost:1,desc:'Resistencia general aumentada un 10%.'},
+    {name:'Provocar',            icon:'😤',type:'skill',  cost:2,desc:'Los enemigos solo pueden atacarte a ti durante 2 turnos.'},
+    {name:'+25 HP Máximo',       icon:'❤️',type:'stat',   cost:1,desc:'Vida máxima aumentada 25 puntos más.'},
+    {name:'Muro de Acero',       icon:'🧱',type:'skill',  cost:3,desc:'Absorbes completamente el próximo ataque que recibas.'},
+    {name:'+20% Defensa',        icon:'🛡️',type:'stat',   cost:1,desc:'Defensa física aumentada un 20% adicional.'},
+    {name:'Contraataque',        icon:'🔄',type:'skill',  cost:2,desc:'Devuelves el 50% del daño recibido al atacante.'},
+    {name:'+30 HP Máximo',       icon:'❤️',type:'stat',   cost:1,desc:'Vida máxima aumentada 30 puntos más.'},
+    {name:'Indestructible',      icon:'💎',type:'ultimate',cost:5,desc:'ULTIMATE TANQUE — No puedes morir durante 2 turnos completos.'},
+  ],'g_cr0','g_cr2');
+
+  // ─── MAGO ───
+  var m1 = buildZ1('m',[
+    {name:'+15% Magia',          icon:'🔮',type:'stat',   cost:1,desc:'Tu poder mágico aumenta un 15%.'},
+    {name:'+10% Crítico Mágico', icon:'⚡',type:'stat',   cost:1,desc:'Probabilidad de crítico mágico aumentada un 10%.'},
+    {name:'Bola de Fuego Mej.',  icon:'🔥',type:'skill',  cost:2,desc:'Tu Bola de Fuego inflige un 30% más de daño.'},
+    {name:'+10% Penetr. Mágica', icon:'🌋',type:'stat',   cost:1,desc:'Penetración mágica aumentada un 10%.'},
+    {name:'Combustión',          icon:'🌡️',type:'skill',  cost:2,desc:'El enemigo arde durante 3 turnos adicionales.'},
+    {name:'+20% Magia',          icon:'🔮',type:'stat',   cost:1,desc:'Poder mágico aumentado un 20% más.'},
+    {name:'Explosión Ígnea',     icon:'💥',type:'skill',  cost:3,desc:'Inflige daño de fuego en área a todos los enemigos.'},
+    {name:'+15% Crítico Mágico', icon:'⚡',type:'stat',   cost:1,desc:'Crítico mágico aumentado un 15% adicional.'},
+    {name:'Meteorito',           icon:'☄️',type:'skill',  cost:2,desc:'Invoca un meteorito que inflige daño masivo de fuego.'},
+    {name:'+10% Magia',          icon:'🔮',type:'stat',   cost:1,desc:'Poder mágico aumentado un 10% más.'},
+    {name:'Nova Solar',          icon:'☀️',type:'ultimate',cost:5,desc:'ULTIMATE FUEGO — Destruye a todos los enemigos con menos del 30% de HP con una explosión solar.'},
+  ]);
+  var m2 = buildZ2('m',[
+    {name:'+10% Defensa Mágica', icon:'🧊',type:'stat',   cost:1,desc:'Tu defensa mágica aumenta un 10%.'},
+    {name:'+15% Magia',          icon:'🔮',type:'stat',   cost:1,desc:'Poder mágico aumentado un 15%.'},
+    {name:'Ventisca',            icon:'❄️',type:'skill',  cost:2,desc:'Congela al enemigo durante 1 turno.'},
+    {name:'+10% Resistencia',    icon:'🔰',type:'stat',   cost:1,desc:'Resistencia general aumentada un 10%.'},
+    {name:'Armadura de Hielo',   icon:'🧊',type:'skill',  cost:2,desc:'Reduces el daño recibido un 20%.'},
+    {name:'+20% Defensa Mágica', icon:'🧊',type:'stat',   cost:1,desc:'Defensa mágica aumentada un 20% más.'},
+    {name:'Tormenta de Hielo',   icon:'🌨️',type:'skill',  cost:3,desc:'Ralentiza todos los enemigos simultáneamente.'},
+    {name:'+15% Magia',          icon:'🔮',type:'stat',   cost:1,desc:'Poder mágico aumentado un 15% adicional.'},
+    {name:'Congelación Profunda',icon:'🧊',type:'skill',  cost:2,desc:'El enemigo no puede actuar durante 2 turnos.'},
+    {name:'+10% Defensa Mágica', icon:'🧊',type:'stat',   cost:1,desc:'Defensa mágica adicional aumentada un 10%.'},
+    {name:'Glaciar Eterno',      icon:'💙',type:'ultimate',cost:5,desc:'ULTIMATE HIELO — Congela a todos los enemigos durante 3 turnos completos.'},
+  ]);
+  var mc = buildZC('m',[
+    {name:'+10% Toda la Magia',  icon:'✨',type:'cross',  cost:2,desc:'Todo tu poder mágico aumenta un 10% permanentemente.'},
+    {name:'Escudo Arcano Mej.',  icon:'🛡️',type:'cross',  cost:3,desc:'Tu escudo arcano absorbe el 50% más de daño.'},
+    {name:'+15% Maná',           icon:'💧',type:'cross',  cost:2,desc:'Tu maná máximo aumenta un 15%.'},
+  ],'m_z1n10','m_z2n10');
+  var m3 = buildZ3('m',[
+    {name:'+10% Magia Oscura',   icon:'🌑',type:'stat',   cost:1,desc:'Tu magia oscura aumenta un 10%.'},
+    {name:'+15% HP',             icon:'❤️',type:'stat',   cost:1,desc:'Tu vida máxima aumenta un 15%.'},
+    {name:'Pacto Oscuro',        icon:'🔗',type:'skill',  cost:2,desc:'Sacrificas el 20% de tu HP para triplicar tu daño de magia.'},
+    {name:'+10% Penetración',    icon:'🌑',type:'stat',   cost:1,desc:'Penetración aumentada un 10%.'},
+    {name:'Maldición',           icon:'☠️',type:'skill',  cost:2,desc:'Reduce todos los stats del enemigo un 25%.'},
+    {name:'+20% Magia Oscura',   icon:'🌑',type:'stat',   cost:1,desc:'Magia oscura aumentada un 20%.'},
+    {name:'Drenar Vida',         icon:'💜',type:'skill',  cost:3,desc:'Robas HP del enemigo y te lo aplicas a ti mismo.'},
+    {name:'+15% Magia',          icon:'🔮',type:'stat',   cost:1,desc:'Poder mágico aumentado un 15%.'},
+    {name:'Explosión de Alma',   icon:'💀',type:'skill',  cost:2,desc:'Inflige daño basado en el HP máximo del enemigo.'},
+    {name:'+10% Magia Oscura',   icon:'🌑',type:'stat',   cost:1,desc:'Magia oscura adicional aumentada un 10%.'},
+    {name:'Apocalipsis Arcano',  icon:'🌀',type:'ultimate',cost:5,desc:'ULTIMATE BRUJO — Daño devastador que ignora toda defensa y resistencia del enemigo.'},
+  ],'m_cr0','m_cr2');
+
+  // ─── MONJE ───
+  var mn1 = buildZ1('mn',[
+    {name:'+10% Bienestar Mental',icon:'🧘',type:'stat',  cost:1,desc:'Tu stat de bienestar mental aumenta un 10%.'},
+    {name:'+15% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Velocidad aumentada un 15%.'},
+    {name:'Paz Interior',        icon:'🕊️',type:'skill',  cost:2,desc:'Eres inmune a efectos negativos durante 2 turnos.'},
+    {name:'+10% Evasión',        icon:'🌀',type:'stat',   cost:1,desc:'Probabilidad de evasión aumentada un 10%.'},
+    {name:'Silencio',            icon:'🤫',type:'skill',  cost:2,desc:'El enemigo no puede usar habilidades durante 1 turno.'},
+    {name:'+20% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Velocidad aumentada un 20% más.'},
+    {name:'Meditación Profunda', icon:'🙏',type:'skill',  cost:3,desc:'Recuperas el 40% de tu HP y tu defensa sube temporalmente.'},
+    {name:'+15% Evasión',        icon:'🌀',type:'stat',   cost:1,desc:'Evasión adicional aumentada un 15%.'},
+    {name:'Trascendencia',       icon:'⭐',type:'skill',  cost:2,desc:'Eres invulnerable durante 1 turno completo.'},
+    {name:'+10% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Velocidad adicional aumentada un 10%.'},
+    {name:'Nirvana',             icon:'☮️',type:'ultimate',cost:5,desc:'ULTIMATE ZEN — Resetea todos los enfriamientos y te cura completamente.'},
+  ]);
+  var mn2 = buildZ2('mn',[
+    {name:'+15% Ataque',         icon:'👊',type:'stat',   cost:1,desc:'Poder de ataque aumentado un 15%.'},
+    {name:'+10% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Probabilidad de crítico aumentada un 10%.'},
+    {name:'Combo',               icon:'👊',type:'skill',  cost:2,desc:'Atacas 3 veces seguidas en un solo turno.'},
+    {name:'+10% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Velocidad de ataque aumentada un 10%.'},
+    {name:'Contraataque',        icon:'🔄',type:'skill',  cost:2,desc:'Devuelves daño automáticamente al ser golpeado.'},
+    {name:'+20% Ataque',         icon:'👊',type:'stat',   cost:1,desc:'Potencia de ataque físico aumentada un 20%.'},
+    {name:'Tormenta de Golpes',  icon:'🌪️',type:'skill',  cost:3,desc:'Atacas 5 veces con daño reducido pero acumulativo.'},
+    {name:'+15% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Crítico adicional aumentado un 15%.'},
+    {name:'Golpe Fulminante Mej.',icon:'💥',type:'skill', cost:2,desc:'Tu Golpe Fulminante inflige el triple de daño.'},
+    {name:'+10% Ataque',         icon:'👊',type:'stat',   cost:1,desc:'Potencia de ataque adicional aumentada un 10%.'},
+    {name:'Mil Puños',           icon:'🌀',type:'ultimate',cost:5,desc:'ULTIMATE COMBATE — Atacas a velocidad máxima durante 10 segundos en un turno.'},
+  ]);
+  var mnc = buildZC('mn',[
+    {name:'+10% Todos los Stats',icon:'✨',type:'cross',  cost:2,desc:'Todos tus stats base aumentan un 10%.'},
+    {name:'Equilibrio',          icon:'☯️',type:'cross',  cost:3,desc:'Balancea perfectamente tu ataque y defensa.'},
+    {name:'+15% Chi',            icon:'💫',type:'cross',  cost:2,desc:'Tu energía chi máxima aumenta un 15%.'},
+  ],'mn_z1n10','mn_z2n10');
+  var mn3 = buildZ3('mn',[
+    {name:'+15% Curación',       icon:'💚',type:'stat',   cost:1,desc:'Tu poder de curación aumenta un 15%.'},
+    {name:'+10% Bienestar',      icon:'🧘',type:'stat',   cost:1,desc:'Tu stat de bienestar aumenta un 10%.'},
+    {name:'Curación Profunda',   icon:'💊',type:'skill',  cost:2,desc:'Recuperas el 50% de tu HP máximo.'},
+    {name:'+10% Regeneración',   icon:'💚',type:'stat',   cost:1,desc:'Regeneración de HP aumentada un 10%.'},
+    {name:'Transferencia',       icon:'💉',type:'skill',  cost:2,desc:'Absorbes HP del enemigo transfiriéndolo a ti.'},
+    {name:'+20% Curación',       icon:'💚',type:'stat',   cost:1,desc:'Poder de curación aumentado un 20%.'},
+    {name:'Aura Sanadora',       icon:'🌿',type:'skill',  cost:3,desc:'Regeneras HP automáticamente cada turno.'},
+    {name:'+15% Bienestar',      icon:'🧘',type:'stat',   cost:1,desc:'Bienestar adicional aumentado un 15%.'},
+    {name:'Resurrección',        icon:'⭐',type:'skill',  cost:2,desc:'Si mueres en combate, revives con el 50% de tu HP.'},
+    {name:'+10% Curación',       icon:'💚',type:'stat',   cost:1,desc:'Curación adicional aumentada un 10%.'},
+    {name:'Milagro',             icon:'✨',type:'ultimate',cost:5,desc:'ULTIMATE SANADOR — Cura completamente e inflige el daño curado al enemigo.'},
+  ],'mn_cr0','mn_cr2');
+
+  // ─── ASESINO ───
+  var as1 = buildZ1('as',[
+    {name:'+15% Sigilo',         icon:'👤',type:'stat',   cost:1,desc:'Tu capacidad de sigilo aumenta un 15%.'},
+    {name:'+10% Evasión',        icon:'💨',type:'stat',   cost:1,desc:'Probabilidad de evasión aumentada un 10%.'},
+    {name:'Desvanecerse',        icon:'🌫️',type:'skill',  cost:2,desc:'Evades todos los ataques enemigos durante 1 turno.'},
+    {name:'+10% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Velocidad aumentada un 10%.'},
+    {name:'Golpe desde Sombras', icon:'🗡️',type:'skill',  cost:2,desc:'Desde el sigilo, inflijes el triple de daño.'},
+    {name:'+20% Sigilo',         icon:'👤',type:'stat',   cost:1,desc:'Sigilo aumentado un 20% más.'},
+    {name:'Forma Espectral',     icon:'👻',type:'skill',  cost:3,desc:'Eres intangible durante 1 turno completo.'},
+    {name:'+15% Evasión',        icon:'💨',type:'stat',   cost:1,desc:'Evasión adicional aumentada un 15%.'},
+    {name:'Multiplicarse',       icon:'🪞',type:'skill',  cost:2,desc:'Creas una copia que ataca junto a ti este turno.'},
+    {name:'+10% Sigilo',         icon:'👤',type:'stat',   cost:1,desc:'Sigilo adicional aumentado un 10%.'},
+    {name:'Sombra Eterna',       icon:'🌑',type:'ultimate',cost:5,desc:'ULTIMATE SOMBRA — Sigilo permanente hasta atacar, infligiendo 5× daño al salir.'},
+  ]);
+  var as2 = buildZ2('as',[
+    {name:'+15% Ataque Distancia',icon:'🎯',type:'stat',  cost:1,desc:'Tu ataque a distancia aumenta un 15%.'},
+    {name:'+10% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Probabilidad de crítico aumentada un 10%.'},
+    {name:'Flecha Envenenada',   icon:'🍃',type:'skill',  cost:2,desc:'Inflijes daño más veneno que dura 3 turnos.'},
+    {name:'+10% Alcance',        icon:'🎯',type:'stat',   cost:1,desc:'Alcance de ataque aumentado un 10%.'},
+    {name:'Retroceder',          icon:'🔙',type:'skill',  cost:2,desc:'Aumentas tu evasión y distancia del enemigo.'},
+    {name:'+20% Ataque Distancia',icon:'🎯',type:'stat',  cost:1,desc:'Ataque a distancia aumentado un 20% más.'},
+    {name:'Lluvia de Dagas',     icon:'🗡️',type:'skill',  cost:3,desc:'Atacas a todos los enemigos presentes.'},
+    {name:'+15% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Crítico adicional aumentado un 15%.'},
+    {name:'Punto Débil',         icon:'🎯',type:'skill',  cost:2,desc:'Multiplicas tu daño por 2 en una zona vulnerable.'},
+    {name:'+10% Ataque',         icon:'🗡️',type:'stat',   cost:1,desc:'Ataque adicional aumentado un 10%.'},
+    {name:'Tormenta de Dagas',   icon:'⚡',type:'ultimate',cost:5,desc:'ULTIMATE DISTANCIA — Lanzas 10 dagas a objetivos aleatorios simultáneamente.'},
+  ]);
+  var asc = buildZC('as',[
+    {name:'+10% Todos los Stats',icon:'✨',type:'cross',  cost:2,desc:'Todos tus stats base aumentan un 10%.'},
+    {name:'Instinto Asesino',    icon:'🗡️',type:'cross',  cost:3,desc:'Tu primer ataque en cada combate es siempre crítico.'},
+    {name:'+15% Velocidad',      icon:'💨',type:'cross',  cost:2,desc:'Tu velocidad total aumenta un 15%.'},
+  ],'as_z1n10','as_z2n10');
+  var as3 = buildZ3('as',[
+    {name:'+15% Ataque',         icon:'🗡️',type:'stat',   cost:1,desc:'Potencia de ataque aumentada un 15%.'},
+    {name:'+10% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Probabilidad de crítico aumentada un 10%.'},
+    {name:'Puñalada Traidora',   icon:'🗡️',type:'skill',  cost:2,desc:'Tu próximo ataque es crítico garantizado.'},
+    {name:'+10% Penetración',    icon:'🔪',type:'stat',   cost:1,desc:'Penetración de armadura aumentada un 10%.'},
+    {name:'Sangrado',            icon:'🩸',type:'skill',  cost:2,desc:'El enemigo sangra causando daño muy alto por turnos.'},
+    {name:'+20% Ataque',         icon:'🗡️',type:'stat',   cost:1,desc:'Potencia de ataque adicional aumentada un 20%.'},
+    {name:'Ejecución',           icon:'⚔️',type:'skill',  cost:3,desc:'Si el enemigo tiene menos del 30% de HP, muere instantáneamente.'},
+    {name:'+15% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Crítico adicional aumentado un 15%.'},
+    {name:'Golpe Vital',         icon:'💀',type:'skill',  cost:2,desc:'Tu ataque ignora toda la defensa del enemigo.'},
+    {name:'+10% Ataque',         icon:'🗡️',type:'stat',   cost:1,desc:'Ataque adicional aumentado un 10%.'},
+    {name:'Sentencia Final',     icon:'☠️',type:'ultimate',cost:5,desc:'ULTIMATE CUERPO — Si el ataque es crítico, mata al enemigo instantáneamente.'},
+  ],'as_cr0','as_cr2');
+
+  // ─── DRUIDA ───
+  var dr1 = buildZ1('dr',[
+    {name:'+15% Vitalidad',      icon:'🌿',type:'stat',   cost:1,desc:'Tu vitalidad aumenta un 15%.'},
+    {name:'+10% Curación Natural',icon:'💚',type:'stat',  cost:1,desc:'Tu curación natural aumenta un 10%.'},
+    {name:'Regeneración',        icon:'♻️',type:'skill',  cost:2,desc:'Te curas automáticamente al comienzo de cada turno.'},
+    {name:'+10% Defensa Natural',icon:'🌿',type:'stat',   cost:1,desc:'Tu defensa natural aumenta un 10%.'},
+    {name:'Piel de Árbol',       icon:'🌲',type:'skill',  cost:2,desc:'Tu defensa aumenta masivamente durante 3 turnos.'},
+    {name:'+20% Vitalidad',      icon:'🌿',type:'stat',   cost:1,desc:'Vitalidad aumentada un 20% más.'},
+    {name:'Enredadera Mejorada', icon:'🌱',type:'skill',  cost:3,desc:'Inmovilizas al enemigo durante 2 turnos con enredaderas.'},
+    {name:'+15% Curación',       icon:'💚',type:'stat',   cost:1,desc:'Curación adicional aumentada un 15%.'},
+    {name:'Barrera Natural',     icon:'🌿',type:'skill',  cost:2,desc:'Absorbes completamente el próximo ataque que recibas.'},
+    {name:'+10% Vitalidad',      icon:'🌿',type:'stat',   cost:1,desc:'Vitalidad adicional aumentada un 10%.'},
+    {name:'Furia del Bosque',    icon:'🌳',type:'ultimate',cost:5,desc:'ULTIMATE NATURALEZA — Invocas una tormenta de la naturaleza que daña al enemigo todos los turnos.'},
+  ]);
+  var dr2 = buildZ2('dr',[
+    {name:'+15% Magia Espiritual',icon:'🌀',type:'stat',  cost:1,desc:'Tu magia espiritual aumenta un 15%.'},
+    {name:'+10% Bienestar Mental',icon:'🧘',type:'stat',  cost:1,desc:'Bienestar mental aumentado un 10%.'},
+    {name:'Espíritu Aliado',     icon:'👻',type:'skill',  cost:2,desc:'Invocas un espíritu que ataca y cura cada turno.'},
+    {name:'+10% Conexión Esp.',  icon:'🌀',type:'stat',   cost:1,desc:'Tu conexión espiritual aumenta un 10%.'},
+    {name:'Maldición Chamánica', icon:'☠️',type:'skill',  cost:2,desc:'Reduces todos los stats del enemigo un 30%.'},
+    {name:'+20% Magia Espiritual',icon:'🌀',type:'stat',  cost:1,desc:'Magia espiritual aumentada un 20% más.'},
+    {name:'Tótem de Poder',      icon:'🗿',type:'skill',  cost:3,desc:'Aumentas todos tus stats un 20% con un tótem sagrado.'},
+    {name:'+15% Bienestar',      icon:'🧘',type:'stat',   cost:1,desc:'Bienestar adicional aumentado un 15%.'},
+    {name:'Visión Chamánica',    icon:'👁️',type:'skill',  cost:2,desc:'Predices el próximo ataque del enemigo y lo evades.'},
+    {name:'+10% Magia',          icon:'🌀',type:'stat',   cost:1,desc:'Poder mágico adicional aumentado un 10%.'},
+    {name:'Tormenta Espiritual', icon:'⚡',type:'ultimate',cost:5,desc:'ULTIMATE CHAMÁN — Daño masivo espiritual más debuff a todos los stats del enemigo.'},
+  ]);
+  var drc = buildZC('dr',[
+    {name:'+10% Todos los Stats',icon:'✨',type:'cross',  cost:2,desc:'Todos tus stats base aumentan un 10%.'},
+    {name:'Armonía',             icon:'☯️',type:'cross',  cost:3,desc:'Equilibras todas tus estadísticas perfectamente.'},
+    {name:'+15% Conexión Natural',icon:'🌿',type:'cross', cost:2,desc:'Tu conexión con la naturaleza aumenta un 15%.'},
+  ],'dr_z1n10','dr_z2n10');
+  var dr3 = buildZ3('dr',[
+    {name:'+15% Defensa',        icon:'🛡️',type:'stat',   cost:1,desc:'Tu defensa física aumenta un 15%.'},
+    {name:'+10% HP Máximo',      icon:'❤️',type:'stat',   cost:1,desc:'Vida máxima aumentada un 10%.'},
+    {name:'Veneno de Naturaleza',icon:'🐍',type:'skill',  cost:2,desc:'El enemigo recibe daño por veneno muy alto durante varios turnos.'},
+    {name:'+10% Resistencia',    icon:'🔰',type:'stat',   cost:1,desc:'Resistencia general aumentada un 10%.'},
+    {name:'Escudo de Espinas',   icon:'🌵',type:'skill',  cost:2,desc:'El enemigo recibe daño de espinas al atacarte.'},
+    {name:'+20% Defensa',        icon:'🛡️',type:'stat',   cost:1,desc:'Defensa adicional aumentada un 20%.'},
+    {name:'Forma de Bestia',     icon:'🐺',type:'skill',  cost:3,desc:'Te transformas aumentando todos tus stats masivamente.'},
+    {name:'+15% HP',             icon:'❤️',type:'stat',   cost:1,desc:'HP máximo adicional aumentado un 15%.'},
+    {name:'Renacimiento',        icon:'🌅',type:'skill',  cost:2,desc:'Si mueres en combate, revives con el 50% de tu HP.'},
+    {name:'+10% Defensa',        icon:'🛡️',type:'stat',   cost:1,desc:'Defensa adicional aumentada un 10%.'},
+    {name:'Avatar del Mundo',    icon:'🌍',type:'ultimate',cost:5,desc:'ULTIMATE GUARDIÁN — Te vuelves imparable durante 3 turnos completos.'},
+  ],'dr_cr0','dr_cr2');
+
+  // ─── BÁRBARO ───
+  var bb1 = buildZ1('bk',[
+    {name:'+20% Ataque',         icon:'⚔️',type:'stat',   cost:1,desc:'Tu ataque físico aumenta un 20%.'},
+    {name:'+10% Fuerza',         icon:'💪',type:'stat',   cost:1,desc:'Tu fuerza aumenta un 10%.'},
+    {name:'Frenesí',             icon:'🌀',type:'skill',  cost:2,desc:'Atacas 4 veces con daño acumulativo en un turno.'},
+    {name:'+10% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Probabilidad de crítico aumentada un 10%.'},
+    {name:'Instinto Animal',     icon:'🐗',type:'skill',  cost:2,desc:'Tu evasión y velocidad aumentan un 20%.'},
+    {name:'+25% Ataque',         icon:'⚔️',type:'stat',   cost:1,desc:'Potencia de ataque física aumentada un 25%.'},
+    {name:'Rugido Salvaje',      icon:'😤',type:'skill',  cost:3,desc:'Aterras al enemigo reduciendo todos sus stats.'},
+    {name:'+15% Fuerza',         icon:'💪',type:'stat',   cost:1,desc:'Fuerza adicional aumentada un 15%.'},
+    {name:'Golpe Brutal Mej.',   icon:'💥',type:'skill',  cost:2,desc:'Tu Golpe Brutal inflige el triple de daño.'},
+    {name:'+10% Ataque',         icon:'⚔️',type:'stat',   cost:1,desc:'Ataque adicional aumentado un 10%.'},
+    {name:'Frenético',           icon:'🔥',type:'ultimate',cost:5,desc:'ULTIMATE SALVAJE — Entras en un trance de daño infinito durante 2 turnos.'},
+  ]);
+  var bb2 = buildZ2('bk',[
+    {name:'+15% Liderazgo',      icon:'👑',type:'stat',   cost:1,desc:'Tu liderazgo aumenta un 15%.'},
+    {name:'+10% Todos los Stats',icon:'💪',type:'stat',   cost:1,desc:'Todos tus stats aumentan un 10%.'},
+    {name:'Llamado de Guerra',   icon:'📣',type:'skill',  cost:2,desc:'Aumentas todos tus stats masivamente en el combate.'},
+    {name:'+10% Intimidación',   icon:'👑',type:'stat',   cost:1,desc:'Tu poder de intimidación aumenta un 10%.'},
+    {name:'Intimidar',           icon:'😤',type:'skill',  cost:2,desc:'Reduces el ataque del enemigo un 35%.'},
+    {name:'+20% Fuerza',         icon:'💪',type:'stat',   cost:1,desc:'Fuerza aumentada un 20% más.'},
+    {name:'Grito de Tribu',      icon:'🔊',type:'skill',  cost:3,desc:'Buff masivo a todos tus stats durante 3 turnos.'},
+    {name:'+15% Liderazgo',      icon:'👑',type:'stat',   cost:1,desc:'Liderazgo adicional aumentado un 15%.'},
+    {name:'Voluntad de Hierro',  icon:'⚙️',type:'skill',  cost:2,desc:'Eres inmune a todos los efectos negativos.'},
+    {name:'+10% Todos los Stats',icon:'💪',type:'stat',   cost:1,desc:'Todos tus stats adicionales aumentan un 10%.'},
+    {name:'Rey Barbárico',       icon:'👑',type:'ultimate',cost:5,desc:'ULTIMATE TRIBU — Todos tus stats se duplican durante 3 turnos.'},
+  ]);
+  var bkc = buildZC('bk',[
+    {name:'+15% Todos los Stats',icon:'✨',type:'cross',  cost:2,desc:'Todos tus stats base aumentan un 15%.'},
+    {name:'Furia Primordial',    icon:'🔥',type:'cross',  cost:3,desc:'Modo berserker aún más potente y devastador.'},
+    {name:'+20% Fuerza',         icon:'💪',type:'cross',  cost:2,desc:'Tu fuerza total aumenta un 20%.'},
+  ],'bk_z1n10','bk_z2n10');
+  var bb3 = buildZ3('bk',[
+    {name:'+20% Daño',           icon:'💥',type:'stat',   cost:1,desc:'Tu daño de todas las fuentes aumenta un 20%.'},
+    {name:'+10% Penetración',    icon:'⚔️',type:'stat',   cost:1,desc:'Penetración de armadura aumentada un 10%.'},
+    {name:'Trance de Batalla',   icon:'🌀',type:'skill',  cost:2,desc:'Eres inmune al daño pero solo puedes atacar.'},
+    {name:'+10% Fuerza',         icon:'💪',type:'stat',   cost:1,desc:'Fuerza adicional aumentada un 10%.'},
+    {name:'Poder Ancestral',     icon:'⚡',type:'skill',  cost:2,desc:'Inflijes daño legendario único una vez por combate.'},
+    {name:'+25% Daño',           icon:'💥',type:'stat',   cost:1,desc:'Daño adicional aumentado un 25%.'},
+    {name:'Aplastamiento',       icon:'🔨',type:'skill',  cost:3,desc:'Tu ataque ignora completamente la defensa del enemigo.'},
+    {name:'+15% Penetración',    icon:'⚔️',type:'stat',   cost:1,desc:'Penetración adicional aumentada un 15%.'},
+    {name:'Sed de Poder',        icon:'🩸',type:'skill',  cost:2,desc:'Cada golpe que recibes aumenta tu daño.'},
+    {name:'+10% Daño',           icon:'💥',type:'stat',   cost:1,desc:'Daño adicional aumentado un 10%.'},
+    {name:'Dios de la Guerra',   icon:'⚡',type:'ultimate',cost:5,desc:'ULTIMATE ANCESTRAL — Eres inmortal e imparable durante 3 turnos completos.'},
+  ],'bk_cr0','bk_cr2');
+
+  // ─── ARQUERO ───
+  var ar1 = buildZ1('ar',[
+    {name:'+15% Ataque Distancia',icon:'🏹',type:'stat',  cost:1,desc:'Tu ataque a distancia aumenta un 15%.'},
+    {name:'+10% Precisión',      icon:'🎯',type:'stat',   cost:1,desc:'Tu precisión aumenta un 10%.'},
+    {name:'Trampa',              icon:'🪤',type:'skill',  cost:2,desc:'Inmovilizas al enemigo durante 2 turnos.'},
+    {name:'+10% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Probabilidad de crítico aumentada un 10%.'},
+    {name:'Marca del Cazador',   icon:'🎯',type:'skill',  cost:2,desc:'El enemigo marcado recibe daño aumentado.'},
+    {name:'+20% Ataque Distancia',icon:'🏹',type:'stat',  cost:1,desc:'Ataque a distancia aumentado un 20% más.'},
+    {name:'Flecha Explosiva Mej.',icon:'💥',type:'skill', cost:3,desc:'Tu Flecha Explosiva inflige el doble de daño en área.'},
+    {name:'+15% Precisión',      icon:'🎯',type:'stat',   cost:1,desc:'Precisión adicional aumentada un 15%.'},
+    {name:'Caza Mayor',          icon:'🦅',type:'skill',  cost:2,desc:'Tu daño se triplica contra jefes de zona.'},
+    {name:'+10% Ataque',         icon:'🏹',type:'stat',   cost:1,desc:'Ataque adicional aumentado un 10%.'},
+    {name:'Lluvia Estelar',      icon:'⭐',type:'ultimate',cost:5,desc:'ULTIMATE CAZADOR — Lanzas 10 flechas de alto daño a objetivos aleatorios.'},
+  ]);
+  var ar2 = buildZ2('ar',[
+    {name:'+15% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Tu velocidad aumenta un 15%.'},
+    {name:'+10% Evasión',        icon:'🌀',type:'stat',   cost:1,desc:'Probabilidad de evasión aumentada un 10%.'},
+    {name:'Movimiento Rápido',   icon:'⚡',type:'skill',  cost:2,desc:'Siempre atacas primero, sin importar la velocidad.'},
+    {name:'+10% Sigilo',         icon:'👤',type:'stat',   cost:1,desc:'Tu sigilo aumenta un 10%.'},
+    {name:'Flecha de Luz',       icon:'💡',type:'skill',  cost:2,desc:'Inflijes daño y ciegas al enemigo durante 1 turno.'},
+    {name:'+20% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Velocidad adicional aumentada un 20%.'},
+    {name:'Tiro Múltiple',       icon:'🏹',type:'skill',  cost:3,desc:'Atacas a 3 objetivos simultáneamente con una sola acción.'},
+    {name:'+15% Evasión',        icon:'🌀',type:'stat',   cost:1,desc:'Evasión adicional aumentada un 15%.'},
+    {name:'Emboscada',           icon:'🗡️',type:'skill',  cost:2,desc:'Si atacas primero, tu daño se cuadruplica.'},
+    {name:'+10% Velocidad',      icon:'💨',type:'stat',   cost:1,desc:'Velocidad adicional aumentada un 10%.'},
+    {name:'Tormenta de Flechas', icon:'⛈️',type:'ultimate',cost:5,desc:'ULTIMATE EXPLORADOR — Atacas a todos los enemigos 3 veces cada uno.'},
+  ]);
+  var arc = buildZC('ar',[
+    {name:'+10% Todos los Stats',icon:'✨',type:'cross',  cost:2,desc:'Todos tus stats base aumentan un 10%.'},
+    {name:'Ojo de Águila Mej.',  icon:'🦅',type:'cross',  cost:3,desc:'Tu crítico y precisión alcanzan niveles máximos.'},
+    {name:'+15% Ataque Distancia',icon:'🏹',type:'cross', cost:2,desc:'Tu ataque a distancia total aumenta un 15%.'},
+  ],'ar_z1n10','ar_z2n10');
+  var ar3 = buildZ3('ar',[
+    {name:'+20% Precisión',      icon:'🎯',type:'stat',   cost:1,desc:'Tu precisión aumenta un 20%.'},
+    {name:'+15% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Probabilidad de crítico aumentada un 15%.'},
+    {name:'Disparo Perfecto',    icon:'🎯',type:'skill',  cost:2,desc:'Garantizas un crítico cada 4 turnos automáticamente.'},
+    {name:'+10% Penetración',    icon:'🏹',type:'stat',   cost:1,desc:'Penetración de armadura aumentada un 10%.'},
+    {name:'Punto Débil',         icon:'🎯',type:'skill',  cost:2,desc:'Multiplicas tu daño por 2 apuntando a una zona vulnerable.'},
+    {name:'+25% Precisión',      icon:'🎯',type:'stat',   cost:1,desc:'Precisión adicional aumentada un 25%.'},
+    {name:'Tiro Cargado',        icon:'⚡',type:'skill',  cost:3,desc:'Cargas 1 turno para un disparo que inflige 5× el daño.'},
+    {name:'+15% Crítico',        icon:'⚡',type:'stat',   cost:1,desc:'Crítico adicional aumentado un 15%.'},
+    {name:'Flecha Guiada',       icon:'🏹',type:'skill',  cost:2,desc:'Nunca falla y no puede ser evadida por ningún enemigo.'},
+    {name:'+10% Precisión',      icon:'🎯',type:'stat',   cost:1,desc:'Precisión adicional aumentada un 10%.'},
+    {name:'Flecha del Destino',  icon:'💫',type:'ultimate',cost:5,desc:'ULTIMATE FRANCOTIRADOR — Daño instantáneo que ignora toda defensa, evasión y resistencia.'},
+  ],'ar_cr0','ar_cr2');
+
+  return {
+    guerrero:{ name:'Guerrero',icon:'⚔️',color:'#ef4444',dim:'#450a0a',zones:['Paladín','Berserker','Tanque'],     nodes:g1.concat(g2,gc,g3)   },
+    mago:    { name:'Mago',    icon:'🔮',color:'#a78bfa',dim:'#3b0764',zones:['Fuego','Hielo','Brujo'],            nodes:m1.concat(m2,mc,m3)   },
+    monje:   { name:'Monje',   icon:'🥋',color:'#f59e0b',dim:'#451a03',zones:['Zen','Combate','Sanador'],          nodes:mn1.concat(mn2,mnc,mn3)},
+    asesino: { name:'Asesino', icon:'🗡️',color:'#22d3ee',dim:'#083344',zones:['Sombra','Distancia','Cuerpo'],      nodes:as1.concat(as2,asc,as3)},
+    druida:  { name:'Druida',  icon:'🌿',color:'#4ade80',dim:'#052e16',zones:['Naturaleza','Chamán','Guardián'],   nodes:dr1.concat(dr2,drc,dr3)},
+    barbaro: { name:'Bárbaro', icon:'🪓',color:'#f97316',dim:'#431407',zones:['Salvaje','Jefe Tribu','Berserker Anc.'],nodes:bb1.concat(bb2,bkc,bb3)},
+    arquero: { name:'Arquero', icon:'🏹',color:'#38bdf8',dim:'#082f49',zones:['Cazador','Explorador','Francotirador'],nodes:ar1.concat(ar2,arc,ar3)},
+  };
+}());
+
+var _stClass = null, _stNodeId = null;
+
+function canUnlockSTNode(cls, node) {
+  var ul = char.skillTree[cls] || [];
+  if (node.req && node.req.length && !node.req.every(function(r){ return ul.indexOf(r) >= 0; })) return false;
+  if (node.reqAny && node.reqAny.length && !node.reqAny.some(function(r){ return ul.indexOf(r) >= 0; })) return false;
+  if (node.reqTotal && ul.length < node.reqTotal) return false;
+  return true;
+}
+
+function stState(cls, nid) {
+  var ul = char.skillTree[cls] || [];
+  if (ul.indexOf(nid) >= 0) return 'unlocked';
+  var data = SKILL_TREE_DATA[cls];
+  if (!data) return 'locked';
+  var node = null;
+  for (var i = 0; i < data.nodes.length; i++) { if (data.nodes[i].id === nid) { node = data.nodes[i]; break; } }
+  if (!node) return 'locked';
+  return canUnlockSTNode(cls, node) ? 'available' : 'locked';
+}
+
+function openSkillTree() {
+  closeMoreDrawer();
+  _stClass = (char.class && SKILL_TREE_DATA[char.class]) ? char.class : 'guerrero';
+  _stNodeId = null;
+  document.getElementById('stMPCount').textContent = char.masteryPoints || 0;
+  _stBuildTabs();
+  _stRender(_stClass);
+  document.getElementById('stOverlay').classList.add('open');
+}
+function closeSkillTree() {
+  document.getElementById('stOverlay').classList.remove('open');
+  document.getElementById('stPanel').classList.remove('open');
+}
+
+function _stBuildTabs() {
+  var tabs = document.getElementById('stTabs');
+  tabs.innerHTML = '';
+  Object.keys(SKILL_TREE_DATA).forEach(function(cls) {
+    var data = SKILL_TREE_DATA[cls];
+    var b = document.createElement('button');
+    b.className = 'st-tab' + (cls === _stClass ? ' active' : '');
+    b.textContent = data.icon + ' ' + data.name;
+    b.onclick = (function(c){ return function(){ _stClass=c; _stBuildTabs(); _stRender(c); _stClosePanel(); }; })(cls);
+    tabs.appendChild(b);
+  });
+}
+
+var _ST_W = 460, _ST_H = 1068;
+
+function _stRender(cls) {
+  var data = SKILL_TREE_DATA[cls];
+  if (!data) return;
+  var svg = document.getElementById('stSVG');
+  svg.setAttribute('viewBox','0 0 '+_ST_W+' '+_ST_H);
+  svg.setAttribute('width', _ST_W);
+  svg.setAttribute('height', _ST_H);
+
+  var nodeMap = {};
+  data.nodes.forEach(function(n){ nodeMap[n.id] = n; });
+
+  function lineClr(aid, bid) {
+    var sa = stState(cls,aid), sb = stState(cls,bid);
+    if (sa==='unlocked' && sb==='unlocked') return {c:data.color,o:.72,w:2,d:''};
+    if (sa==='unlocked') return {c:data.color,o:.28,w:1,d:'4 5'};
+    return {c:'#1e1b30',o:.45,w:1,d:'4 5'};
+  }
+
+  // Collect unique lines
+  var lineSet = {}, lines = [];
+  data.nodes.forEach(function(n) {
+    var srcs = (n.req||[]).concat(n.reqAny||[]).concat(n.connects||[]);
+    srcs.forEach(function(r) {
+      if (!nodeMap[r]) return;
+      var k = [r,n.id].sort().join('|');
+      if (!lineSet[k]) { lineSet[k]=1; lines.push([r,n.id]); }
+    });
+  });
+
+  var nR = { stat:13, skill:19, ultimate:27, cross:16 };
+
+  var h = '<defs>'
+    +'<filter id="stglow" x="-70%" y="-70%" width="240%" height="240%">'
+    +'<feGaussianBlur stdDeviation="5" result="b"/>'
+    +'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'<filter id="stglow2" x="-100%" y="-100%" width="300%" height="300%">'
+    +'<feGaussianBlur stdDeviation="9" result="b"/>'
+    +'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'<filter id="stavail" x="-50%" y="-50%" width="200%" height="200%">'
+    +'<feGaussianBlur stdDeviation="3" result="b"/>'
+    +'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'</defs>';
+
+  h += '<rect width="'+_ST_W+'" height="'+_ST_H+'" fill="#030309"/>';
+  // Zone dividers
+  h += '<line x1="230" y1="20" x2="230" y2="585" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="5 7"/>';
+  h += '<line x1="20" y1="596" x2="'+(_ST_W-20)+'" y2="596" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="5 7"/>';
+  // Zone labels
+  var zl = [{t:data.zones[0],x:115,y:26},{t:data.zones[1],x:345,y:26},{t:data.zones[2],x:230,y:642}];
+  zl.forEach(function(z){
+    h += '<text x="'+z.x+'" y="'+z.y+'" text-anchor="middle" fill="'+data.color+'" font-family="\'Press Start 2P\',monospace" font-size="6.5" opacity=".4" letter-spacing="1">'+z.t.toUpperCase()+'</text>';
+  });
+
+  // Lines
+  lines.forEach(function(pair) {
+    var a = nodeMap[pair[0]], b = nodeMap[pair[1]];
+    if (!a||!b) return;
+    var lc = lineClr(pair[0],pair[1]);
+    var da = lc.d ? ' stroke-dasharray="'+lc.d+'"' : '';
+    h += '<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+lc.c+'" stroke-width="'+lc.w+'" stroke-opacity="'+lc.o+'"'+da+'/>';
+  });
+
+  // Nodes
+  data.nodes.forEach(function(n) {
+    var st = stState(cls, n.id);
+    var r  = nR[n.type] || 15;
+    var fill, stroke, sw, filt='', tOp;
+    if (st==='unlocked') {
+      fill=data.color; stroke='#fff'; sw=2; tOp=1;
+      filt = n.type==='ultimate' ? ' filter="url(#stglow2)"' : ' filter="url(#stglow)"';
+    } else if (st==='available') {
+      fill='#0d0d1a'; stroke=data.color; sw=1.5; tOp=0.9;
+      filt=' filter="url(#stavail)"';
+    } else {
+      fill='#080812'; stroke='#25213a'; sw=1; tOp=0.3;
+    }
+    var fs = n.type==='ultimate' ? 15 : (n.type==='stat' ? 10 : 12);
+    var ty = n.y + Math.round(fs*0.38);
+
+    h += '<g onclick="stTap(\''+cls+'\',\''+n.id+'\')" style="cursor:pointer">';
+    if (st==='available') {
+      h += '<circle cx="'+n.x+'" cy="'+n.y+'" r="'+(r+5)+'" fill="none" stroke="'+data.color+'" stroke-width="1" opacity=".2"/>';
+    }
+    if (n.type==='ultimate' && st==='unlocked') {
+      h += '<circle cx="'+n.x+'" cy="'+n.y+'" r="'+(r+8)+'" fill="'+data.color+'" opacity=".08"/>';
+    }
+    h += '<circle cx="'+n.x+'" cy="'+n.y+'" r="'+r+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'" opacity="'+(st==='locked'?.4:1)+'"'+filt+'/>';
+    h += '<text x="'+n.x+'" y="'+ty+'" text-anchor="middle" font-size="'+fs+'" opacity="'+tOp+'" style="pointer-events:none;user-select:none">'+n.icon+'</text>';
+    if (st==='available') {
+      var bx=n.x+r-2, by=n.y-r+2;
+      h += '<circle cx="'+bx+'" cy="'+by+'" r="7" fill="#7c3aed" stroke="#030309" stroke-width="1.5"/>';
+      h += '<text x="'+bx+'" y="'+(by+3)+'" text-anchor="middle" font-size="7" fill="#fff" style="pointer-events:none">'+n.cost+'</text>';
+    }
+    h += '</g>';
+  });
+
+  svg.innerHTML = h;
+}
+
+function stTap(cls, nid) {
+  _stClass  = cls;
+  _stNodeId = nid;
+  var data = SKILL_TREE_DATA[cls];
+  var node = null;
+  for (var i = 0; i < data.nodes.length; i++) { if (data.nodes[i].id===nid){ node=data.nodes[i]; break; } }
+  if (!node) return;
+
+  var st = stState(cls, nid);
+  var zLabel = nid.indexOf('_cr') >= 0 ? 'Nodo de Cruce'
+    : nid.indexOf('_z1') >= 0 ? data.zones[0]
+    : nid.indexOf('_z2') >= 0 ? data.zones[1]
+    : data.zones[2];
+  var tLabel = {stat:'Estadística',skill:'Habilidad Activa',ultimate:'Ultimate',cross:'Nodo Especial'}[node.type]||'';
+
+  document.getElementById('stDPIcon').textContent = node.icon;
+  document.getElementById('stDPName').textContent = node.name;
+  document.getElementById('stDPZone').textContent = zLabel + ' · ' + tLabel;
+  document.getElementById('stDPDesc').textContent = node.desc;
+  document.getElementById('stDPCost').textContent = '✨ Coste: ' + node.cost + ' Punto' + (node.cost>1?'s':'') + ' de Maestría';
+
+  var btn = document.getElementById('stDPBtn');
+  if (st==='unlocked') {
+    btn.textContent='✓ Desbloqueado'; btn.className='st-dp-btn done'; btn.disabled=true;
+  } else if (st==='available') {
+    var mp = char.masteryPoints||0;
+    if (mp>=node.cost){ btn.textContent='✨ Desbloquear'; btn.className='st-dp-btn can'; btn.disabled=false; }
+    else { btn.textContent='Sin PM ('+mp+'/'+node.cost+')'; btn.className='st-dp-btn no'; btn.disabled=true; }
+  } else {
+    btn.textContent='🔒 Requisitos no cumplidos'; btn.className='st-dp-btn no'; btn.disabled=true;
+  }
+  document.getElementById('stPanel').classList.add('open');
+}
+
+function _stClosePanel() { document.getElementById('stPanel').classList.remove('open'); }
+
+function stUnlock() {
+  if (!_stClass||!_stNodeId) return;
+  var data = SKILL_TREE_DATA[_stClass];
+  var node = null;
+  for (var i=0;i<data.nodes.length;i++){if(data.nodes[i].id===_stNodeId){node=data.nodes[i];break;}}
+  if (!node || stState(_stClass,_stNodeId)!=='available') return;
+  var mp = char.masteryPoints||0;
+  if (mp<node.cost){ quickToast('⚠️','Puntos insuficientes','Necesitas '+node.cost+' PM'); return; }
+  char.masteryPoints = mp - node.cost;
+  if (!char.skillTree[_stClass]) char.skillTree[_stClass]=[];
+  char.skillTree[_stClass].push(_stNodeId);
+  saveChar();
+  document.getElementById('stMPCount').textContent = char.masteryPoints;
+  _stRender(_stClass);
+  stTap(_stClass, _stNodeId);
+  quickToast(node.icon, node.name, '¡Habilidad desbloqueada!');
+}
+
+function stResetTree() {
+  if (!_stClass) return;
+  var cost = 500;
+  if ((char.gold||0)<cost){ quickToast('🪙','Oro insuficiente','Necesitas '+cost+' monedas'); return; }
+  if (!confirm('¿Reiniciar el árbol de '+SKILL_TREE_DATA[_stClass].name+'?\nCoste: '+cost+' 🪙\nRecuperarás todos los Puntos de Maestría gastados.')) return;
+  var nodes = char.skillTree[_stClass]||[];
+  var refund = 0;
+  nodes.forEach(function(id){
+    var n = SKILL_TREE_DATA[_stClass].nodes.find(function(x){return x.id===id;});
+    if (n) refund += n.cost;
+  });
+  char.masteryPoints = (char.masteryPoints||0) + refund;
+  char.gold = (char.gold||0) - cost;
+  char.skillTree[_stClass] = [];
+  saveChar();
+  document.getElementById('stMPCount').textContent = char.masteryPoints;
+  _stClosePanel();
+  _stRender(_stClass);
+  quickToast('♻️','Árbol reiniciado','+'+refund+' PM devueltos');
+}
+
 setBottomTab('bnHome');
 
 // ── Start: check auth session or go guest ──
@@ -16309,6 +17030,36 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
   <div class="ib-btns">
     <button class="ib-install" id="ibInstallBtn" onclick="_pwaInstall()">Instalar</button>
     <button class="ib-dismiss" id="ibDismissBtn" onclick="_pwaHideBanner();localStorage.setItem('pwa_banner_dismissed','1')">Ahora no</button>
+  </div>
+</div>
+
+<!-- ── SKILL TREE OVERLAY ── -->
+<div class="st-overlay" id="stOverlay">
+  <div class="st-header">
+    <button class="st-back" onclick="closeSkillTree()">←</button>
+    <span class="st-title">Árbol de Habilidades</span>
+    <div class="st-mp">✨ <span id="stMPCount">0</span> PM</div>
+  </div>
+  <div class="st-tabs" id="stTabs"></div>
+  <div class="st-wrap">
+    <svg class="st-svg" id="stSVG" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div class="st-panel" id="stPanel">
+    <div class="st-dp-header">
+      <div class="st-dp-icon" id="stDPIcon">⭐</div>
+      <div class="st-dp-info">
+        <div class="st-dp-name" id="stDPName"></div>
+        <div class="st-dp-zone" id="stDPZone"></div>
+      </div>
+    </div>
+    <div class="st-dp-desc" id="stDPDesc"></div>
+    <div class="st-dp-foot">
+      <div class="st-dp-cost" id="stDPCost"></div>
+      <button class="st-dp-btn" id="stDPBtn" onclick="stUnlock()">Desbloquear</button>
+    </div>
+  </div>
+  <div class="st-bottom-row">
+    <button class="st-reset" onclick="stResetTree()">♻ Reiniciar árbol (500 🪙)</button>
   </div>
 </div>
 
@@ -16362,6 +17113,10 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
     <button class="more-item" onclick="openApoyo(); closeMoreDrawer()">
       <span class="more-item-icon">💙</span>
       <span class="more-item-label">Apoyo</span>
+    </button>
+    <button class="more-item" onclick="openSkillTree()">
+      <span class="more-item-icon">🌟</span>
+      <span class="more-item-label">Árbol</span>
     </button>
   </div>
 </div>
