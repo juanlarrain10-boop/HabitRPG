@@ -17150,7 +17150,7 @@ async function _guildRender() {
     var time = t.getHours() + ':' + String(t.getMinutes()).padStart(2,'0');
     return '<div class="guild-msg' + (isMe?' guild-msg-me':'') + '">'
       + '<span class="guild-msg-name">' + msg.display_name + '</span>'
-      + '<span class="guild-msg-text">' + _escapeHtml(msg.message) + '</span>'
+      + '<span class="guild-msg-text">' + _escapeHtml(msg.content) + '</span>'
       + '<span class="guild-msg-time">' + time + '</span>'
       + '</div>';
   }).join('') : '<div style="color:var(--dim);font-size:.7rem;text-align:center;padding:12px">Sé el primero en escribir</div>';
@@ -17198,7 +17198,7 @@ function _guildAppendMsg(msg) {
   var div = document.createElement('div');
   div.className = 'guild-msg' + (isMe?' guild-msg-me':'');
   div.innerHTML = '<span class="guild-msg-name">' + msg.display_name + '</span>'
-    + '<span class="guild-msg-text">' + _escapeHtml(msg.message) + '</span>'
+    + '<span class="guild-msg-text">' + _escapeHtml(msg.content) + '</span>'
     + '<span class="guild-msg-time">' + time + '</span>';
   // Remove empty placeholder if present
   var empty = box.querySelector('div[style]');
@@ -17216,7 +17216,7 @@ async function _guildSendMsg() {
   try {
     await sbClient.from('hrpg_guild_messages').insert({
       guild_id: char.guildId, user_id: sbUser.id,
-      display_name: char.name || 'Aventurero', message: text
+      display_name: char.name || 'Aventurero', content: text
     });
   } catch(e) { quickToast('❌','Error','No se pudo enviar el mensaje'); }
 }
