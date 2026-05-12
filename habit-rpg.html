@@ -15903,12 +15903,7 @@ function navShop() {
   on('mTopBtnToday', function() { cur = todayKey(); day = loadDay(cur); renderAll(); });
   on('profileSignOutBtn', function() { var b = document.getElementById('btnSignOut'); if (b) b.click(); });
 
-  // Bottom navigation — all tabs wired here, onclick removed from HTML
-  on('bnHome',    goHome);
-  on('bnAdv',     navAdv);
-  on('bnShop',    navShop);
-  on('bnProfile', openProfile);
-  on('bnMore',    openMoreDrawer);
+  // Bottom navigation — wired via onclick in HTML for Safari iOS compatibility
 
   // Sync close buttons back to home tab
   var _ca = closeAdventure, _cs = closeShop;
@@ -16180,23 +16175,23 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 
 <!-- ── BOTTOM NAVIGATION ── -->
 <nav class="bottom-nav">
-  <button class="bn-tab active" id="bnHome">
+  <button class="bn-tab active" id="bnHome" onclick="goHome()">
     <span class="bn-icon">🏠</span>
     <span class="bn-label">Inicio</span>
   </button>
-  <button class="bn-tab" id="bnAdv">
+  <button class="bn-tab" id="bnAdv" onclick="navAdv()">
     <span class="bn-icon">⚔️</span>
     <span class="bn-label">Aventura</span>
   </button>
-  <button class="bn-tab" id="bnShop">
+  <button class="bn-tab" id="bnShop" onclick="navShop()">
     <span class="bn-icon">🏪</span>
     <span class="bn-label">Tienda</span>
   </button>
-  <button class="bn-tab" id="bnProfile">
+  <button class="bn-tab" id="bnProfile" onclick="openProfile()">
     <span class="bn-icon">👤</span>
     <span class="bn-label">Perfil</span>
   </button>
-  <button class="bn-tab" id="bnMore">
+  <button class="bn-tab" id="bnMore" onclick="openMoreDrawer()">
     <span class="bn-icon">☰</span>
     <span class="bn-label">Más</span>
   </button>
