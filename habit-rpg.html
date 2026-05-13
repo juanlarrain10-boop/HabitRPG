@@ -4976,23 +4976,23 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 </div>
 
 <!-- ── ADVENTURE OVERLAY ── -->
-<div class="adv-overlay hide" id="advOverlay">
+<div class="adv-overlay hide" id="advOverlay" onclick="if(event.target===this)closeAdventure()">
   <div class="adv-wrap">
     <div class="adv-hd">
       <div class="adv-title-hd">⚔️ Aventura</div>
-      <button class="adv-close-btn" id="advCloseBtn">✕</button>
+      <button class="adv-close-btn" id="advCloseBtn" onclick="closeAdventure()">✕</button>
     </div>
     <div id="advContent"></div>
   </div>
 </div>
 
 <!-- ── SHOP OVERLAY ── -->
-<div class="shop-overlay hide" id="shopOverlay">
+<div class="shop-overlay hide" id="shopOverlay" onclick="if(event.target===this)closeShop()">
   <div class="shop-wrap">
     <div class="shop-hd">
       <div class="shop-title">🏪 Tienda</div>
       <div class="shop-gold-badge" id="shopGoldBadge">🪙 0</div>
-      <button class="shop-close" id="shopCloseBtn">✕</button>
+      <button class="shop-close" id="shopCloseBtn" onclick="closeShop()">✕</button>
     </div>
     <div class="shop-tabs" id="shopTabs"></div>
     <div class="shop-grid" id="shopGrid"></div>
@@ -10505,11 +10505,12 @@ function openAdventure() {
   adv.view = 'map';
   document.getElementById('advOverlay').classList.remove('hide');
   renderAdv();
-  SFX.startAmbient('dungeon');
+  try { SFX.startAmbient('dungeon'); } catch(e) {}
+  history.pushState({hrpgOverlay: 'adventure'}, '');
 }
 function closeAdventure() {
   document.getElementById('advOverlay').classList.add('hide');
-  SFX.stopAmbient();
+  try { SFX.stopAmbient(); } catch(e) {}
 }
 
 // ── Main Render Dispatcher ──
@@ -12229,10 +12230,7 @@ function renderCombatResult(el) {
 
 // ── Event Listeners ──
 document.getElementById('btnAdv').addEventListener('click', openAdventure);
-document.getElementById('advCloseBtn').addEventListener('click', closeAdventure);
-document.getElementById('advOverlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('advOverlay')) closeAdventure();
-});
+// advCloseBtn and advOverlay backdrop handled via inline onclick in HTML
 
 // ═══════════════════════════════════════════
 // SHOP
@@ -12242,9 +12240,10 @@ let shopCat = 'all';
 
 function openShop() {
   shopCat = 'all';
-  renderShopTabs();
-  renderShopGrid();
+  try { renderShopTabs(); } catch(e) { console.error('[shop] renderShopTabs:', e); }
+  try { renderShopGrid(); } catch(e) { console.error('[shop] renderShopGrid:', e); }
   document.getElementById('shopOverlay').classList.remove('hide');
+  history.pushState({hrpgOverlay: 'shop'}, '');
 }
 
 function closeShop() {
@@ -12658,10 +12657,7 @@ function shopUsePotion(id) {
 
 document.getElementById('btnShop').addEventListener('click', openShop);
 document.getElementById('goldShopBtn').addEventListener('click', openShop);
-document.getElementById('shopCloseBtn').addEventListener('click', closeShop);
-document.getElementById('shopOverlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('shopOverlay')) closeShop();
-});
+// shopCloseBtn and shopOverlay backdrop handled via inline onclick in HTML
 
 // ═══════════════════════════════════════════
 // PETS SYSTEM
@@ -16477,6 +16473,7 @@ function openMoreDrawer() {
   if (d)   d.classList.add('open');
   if (b)   b.classList.add('open');
   if (btn) btn.classList.add('active');
+  history.pushState({hrpgOverlay: 'drawer'}, '');
 }
 
 function goHome() {
@@ -16497,6 +16494,7 @@ function openProfile() {
   closeMoreDrawer();
   panel.classList.add('profile-open');
   document.body.style.overflow = 'hidden';
+  history.pushState({hrpgOverlay: 'profile'}, '');
   setBottomTab('bnProfile');
   var emailEl = document.getElementById('profileUserEmail');
   if (emailEl) {
@@ -16542,6 +16540,28 @@ function navShop() {
   var _ca = closeAdventure, _cs = closeShop;
   closeAdventure = function() { _ca(); setBottomTab('bnHome'); };
   closeShop      = function() { _cs(); setBottomTab('bnHome'); };
+
+  // ── Hardware / browser back button: close the topmost overlay ──
+  function _closeTopOverlay() {
+    var moreDrawer = document.getElementById('moreDrawer');
+    if (moreDrawer && moreDrawer.classList.contains('open')) { closeMoreDrawer(); return; }
+    var panel = document.getElementById('charPanel');
+    if (panel && panel.classList.contains('profile-open')) { closeProfile(); return; }
+    var advOl = document.getElementById('advOverlay');
+    if (advOl && !advOl.classList.contains('hide')) { closeAdventure(); return; }
+    var shopOl = document.getElementById('shopOverlay');
+    if (shopOl && !shopOl.classList.contains('hide')) { closeShop(); return; }
+    var stOl = document.getElementById('stOverlay');
+    if (stOl && stOl.classList.contains('open')) { closeSkillTree(); return; }
+    var guildOl = document.getElementById('guildOverlay');
+    if (guildOl && guildOl.classList.contains('open')) { closeGuild(); return; }
+    var mentorOl = document.getElementById('mentorOverlay');
+    if (mentorOl && mentorOl.classList.contains('open')) { closeMentorLetter(); return; }
+  }
+
+  window.addEventListener('popstate', function() {
+    _closeTopOverlay();
+  });
 }());
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -17064,6 +17084,7 @@ function _guildCode() {
 async function openGuild() {
   closeMoreDrawer();
   document.getElementById('guildOverlay').classList.add('open');
+  history.pushState({hrpgOverlay: 'guild'}, '');
   await _guildLoad();
 }
 function closeGuild() {
@@ -17764,6 +17785,7 @@ function openSkillTree() {
   _stBuildTabs();
   _stRender(_stClass);
   document.getElementById('stOverlay').classList.add('open');
+  history.pushState({hrpgOverlay: 'skilltree'}, '');
 }
 function closeSkillTree() {
   document.getElementById('stOverlay').classList.remove('open');
