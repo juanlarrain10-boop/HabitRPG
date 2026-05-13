@@ -16112,9 +16112,8 @@ setInterval(applyTimeOfDay, 60000);
 setInterval(applyNightMode, 60000);
 
 // ── Auth listeners ──
+// authSubmit and authGuest have onclick in HTML — no addEventListener to avoid double-firing on iOS Safari
 try {
-  document.getElementById('authSubmit')?.addEventListener('click', handleAuthSubmit);
-  document.getElementById('authGuest')?.addEventListener('click', () => continueAsGuest());
   document.getElementById('tabLogin')?.addEventListener('click', () => setAuthTab('login'));
   document.getElementById('tabRegister')?.addEventListener('click', () => setAuthTab('register'));
   document.getElementById('btnSignOut')?.addEventListener('click', signOut);
@@ -16543,6 +16542,10 @@ function navShop() {
 
   // ── Hardware / browser back button: close the topmost overlay ──
   function _closeTopOverlay() {
+    // Never interfere while auth overlay is showing (login screen)
+    var authOl = document.getElementById('authOverlay');
+    if (authOl && !authOl.classList.contains('hide')) return;
+
     var moreDrawer = document.getElementById('moreDrawer');
     if (moreDrawer && moreDrawer.classList.contains('open')) { closeMoreDrawer(); return; }
     var panel = document.getElementById('charPanel');
