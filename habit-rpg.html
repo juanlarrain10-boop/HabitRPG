@@ -5002,7 +5002,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     <div id="csStateTint"></div>
 
     <!-- ══ CAMP SCREEN — El Campamento ══ -->
-    <div class="camp-screen" id="campScreen">
+    <div class="camp-screen hidden" id="campScreen">
       <!-- World background -->
       <div class="camp-world-bg">
         <div class="camp-sky sky-storm" id="campSky"></div>
@@ -16401,9 +16401,16 @@ function showAuthOverlay() {
   document.getElementById('authOverlay').classList.remove('hide');
   setAuthTab('login');
   showAuthForm();
+  // Hide camp screen to prevent iOS Safari scroll-swallow during auth
+  var camp = document.getElementById('campScreen');
+  if (camp) camp.classList.add('hidden');
 }
 function hideAuthOverlay() {
   document.getElementById('authOverlay').classList.add('hide');
+  // Reveal camp screen now that auth is done (was hidden to prevent iOS Safari
+  // scroll-swallow: overflow-x:auto behind position:fixed can eat touch events)
+  var camp = document.getElementById('campScreen');
+  if (camp) camp.classList.remove('hidden');
 }
 function showAuthForm() {
   document.getElementById('authForm').classList.remove('hide');
