@@ -3718,6 +3718,228 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .qnr-btn:hover  { border-color: var(--purp2); color: var(--txt); background: var(--s3); }
 .qnr-btn:active { background: var(--purpg); color: var(--purp2); }
 
+/* ════════════════════════════════════════════════
+   CAMP SCREEN — El Campamento (RPG home base)
+   ════════════════════════════════════════════════ */
+.camp-screen {
+  position: relative; display: flex; flex-direction: column;
+  min-height: calc(100dvh - 56px); overflow: hidden;
+  background: #08080e;
+}
+.camp-screen.hidden { display: none; }
+
+.camp-world-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.camp-sky {
+  position: absolute; inset: 0;
+  transition: background 2.5s ease;
+}
+.camp-sky.sky-clear {
+  background: linear-gradient(180deg,#08041a 0%,#180a40 35%,#2e1268 65%,#120828 100%);
+}
+.camp-sky.sky-overcast {
+  background: linear-gradient(180deg,#0a0a18 0%,#141425 35%,#1e1c32 65%,#0e0e1e 100%);
+}
+.camp-sky.sky-storm {
+  background: linear-gradient(180deg,#050509 0%,#0b090f 35%,#12101a 65%,#060609 100%);
+}
+/* star dots */
+.camp-stars { position: absolute; inset: 0; pointer-events: none; }
+.camp-star {
+  position: absolute; border-radius: 50%;
+  background: #fff; animation: campTwinkle var(--dur,2s) ease-in-out infinite;
+}
+@keyframes campTwinkle {
+  0%,100% { opacity: var(--lo,.2); }
+  50%      { opacity: var(--hi,.9); }
+}
+.camp-vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,.7) 100%);
+  pointer-events: none;
+}
+/* subtle ground glow */
+.camp-ground-glow {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 180px;
+  background: linear-gradient(0deg, rgba(139,92,246,.08) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ── Hero zone ── */
+.camp-hero-zone {
+  position: relative; z-index: 1; flex: 1;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 14px 16px 0; gap: 12px;
+}
+.camp-rpg-msg {
+  width: 100%; text-align: center;
+  padding: 10px 14px;
+  background: rgba(0,0,0,.45); backdrop-filter: blur(6px);
+  border: 1px solid rgba(167,139,250,.18);
+  border-radius: 12px;
+}
+.camp-rpg-day {
+  font-family: var(--pxfont); font-size: .42rem;
+  color: var(--purp2); text-transform: uppercase;
+  letter-spacing: .18em; margin-bottom: 5px;
+}
+.camp-rpg-line {
+  font-size: .88rem; font-weight: 700;
+  color: var(--txt); line-height: 1.45; font-style: italic;
+}
+
+.camp-char-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+}
+.camp-char-avatar-ring {
+  width: 124px; height: 124px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  transition: box-shadow .5s;
+}
+.camp-char-avatar-ring.state-brillante {
+  box-shadow: 0 0 0 3px #10b981, 0 0 32px rgba(16,185,129,.65), 0 0 64px rgba(16,185,129,.3);
+  background: radial-gradient(circle, rgba(16,185,129,.18) 0%, transparent 70%);
+}
+.camp-char-avatar-ring.state-normal {
+  box-shadow: 0 0 0 2px var(--purp2), 0 0 22px rgba(139,92,246,.45);
+  background: radial-gradient(circle, rgba(139,92,246,.14) 0%, transparent 70%);
+}
+.camp-char-avatar-ring.state-cansado {
+  box-shadow: 0 0 0 2px #f59e0b, 0 0 18px rgba(245,158,11,.35);
+  background: radial-gradient(circle, rgba(245,158,11,.1) 0%, transparent 70%);
+}
+.camp-char-avatar-ring.state-critico {
+  box-shadow: 0 0 0 2px #ef4444, 0 0 24px rgba(239,68,68,.55), 0 0 48px rgba(239,68,68,.22);
+  background: radial-gradient(circle, rgba(239,68,68,.14) 0%, transparent 70%);
+  animation: campCritPulse 1.4s ease-in-out infinite;
+}
+@keyframes campCritPulse {
+  0%,100% { box-shadow: 0 0 0 2px #ef4444, 0 0 24px rgba(239,68,68,.55), 0 0 48px rgba(239,68,68,.22); }
+  50%      { box-shadow: 0 0 0 4px #ef4444, 0 0 44px rgba(239,68,68,.75), 0 0 80px rgba(239,68,68,.38); }
+}
+#campCharSvg { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+.camp-char-name {
+  font-family: var(--pxfont); font-size: .48rem;
+  color: var(--txt); letter-spacing: .06em;
+}
+.camp-char-state-label {
+  font-size: .7rem; font-weight: 700;
+  padding: 4px 12px; border-radius: 20px; border: 1px solid;
+}
+.camp-char-state-label.state-brillante { color:#10b981; border-color:rgba(16,185,129,.4); background:rgba(16,185,129,.1); }
+.camp-char-state-label.state-normal    { color:var(--purp2); border-color:rgba(167,139,250,.3); background:rgba(167,139,250,.08); }
+.camp-char-state-label.state-cansado   { color:#f59e0b; border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.08); }
+.camp-char-state-label.state-critico   { color:#ef4444; border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.1); }
+
+/* ── News cards ── */
+.camp-news-section { position: relative; z-index: 1; padding-bottom: 10px; }
+.camp-news-label {
+  font-family: var(--pxfont); font-size: .36rem;
+  color: var(--dim); text-transform: uppercase;
+  letter-spacing: .12em; padding: 0 16px 8px;
+}
+.camp-news-scroll {
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -ms-overflow-style: none;
+  padding: 0 16px; display: flex; gap: 10px;
+}
+.camp-news-scroll::-webkit-scrollbar { display: none; }
+.camp-news-card {
+  flex-shrink: 0; width: 188px; scroll-snap-align: start;
+  background: linear-gradient(135deg,rgba(28,18,48,.94),rgba(18,12,32,.97));
+  border: 1px solid rgba(167,139,250,.2);
+  border-radius: 14px; padding: 13px 13px 12px;
+  cursor: pointer; transition: border-color .2s, transform .12s;
+  position: relative; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.camp-news-card:active { transform: scale(0.96); }
+.camp-news-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(167,139,250,.05) 0%, transparent 55%);
+  pointer-events: none;
+}
+.camp-news-card.card-streak  { border-color: rgba(239,68,68,.32); }
+.camp-news-card.card-streak::before  { background: linear-gradient(135deg,rgba(239,68,68,.07) 0%,transparent 55%); }
+.camp-news-card.card-special { border-color: rgba(245,158,11,.35); }
+.camp-news-card.card-special::before { background: linear-gradient(135deg,rgba(245,158,11,.08) 0%,transparent 55%); }
+.camp-news-card.card-guild   { border-color: rgba(96,165,250,.28); }
+.camp-news-card.card-progress{ border-color: rgba(16,185,129,.28); }
+.camp-news-card.card-progress::before { background: linear-gradient(135deg,rgba(16,185,129,.06) 0%,transparent 55%); }
+.camp-news-card.card-dungeon { border-color: rgba(167,139,250,.32); }
+.camp-news-card.card-done    { opacity: .5; }
+
+.cnc-icon  { font-size: 1.75rem; margin-bottom: 5px; display: block; }
+.cnc-title { font-family: var(--pxfont); font-size: .38rem; color: var(--purp2); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
+.cnc-body  { font-size: .8rem; color: var(--txt); font-weight: 700; line-height: 1.3; }
+.cnc-sub   { font-size: .65rem; color: var(--dim); margin-top: 3px; line-height: 1.3; }
+.cnc-action {
+  display: inline-block; margin-top: 8px;
+  font-size: .6rem; font-weight: 700; color: var(--purp2);
+  border: 1px solid rgba(167,139,250,.28); border-radius: 6px;
+  padding: 3px 8px; background: rgba(167,139,250,.08);
+}
+.cnc-done-badge {
+  position: absolute; top: 8px; right: 8px;
+  font-size: .55rem; font-weight: 700; color: #10b981;
+  background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.28);
+  border-radius: 20px; padding: 2px 7px;
+}
+
+/* ── Camp bottom nav ── */
+.camp-bottom-nav {
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
+  padding: 10px 12px calc(14px + env(safe-area-inset-bottom,0px));
+  background: linear-gradient(0deg,rgba(8,8,14,.98) 60%,transparent 100%);
+}
+.camp-nav-btn {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px; padding: 14px 8px;
+  background: rgba(14,14,24,.85);
+  border: 1.5px solid rgba(167,139,250,.18);
+  border-radius: 14px; cursor: pointer; color: var(--txt);
+  font-family: inherit;
+  transition: background .15s, border-color .18s, transform .1s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.camp-nav-btn:active    { transform: scale(0.95); background: rgba(139,92,246,.18); }
+.camp-nav-btn.btn-primary {
+  border-color: rgba(167,139,250,.45);
+  background: rgba(139,92,246,.14);
+}
+.camp-nav-btn.btn-primary:active { background: rgba(139,92,246,.28); }
+.cnb-icon  { font-size: 1.55rem; }
+.cnb-label { font-family: var(--pxfont); font-size: .36rem; color: var(--txt); letter-spacing: .04em; text-align: center; }
+.cnb-sub   { font-size: .65rem; color: var(--purp2); font-weight: 700; }
+
+/* ── Misiones screen ── */
+.misiones-screen          { display: none; }
+.misiones-screen.active   { display: block; }
+.mis-back-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px 8px;
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(8,8,16,.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(167,139,250,.13);
+}
+.mis-back-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(167,139,250,.1); border: 1px solid rgba(167,139,250,.25);
+  border-radius: 8px; color: var(--purp2);
+  font-family: inherit; font-size: .75rem; font-weight: 700;
+  padding: 7px 13px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.mis-back-btn:active { background: rgba(167,139,250,.2); }
+.mis-back-title {
+  font-family: var(--pxfont); font-size: .43rem;
+  color: var(--dim); letter-spacing: .05em;
+}
+
 /* ── Habits area adjustments ── */
 .habits-area {
   padding: 12px 16px 20px !important;
@@ -4779,6 +5001,61 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     <!-- Screen tint for critical character state -->
     <div id="csStateTint"></div>
 
+    <!-- ══ CAMP SCREEN — El Campamento ══ -->
+    <div class="camp-screen" id="campScreen">
+      <!-- World background -->
+      <div class="camp-world-bg">
+        <div class="camp-sky sky-storm" id="campSky"></div>
+        <div class="camp-stars" id="campStars"></div>
+        <div class="camp-ground-glow"></div>
+        <div class="camp-vignette"></div>
+      </div>
+      <!-- Hero zone -->
+      <div class="camp-hero-zone">
+        <div class="camp-rpg-msg">
+          <div class="camp-rpg-day" id="campRpgDay">Lunes</div>
+          <div class="camp-rpg-line" id="campRpgLine">Una nueva semana comienza. El destino te llama.</div>
+        </div>
+        <div class="camp-char-wrap">
+          <div class="camp-char-avatar-ring state-normal" id="campCharRing">
+            <svg id="campCharSvg" width="96" height="96" viewBox="0 0 64 64" style="image-rendering:pixelated;image-rendering:crisp-edges"></svg>
+          </div>
+          <div class="camp-char-name" id="campCharName">Aventurero</div>
+          <div class="camp-char-state-label state-normal" id="campCharStateLabel">⚡ En forma</div>
+        </div>
+      </div>
+      <!-- News cards -->
+      <div class="camp-news-section">
+        <div class="camp-news-label">Novedades del día</div>
+        <div class="camp-news-scroll" id="campNewsTrack"></div>
+      </div>
+      <!-- Bottom nav -->
+      <div class="camp-bottom-nav">
+        <button class="camp-nav-btn btn-primary" onclick="showMisionesScreen()">
+          <span class="cnb-icon">⚔️</span>
+          <span class="cnb-label">Misiones</span>
+          <span class="cnb-sub" id="cnbMisionsSub">0/0</span>
+        </button>
+        <button class="camp-nav-btn" onclick="navAdv()">
+          <span class="cnb-icon">🗺️</span>
+          <span class="cnb-label">Aventura</span>
+          <span class="cnb-sub">Explorar</span>
+        </button>
+        <button class="camp-nav-btn" onclick="openProfile()">
+          <span class="cnb-icon">👤</span>
+          <span class="cnb-label">Perfil</span>
+          <span class="cnb-sub" id="cnbProfileSub">Nv.1</span>
+        </button>
+      </div>
+    </div><!-- /camp-screen -->
+
+    <!-- ══ MISIONES SCREEN ══ -->
+    <div class="misiones-screen" id="misionesScreen">
+      <div class="mis-back-bar">
+        <button class="mis-back-btn" onclick="showCampScreen()">← Campamento</button>
+        <span class="mis-back-title">Misiones del Día</span>
+      </div>
+
     <!-- Compact character strip -->
     <div class="char-strip" onclick="openProfile()" role="button" aria-label="Ver perfil">
       <div class="cs-avatar-wrap" id="csAvatarWrap">
@@ -5038,6 +5315,8 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     <div class="calm-row">
       <button class="calm-main-btn" id="btnCalm">🕊️ Momento de calma — 5·4·3·2·1</button>
     </div>
+
+    </div><!-- /misiones-screen -->
 
   </div>
 </div>
@@ -9327,6 +9606,260 @@ function spawnConfetti(el) {
   }
 }
 
+// ═══════════════════════════════════════════
+// CAMP SCREEN — El Campamento
+// ═══════════════════════════════════════════
+
+const CAMP_MESSAGES = {
+  0: ['El mundo descansa, pero el héroe forja su leyenda.',
+      'La tormenta de la semana cesó. Reagrúpate, guerrero.',
+      'El Sabbath del guerrero. Prepárate para lo que viene.'],
+  1: ['Una nueva semana comienza. El destino te llama.',
+      'Las puertas del Abismo se abren de nuevo. ¿Estás listo?',
+      'El Consejo ha convocado al héroe. Es tu turno.'],
+  2: ['El camino hacia la gloria continúa. Sin pausa.',
+      'Las llamas del esfuerzo arden más fuerte hoy.',
+      'El guerrero sigue su misión sin descanso.'],
+  3: ['El Abismo despierta. Tu héroe debe actuar.',
+      'La batalla más dura espera a los más valientes.',
+      'El punto de quiebre. Aquí se forjan las leyendas.'],
+  4: ['La victoria está al alcance. No te rindas ahora.',
+      'El alba se acerca. Un esfuerzo más, aventurero.',
+      'Las fuerzas del caos retroceden. Empuja más fuerte.'],
+  5: ['El fin de semana llama, pero el héroe no afloja.',
+      'Las mazmorras aguardan. El botín es tuyo esta noche.',
+      'La última línea antes del descanso. Hazlo contar.'],
+  6: ['El guerrero merece su descanso. Pero primero: la misión.',
+      'El mundo se abre ante ti. Explora y conquista.',
+      'El Oráculo susurra: "Este es tu día de gloria."'],
+};
+
+const DAILY_SPECIAL_POOL = [
+  { icon:'🚶', title:'Caminata del Héroe',      desc:'Sal a caminar 20 minutos sin teléfono.',               xp:40 },
+  { icon:'📖', title:'Lectura Sagrada',           desc:'Lee 15 páginas sin interrupciones.',                   xp:35 },
+  { icon:'✍️', title:'Diario del Guerrero',       desc:'Escribe 3 cosas por las que estás agradecido.',        xp:30 },
+  { icon:'📞', title:'Conexión Vital',            desc:'Llama a alguien que extrañas.',                         xp:45 },
+  { icon:'💧', title:'Hidratación Élite',         desc:'Bebe 10 vasos de agua hoy.',                           xp:25 },
+  { icon:'🧘', title:'Meditación Profunda',       desc:'Medita 10 minutos en silencio absoluto.',              xp:35 },
+  { icon:'🌅', title:'Vigilia del Alba',          desc:'Despierta antes de las 7 AM y disfruta el amanecer.', xp:50 },
+  { icon:'🍎', title:'Nutrición del Campeón',     desc:'Come 5 porciones de frutas o verduras hoy.',          xp:30 },
+  { icon:'💪', title:'Entrenamiento Especial',    desc:'Haz 30 min de ejercicio de alta intensidad.',         xp:45 },
+  { icon:'🎯', title:'El Desafío del Día',        desc:'Completa tu tarea más difícil antes que ninguna otra.',xp:40 },
+  { icon:'🌙', title:'Ritual Nocturno',           desc:'Duerme antes de las 11 PM sin pantallas 30 min antes.',xp:35 },
+  { icon:'🎨', title:'Creación Libre',            desc:'Dedica 20 min a algo creativo: dibujo, música o escritura.',xp:30 },
+  { icon:'🤝', title:'Acto de Bondad',            desc:'Haz algo bueno por alguien sin esperar nada a cambio.',xp:40 },
+  { icon:'📵', title:'Desintoxicación Digital',   desc:'Pasa 2 horas sin redes sociales ni noticias.',        xp:35 },
+  { icon:'🧹', title:'El Gran Orden',             desc:'Ordena y limpia un espacio de tu hogar completamente.',xp:30 },
+];
+
+function getDailySpecialMission() {
+  var today = new Date();
+  var key   = today.toISOString().slice(0, 10);
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem('camp_special') || '{}'); } catch(e){}
+  if (saved.date === key) return saved;
+  var dayNum  = Math.floor(today.getTime() / 86400000);
+  var idx     = dayNum % DAILY_SPECIAL_POOL.length;
+  var mission = Object.assign({}, DAILY_SPECIAL_POOL[idx], { date: key, done: false });
+  localStorage.setItem('camp_special', JSON.stringify(mission));
+  return mission;
+}
+
+function completeDailySpecial() {
+  var special = getDailySpecialMission();
+  if (special.done) return;
+  special.done = true;
+  localStorage.setItem('camp_special', JSON.stringify(special));
+  if (typeof addXP === 'function') addXP(special.xp, 'disciplina', 'Misión Especial: ' + special.title);
+  if (typeof floatXP === 'function') floatXP(special.xp, 'disciplina', document.getElementById('campCharRing'));
+  spawnConfetti(document.getElementById('campCharRing'));
+  if (typeof quickToast === 'function') quickToast('⭐', 'Misión especial completada', '+' + special.xp + ' XP — ' + special.title);
+  renderCampScreen();
+}
+
+function showCampScreen() {
+  var camp = document.getElementById('campScreen');
+  var mis  = document.getElementById('misionesScreen');
+  if (camp) camp.classList.remove('hidden');
+  if (mis)  mis.classList.remove('active');
+  renderCampScreen();
+  setBottomTab('bnHome');
+}
+
+function showMisionesScreen() {
+  var camp = document.getElementById('campScreen');
+  var mis  = document.getElementById('misionesScreen');
+  if (camp) camp.classList.add('hidden');
+  if (mis)  { mis.classList.add('active'); mis.scrollTop = 0; }
+  setBottomTab('bnHome');
+  history.pushState({ hrpgOverlay: 'misiones' }, '');
+}
+
+function renderCampScreen() {
+  var screen = document.getElementById('campScreen');
+  if (!screen || screen.classList.contains('hidden')) return;
+  _campRenderBg();
+  _campRenderMsg();
+  _campRenderChar();
+  _campRenderCards();
+  _campRenderBottomNav();
+}
+
+function _campRenderBg() {
+  var sky = document.getElementById('campSky');
+  if (!sky) return;
+  var mornScore = (day && day.bienMorn) || 0;
+  var evenScore = (day && day.bienEven) || 0;
+  var score     = Math.max(mornScore, evenScore);
+  sky.className = 'camp-sky';
+  if (!mornScore && !evenScore) { sky.classList.add('sky-storm'); }
+  else if (score >= 7)          { sky.classList.add('sky-clear'); }
+  else if (score >= 4)          { sky.classList.add('sky-overcast'); }
+  else                          { sky.classList.add('sky-storm'); }
+
+  // Seed stars once
+  var starsEl = document.getElementById('campStars');
+  if (starsEl && !starsEl._seeded) {
+    starsEl._seeded = true;
+    for (var i = 0; i < 55; i++) {
+      var s = document.createElement('div');
+      s.className = 'camp-star';
+      var sz = 1 + Math.random() * 2;
+      s.style.cssText = 'width:'+sz+'px;height:'+sz+'px;'
+        +'left:'+Math.random()*100+'%;top:'+Math.random()*70+'%;'
+        +'--dur:'+(1.5+Math.random()*3)+'s;'
+        +'--lo:'+(0.1+Math.random()*0.2)+';--hi:'+(0.5+Math.random()*0.5)+';'
+        +'animation-delay:'+(Math.random()*4)+'s';
+      starsEl.appendChild(s);
+    }
+  }
+}
+
+function _campRenderMsg() {
+  var dayEl  = document.getElementById('campRpgDay');
+  var lineEl = document.getElementById('campRpgLine');
+  if (!dayEl || !lineEl) return;
+  var DAYS_ES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var d       = new Date();
+  var dow     = d.getDay();
+  var msgs    = CAMP_MESSAGES[dow] || CAMP_MESSAGES[1];
+  var variant = d.getDate() % msgs.length;
+  dayEl.textContent  = DAYS_ES[dow];
+  lineEl.textContent = msgs[variant];
+}
+
+function _campRenderChar() {
+  var ring    = document.getElementById('campCharRing');
+  var svgWrap = document.getElementById('campCharSvg');
+  var nameEl  = document.getElementById('campCharName');
+  var stateEl = document.getElementById('campCharStateLabel');
+  if (!ring || !svgWrap) return;
+  svgWrap.innerHTML = '';
+  if (typeof buildPixelAvatar === 'function') {
+    svgWrap.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 96));
+  }
+  if (nameEl) nameEl.textContent = (char && char.name) || 'Aventurero';
+  var state = (typeof getCharacterState === 'function') ? getCharacterState() : 'normal';
+  var stateMap = {
+    brillante: { label:'✨ Brillante',     cls:'state-brillante' },
+    normal:    { label:'⚡ En forma',      cls:'state-normal'    },
+    cansado:   { label:'😓 Cansado',       cls:'state-cansado'   },
+    critico:   { label:'💀 Estado crítico',cls:'state-critico'   },
+  };
+  var sm = stateMap[state] || stateMap.normal;
+  ring.className = 'camp-char-avatar-ring ' + sm.cls;
+  if (stateEl) { stateEl.className = 'camp-char-state-label ' + sm.cls; stateEl.textContent = sm.label; }
+}
+
+function _campRenderCards() {
+  var track = document.getElementById('campNewsTrack');
+  if (!track) return;
+  track.innerHTML = '';
+  var cards = _campBuildCards();
+  cards.forEach(function(card) {
+    var el = document.createElement('div');
+    el.className = 'camp-news-card ' + (card.type || '') + (card.done ? ' card-done' : '');
+    var html = '';
+    if (card.done) html += '<div class="cnc-done-badge">✓ Hecho</div>';
+    html += '<span class="cnc-icon">' + card.icon + '</span>';
+    html += '<div class="cnc-title">' + card.title + '</div>';
+    html += '<div class="cnc-body">'  + card.body  + '</div>';
+    if (card.sub)    html += '<div class="cnc-sub">'    + card.sub    + '</div>';
+    if (card.action) html += '<div class="cnc-action">' + card.action + '</div>';
+    el.innerHTML = html;
+    if (card.onClick) el.addEventListener('click', card.onClick);
+    track.appendChild(el);
+  });
+}
+
+function _campBuildCards() {
+  var cards = [];
+  var mornDone  = (day.morning  || []).filter(function(m){ return m.done; }).length;
+  var mornTotal = typeof MORNING_ITEMS !== 'undefined' ? MORNING_ITEMS.length : 4;
+  var missDone  = (day.missions || []).filter(function(m){ return m.done; }).length;
+  var missTotal = (day.missions || []).length;
+  var totalDone  = mornDone + missDone;
+  var totalTotal = mornTotal + missTotal;
+  var pct = totalTotal > 0 ? Math.round(totalDone / totalTotal * 100) : 0;
+
+  // Progress
+  cards.push({ type:'card-progress', icon:'🎯', title:'Progreso del día',
+    body: totalDone + ' de ' + totalTotal + ' misiones', sub: pct + '% del día conquistado',
+    action:'Ver Misiones →', onClick: function(){ showMisionesScreen(); } });
+
+  // Streak
+  var streak = (char && char.habitStreak && char.habitStreak.count) || 0;
+  if (streak >= 2) {
+    cards.push({ type:'card-streak', icon:'🔥', title:'Racha activa',
+      body: 'Tu racha llega a ' + streak + ' días',
+      sub: streak >= 30 ? '¡Leyenda viva!' : streak >= 7 ? '¡Semana perfecta!' : 'Sigue así, guerrero' });
+  }
+
+  // Daily special
+  var special = getDailySpecialMission();
+  cards.push({ type:'card-special', icon:special.icon, title:'Misión Especial',
+    body: special.title, sub: special.desc,
+    action: special.done ? '✓ Completada' : '+' + special.xp + ' XP · Completar',
+    done: special.done,
+    onClick: special.done ? null : function(){ completeDailySpecial(); } });
+
+  // Dungeon
+  cards.push({ type:'card-dungeon', icon:'⚔️', title:'Mazmorra del día',
+    body: pct >= 50 ? 'La mazmorra de hoy está desbloqueada' : 'Completa más misiones para revelarla',
+    sub: pct >= 50 ? 'Aventúrate ahora, guerrero' : (50 - pct) + '% más para desbloquear',
+    action: pct >= 50 ? 'Entrar →' : '🔒 Bloqueada',
+    onClick: pct >= 50 ? function(){ navAdv(); } : null });
+
+  // Guild
+  if (typeof guild !== 'undefined' && guild && guild.name) {
+    var mc = (guild.members && guild.members.length) || 0;
+    cards.push({ type:'card-guild', icon:'🏰', title:'Tu Gremio',
+      body: guild.name, sub: mc + ' miembros en batalla',
+      action:'Ver Gremio →',
+      onClick: function(){ if (typeof openGuildModal === 'function') openGuildModal(); } });
+  }
+
+  // XP today
+  var xpToday = (day && day.xpToday) || 0;
+  if (xpToday > 0) {
+    cards.push({ type:'card-progress', icon:'⚡', title:'XP ganado hoy',
+      body: '+' + xpToday + ' XP conseguidos',
+      sub: 'Nivel ' + ((char && char.level) || 1) + ' · ' + ((char && char.xp) || 0) + ' XP total' });
+  }
+  return cards;
+}
+
+function _campRenderBottomNav() {
+  var mornDone  = (day.morning  || []).filter(function(m){ return m.done; }).length;
+  var mornTotal = typeof MORNING_ITEMS !== 'undefined' ? MORNING_ITEMS.length : 4;
+  var missDone  = (day.missions || []).filter(function(m){ return m.done; }).length;
+  var missTotal = (day.missions || []).length;
+  var el = document.getElementById('cnbMisionsSub');
+  if (el) el.textContent = (mornDone + missDone) + '/' + (mornTotal + missTotal);
+  var profEl = document.getElementById('cnbProfileSub');
+  if (profEl) profEl.textContent = 'Nv.' + ((char && char.level) || 1);
+}
+
 // ── APPEARANCE EDITOR (char panel) ──────────────────────────────────────────
 
 function toggleAparienciaEditor() {
@@ -9627,6 +10160,7 @@ function renderChar() {
   }
 
   renderDaySummary();
+  renderCampScreen();
 }
 
 // ═══════════════════════════════════════════
@@ -16605,6 +17139,14 @@ function goHome() {
   closeMoreDrawer();
   document.body.style.overflow = '';
   setBottomTab('bnHome');
+  // Return to camp screen if on misiones screen
+  var camp = document.getElementById('campScreen');
+  var mis  = document.getElementById('misionesScreen');
+  if (camp && mis && mis.classList.contains('active')) {
+    camp.classList.remove('hidden');
+    mis.classList.remove('active');
+    renderCampScreen();
+  }
 }
 
 function openProfile() {
@@ -16668,6 +17210,9 @@ function navShop() {
 
     var moreDrawer = document.getElementById('moreDrawer');
     if (moreDrawer && moreDrawer.classList.contains('open')) { closeMoreDrawer(); return; }
+    // Back from misiones screen → camp screen
+    var misOl = document.getElementById('misionesScreen');
+    if (misOl && misOl.classList.contains('active')) { showCampScreen(); return; }
     var panel = document.getElementById('charPanel');
     if (panel && panel.classList.contains('profile-open')) { closeProfile(); return; }
     var advOl = document.getElementById('advOverlay');
@@ -18106,6 +18651,7 @@ function stResetTree() {
 
 setBottomTab('bnHome');
 try { checkAndShowMentorLetter(); } catch(e) {}
+try { renderCampScreen(); } catch(e) {}
 
 // ── Start: check auth session or go guest ──
 initAuth();
