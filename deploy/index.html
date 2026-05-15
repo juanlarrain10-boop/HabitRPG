@@ -5018,7 +5018,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
         </div>
         <div class="camp-char-wrap">
           <div class="camp-char-avatar-ring state-normal" id="campCharRing">
-            <svg id="campCharSvg" width="96" height="96" viewBox="0 0 64 64" style="image-rendering:pixelated;image-rendering:crisp-edges"></svg>
+            <div id="campCharSvg" style="width:96px;height:96px;display:flex;align-items:center;justify-content:center;overflow:hidden;image-rendering:pixelated;image-rendering:crisp-edges"></div>
           </div>
           <div class="camp-char-name" id="campCharName">Aventurero</div>
           <div class="camp-char-state-label state-normal" id="campCharStateLabel">⚡ En forma</div>
@@ -9698,11 +9698,11 @@ function showMisionesScreen() {
 function renderCampScreen() {
   var screen = document.getElementById('campScreen');
   if (!screen || screen.classList.contains('hidden')) return;
-  _campRenderBg();
-  _campRenderMsg();
-  _campRenderChar();
-  _campRenderCards();
-  _campRenderBottomNav();
+  try { _campRenderBg(); }      catch(e) {}
+  try { _campRenderMsg(); }     catch(e) {}
+  try { _campRenderChar(); }    catch(e) {}
+  try { _campRenderCards(); }   catch(e) {}
+  try { _campRenderBottomNav(); } catch(e) {}
 }
 
 function _campRenderBg() {
@@ -9755,7 +9755,7 @@ function _campRenderChar() {
   var stateEl = document.getElementById('campCharStateLabel');
   if (!ring || !svgWrap) return;
   svgWrap.innerHTML = '';
-  if (typeof buildPixelAvatar === 'function') {
+  if (typeof buildPixelAvatar === 'function' && char && char.avatar) {
     svgWrap.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 96));
   }
   if (nameEl) nameEl.textContent = (char && char.name) || 'Aventurero';
@@ -16410,7 +16410,10 @@ function hideAuthOverlay() {
   // Reveal camp screen now that auth is done (was hidden to prevent iOS Safari
   // scroll-swallow: overflow-x:auto behind position:fixed can eat touch events)
   var camp = document.getElementById('campScreen');
-  if (camp) camp.classList.remove('hidden');
+  if (camp) {
+    camp.classList.remove('hidden');
+    try { renderCampScreen(); } catch(e) {}
+  }
 }
 function showAuthForm() {
   document.getElementById('authForm').classList.remove('hide');
