@@ -3781,14 +3781,14 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 }
 .camp-news-card {
   background:
-    repeating-linear-gradient(88deg,transparent 0,transparent 14px,rgba(0,0,0,.025) 14px,rgba(0,0,0,.025) 15px),
-    repeating-linear-gradient(2deg,transparent 0,transparent 10px,rgba(255,220,150,.012) 10px,rgba(255,220,150,.012) 11px),
-    linear-gradient(145deg,#28200e 0%,#1c1608 60%,#221a08 100%);
-  border: 1px solid rgba(140,110,68,.48);
+    repeating-linear-gradient(88deg,transparent 0,transparent 13px,rgba(0,0,0,.07) 13px,rgba(0,0,0,.07) 14px),
+    repeating-linear-gradient(1deg,transparent 0,transparent 9px,rgba(255,210,120,.04) 9px,rgba(255,210,120,.04) 10px),
+    linear-gradient(160deg,#5c4220 0%,#4a3214 50%,#3d2a0e 100%);
+  border: 1px solid rgba(180,140,75,.65);
   border-radius: 8px; padding: 9px 10px 9px;
   cursor: pointer; transition: border-color .2s, transform .12s;
   position: relative; overflow: hidden;
-  box-shadow: inset 0 0 10px rgba(0,0,0,.45), 0 2px 8px rgba(0,0,0,.35);
+  box-shadow: inset 0 0 18px rgba(0,0,0,.55), inset 0 1px 0 rgba(220,185,100,.12), 0 2px 10px rgba(0,0,0,.5);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   animation: scrollReveal .38s ease-out both;
@@ -3799,17 +3799,17 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .camp-news-card:active { transform: scale(0.95); }
 .camp-news-card::before {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(145deg,rgba(200,165,90,.06) 0%,transparent 55%);
+  background: linear-gradient(145deg,rgba(220,185,100,.14) 0%,transparent 50%);
   pointer-events: none;
 }
-.camp-news-card.card-streak  { border-color: rgba(185,55,55,.55); }
-.camp-news-card.card-streak::before  { background: linear-gradient(145deg,rgba(220,70,70,.08) 0%,transparent 55%); }
-.camp-news-card.card-special { border-color: rgba(185,140,40,.6); }
-.camp-news-card.card-special::before { background: linear-gradient(145deg,rgba(220,160,50,.09) 0%,transparent 55%); }
-.camp-news-card.card-guild   { border-color: rgba(50,100,200,.45); }
-.camp-news-card.card-progress{ border-color: rgba(30,135,80,.48); }
-.camp-news-card.card-progress::before { background: linear-gradient(145deg,rgba(50,180,110,.07) 0%,transparent 55%); }
-.camp-news-card.card-dungeon { border-color: rgba(130,80,200,.42); }
+.camp-news-card.card-streak  { border-color: rgba(220,70,70,.75); }
+.camp-news-card.card-streak::before  { background: linear-gradient(145deg,rgba(220,70,70,.16) 0%,transparent 55%); }
+.camp-news-card.card-special { border-color: rgba(210,165,50,.8); }
+.camp-news-card.card-special::before { background: linear-gradient(145deg,rgba(220,165,60,.15) 0%,transparent 55%); }
+.camp-news-card.card-guild   { border-color: rgba(70,120,230,.65); }
+.camp-news-card.card-progress{ border-color: rgba(50,170,100,.7); }
+.camp-news-card.card-progress::before { background: linear-gradient(145deg,rgba(50,180,110,.14) 0%,transparent 55%); }
+.camp-news-card.card-dungeon { border-color: rgba(155,100,230,.65); }
 .camp-news-card.card-done    { opacity: .5; }
 
 .cnc-seal {
