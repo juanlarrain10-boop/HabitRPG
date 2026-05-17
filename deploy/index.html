@@ -11118,7 +11118,7 @@ function getAdvStatus() {
   const xpT   = day.xpToday || 0;
   let available = 1;
   if (pct >= 0.5) available = 2;
-  if (pct >= 1.0) available = 4;
+  if (pct >= 1.0) available = 3;
   const played    = day.dungeonsPlayed || 0;
   let remaining   = Math.max(0, available - played);
   if (gm && gm.infiniteDungeons) { remaining = 99; }
@@ -11199,13 +11199,13 @@ function renderAdvMap(el) {
         ⚔️ ${st.remaining} / ${st.available} dungeon${st.available!==1?'s':''} hoy
       </span>`;
   if (st.remaining === 0) {
-    if (st.available === 4) {
+    if (st.available === 3) {
       html += `</div><div class="adv-lock-banner" style="background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.2);color:#6ee7b7">✅ ¡Completaste todos tus dungeons de hoy! Vuelve mañana.</div>`;
     } else if (st.available === 2) {
-      const need4 = Math.ceil((1.0 - st.pct) * st.total);
+      const need3 = Math.ceil((1.0 - st.pct) * st.total);
       html += `</div><div class="adv-lock-banner" style="background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.2);color:#6ee7b7">
-        ✅ 2 dungeons completados. Completa el <b>100%</b> de misiones para desbloquear 4 dungeons.
-        ${need4 > 0 ? `<br>Faltan <b>${need4} misión${need4!==1?'es':''}</b>.` : ''}
+        ✅ 2 dungeons completados. Completa el <b>100%</b> de misiones para desbloquear 3 dungeons.
+        ${need3 > 0 ? `<br>Faltan <b>${need3} misión${need3!==1?'es':''}</b>.` : ''}
       </div>`;
     } else {
       const need2 = Math.ceil((0.5 - st.pct) * st.total);
@@ -11219,8 +11219,8 @@ function renderAdvMap(el) {
       const need2 = Math.ceil((0.5 - st.pct) * st.total);
       html += `<span style="font-size:.63rem;color:var(--dim)">Completa <b>${need2} misión${need2!==1?'es':''}</b> más → 2 dungeons</span>`;
     } else if (st.pct < 1.0) {
-      const need4 = Math.ceil((1.0 - st.pct) * st.total);
-      html += `<span style="font-size:.63rem;color:var(--dim)">Completa <b>${need4} misión${need4!==1?'es':''}</b> más → 4 dungeons</span>`;
+      const need3 = Math.ceil((1.0 - st.pct) * st.total);
+      html += `<span style="font-size:.63rem;color:var(--dim)">Completa <b>${need3} misión${need3!==1?'es':''}</b> más → 3 dungeons</span>`;
     }
     html += `</div>`;
   }
