@@ -40,7 +40,9 @@
       "Bash(mkdir \"C:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\js\")",
       "Bash(curl -L \"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js\" -o \"C:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\js\\\\supabase.min.js\" --silent --show-error)",
       "Bash(git commit *)",
-      "Bash(powershell -Command \"Copy-Item 'habit-rpg.html' 'deploy\\\\index.html' -Force\")"
+      "Bash(powershell -Command \"Copy-Item 'habit-rpg.html' 'deploy\\\\index.html' -Force\")",
+      "Bash(wc -l \"/mnt/c/Users/juanl/OneDrive/Escritorio/Proyectos/habit-rpg.html\")",
+      "Read(//mnt/c/Users/juanl/OneDrive/Escritorio/Proyectos/**)"
     ]
   }
 }

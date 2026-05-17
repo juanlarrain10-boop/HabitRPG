@@ -807,6 +807,87 @@ h2, h3 { font-family: var(--pxfont); }
 }
 .btn-del:hover { color: #f87171; border-color: rgba(248,113,113,.3); background: rgba(248,113,113,.07); }
 
+/* ── POMODORO TIMER BUTTON ── */
+.btn-pom {
+  width: 26px; height: 26px; flex-shrink: 0; border-radius: 6px;
+  border: 1px solid var(--bd); background: transparent;
+  color: var(--dim); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: .72rem; transition: all .15s; margin-left: 2px;
+}
+.btn-pom:hover { color: #fb923c; border-color: rgba(251,146,60,.35); background: rgba(251,146,60,.08); }
+.btn-pom.pom-running { color: #fb923c; border-color: rgba(251,146,60,.5); background: rgba(251,146,60,.12); animation: pomPulse 1.4s ease-in-out infinite; }
+@keyframes pomPulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+/* ── POMODORO OVERLAY ── */
+.pom-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(4,3,12,.97);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.pom-overlay.visible { opacity: 1; pointer-events: all; }
+.pom-header { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 28px; }
+.pom-counter {
+  font-size: .62rem; color: rgba(251,146,60,.8); letter-spacing: .08em;
+  text-transform: uppercase; font-weight: 700;
+  background: rgba(251,146,60,.08); border: 1px solid rgba(251,146,60,.2);
+  border-radius: 20px; padding: 3px 12px; margin-bottom: 4px;
+}
+.pom-task-name {
+  font-size: 1.05rem; font-weight: 700; color: rgba(255,255,255,.92);
+  text-align: center; max-width: 300px; padding: 0 16px; line-height: 1.35;
+}
+.pom-msg { font-size: .72rem; color: rgba(255,255,255,.42); margin-top: 8px; transition: opacity .6s; }
+.pom-circle-wrap {
+  position: relative; width: 220px; height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 32px;
+}
+.pom-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pom-track { fill: none; stroke: rgba(255,255,255,.06); stroke-width: 10; }
+.pom-progress {
+  fill: none;
+  stroke: var(--pom-color, #fb923c);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 552.92;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset .98s linear, stroke .3s;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 0 8px var(--pom-color, #fb923c));
+}
+.pom-time {
+  font-size: 3rem; font-weight: 800; color: #fff;
+  letter-spacing: -.02em; line-height: 1;
+  font-variant-numeric: tabular-nums; z-index: 1;
+}
+.pom-controls { display: flex; gap: 12px; }
+.pom-btn-ctrl {
+  padding: 11px 26px; border-radius: 10px; border: 1px solid transparent;
+  font-size: .88rem; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: all .15s;
+}
+.pom-btn-pause  { background: rgba(255,255,255,.1); color: #fff; border-color: rgba(255,255,255,.12); }
+.pom-btn-pause:hover  { background: rgba(255,255,255,.18); }
+.pom-btn-cancel { background: rgba(248,113,113,.1); color: #f87171; border-color: rgba(248,113,113,.25); }
+.pom-btn-cancel:hover { background: rgba(248,113,113,.18); }
+.pom-btn-yes { background: rgba(52,211,153,.12); color: #34d399; border-color: rgba(52,211,153,.28); }
+.pom-btn-yes:hover { background: rgba(52,211,153,.22); }
+.pom-btn-close { background: rgba(255,255,255,.07); color: rgba(255,255,255,.55); border-color: rgba(255,255,255,.1); }
+.pom-btn-close:hover { background: rgba(255,255,255,.13); }
+.pom-complete-screen { display: none; flex-direction: column; align-items: center; gap: 14px; }
+.pom-complete-screen.visible { display: flex; }
+.pom-complete-title { font-size: 2rem; }
+.pom-complete-xplbl { font-size: .95rem; color: #34d399; font-weight: 700; }
+.pom-complete-sub { font-size: .78rem; color: rgba(255,255,255,.45); text-align: center; }
+.pom-break-screen { display: none; flex-direction: column; align-items: center; gap: 14px; }
+.pom-break-screen.visible { display: flex; }
+.pom-break-title { font-size: 1.1rem; font-weight: 700; color: rgba(255,255,255,.85); }
+.pom-break-time { font-size: 2.8rem; font-weight: 800; color: #34d399; letter-spacing: -.02em; }
+.pom-break-sub { font-size: .78rem; color: rgba(255,255,255,.4); }
+
 /* ── TRACKERS ───────────────────────────── */
 .trackers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 580px) { .trackers { grid-template-columns: 1fr; } }
@@ -9755,6 +9836,7 @@ function defDay() {
     sleepXPAwarded: false,
     mornBonusAwarded: false,
     missBonusAwarded: false,
+    pomodoroCount: 0,
     checkinMorn: { score:0, emotion:'', xpAwarded:false },
     checkinEven: { score:0, emotion:'', xpAwarded:false },
     energyPhys: 0,
@@ -11069,15 +11151,17 @@ function renderMissions() {
     const icon = document.createElement('div'); icon.className = 'hicon'; icon.textContent = m.icon || '•';
     const lbl  = document.createElement('div'); lbl.className = 'hlbl'; lbl.textContent = m.label;
     const xpb  = document.createElement('div'); xpb.className = 'hxp-badge'; xpb.textContent = `+${m.xp} XP`;
+    const pom  = document.createElement('button'); pom.className = 'btn-pom'; pom.textContent = '⏱'; pom.title = 'Pomodoro 25 min';
     const del  = document.createElement('button'); del.className = 'btn-del'; del.textContent = '✕'; del.title = 'Eliminar';
 
-    // click on row (not delete) = toggle
+    // click on row (not delete/pom) = toggle
     [chk, icon, lbl, xpb].forEach(el => el.addEventListener('click', () => toggleMission(i, row)));
     row.addEventListener('click', e => { if (e.target === row) toggleMission(i, row); });
+    pom.addEventListener('click', e => { e.stopPropagation(); openPomodoro(i); });
     del.addEventListener('click', e => { e.stopPropagation(); removeMission(i); });
 
     row.appendChild(chk); row.appendChild(icon); row.appendChild(lbl);
-    row.appendChild(xpb); row.appendChild(del);
+    row.appendChild(xpb); row.appendChild(pom); row.appendChild(del);
     list.appendChild(row);
   });
 
@@ -11163,6 +11247,154 @@ function removeMission(i) {
   }
   day.missions.splice(i, 1);
   saveDay(); renderMissions(); renderChar();
+}
+
+/* ── POMODORO TIMER ──────────────────────────────── */
+var _pom = {
+  missionIdx: -1,
+  missionLabel: '',
+  remaining: 1500,
+  total: 1500,
+  paused: false,
+  interval: null,
+  breakInterval: null,
+  breakRemaining: 300,
+};
+var POM_CIRC = 552.92; // 2π × 88
+
+function _pomClassColor() {
+  var cls = (typeof CLASSES !== 'undefined' && CLASSES[char.class]) || {};
+  return cls.color || '#fb923c';
+}
+
+function _pomMsg(rem) {
+  if (rem > 1200) return 'Enfócate. Cada segundo cuenta.';
+  if (rem > 900)  return 'Vas bien. Sigue adelante.';
+  if (rem > 600)  return 'A mitad de camino. ¡Tú puedes!';
+  if (rem > 300)  return 'La recta final. ¡No pares!';
+  return '¡Casi terminas! Aguanta.';
+}
+
+function _pomBell() {
+  try {
+    var ac = new (window.AudioContext || window.webkitAudioContext)();
+    [[880,0],[660,0.55],[880,1.1],[440,1.7]].forEach(function(p) {
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine'; o.frequency.value = p[0];
+      var t = ac.currentTime + p[1];
+      g.gain.setValueAtTime(0.38, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 1.1);
+      o.connect(g); g.connect(ac.destination);
+      o.start(t); o.stop(t + 1.2);
+    });
+  } catch(e) {}
+}
+
+function openPomodoro(idx) {
+  var m = day.missions[idx];
+  if (!m) return;
+  pomCancel(); // clear any existing timer
+  _pom.missionIdx = idx;
+  _pom.missionLabel = m.label;
+  _pom.remaining = 1500;
+  _pom.total = 1500;
+  _pom.paused = false;
+
+  var ov = document.getElementById('pomOverlay');
+  ov.style.setProperty('--pom-color', _pomClassColor());
+  document.getElementById('pomTaskName').textContent = m.label;
+  document.getElementById('pomTimerScreen').style.display = 'flex';
+  document.getElementById('pomCompleteScreen').classList.remove('visible');
+  document.getElementById('pomBreakScreen').classList.remove('visible');
+  document.getElementById('pomPauseBtn').textContent = 'Pausar';
+  _pomUpdateDisplay();
+  ov.classList.add('visible');
+
+  // Mark the button as running
+  document.querySelectorAll('.btn-pom').forEach(function(b, i) {
+    b.classList.toggle('pom-running', i === idx);
+  });
+
+  _pom.interval = setInterval(function() {
+    if (_pom.paused) return;
+    _pom.remaining--;
+    _pomUpdateDisplay();
+    if (_pom.remaining <= 0) { clearInterval(_pom.interval); _pomFinish(); }
+  }, 1000);
+}
+
+function _pomUpdateDisplay() {
+  var m = Math.floor(_pom.remaining / 60);
+  var s = _pom.remaining % 60;
+  document.getElementById('pomTime').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  document.getElementById('pomProgress').style.strokeDashoffset = POM_CIRC * (1 - _pom.remaining / _pom.total);
+  document.getElementById('pomMsg').textContent = _pomMsg(_pom.remaining);
+  var cnt = day.pomodoroCount || 0;
+  document.getElementById('pomCounter').textContent = '🍅 ' + cnt + ' pomodoro' + (cnt !== 1 ? 's' : '') + ' hoy';
+}
+
+function pomTogglePause() {
+  _pom.paused = !_pom.paused;
+  document.getElementById('pomPauseBtn').textContent = _pom.paused ? 'Reanudar' : 'Pausar';
+}
+
+function pomCancel() {
+  clearInterval(_pom.interval);
+  clearInterval(_pom.breakInterval);
+  _pom.interval = null;
+  _pom.breakInterval = null;
+  document.querySelectorAll('.btn-pom').forEach(function(b) { b.classList.remove('pom-running'); });
+  var ov = document.getElementById('pomOverlay');
+  if (ov) ov.classList.remove('visible');
+}
+
+function pomClose() { pomCancel(); }
+
+function _pomFinish() {
+  document.querySelectorAll('.btn-pom').forEach(function(b) { b.classList.remove('pom-running'); });
+  // +10 XP bonus
+  addXP(10, 'disciplina', 'Pomodoro: ' + _pom.missionLabel);
+  floatXP(10, 'disciplina', document.getElementById('missList'));
+  vibrate([200, 100, 200]);
+  _pomBell();
+  day.pomodoroCount = (day.pomodoroCount || 0) + 1;
+  var cnt = day.pomodoroCount;
+  var xpLbl = '+10 XP disciplina';
+  var sub = 'Total hoy: ' + cnt + ' pomodoro' + (cnt !== 1 ? 's' : '');
+  if (cnt % 4 === 0) {
+    addXP(50, 'disciplina', 'Bonus 4 pomodoros seguidos');
+    floatXP(50, 'disciplina', document.getElementById('missList'));
+    xpLbl = '+10 XP + ¡BONUS +50 XP! (4 pomodoros)';
+    sub = '🔥 ¡4 pomodoros consecutivos! +50 XP extra';
+    vibrate([300, 100, 300, 100, 300]);
+  }
+  saveDay(); renderChar(); renderMissions();
+  document.getElementById('pomTimerScreen').style.display = 'none';
+  document.getElementById('pomCompleteXP').textContent = xpLbl;
+  document.getElementById('pomCompleteSub').textContent = sub;
+  document.getElementById('pomCompleteScreen').classList.add('visible');
+}
+
+function pomStartBreak() {
+  _pom.breakRemaining = 300;
+  document.getElementById('pomCompleteScreen').classList.remove('visible');
+  document.getElementById('pomBreakScreen').classList.add('visible');
+  _pomUpdateBreak();
+  _pom.breakInterval = setInterval(function() {
+    _pom.breakRemaining--;
+    _pomUpdateBreak();
+    if (_pom.breakRemaining <= 0) {
+      clearInterval(_pom.breakInterval);
+      vibrate([100, 50, 100]);
+      pomClose();
+    }
+  }, 1000);
+}
+
+function _pomUpdateBreak() {
+  var m = Math.floor(_pom.breakRemaining / 60);
+  var s = _pom.breakRemaining % 60;
+  document.getElementById('pomBreakTime').textContent = m + ':' + (s < 10 ? '0' : '') + s;
 }
 
 function addMission() {
@@ -19567,6 +19799,50 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
       <span class="more-item-label">Gremio</span>
     </button>
   </div>
+</div>
+
+<!-- ══ POMODORO TIMER OVERLAY ══ -->
+<div class="pom-overlay" id="pomOverlay">
+
+  <!-- Timer countdown screen -->
+  <div id="pomTimerScreen" style="display:flex;flex-direction:column;align-items:center">
+    <div class="pom-header">
+      <div class="pom-counter" id="pomCounter">🍅 0 pomodoros hoy</div>
+      <div class="pom-task-name" id="pomTaskName">Tarea</div>
+      <div class="pom-msg" id="pomMsg">Enfócate. Cada segundo cuenta.</div>
+    </div>
+    <div class="pom-circle-wrap">
+      <svg class="pom-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle class="pom-track" cx="100" cy="100" r="88"/>
+        <circle class="pom-progress" id="pomProgress" cx="100" cy="100" r="88"/>
+      </svg>
+      <div class="pom-time" id="pomTime">25:00</div>
+    </div>
+    <div class="pom-controls">
+      <button class="pom-btn-ctrl pom-btn-pause" id="pomPauseBtn" onclick="pomTogglePause()">Pausar</button>
+      <button class="pom-btn-ctrl pom-btn-cancel" onclick="pomCancel()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Completion + break offer screen -->
+  <div class="pom-complete-screen" id="pomCompleteScreen">
+    <div class="pom-complete-title">🍅 ¡Completado!</div>
+    <div class="pom-complete-xplbl" id="pomCompleteXP">+10 XP disciplina</div>
+    <div class="pom-complete-sub" id="pomCompleteSub"></div>
+    <div style="display:flex;gap:12px;margin-top:10px">
+      <button class="pom-btn-ctrl pom-btn-yes" onclick="pomStartBreak()">Descansar 5 min</button>
+      <button class="pom-btn-ctrl pom-btn-close" onclick="pomClose()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Break countdown screen -->
+  <div class="pom-break-screen" id="pomBreakScreen">
+    <div class="pom-break-title">Descanso activo</div>
+    <div class="pom-break-time" id="pomBreakTime">5:00</div>
+    <div class="pom-break-sub">Respira, estira, hidratate.</div>
+    <button class="pom-btn-ctrl pom-btn-cancel" onclick="pomClose()" style="margin-top:10px">Terminar descanso</button>
+  </div>
+
 </div>
 
 </body>
