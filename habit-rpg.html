@@ -3718,7 +3718,7 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   align-items: center; justify-content: center; gap: 10px;
 }
 .camp-char-avatar-ring {
-  width: 124px; height: 124px; border-radius: 50%;
+  width: 170px; height: 170px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   position: relative;
   transition: box-shadow .5s;
@@ -3841,6 +3841,112 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .cnb-icon  { font-size: 1.55rem; }
 .cnb-label { font-family: var(--pxfont); font-size: .36rem; color: var(--txt); letter-spacing: .04em; text-align: center; }
 .cnb-sub   { font-size: .65rem; color: var(--purp2); font-weight: 700; }
+
+/* ── Camp epic background ── */
+.camp-moon {
+  position: absolute; top: 7%; right: 7%;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%,#fffff8 0%,#eee0b8 45%,#c8a96a 100%);
+  box-shadow:
+    0 0 0 1px rgba(255,246,180,.18),
+    0 0 18px rgba(255,244,160,.38),
+    0 0 55px rgba(255,238,130,.2),
+    0 0 110px rgba(255,228,100,.11);
+  animation: campMoonPulse 9s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes campMoonPulse {
+  0%,100% { box-shadow: 0 0 0 1px rgba(255,246,180,.18),0 0 18px rgba(255,244,160,.38),0 0 55px rgba(255,238,130,.2),0 0 110px rgba(255,228,100,.11); }
+  50%      { box-shadow: 0 0 0 1px rgba(255,246,180,.26),0 0 28px rgba(255,244,160,.52),0 0 80px rgba(255,238,130,.28),0 0 140px rgba(255,228,100,.16); }
+}
+.camp-nebula-l {
+  position: absolute; width: 260px; height: 190px;
+  top: 4%; left: -60px;
+  background: radial-gradient(ellipse at 55% 45%,rgba(76,29,149,.22) 0%,rgba(49,6,101,.13) 42%,transparent 70%);
+  border-radius: 50%; pointer-events: none;
+  animation: campNebulaL 26s ease-in-out infinite alternate;
+}
+@keyframes campNebulaL {
+  from { transform: translateY(0) rotate(-4deg); opacity:.65; }
+  to   { transform: translateY(14px) rotate(4deg); opacity:1; }
+}
+.camp-nebula-r {
+  position: absolute; width: 200px; height: 150px;
+  top: 10%; right: -40px;
+  background: radial-gradient(ellipse at 45% 50%,rgba(109,40,217,.14) 0%,rgba(79,28,150,.08) 45%,transparent 70%);
+  border-radius: 50%; pointer-events: none;
+  animation: campNebulaR 33s ease-in-out infinite alternate;
+}
+@keyframes campNebulaR {
+  from { transform: translateY(6px) scale(.97); opacity:.8; }
+  to   { transform: translateY(-10px) scale(1.04); opacity:1; }
+}
+.camp-horizon {
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 42%;
+  pointer-events: none;
+}
+/* campfire scene — positioned at bottom of hero-zone */
+.camp-fire-scene {
+  position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 160px; height: 84px;
+  pointer-events: none;
+}
+.camp-fire-spark-canvas {
+  position: absolute; bottom: 8px; left: 50%;
+  transform: translateX(-50%);
+  width: 140px; height: 190px;
+  pointer-events: none;
+}
+.camp-fire-glow-base {
+  position: absolute; bottom: 4px; left: 50%;
+  transform: translateX(-50%);
+  width: 155px; height: 80px;
+  background: radial-gradient(ellipse at 50% 90%,rgba(251,146,60,.52) 0%,rgba(234,88,12,.26) 38%,transparent 68%);
+  pointer-events: none;
+  animation: campFireGlow 1.9s ease-in-out infinite alternate;
+}
+@keyframes campFireGlow {
+  from { opacity:.75; transform: translateX(-50%) scaleX(1); }
+  to   { opacity:1;   transform: translateX(-50%) scaleX(1.1); }
+}
+.camp-fire-body {
+  position: absolute; bottom: 18px; left: 50%;
+  transform: translateX(-50%);
+  width: 60px; height: 58px;
+}
+.camp-fire-body::before {
+  content: ''; position: absolute; bottom: 0;
+  left: 5px; width: 42px; height: 54px;
+  background: linear-gradient(to top,#fbbf24 0%,#f97316 35%,#ef4444 68%,transparent 100%);
+  border-radius: 52% 52% 24% 24%;
+  animation: campFire1 .25s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+.camp-fire-body::after {
+  content: ''; position: absolute; bottom: 0;
+  left: 16px; width: 26px; height: 40px;
+  background: linear-gradient(to top,#fef08a 0%,#fbbf24 40%,#fb923c 72%,transparent 100%);
+  border-radius: 50% 50% 22% 22%;
+  animation: campFire2 .20s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+@keyframes campFire1 {
+  from { transform: scaleX(1) scaleY(1) rotate(-2.5deg); }
+  to   { transform: scaleX(.84) scaleY(1.08) rotate(2.5deg); }
+}
+@keyframes campFire2 {
+  from { transform: scaleX(1.06) scaleY(1) rotate(1.5deg); }
+  to   { transform: scaleX(.9) scaleY(.95) rotate(-2deg); }
+}
+.camp-fire-logs {
+  position: absolute; bottom: 12px; left: 50%;
+  transform: translateX(-50%);
+  width: 62px; height: 14px;
+  background: linear-gradient(to right,#3d1f06,#6b3a14,#4e2a0a,#6b3a14,#3d1f06);
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.65);
+}
 
 /* ── Misiones screen ── */
 .misiones-screen          { display: none; }
@@ -5209,6 +5315,25 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <div class="camp-world-bg">
         <div class="camp-sky sky-storm" id="campSky"></div>
         <div class="camp-stars" id="campStars"></div>
+        <div class="camp-nebula-l"></div>
+        <div class="camp-nebula-r"></div>
+        <div class="camp-moon"></div>
+        <svg class="camp-horizon" viewBox="0 0 390 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,220 L0,155 L50,105 L90,135 L130,80 L180,125 L210,60 L250,115 L290,85 L330,118 L370,88 L390,112 L390,220 Z" fill="#09060f"/>
+          <path d="M0,220 L0,182 L45,160 L90,174 L125,152 L165,170 L205,150 L250,172 L282,157 L320,172 L355,160 L390,170 L390,220 Z" fill="#060410"/>
+          <polygon points="5,200 28,158 50,200" fill="#050210"/>
+          <polygon points="-2,210 24,163 50,210" fill="#060312"/>
+          <polygon points="42,206 66,161 90,206" fill="#040210"/>
+          <polygon points="36,216 63,169 90,216" fill="#050310"/>
+          <polygon points="300,205 323,162 346,205" fill="#050210"/>
+          <polygon points="295,215 320,168 345,215" fill="#060312"/>
+          <polygon points="338,202 362,158 386,202" fill="#040210"/>
+          <polygon points="334,213 360,166 386,213" fill="#050310"/>
+          <rect x="25" y="200" width="5" height="16" fill="#04020e"/>
+          <rect x="62" y="206" width="5" height="14" fill="#04020e"/>
+          <rect x="319" y="205" width="5" height="14" fill="#04020e"/>
+          <rect x="358" y="202" width="5" height="14" fill="#04020e"/>
+        </svg>
         <div class="camp-ground-glow"></div>
         <div class="camp-vignette"></div>
       </div>
@@ -5220,10 +5345,17 @@ button:active:not(:disabled), .btn:active:not(:disabled),
         </div>
         <div class="camp-char-wrap">
           <div class="camp-char-avatar-ring state-normal" id="campCharRing">
-            <div id="campCharSvg" style="width:96px;height:96px;display:flex;align-items:center;justify-content:center;overflow:hidden;image-rendering:pixelated;image-rendering:crisp-edges"></div>
+            <div id="campCharSvg" style="width:132px;height:132px;display:flex;align-items:center;justify-content:center;overflow:hidden;image-rendering:pixelated;image-rendering:crisp-edges"></div>
           </div>
           <div class="camp-char-name" id="campCharName">Aventurero</div>
           <div class="camp-char-state-label state-normal" id="campCharStateLabel">⚡ En forma</div>
+        </div>
+        <!-- Campfire scene — absolute bottom of hero-zone -->
+        <div class="camp-fire-scene">
+          <canvas class="camp-fire-spark-canvas" id="campFireCanvas"></canvas>
+          <div class="camp-fire-glow-base"></div>
+          <div class="camp-fire-body"></div>
+          <div class="camp-fire-logs"></div>
         </div>
       </div>
       <!-- News cards -->
@@ -9913,6 +10045,7 @@ function showMisionesScreen() {
   var mis  = document.getElementById('misionesScreen');
   if (camp) camp.classList.add('hidden');
   if (mis)  { mis.classList.add('active'); mis.scrollTop = 0; }
+  _campStopFire();
   setBottomTab('bnHome');
   history.pushState({ hrpgOverlay: 'misiones' }, '');
 }
@@ -9943,18 +10076,72 @@ function _campRenderBg() {
   var starsEl = document.getElementById('campStars');
   if (starsEl && !starsEl._seeded) {
     starsEl._seeded = true;
-    for (var i = 0; i < 55; i++) {
+    var starPalette = ['#ffffff','#dde8ff','#ffe8c8','#d8ccff','#f0f8ff'];
+    for (var i = 0; i < 80; i++) {
       var s = document.createElement('div');
       s.className = 'camp-star';
-      var sz = 1 + Math.random() * 2;
+      var sz = .7 + Math.random() * 2.4;
+      var clr = starPalette[Math.floor(Math.random()*starPalette.length)];
       s.style.cssText = 'width:'+sz+'px;height:'+sz+'px;'
-        +'left:'+Math.random()*100+'%;top:'+Math.random()*70+'%;'
-        +'--dur:'+(1.5+Math.random()*3)+'s;'
-        +'--lo:'+(0.1+Math.random()*0.2)+';--hi:'+(0.5+Math.random()*0.5)+';'
-        +'animation-delay:'+(Math.random()*4)+'s';
+        +'left:'+Math.random()*100+'%;top:'+Math.random()*62+'%;'
+        +'--dur:'+(1.6+Math.random()*3.8)+'s;'
+        +'--lo:'+(0.06+Math.random()*0.18)+';--hi:'+(0.52+Math.random()*0.48)+';'
+        +'animation-delay:'+(Math.random()*5)+'s;'
+        +'background:'+clr+';';
       starsEl.appendChild(s);
     }
   }
+  _campStartFire();
+}
+
+function _campStartFire() {
+  var canvas = document.getElementById('campFireCanvas');
+  if (!canvas || canvas._firing) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.offsetWidth || 140;
+  var H = canvas.offsetHeight || 190;
+  canvas.width = W; canvas.height = H;
+  canvas._firing = true;
+  function mkSpark() {
+    return {
+      x: W/2 + (Math.random()-.5)*32,
+      y: H - 20,
+      vx: (Math.random()-.5)*1.1,
+      vy: -(1.6+Math.random()*2.6),
+      life: Math.random()*35,
+      maxLife: 55+Math.random()*70,
+      sz: .9+Math.random()*1.9,
+      hue: 16+Math.random()*42
+    };
+  }
+  var sparks = [];
+  for (var i=0;i<24;i++) sparks.push(mkSpark());
+  function tick() {
+    if (!canvas._firing) return;
+    ctx.clearRect(0,0,W,H);
+    for (var i=0;i<sparks.length;i++) {
+      var sp=sparks[i];
+      sp.x += sp.vx + (Math.random()-.5)*.38;
+      sp.y += sp.vy;
+      sp.vy *= .984;
+      sp.life++;
+      if (sp.life>sp.maxLife) { sparks[i]=mkSpark(); continue; }
+      var t=sp.life/sp.maxLife;
+      var a=t<.22?t/.22:Math.max(0,1-(t-.22)/.78);
+      ctx.beginPath();
+      ctx.arc(sp.x,sp.y,Math.max(.4,sp.sz*(1-t*.6)),0,Math.PI*2);
+      ctx.fillStyle='hsla('+sp.hue+',100%,'+(62+t*24)+'%,'+a+')';
+      ctx.fill();
+    }
+    canvas._raf=requestAnimationFrame(tick);
+  }
+  tick();
+}
+function _campStopFire() {
+  var canvas=document.getElementById('campFireCanvas');
+  if (!canvas) return;
+  canvas._firing=false;
+  if (canvas._raf) { cancelAnimationFrame(canvas._raf); canvas._raf=null; }
 }
 
 function _campRenderMsg() {
@@ -9978,7 +10165,7 @@ function _campRenderChar() {
   if (!ring || !svgWrap) return;
   svgWrap.innerHTML = '';
   if (typeof buildPixelAvatar === 'function' && char && char.avatar) {
-    svgWrap.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 96));
+    svgWrap.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 132));
   }
   if (nameEl) nameEl.textContent = (char && char.name) || 'Aventurero';
   var state = (typeof getCharacterState === 'function') ? getCharacterState() : 'normal';
