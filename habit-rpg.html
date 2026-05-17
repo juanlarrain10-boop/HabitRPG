@@ -3770,45 +3770,68 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   padding: 0 14px;
   display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
 }
+@keyframes scrollReveal {
+  from { transform: scaleY(0.78); opacity: 0; transform-origin: top center; }
+  to   { transform: scaleY(1); opacity: 1; transform-origin: top center; }
+}
+@keyframes scrollTap {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.93) rotate(-0.4deg); }
+  100% { transform: scale(1); }
+}
 .camp-news-card {
-  background: linear-gradient(135deg,rgba(28,18,48,.94),rgba(18,12,32,.97));
-  border: 1px solid rgba(167,139,250,.2);
-  border-radius: 12px; padding: 9px 10px 8px;
+  background:
+    repeating-linear-gradient(88deg,transparent 0,transparent 14px,rgba(0,0,0,.025) 14px,rgba(0,0,0,.025) 15px),
+    repeating-linear-gradient(2deg,transparent 0,transparent 10px,rgba(255,220,150,.012) 10px,rgba(255,220,150,.012) 11px),
+    linear-gradient(145deg,#28200e 0%,#1c1608 60%,#221a08 100%);
+  border: 1px solid rgba(140,110,68,.48);
+  border-radius: 8px; padding: 9px 10px 9px;
   cursor: pointer; transition: border-color .2s, transform .12s;
   position: relative; overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0,0,0,.45), 0 2px 8px rgba(0,0,0,.35);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  animation: scrollReveal .38s ease-out both;
 }
-.camp-news-card:active { transform: scale(0.96); }
+.camp-news-card:nth-child(2) { animation-delay: .12s; }
+.camp-news-card:nth-child(3) { animation-delay: .22s; }
+.camp-news-card:nth-child(4) { animation-delay: .30s; }
+.camp-news-card:active { transform: scale(0.95); }
 .camp-news-card::before {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(167,139,250,.05) 0%, transparent 55%);
+  background: linear-gradient(145deg,rgba(200,165,90,.06) 0%,transparent 55%);
   pointer-events: none;
 }
-.camp-news-card.card-streak  { border-color: rgba(239,68,68,.32); }
-.camp-news-card.card-streak::before  { background: linear-gradient(135deg,rgba(239,68,68,.07) 0%,transparent 55%); }
-.camp-news-card.card-special { border-color: rgba(245,158,11,.35); }
-.camp-news-card.card-special::before { background: linear-gradient(135deg,rgba(245,158,11,.08) 0%,transparent 55%); }
-.camp-news-card.card-guild   { border-color: rgba(96,165,250,.28); }
-.camp-news-card.card-progress{ border-color: rgba(16,185,129,.28); }
-.camp-news-card.card-progress::before { background: linear-gradient(135deg,rgba(16,185,129,.06) 0%,transparent 55%); }
-.camp-news-card.card-dungeon { border-color: rgba(167,139,250,.32); }
+.camp-news-card.card-streak  { border-color: rgba(185,55,55,.55); }
+.camp-news-card.card-streak::before  { background: linear-gradient(145deg,rgba(220,70,70,.08) 0%,transparent 55%); }
+.camp-news-card.card-special { border-color: rgba(185,140,40,.6); }
+.camp-news-card.card-special::before { background: linear-gradient(145deg,rgba(220,160,50,.09) 0%,transparent 55%); }
+.camp-news-card.card-guild   { border-color: rgba(50,100,200,.45); }
+.camp-news-card.card-progress{ border-color: rgba(30,135,80,.48); }
+.camp-news-card.card-progress::before { background: linear-gradient(145deg,rgba(50,180,110,.07) 0%,transparent 55%); }
+.camp-news-card.card-dungeon { border-color: rgba(130,80,200,.42); }
 .camp-news-card.card-done    { opacity: .5; }
 
+.cnc-seal {
+  position: absolute; top: 7px; right: 8px;
+  width: 20px; height: 20px; border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.14);
+  z-index: 3; pointer-events: none;
+}
 .cnc-icon  { font-size: 1.35rem; margin-bottom: 3px; display: block; }
-.cnc-title { font-family: var(--pxfont); font-size: .32rem; color: var(--purp2); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 3px; }
-.cnc-body  { font-size: .72rem; color: var(--txt); font-weight: 700; line-height: 1.25; }
-.cnc-sub   { font-size: .6rem; color: var(--dim); margin-top: 2px; line-height: 1.25; }
+.cnc-title { font-family: var(--pxfont); font-size: .32rem; color: #c8a060; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 3px; }
+.cnc-body  { font-size: .72rem; color: #cdb898; font-weight: 700; line-height: 1.25; }
+.cnc-sub   { font-size: .6rem; color: #7e6845; margin-top: 2px; line-height: 1.25; }
 .cnc-action {
   display: inline-block; margin-top: 5px;
-  font-size: .55rem; font-weight: 700; color: var(--purp2);
-  border: 1px solid rgba(167,139,250,.28); border-radius: 5px;
-  padding: 2px 6px; background: rgba(167,139,250,.08);
+  font-size: .55rem; font-weight: 700; color: #c8a060;
+  border: 1px solid rgba(200,160,96,.38); border-radius: 5px;
+  padding: 2px 6px; background: rgba(200,160,96,.1);
 }
 .cnc-done-badge {
   position: absolute; top: 6px; right: 6px;
-  font-size: .5rem; font-weight: 700; color: #10b981;
-  background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.28);
+  font-size: .5rem; font-weight: 700; color: #6ee7b7;
+  background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25);
   border-radius: 20px; padding: 2px 5px;
 }
 
@@ -3944,6 +3967,45 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   background: linear-gradient(to right,#3d1f06,#6b3a14,#4e2a0a,#6b3a14,#3d1f06);
   border-radius: 5px;
   box-shadow: 0 2px 8px rgba(0,0,0,.65);
+}
+
+/* ── Castle throne door ── */
+.camp-throne-door {
+  position: absolute; bottom: 12px; right: 6px;
+  z-index: 4;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.camp-throne-door-svg {
+  width: 64px; height: 86px;
+  filter: drop-shadow(0 0 5px rgba(251,191,36,.3)) drop-shadow(0 3px 14px rgba(0,0,0,.65));
+  transition: filter .3s;
+}
+.camp-throne-door-label {
+  font-family: var(--pxfont); font-size: .27rem;
+  color: rgba(253,230,138,.68); letter-spacing: .09em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(251,191,36,.5);
+  pointer-events: none;
+}
+.camp-throne-door:active .camp-throne-door-svg {
+  filter: drop-shadow(0 0 14px rgba(251,191,36,.75)) drop-shadow(0 3px 16px rgba(0,0,0,.7));
+}
+.camp-throne-door.has-news .camp-throne-door-svg {
+  animation: campDoorPulse 2.6s ease-in-out infinite;
+}
+@keyframes campDoorPulse {
+  0%,100% { filter: drop-shadow(0 0 5px rgba(251,191,36,.3)) drop-shadow(0 3px 14px rgba(0,0,0,.65)); }
+  50%      { filter: drop-shadow(0 0 18px rgba(251,191,36,.78)) drop-shadow(0 0 38px rgba(234,179,8,.45)) drop-shadow(0 3px 14px rgba(0,0,0,.65)); }
+}
+.camp-throne-door.door-opening {
+  animation: campDoorOpen .44s ease-in-out forwards;
+}
+@keyframes campDoorOpen {
+  0%  { transform: scale(1) translateY(0); opacity: 1; }
+  35% { transform: scale(1.1) translateY(-5px); opacity: 1; }
+  100%{ transform: scale(0.55) translateY(10px); opacity: 0; }
 }
 
 /* ── Misiones screen ── */
@@ -5354,6 +5416,42 @@ button:active:not(:disabled), .btn:active:not(:disabled),
             <div class="camp-fire-body"></div>
             <div class="camp-fire-logs"></div>
           </div>
+        </div>
+        <!-- Castle door to Sala del Trono -->
+        <div class="camp-throne-door" id="campThroneDoor" onclick="openThroneFromDoor()">
+          <svg class="camp-throne-door-svg" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="ctdG" cx="50%" cy="72%" r="55%">
+                <stop offset="0%" stop-color="#fde68a" stop-opacity=".72"/>
+                <stop offset="58%" stop-color="#f59e0b" stop-opacity=".22"/>
+                <stop offset="100%" stop-color="#78350f" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <ellipse cx="30" cy="52" rx="26" ry="29" fill="url(#ctdG)"/>
+            <path d="M3,80 L3,38 C3,11 30,4 30,4 C30,4 57,11 57,38 L57,80 Z" fill="#120d22"/>
+            <path d="M9,80 L9,40 C9,18 30,12 30,12 C30,12 51,18 51,40 L51,80 Z" fill="#1c1632"/>
+            <rect x="11" y="39" width="38" height="41" fill="#6b4220"/>
+            <line x1="11" y1="50" x2="49" y2="50" stroke="#4a2e14" stroke-width=".7" opacity=".8"/>
+            <line x1="11" y1="61" x2="49" y2="61" stroke="#4a2e14" stroke-width=".7" opacity=".8"/>
+            <line x1="11" y1="72" x2="49" y2="72" stroke="#4a2e14" stroke-width=".7" opacity=".8"/>
+            <rect x="29" y="39" width="2.5" height="41" fill="#4a2e14" opacity=".7"/>
+            <rect x="11" y="46" width="38" height="2.2" rx=".8" fill="#22202e" opacity=".9"/>
+            <rect x="11" y="67" width="38" height="2.2" rx=".8" fill="#22202e" opacity=".9"/>
+            <circle cx="37" cy="59" r="3.2" fill="none" stroke="#b8860b" stroke-width="1.5"/>
+            <circle cx="37" cy="56.2" r="1.4" fill="#b8860b"/>
+            <line x1="11" y1="39" x2="11" y2="80" stroke="#fde68a" stroke-width=".8" opacity=".7"/>
+            <line x1="49" y1="39" x2="49" y2="80" stroke="#fde68a" stroke-width=".8" opacity=".7"/>
+            <line x1="11" y1="39" x2="49" y2="39" stroke="#fde68a" stroke-width=".6" opacity=".55"/>
+            <path d="M9,40 C9,18 30,12 30,12 C30,12 51,18 51,40" fill="none" stroke="#fde68a" stroke-width=".5" opacity=".22"/>
+            <path d="M25,11 Q30,7 35,11 L33,16 Q30,13 27,16 Z" fill="#1a1230"/>
+            <rect x="3" y="45" width="6" height="9" rx=".5" fill="#1a1230" opacity=".45"/>
+            <rect x="3" y="58" width="6" height="9" rx=".5" fill="#1a1230" opacity=".45"/>
+            <rect x="3" y="71" width="6" height="9" rx=".5" fill="#1a1230" opacity=".45"/>
+            <rect x="51" y="45" width="6" height="9" rx=".5" fill="#1a1230" opacity=".45"/>
+            <rect x="51" y="58" width="6" height="9" rx=".5" fill="#1a1230" opacity=".45"/>
+            <rect x="51" y="71" width="6" height="9" rx=".5" fill="#1a1230" opacity=".45"/>
+          </svg>
+          <div class="camp-throne-door-label">Sala del Trono</div>
         </div>
       </div>
       <!-- News cards -->
@@ -10090,6 +10188,7 @@ function _campRenderBg() {
     }
   }
   _campStartFire();
+  _campUpdateDoor();
 }
 
 function _campStartFire() {
@@ -10142,6 +10241,37 @@ function _campStopFire() {
   if (canvas._raf) { cancelAnimationFrame(canvas._raf); canvas._raf=null; }
 }
 
+function openThroneFromDoor() {
+  var door = document.getElementById('campThroneDoor');
+  if (door) {
+    door.classList.add('door-opening');
+    if (navigator.vibrate) navigator.vibrate(28);
+    setTimeout(function() {
+      door.classList.remove('door-opening');
+      if (typeof openThrone === 'function') openThrone();
+    }, 440);
+  } else {
+    if (typeof openThrone === 'function') openThrone();
+  }
+}
+
+function _campUpdateDoor() {
+  var door = document.getElementById('campThroneDoor');
+  if (!door) return;
+  var has = false;
+  try {
+    if (char) {
+      if ((char.gold || 0) >= 500) has = true;
+      if ((char._newAchCount || 0) > 0) has = true;
+      if ((char.masteryPoints || 0) > 0) has = true;
+    }
+    if (typeof getAdvStatus === 'function') {
+      var s = getAdvStatus(); if (s && s.remaining > 0) has = true;
+    }
+  } catch(e) {}
+  door.classList.toggle('has-news', has);
+}
+
 function _campRenderMsg() {
   var dayEl  = document.getElementById('campRpgDay');
   var lineEl = document.getElementById('campRpgLine');
@@ -10182,11 +10312,17 @@ function _campRenderCards() {
   var track = document.getElementById('campNewsTrack');
   if (!track) return;
   track.innerHTML = '';
+  var SEAL_COLORS = {
+    'card-streak':'#b91c1c','card-dungeon':'#7c3aed',
+    'card-special':'#b45309','card-progress':'#047857','card-guild':'#1d4ed8'
+  };
   var cards = _campBuildCards();
-  cards.forEach(function(card) {
+  cards.forEach(function(card, idx) {
     var el = document.createElement('div');
     el.className = 'camp-news-card ' + (card.type || '') + (card.done ? ' card-done' : '');
-    var html = '';
+    el.style.animationDelay = (idx * 0.1) + 's';
+    var sealClr = SEAL_COLORS[card.type] || '#5b21b6';
+    var html = '<div class="cnc-seal" style="background:radial-gradient(circle at 38% 32%,rgba(255,255,255,.22) 0%,transparent 55%),' + sealClr + '"></div>';
     if (card.done) html += '<div class="cnc-done-badge">✓ Hecho</div>';
     html += '<span class="cnc-icon">' + card.icon + '</span>';
     html += '<div class="cnc-title">' + card.title + '</div>';
@@ -10194,7 +10330,16 @@ function _campRenderCards() {
     if (card.sub)    html += '<div class="cnc-sub">'    + card.sub    + '</div>';
     if (card.action) html += '<div class="cnc-action">' + card.action + '</div>';
     el.innerHTML = html;
-    if (card.onClick) el.addEventListener('click', card.onClick);
+    if (card.onClick) {
+      (function(fn) {
+        el.addEventListener('click', function() {
+          if (el._tapping) return;
+          el._tapping = true;
+          el.style.animation = 'scrollTap .22s ease-out';
+          setTimeout(function() { el.style.animation = ''; el._tapping = false; fn(); }, 185);
+        });
+      })(card.onClick);
+    }
     track.appendChild(el);
   });
 }
