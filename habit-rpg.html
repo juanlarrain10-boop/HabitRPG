@@ -3694,7 +3694,7 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .camp-hero-zone {
   position: relative; z-index: 1; flex: 1;
   display: flex; flex-direction: column; align-items: center;
-  padding: 14px 16px 0; gap: 12px;
+  padding: 12px 16px 18px; gap: 18px;
 }
 .camp-rpg-msg {
   width: 100%; text-align: center;
@@ -3760,23 +3760,20 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .camp-char-state-label.state-critico   { color:#ef4444; border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.1); }
 
 /* ── News cards ── */
-.camp-news-section { position: relative; z-index: 1; padding-bottom: 10px; }
+.camp-news-section { position: relative; z-index: 1; padding-bottom: 8px; }
 .camp-news-label {
-  font-family: var(--pxfont); font-size: .36rem;
+  font-family: var(--pxfont); font-size: .34rem;
   color: var(--dim); text-transform: uppercase;
-  letter-spacing: .12em; padding: 0 16px 8px;
+  letter-spacing: .12em; padding: 0 14px 6px;
 }
 .camp-news-scroll {
-  overflow-x: auto; scroll-snap-type: x mandatory;
-  scrollbar-width: none; -ms-overflow-style: none;
-  padding: 0 16px; display: flex; gap: 10px;
+  padding: 0 14px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
 }
-.camp-news-scroll::-webkit-scrollbar { display: none; }
 .camp-news-card {
-  flex-shrink: 0; width: 188px; scroll-snap-align: start;
   background: linear-gradient(135deg,rgba(28,18,48,.94),rgba(18,12,32,.97));
   border: 1px solid rgba(167,139,250,.2);
-  border-radius: 14px; padding: 13px 13px 12px;
+  border-radius: 12px; padding: 9px 10px 8px;
   cursor: pointer; transition: border-color .2s, transform .12s;
   position: relative; overflow: hidden;
   -webkit-tap-highlight-color: transparent;
@@ -3798,36 +3795,36 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .camp-news-card.card-dungeon { border-color: rgba(167,139,250,.32); }
 .camp-news-card.card-done    { opacity: .5; }
 
-.cnc-icon  { font-size: 1.75rem; margin-bottom: 5px; display: block; }
-.cnc-title { font-family: var(--pxfont); font-size: .38rem; color: var(--purp2); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
-.cnc-body  { font-size: .8rem; color: var(--txt); font-weight: 700; line-height: 1.3; }
-.cnc-sub   { font-size: .65rem; color: var(--dim); margin-top: 3px; line-height: 1.3; }
+.cnc-icon  { font-size: 1.35rem; margin-bottom: 3px; display: block; }
+.cnc-title { font-family: var(--pxfont); font-size: .32rem; color: var(--purp2); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 3px; }
+.cnc-body  { font-size: .72rem; color: var(--txt); font-weight: 700; line-height: 1.25; }
+.cnc-sub   { font-size: .6rem; color: var(--dim); margin-top: 2px; line-height: 1.25; }
 .cnc-action {
-  display: inline-block; margin-top: 8px;
-  font-size: .6rem; font-weight: 700; color: var(--purp2);
-  border: 1px solid rgba(167,139,250,.28); border-radius: 6px;
-  padding: 3px 8px; background: rgba(167,139,250,.08);
+  display: inline-block; margin-top: 5px;
+  font-size: .55rem; font-weight: 700; color: var(--purp2);
+  border: 1px solid rgba(167,139,250,.28); border-radius: 5px;
+  padding: 2px 6px; background: rgba(167,139,250,.08);
 }
 .cnc-done-badge {
-  position: absolute; top: 8px; right: 8px;
-  font-size: .55rem; font-weight: 700; color: #10b981;
+  position: absolute; top: 6px; right: 6px;
+  font-size: .5rem; font-weight: 700; color: #10b981;
   background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.28);
-  border-radius: 20px; padding: 2px 7px;
+  border-radius: 20px; padding: 2px 5px;
 }
 
 /* ── Camp bottom nav ── */
 .camp-bottom-nav {
   position: relative; z-index: 2;
-  display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
-  padding: 10px 12px calc(14px + env(safe-area-inset-bottom,0px));
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 7px;
+  padding: 7px 12px calc(10px + env(safe-area-inset-bottom,0px));
   background: linear-gradient(0deg,rgba(8,8,14,.98) 60%,transparent 100%);
 }
 .camp-nav-btn {
   display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 4px; padding: 14px 8px;
+  justify-content: center; gap: 3px; padding: 9px 8px;
   background: rgba(14,14,24,.85);
   border: 1.5px solid rgba(167,139,250,.18);
-  border-radius: 14px; cursor: pointer; color: var(--txt);
+  border-radius: 12px; cursor: pointer; color: var(--txt);
   font-family: inherit;
   transition: background .15s, border-color .18s, transform .1s;
   -webkit-tap-highlight-color: transparent; touch-action: manipulation;
@@ -3838,9 +3835,9 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   background: rgba(139,92,246,.14);
 }
 .camp-nav-btn.btn-primary:active { background: rgba(139,92,246,.28); }
-.cnb-icon  { font-size: 1.55rem; }
-.cnb-label { font-family: var(--pxfont); font-size: .36rem; color: var(--txt); letter-spacing: .04em; text-align: center; }
-.cnb-sub   { font-size: .65rem; color: var(--purp2); font-weight: 700; }
+.cnb-icon  { font-size: 1.35rem; }
+.cnb-label { font-family: var(--pxfont); font-size: .33rem; color: var(--txt); letter-spacing: .04em; text-align: center; }
+.cnb-sub   { font-size: .6rem; color: var(--purp2); font-weight: 700; }
 
 /* ── Camp epic background ── */
 .camp-moon {
@@ -3885,23 +3882,24 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   position: absolute; bottom: 0; left: 0; width: 100%; height: 42%;
   pointer-events: none;
 }
-/* campfire scene — positioned at bottom of hero-zone */
+/* campfire scene — in normal flow inside camp-char-wrap, below state label */
 .camp-fire-scene {
-  position: absolute; bottom: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 160px; height: 84px;
+  position: relative;
+  width: 128px; height: 67px;
+  flex-shrink: 0;
+  margin: 4px auto 0;
   pointer-events: none;
 }
 .camp-fire-spark-canvas {
-  position: absolute; bottom: 8px; left: 50%;
+  position: absolute; bottom: 6px; left: 50%;
   transform: translateX(-50%);
-  width: 140px; height: 190px;
+  width: 112px; height: 220px;
   pointer-events: none;
 }
 .camp-fire-glow-base {
-  position: absolute; bottom: 4px; left: 50%;
+  position: absolute; bottom: 3px; left: 50%;
   transform: translateX(-50%);
-  width: 155px; height: 80px;
+  width: 124px; height: 64px;
   background: radial-gradient(ellipse at 50% 90%,rgba(251,146,60,.52) 0%,rgba(234,88,12,.26) 38%,transparent 68%);
   pointer-events: none;
   animation: campFireGlow 1.9s ease-in-out infinite alternate;
@@ -3911,13 +3909,13 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   to   { opacity:1;   transform: translateX(-50%) scaleX(1.1); }
 }
 .camp-fire-body {
-  position: absolute; bottom: 18px; left: 50%;
+  position: absolute; bottom: 14px; left: 50%;
   transform: translateX(-50%);
-  width: 60px; height: 58px;
+  width: 48px; height: 46px;
 }
 .camp-fire-body::before {
   content: ''; position: absolute; bottom: 0;
-  left: 5px; width: 42px; height: 54px;
+  left: 4px; width: 34px; height: 43px;
   background: linear-gradient(to top,#fbbf24 0%,#f97316 35%,#ef4444 68%,transparent 100%);
   border-radius: 52% 52% 24% 24%;
   animation: campFire1 .25s ease-in-out infinite alternate;
@@ -3925,7 +3923,7 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 }
 .camp-fire-body::after {
   content: ''; position: absolute; bottom: 0;
-  left: 16px; width: 26px; height: 40px;
+  left: 13px; width: 21px; height: 32px;
   background: linear-gradient(to top,#fef08a 0%,#fbbf24 40%,#fb923c 72%,transparent 100%);
   border-radius: 50% 50% 22% 22%;
   animation: campFire2 .20s ease-in-out infinite alternate;
@@ -3940,9 +3938,9 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   to   { transform: scaleX(.9) scaleY(.95) rotate(-2deg); }
 }
 .camp-fire-logs {
-  position: absolute; bottom: 12px; left: 50%;
+  position: absolute; bottom: 10px; left: 50%;
   transform: translateX(-50%);
-  width: 62px; height: 14px;
+  width: 50px; height: 11px;
   background: linear-gradient(to right,#3d1f06,#6b3a14,#4e2a0a,#6b3a14,#3d1f06);
   border-radius: 5px;
   box-shadow: 0 2px 8px rgba(0,0,0,.65);
@@ -5349,13 +5347,13 @@ button:active:not(:disabled), .btn:active:not(:disabled),
           </div>
           <div class="camp-char-name" id="campCharName">Aventurero</div>
           <div class="camp-char-state-label state-normal" id="campCharStateLabel">⚡ En forma</div>
-        </div>
-        <!-- Campfire scene — absolute bottom of hero-zone -->
-        <div class="camp-fire-scene">
-          <canvas class="camp-fire-spark-canvas" id="campFireCanvas"></canvas>
-          <div class="camp-fire-glow-base"></div>
-          <div class="camp-fire-body"></div>
-          <div class="camp-fire-logs"></div>
+          <!-- Campfire — always below name+state, in normal flow -->
+          <div class="camp-fire-scene">
+            <canvas class="camp-fire-spark-canvas" id="campFireCanvas"></canvas>
+            <div class="camp-fire-glow-base"></div>
+            <div class="camp-fire-body"></div>
+            <div class="camp-fire-logs"></div>
+          </div>
         </div>
       </div>
       <!-- News cards -->
