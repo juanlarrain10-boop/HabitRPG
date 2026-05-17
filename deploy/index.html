@@ -2071,52 +2071,6 @@ h2, h3 { font-family: var(--pxfont); }
 .craft-btn:hover { opacity:.88; }
 .craft-btn:disabled { opacity:.35; cursor:not-allowed; background:#374151; }
 
-/* ═══ MASCOTAS ════════════════════════════════════════════ */
-.btn-pets {
-  padding:6px 13px; border-radius:var(--rsm);
-  background:rgba(74,222,128,.08); border:1px solid rgba(74,222,128,.25);
-  color:#4ade80; font-family:inherit; font-size:.71rem; font-weight:800;
-  cursor:pointer; transition:all .14s; letter-spacing:.01em; flex-shrink:0;
-}
-.btn-pets:hover { background:rgba(74,222,128,.18); border-color:#4ade80; }
-.pets-overlay {
-  position:fixed; inset:0; z-index:800;
-  background:rgba(6,6,14,.97); backdrop-filter:blur(20px);
-  overflow-y:auto; display:flex; justify-content:center;
-  padding:0 0 60px; opacity:1; pointer-events:all; transition:opacity .25s;
-}
-.pets-overlay.hide { opacity:0; pointer-events:none; }
-.pets-wrap { width:100%; max-width:680px; padding:0 16px; }
-.pets-hd {
-  position:sticky; top:0; z-index:2; background:rgba(6,6,14,.96); backdrop-filter:blur(14px);
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  padding:16px 0 14px; border-bottom:1px solid var(--bd); margin-bottom:22px;
-}
-.pets-ttl { font-size:1.25rem; font-weight:800; color:#4ade80; margin:0; }
-.active-pet-card {
-  background:rgba(74,222,128,.08); border:2px solid rgba(74,222,128,.4);
-  border-radius:14px; padding:16px 18px; margin-bottom:22px; display:flex; align-items:center; gap:16px;
-}
-.apc-icon { font-size:3rem; }
-.apc-info { flex:1; }
-.apc-name { font-size:1.1rem; font-weight:800; color:#4ade80; }
-.apc-bonus{ font-size:.8rem; color:#a3e635; margin-top:3px; }
-.apc-none { text-align:center; color:var(--dim); font-size:.88rem; padding:12px 0; font-style:italic; }
-.pets-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(145px,1fr)); gap:12px; }
-.pet-card {
-  background:rgba(74,222,128,.05); border:2px solid rgba(74,222,128,.18);
-  border-radius:14px; padding:16px 12px; text-align:center; cursor:pointer; transition:all .18s;
-}
-.pet-card:hover { background:rgba(74,222,128,.12); border-color:rgba(74,222,128,.45); transform:translateY(-2px); }
-.pet-card.owned.active-pet { border-color:#4ade80; background:rgba(74,222,128,.14); box-shadow:0 0 18px rgba(74,222,128,.2); }
-.pet-card.locked { filter:grayscale(.85); opacity:.5; cursor:not-allowed; }
-.pet-card.locked:hover { transform:none; }
-.pet-icon { font-size:2.4rem; margin-bottom:8px; display:block; }
-.pet-name { font-size:.84rem; font-weight:800; color:var(--fg); margin-bottom:3px; }
-.pet-card.owned .pet-name { color:#4ade80; }
-.pet-bonus{ font-size:.7rem; color:#a3e635; margin-bottom:4px; }
-.pet-hint { font-size:.68rem; color:var(--dim); font-style:italic; }
-.pet-active-badge { font-size:.65rem; padding:2px 8px; border-radius:20px; background:rgba(74,222,128,.18); color:#4ade80; border:1px solid rgba(74,222,128,.4); font-weight:700; margin-top:5px; display:inline-block; }
 
 /* ═══ ESTADÍSTICAS ════════════════════════════════════════ */
 .btn-stats {
@@ -3116,34 +3070,6 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 }
 .auth-retry-btn.hide { display:none; }
 
-.auth-diag { margin-top:14px; border-top:1px solid var(--bd); padding-top:10px; }
-.auth-diag-toggle {
-  background:none; border:none; color:var(--dim); font-size:.68rem;
-  cursor:pointer; padding:0; font-family:inherit; text-decoration:underline;
-  touch-action:manipulation;
-}
-.auth-diag-panel {
-  font-size:.67rem; font-family:monospace; color:var(--dim);
-  background:var(--bg); border:1px solid var(--bd); border-radius:8px;
-  padding:10px 12px; margin-top:8px; line-height:1.9;
-}
-.auth-diag-panel.hide { display:none; }
-.auth-diag-row { display:flex; justify-content:space-between; gap:6px; border-bottom:1px solid rgba(255,255,255,.04); padding:1px 0; }
-.auth-diag-ok  { color:#34d399; }
-.auth-diag-err { color:#f87171; }
-.auth-diag-warn { color:#f59e0b; }
-.auth-diag-test {
-  margin-top:8px; width:100%; padding:6px 8px;
-  background:var(--s3); border:1px solid var(--bd2); border-radius:6px;
-  color:var(--dim); font-family:monospace; font-size:.66rem; cursor:pointer;
-  touch-action:manipulation;
-}
-.auth-diag-log {
-  margin-top:6px; font-size:.58rem; max-height:110px; overflow-y:auto;
-  white-space:pre-wrap; word-break:break-all; color:var(--dim);
-  background:rgba(0,0,0,.3); border-radius:5px; padding:6px 8px;
-  line-height:1.6;
-}
 #authForm.hide { display:none; }
 #authWelcome.hide { display:none; }
 .auth-title.hide { display:none; }
@@ -4708,19 +4634,6 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <div class="auth-spinner"></div>
       <div id="authLoadingTxt">Cargando tu aventura...</div>
     </div>
-    <div class="auth-diag">
-      <button class="auth-diag-toggle" type="button" onclick="_diagToggle()">🔍 Diagnóstico de conexión</button>
-      <div class="auth-diag-panel hide" id="authDiagPanel">
-        <div class="auth-diag-row">SDK Supabase<span id="diagSdk">—</span></div>
-        <div class="auth-diag-row">Cliente (sbClient)<span id="diagClient">—</span></div>
-        <div class="auth-diag-row">Internet<span id="diagNet">—</span></div>
-        <div class="auth-diag-row">Modo PWA<span id="diagMode">—</span></div>
-        <div class="auth-diag-row">Supabase URL<span id="diagUrl">—</span></div>
-        <button class="auth-diag-test" type="button" onclick="_diagTest()">▶ Probar conexión Supabase</button>
-        <div id="diagTestResult" style="margin-top:5px;word-break:break-all;font-size:.64rem;"></div>
-        <div class="auth-diag-log" id="diagLog"></div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -4870,7 +4783,6 @@ button:active:not(:disabled), .btn:active:not(:disabled),
         <button class="ng-item" id="btnShop">🏪 Tienda</button>
         <button class="ng-item" id="btnAdv">⚔️ Aventura</button>
         <button class="ng-item" id="btnStory">📖 Historia</button>
-        <button class="ng-item" id="btnSubclass">🌟 Subclases</button>
       </div>
     </div>
     <!-- Personal -->
@@ -4879,8 +4791,6 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <div class="ng-menu">
         <button class="ng-item" id="btnDiary">📜 Diario</button>
         <button class="ng-item" id="btnAchievements">🏆 Logros</button>
-        <button class="ng-item" id="btnStats">📊 Stats</button>
-        <button class="ng-item" id="btnPets">🐾 Mascotas</button>
       </div>
     </div>
     <!-- Bienestar -->
@@ -4888,7 +4798,6 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <button class="ngb" onclick="toggleNavGroup('ngBienestar')">💙 Bienestar <span class="ng-arrow">▾</span></button>
       <div class="ng-menu">
         <button class="ng-item" id="btnWellness">🧘 Mental</button>
-        <button class="ng-item" id="btnWheel">🗺️ Rueda de la Vida</button>
         <button class="ng-item" id="btnApoyo">💙 Apoyo</button>
       </div>
     </div>
@@ -4944,6 +4853,10 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     <div>
       <div class="stats-title">Estadísticas</div>
       <div id="statsContainer"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="ng-item" style="flex:1;text-align:center" onclick="openStats()">📊 Estadísticas detalladas</button>
+        <button class="ng-item" style="flex:1;text-align:center" onclick="openSubclasses()">🌟 Subclases</button>
+      </div>
     </div>
 
     <div>
@@ -5409,16 +5322,6 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     </div>
     <div class="ach-progress-line" id="achProgressLine">0 / 7 logros desbloqueados</div>
     <div class="ach-grid" id="achGrid"></div>
-  </div>
-</div>
-<!-- PETS OVERLAY -->
-<div class="pets-overlay hide" id="petsOverlay">
-  <div class="pets-wrap">
-    <div class="pets-hd">
-      <h2 class="pets-ttl">🐾 Mascotas</h2>
-      <button style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:1.3rem;padding:4px 8px;" id="petsCloseBtn">✕</button>
-    </div>
-    <div id="petsContent"></div>
   </div>
 </div>
 <!-- STATS OVERLAY -->
@@ -6436,13 +6339,6 @@ const RECIPES = [
   { id:'rc6', name:'Anillo del Equilibrio', icon:'💍', result:'ac4', mats:['ac2','ac3'],  desc:'El balance perfecto entre fuerza y calma' },
 ];
 
-const PETS = [
-  { id:'lobo',      name:'Lobo Gris',     icon:'🐺', bonus:{fuerza:4},     desc:'Compañero de batalla. +4 Fuerza.',    unlock:'battles', threshold:5,  hint:'Ganar 5 batallas' },
-  { id:'buho',      name:'Búho Sabio',    icon:'🦉', bonus:{mente:4},      desc:'Guardián del conocimiento. +4 Mente.',unlock:'level',   threshold:8,  hint:'Alcanzar nivel 8' },
-  { id:'tortuga',   name:'Tortuga Zen',   icon:'🐢', bonus:{vitalidad:4},  desc:'Maestro de la paciencia. +4 Vitalidad.',unlock:'morning',threshold:7, hint:'7 mañanas completas' },
-  { id:'zorro',     name:'Zorro Ágil',    icon:'🦊', bonus:{disciplina:4}, desc:'Estratega de hábitos. +4 Disciplina.',unlock:'habit',   threshold:5,  hint:'Racha de 5 días' },
-  { id:'mariposa',  name:'Mariposa Luna', icon:'🦋', bonus:{bienestar:4},  desc:'Símbolo de transformación. +4 Bienestar.',unlock:'journal',threshold:3,hint:'3 entradas en el diario' },
-];
 
 // ── ADVENTURE CONSTANTS ──────────────────
 const ENEMIES = {
@@ -9198,8 +9094,6 @@ function defChar() {
     morningStreak: { count: 0, lastDate: '' },
     wellnessStreak:{ count: 0, lastDate: '' },
     journalCount: 0,
-    petsOwned: [],
-    activePet: null,
     morningTotal: 0,
     subclasses: [],
     activeSubclass: null,
@@ -9365,7 +9259,6 @@ function loadChar() {
     if (!c.morningStreak  || typeof c.morningStreak  !== 'object') c.morningStreak  = { count:0, lastDate:'' };
     if (!c.wellnessStreak || typeof c.wellnessStreak !== 'object') c.wellnessStreak = { count:0, lastDate:'' };
     if (typeof c.journalCount !== 'number') c.journalCount = 0;
-    if (!Array.isArray(c.petsOwned)) c.petsOwned = [];
     if (typeof c.morningTotal !== 'number') c.morningTotal = 0;
     if (!Array.isArray(c.subclasses)) c.subclasses = [];
     if (c.activeSubclass === undefined) c.activeSubclass = null;
@@ -9452,7 +9345,6 @@ function checkLevelUp() {
     showLevelUp(char.level);
     checkChapterUnlock(char.level);
     checkAchievement('heroe_forjado');
-    checkPetUnlock();
     checkAllSubclassUnlocks();
     SFX.levelUp();
     addMasteryPoint('level');
@@ -9480,7 +9372,7 @@ function getEquipBonus(cat) {
 
 function statValue(cat) {
   const base  = Math.min(99, 1 + Math.floor((char.statXP[cat] || 0) / 25));
-  const bonus = getEquipBonus(cat) + (typeof petBonus === 'function' ? petBonus(cat) : 0);
+  const bonus = getEquipBonus(cat);
   return Math.min(99, base + bonus);
 }
 
@@ -12777,7 +12669,6 @@ function endCombat(won) {
     addGold(adv.rewards.gold);
     saveChar(); saveDay(); renderChar();
     checkAchievement('veterano');
-    checkPetUnlock();
     SFX.victory();
     setTimeout(() => playVictoryAnimation(), 200);
   } else {
@@ -13313,88 +13204,6 @@ document.getElementById('btnShop').addEventListener('click', openShop);
 document.getElementById('goldShopBtn').addEventListener('click', openShop);
 // shopCloseBtn and shopOverlay backdrop handled via inline onclick in HTML
 
-// ═══════════════════════════════════════════
-// PETS SYSTEM
-// ═══════════════════════════════════════════
-
-function petBonus(cat) {
-  if (!char.activePet) return 0;
-  const pet = PETS.find(p => p.id === char.activePet);
-  return (pet?.bonus?.[cat] || 0);
-}
-
-function checkPetUnlock() {
-  PETS.forEach(p => {
-    if (char.petsOwned.includes(p.id)) return;
-    let met = false;
-    if (p.unlock === 'battles') met = (char.battlesWon || 0) >= p.threshold;
-    else if (p.unlock === 'level')   met = char.level >= p.threshold;
-    else if (p.unlock === 'morning') met = (char.morningTotal || 0) >= p.threshold;
-    else if (p.unlock === 'habit')   met = (char.habitStreak?.count || 0) >= p.threshold;
-    else if (p.unlock === 'journal') met = (char.journalCount || 0) >= p.threshold;
-    if (met) {
-      char.petsOwned.push(p.id);
-      saveChar();
-      showPetToast(p);
-    }
-  });
-}
-
-function showPetToast(pet) {
-  const toast = document.getElementById('achToast');
-  document.getElementById('atIcon').textContent = pet.icon;
-  document.getElementById('atName').textContent = `¡${pet.name} te acompaña!`;
-  document.getElementById('atDesc').textContent = pet.desc;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3800);
-  SFX.achievement();
-}
-
-function openPets()  { renderPets(); document.getElementById('petsOverlay').classList.remove('hide'); }
-function closePets() { document.getElementById('petsOverlay').classList.add('hide'); }
-
-function renderPets() {
-  const active = char.activePet ? PETS.find(p => p.id === char.activePet) : null;
-  let html = '';
-
-  html += `<div style="margin-bottom:12px;font-size:.78rem;color:var(--dim)">Elige una mascota activa. Su bonus se suma a tus estadísticas de combate.</div>`;
-
-  html += `<div class="active-pet-card">`;
-  if (active) {
-    const bonusKey = Object.keys(active.bonus)[0];
-    const bonusVal = Object.values(active.bonus)[0];
-    html += `<div class="apc-icon">${active.icon}</div>
-      <div class="apc-info">
-        <div class="apc-name">${active.name}</div>
-        <div class="apc-bonus">+${bonusVal} ${bonusKey.charAt(0).toUpperCase()+bonusKey.slice(1)} en combate</div>
-      </div>`;
-  } else {
-    html += `<div class="apc-none" style="width:100%">No tienes mascota activa. Desbloquea una y selecciónala.</div>`;
-  }
-  html += `</div>`;
-
-  html += `<div class="pets-grid">`;
-  PETS.forEach(p => {
-    const owned  = char.petsOwned.includes(p.id);
-    const isActive = char.activePet === p.id;
-    html += `<div class="pet-card${owned?' owned':''}${!owned?' locked':''}${isActive?' active-pet':''}"
-      onclick="${owned?`setActivePet('${p.id}')`:''}">
-      <span class="pet-icon">${p.icon}</span>
-      <div class="pet-name">${p.name}</div>
-      <div class="pet-bonus">${Object.entries(p.bonus).map(([k,v])=>`+${v} ${k}`).join(', ')}</div>
-      <div class="pet-hint">${owned ? p.desc : '🔒 '+p.hint}</div>
-      ${isActive ? '<div class="pet-active-badge">✓ Activa</div>' : ''}
-    </div>`;
-  });
-  html += `</div>`;
-  document.getElementById('petsContent').innerHTML = html;
-}
-
-function setActivePet(id) {
-  char.activePet = (char.activePet === id) ? null : id;
-  saveChar();
-  renderPets();
-}
 
 // ═══════════════════════════════════════════
 // STATISTICS — helpers
@@ -14107,6 +13916,11 @@ function renderWellnessMenu() {
         <div class="wtb-name">Grounding 5-4-3-2-1</div>
         <div class="wtb-desc">Técnica rápida para la ansiedad</div>
       </div>
+      <div class="well-tool-btn" onclick="closeWellness(); openWheel()">
+        <div class="wtb-icon">🗺️</div>
+        <div class="wtb-name">Rueda de la Vida</div>
+        <div class="wtb-desc">Evalúa todas las áreas de tu vida</div>
+      </div>
     </div>`;
 }
 
@@ -14493,7 +14307,6 @@ function updateHabitStreak() {
   saveChar();
   checkAchievement('racha_fuego');
   checkAchievement('dia_perfecto');
-  checkPetUnlock();
 }
 
 function updateMorningStreak() {
@@ -14506,7 +14319,6 @@ function updateMorningStreak() {
   char.morningTotal = (char.morningTotal || 0) + 1;
   saveChar();
   checkAchievement('maestro_alba');
-  checkPetUnlock();
 }
 
 function updateWellnessStreak() {
@@ -14653,7 +14465,6 @@ function saveDiaryEntry() {
     char.journalCount = (char.journalCount || 0) + 1;
     saveChar();
     checkAchievement('cronista');
-    checkPetUnlock();
   }
   SFX.habitDone();
   const note = document.getElementById('diarySavedNote');
@@ -14964,13 +14775,6 @@ document.getElementById('achOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('achOverlay')) closeAchievements();
 });
 
-document.getElementById('btnPets').addEventListener('click', openPets);
-document.getElementById('petsCloseBtn').addEventListener('click', closePets);
-document.getElementById('petsOverlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('petsOverlay')) closePets();
-});
-
-document.getElementById('btnStats').addEventListener('click', openStats);
 document.getElementById('statsCloseBtn').addEventListener('click', closeStats);
 document.getElementById('statsOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('statsOverlay')) closeStats();
@@ -15959,78 +15763,6 @@ function _log(msg) {
   if (el) el.textContent = _diagLogs.slice(-20).join('\n');
 }
 
-function _diagToggle() {
-  const panel = document.getElementById('authDiagPanel');
-  if (!panel) return;
-  const wasHidden = panel.classList.toggle('hide');
-  if (!wasHidden) _diagRefresh();
-}
-
-function _diagRefresh() {
-  const standalone = window.matchMedia('(display-mode: standalone)').matches || !!navigator.standalone;
-  const sdk    = typeof supabase !== 'undefined';
-  const hasCc  = sdk && typeof supabase.createClient === 'function';
-  const client = !!sbClient;
-  const online = navigator.onLine;
-  const set = (id, txt, cls) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = txt; el.className = cls || '';
-  };
-  set('diagSdk',    sdk
-    ? (hasCc ? '✅ OK (createClient ✓)' : '⚠️ cargado pero createClient ausente')
-    : '❌ undefined',
-    sdk && hasCc ? 'auth-diag-ok' : 'auth-diag-err');
-  set('diagClient', client
-    ? '✅ inicializado'
-    : (sdk && hasCc ? '❌ null — createClient falló (ver log)' : '❌ null'),
-    client ? 'auth-diag-ok' : 'auth-diag-err');
-  set('diagNet',    online ? '✅ online'        : '❌ offline',    online ? 'auth-diag-ok' : 'auth-diag-err');
-  set('diagMode',   standalone ? '📱 standalone' : '🌐 browser', 'auth-diag-warn');
-  set('diagUrl',    SUPABASE_URL.replace('https://', ''), '');
-
-  // Force-call initSupabase if client still null (diagnostic re-attempt)
-  if (!client && sdk && hasCc) {
-    _log('diagRefresh: sbClient null, reintentando initSupabase...');
-    initSupabase();
-    if (sbClient) {
-      set('diagClient', '✅ inicializado (tras reintento)', 'auth-diag-ok');
-      _authUpdateNetWarn();
-    }
-  }
-
-  const el = document.getElementById('diagLog');
-  if (el) el.textContent = _diagLogs.slice(-25).join('\n');
-}
-
-async function _diagTest() {
-  const btn    = document.querySelector('.auth-diag-test');
-  const result = document.getElementById('diagTestResult');
-  if (!result) return;
-  if (btn) btn.disabled = true;
-  result.textContent = '⏳ Probando...'; result.className = '';
-  const url = SUPABASE_URL + '/auth/v1/health';
-  const t0 = Date.now();
-  _log('diagTest: GET ' + url);
-  try {
-    const r = await fetch(url, {
-      method: 'GET', mode: 'cors', cache: 'no-store',
-      headers: { 'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + SUPABASE_ANON },
-    });
-    const ms = Date.now() - t0;
-    _log('diagTest: HTTP ' + r.status + ' en ' + ms + 'ms');
-    result.textContent = r.ok
-      ? '✅ Supabase OK (HTTP ' + r.status + ', ' + ms + 'ms)'
-      : '⚠️ HTTP ' + r.status + ' (' + ms + 'ms)';
-    result.className = r.ok ? 'auth-diag-ok' : 'auth-diag-warn';
-  } catch(e) {
-    const ms = Date.now() - t0;
-    _log('diagTest: ERROR ' + e.name + ': ' + e.message);
-    result.textContent = '❌ ' + e.name + ': ' + e.message + ' (' + ms + 'ms)';
-    result.className = 'auth-diag-err';
-  }
-  if (btn) btn.disabled = false;
-}
 
 function initSupabase() {
   _log('initSupabase: llamada. typeof supabase=' + typeof supabase);
@@ -16467,35 +16199,7 @@ function updateAuthChip() {
 
 const OB_SCREENS = [
   {
-    id:1, icon:'🧭', field:'occupation', type:'single', skippable:true,
-    question:'¿A qué te dedicas actualmente?',
-    subtitle:'Opcional — puedes saltar si prefieres.',
-    opts:[
-      { id:'estudiante',        label:'Estudiante',                             icon:'🎓' },
-      { id:'trabajador_dep',    label:'Trabajador dependiente (empleado)',       icon:'💼' },
-      { id:'trabajador_ind',    label:'Trabajador independiente o freelance',    icon:'🏠' },
-      { id:'emprendedor',       label:'Emprendedor o dueño de negocio',          icon:'🚀' },
-      { id:'profesional_salud', label:'Profesional de la salud',                icon:'🩺' },
-      { id:'artista',           label:'Artista o creativo',                     icon:'🎨' },
-      { id:'transicion',        label:'En transición o buscando mi camino',     icon:'🦋' },
-      { id:'skip',              label:'Prefiero no decirlo',                    icon:'🔒' },
-    ],
-  },
-  {
-    id:2, icon:'🏠', field:'living', type:'single', skippable:true,
-    question:'¿Cuál es tu situación de vida actual?',
-    subtitle:'Opcional — puedes saltar si prefieres.',
-    opts:[
-      { id:'solo',       label:'Vivo solo',                              icon:'🧍' },
-      { id:'pareja',     label:'Vivo en pareja',                         icon:'❤️' },
-      { id:'familia',    label:'Vivo con familia',                       icon:'👨‍👩‍👦' },
-      { id:'hijos',      label:'Tengo hijos',                            icon:'👨‍👩‍👧' },
-      { id:'cambio',     label:'Estoy en una etapa de cambio importante',icon:'🌊' },
-      { id:'skip',       label:'Prefiero no decirlo',                    icon:'🔒' },
-    ],
-  },
-  {
-    id:3, icon:'🎯', field:'goal', type:'single', skippable:true,
+    id:1, icon:'🎯', field:'goal', type:'single', skippable:true,
     question:'¿Cuál es tu objetivo principal ahora mismo?',
     subtitle:'Opcional — puedes saltar si prefieres.',
     opts:[
@@ -16507,7 +16211,7 @@ const OB_SCREENS = [
     ],
   },
   {
-    id:4, icon:'🗺️', field:'areas', type:'multi', skippable:true,
+    id:2, icon:'🗺️', field:'areas', type:'multi', skippable:true,
     question:'¿Qué áreas quieres trabajar?',
     subtitle:'Puedes elegir varias. Opcional.',
     opts:[
@@ -16523,29 +16227,7 @@ const OB_SCREENS = [
     ],
   },
   {
-    id:5, icon:'🌍', field:'lifestyle', type:'single', skippable:true,
-    question:'¿Cómo describirías tu estilo de vida actual?',
-    subtitle:'Opcional — puedes saltar si prefieres.',
-    opts:[
-      { id:'ocupado',       label:'Muy ocupado, poco tiempo libre',                   icon:'⏰' },
-      { id:'equilibrado',   label:'Equilibrado pero quiero mejorar',                  icon:'✨' },
-      { id:'desorganizado', label:'Tengo tiempo pero me cuesta organizarme',          icon:'🌀' },
-      { id:'transicion',    label:'Estoy en un momento de cambio o transición',       icon:'🦋' },
-    ],
-  },
-  {
-    id:6, icon:'⚔️', field:'consistency', type:'single', skippable:true,
-    question:'¿Qué tanto te cuesta mantener hábitos?',
-    subtitle:'Opcional — puedes saltar si prefieres.',
-    opts:[
-      { id:'comienzo_abandono', label:'Me cuesta mucho, empiezo y abandono',           icon:'😓' },
-      { id:'aveces',            label:'A veces lo logro pero no soy constante',        icon:'🌊' },
-      { id:'bastante',          label:'Soy bastante constante pero quiero más',        icon:'💫' },
-      { id:'disciplinado',      label:'Soy muy disciplinado y busco optimizar',        icon:'🎯' },
-    ],
-  },
-  {
-    id:7, icon:'💙', field:'mental', type:'single', skippable:true,
+    id:3, icon:'💙', field:'mental', type:'single', skippable:true,
     question:'¿Hay algo específico que quieras trabajar en tu bienestar mental?',
     subtitle:'Opcional — puedes saltar esta pregunta.',
     opts:[
@@ -16560,11 +16242,11 @@ const OB_SCREENS = [
 ];
 
 let obCurrent = 1;
-let obAnswers = { occupation:'', living:'', goal:'', areas:[], lifestyle:'', consistency:'', mental:'' };
+let obAnswers = { goal:'', areas:[], mental:'' };
 
 function showOnboarding() {
   obCurrent = 1;
-  obAnswers = { occupation:'', living:'', goal:'', areas:[], lifestyle:'', consistency:'', mental:'' };
+  obAnswers = { goal:'', areas:[], mental:'' };
   document.getElementById('obOverlay').classList.remove('hide');
   obGoTo(1);
 }
@@ -16667,13 +16349,9 @@ function obSkip() {
 
 function obFinish() {
   if (!char.onboarding) char.onboarding = {};
-  char.onboarding.occupation  = obAnswers.occupation;
-  char.onboarding.living      = obAnswers.living;
-  char.onboarding.goal        = obAnswers.goal;
-  char.onboarding.areas       = [...obAnswers.areas];
-  char.onboarding.lifestyle   = obAnswers.lifestyle;
-  char.onboarding.consistency = obAnswers.consistency;
-  char.onboarding.mental      = obAnswers.mental;
+  char.onboarding.goal   = obAnswers.goal;
+  char.onboarding.areas  = [...obAnswers.areas];
+  char.onboarding.mental = obAnswers.mental;
   char.onboardingDone         = true;
   saveChar();
   // Generate today's missions based on fresh onboarding answers
@@ -16796,9 +16474,7 @@ document.getElementById('obOverlay').addEventListener('click', e => {
 });
 
 // ── App listeners ──
-document.getElementById('btnSubclass').addEventListener('click', openSubclasses);
 document.getElementById('subCloseBtn').addEventListener('click', closeSubclasses);
-document.getElementById('btnWheel').addEventListener('click', openWheel);
 document.getElementById('wheelCloseBtn').addEventListener('click', closeWheel);
 document.getElementById('btnApoyo').addEventListener('click', openApoyo);
 document.getElementById('apoyoCloseBtn').addEventListener('click', closeApoyo);
