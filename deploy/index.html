@@ -19004,6 +19004,22 @@ const _CARD_PHRASES = {
   brujo:'El poder oscuro obedece mi voluntad',
 };
 
+// Polyfill for ctx.roundRect — not available in Safari iOS < 15.4
+function _roundRect(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
 function generateHeroCard() {
   return new Promise(resolve => {
     const W = 1080, H = 1080;
@@ -19043,7 +19059,7 @@ function generateHeroCard() {
 
     // Center radial glow
     const cGrd = ctx.createRadialGradient(W/2, H * 0.47, 40, W/2, H * 0.47, W * 0.56);
-    cGrd.addColorStop(0, theme.glow.replace(')', ',0.22)').replace('rgba(', 'rgba('));
+    cGrd.addColorStop(0, theme.glow.replace(/[\d.]+\)$/, '0.22)'));
     cGrd.addColorStop(1, 'transparent');
     ctx.fillStyle = cGrd;
     ctx.fillRect(0, 0, W, H);
@@ -19116,7 +19132,7 @@ function generateHeroCard() {
     const avCv = buildPixelAvatar(char.avatar || {}, clsKey, char.equipped || {}, AV);
     // Glow behind avatar
     const avGrd = ctx.createRadialGradient(W/2, 440, 20, W/2, 440, 210);
-    avGrd.addColorStop(0, theme.glow.replace(',0.45)', ',0.18)'));
+    avGrd.addColorStop(0, theme.glow.replace(/[\d.]+\)$/, '0.18)'));
     avGrd.addColorStop(1, 'transparent');
     ctx.fillStyle = avGrd;
     ctx.fillRect(W/2 - 220, 290, 440, 330);
@@ -19145,17 +19161,17 @@ function generateHeroCard() {
 
       // Card background
       ctx.fillStyle = 'rgba(255,255,255,0.055)';
-      ctx.beginPath(); ctx.roundRect(sx, sy, cW, 74, 14); ctx.fill();
+      _roundRect(ctx, sx, sy, cW, 74, 14); ctx.fill();
 
       // Bar fill
       const bx = sx + 14, bw = cW - 28, bh = 9;
       const barFill = Math.max(6, (lv / 99) * bw);
       ctx.fillStyle = 'rgba(255,255,255,0.08)';
-      ctx.beginPath(); ctx.roundRect(bx, sy + 53, bw, bh, 4); ctx.fill();
+      _roundRect(ctx, bx, sy + 53, bw, bh, 4); ctx.fill();
       const bGrd = ctx.createLinearGradient(bx, 0, bx + barFill, 0);
       bGrd.addColorStop(0, color + 'dd'); bGrd.addColorStop(1, color + '55');
       ctx.fillStyle = bGrd;
-      ctx.beginPath(); ctx.roundRect(bx, sy + 53, barFill, bh, 4); ctx.fill();
+      _roundRect(ctx, bx, sy + 53, barFill, bh, 4); ctx.fill();
 
       // Label
       ctx.textAlign = 'left';
@@ -19199,41 +19215,81 @@ function generateHeroCard() {
 
 async function shareHeroCard() {
   const btn = document.getElementById('btnShareHero');
+  const restore = () => { if (btn) { btn.disabled = false; btn.textContent = '📤 Compartir mi héroe'; } };
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Generando...'; }
   try {
+    console.log('[shareHeroCard] generating canvas...');
     const canvas = await generateHeroCard();
-    canvas.toBlob(async blob => {
-      if (!blob) { if (btn) { btn.disabled = false; btn.textContent = '📤 Compartir mi héroe'; } return; }
+    console.log('[shareHeroCard] canvas OK, converting to blob...');
+
+    // Wrap toBlob in a Promise so errors are properly caught
+    const blob = await new Promise((res, rej) =>
+      canvas.toBlob(b => b ? res(b) : rej(new Error('toBlob devolvió null')), 'image/png')
+    );
+    console.log('[shareHeroCard] blob OK, size:', blob.size);
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isSafariDesktop = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    // Try Web Share API (iOS 15.1+ and modern Android)
+    if (navigator.share) {
       const file = new File([blob], 'mi-heroe-habitrpg.png', { type: 'image/png' });
       const shareData = {
         title: `${char.name || 'Mi Héroe'} — HabitRPG`,
-        text: `¡Mira a mi héroe! ⚔️ Nivel ${char.level} · Rango ${getRank(char.level)} · habit-rpg-nine.vercel.app`,
+        text: `⚔️ Nivel ${char.level} · Rango ${getRank(char.level)} · habit-rpg-nine.vercel.app`,
         files: [file],
       };
-      let shared = false;
-      if (navigator.share) {
-        try {
-          if (navigator.canShare && navigator.canShare(shareData)) {
-            await navigator.share(shareData);
-            shared = true;
-          } else {
-            await navigator.share({ title: shareData.title, text: shareData.text });
-            shared = true;
-          }
-        } catch (e) { if (e.name !== 'AbortError') _downloadHeroCard(blob); else shared = true; }
+      try {
+        const canShareFile = navigator.canShare && navigator.canShare(shareData);
+        console.log('[shareHeroCard] navigator.share available, canShareFile:', canShareFile);
+        await navigator.share(canShareFile ? shareData : {
+          title: shareData.title, text: shareData.text, url: 'https://habit-rpg-nine.vercel.app'
+        });
+        console.log('[shareHeroCard] shared successfully');
+        restore(); return;
+      } catch (e) {
+        console.warn('[shareHeroCard] navigator.share error:', e.name, e.message);
+        if (e.name === 'AbortError') { restore(); return; }
+        // Fall through to download fallback
       }
-      if (!shared) _downloadHeroCard(blob);
-      if (btn) { btn.disabled = false; btn.textContent = '📤 Compartir mi héroe'; }
-    }, 'image/png');
+    } else {
+      console.log('[shareHeroCard] navigator.share not available, using download fallback');
+    }
+
+    _downloadHeroCard(blob, isIOS || isSafariDesktop);
+    restore();
+
   } catch (e) {
-    console.error('[shareHeroCard]', e);
-    if (btn) { btn.disabled = false; btn.textContent = '📤 Compartir mi héroe'; }
+    console.error('[shareHeroCard] error:', e.name, e.message, e.stack);
+    restore();
+    quickToast('⚠️', 'No se pudo generar la tarjeta', e.message || 'Error desconocido');
   }
 }
 
-function _downloadHeroCard(blob) {
+function _downloadHeroCard(blob, iosMode) {
   const url = URL.createObjectURL(blob);
-  const a   = document.createElement('a');
+
+  if (iosMode) {
+    // Safari iOS ignores <a download>; show an overlay with the image for long-press save
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;box-sizing:border-box;';
+    const hint = document.createElement('p');
+    hint.textContent = 'Mantén presionada la imagen para guardarla en tu galería';
+    hint.style.cssText = 'color:#ccc;font:15px sans-serif;margin:0;text-align:center;max-width:300px;line-height:1.5;';
+    const img = document.createElement('img');
+    img.src = url;
+    img.style.cssText = 'max-width:88vw;max-height:66vh;border-radius:14px;border:1px solid rgba(255,255,255,.15);display:block;';
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'Cerrar';
+    closeBtn.style.cssText = 'margin-top:4px;padding:12px 36px;background:#222;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:10px;font:16px sans-serif;cursor:pointer;';
+    closeBtn.onclick = () => { overlay.remove(); URL.revokeObjectURL(url); };
+    overlay.append(hint, img, closeBtn);
+    document.body.appendChild(overlay);
+    return;
+  }
+
+  // Desktop / Android Chrome: trigger download via hidden <a>
+  const a = document.createElement('a');
   a.href = url;
   a.download = `heroe-${(char.name || 'habitrpg').replace(/\s+/g,'-').toLowerCase()}.png`;
   document.body.appendChild(a);
