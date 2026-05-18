@@ -5106,6 +5106,61 @@ button:active:not(:disabled), .btn:active:not(:disabled),
   color: var(--dim); font-size: .65rem; cursor: pointer; font-family: inherit;
   touch-action: manipulation;
 }
+.mentor-ai-badge-wrap { display: flex; justify-content: center; padding: 0 20px 6px; }
+.mentor-ai-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: linear-gradient(135deg, rgba(212,169,106,.18), rgba(212,169,106,.08));
+  border: 1px solid rgba(212,169,106,.5);
+  color: #d4a96a; font-size: .56rem; letter-spacing: .07em;
+  padding: 4px 11px; border-radius: 20px;
+  font-family: var(--pxfont);
+  box-shadow: 0 0 10px rgba(212,169,106,.15);
+}
+.mentor-loading-body {
+  padding: 28px 20px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.mentor-loading-icon { font-size: 2.2rem; animation: floatIdle 2s ease-in-out infinite; }
+.mentor-loading-text { font-size: .74rem; color: rgba(212,169,106,.8); line-height: 1.6; }
+.mentor-loading-dots::after {
+  content: '';
+  animation: mDots 1.5s steps(4, end) infinite;
+}
+@keyframes mDots {
+  0%,100% { content: ''; }
+  25%      { content: '.'; }
+  50%      { content: '..'; }
+  75%      { content: '...'; }
+}
+.mentor-letter-ai-text {
+  font-size: .75rem; line-height: 1.78; color: rgba(255,255,255,.82);
+  white-space: pre-wrap; margin-bottom: 14px;
+}
+/* AI key settings in profile */
+.ai-settings-section {
+  margin-top: 14px; padding: 14px;
+  background: var(--s2); border: 1px solid var(--bd2); border-radius: 14px;
+}
+.ai-settings-title { font-size: .7rem; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
+.ai-settings-desc { font-size: .61rem; color: var(--dim); line-height: 1.5; margin-bottom: 10px; }
+.ai-key-row { display: flex; gap: 8px; align-items: center; }
+.ai-key-input {
+  flex: 1; min-width: 0; padding: 9px 10px; border-radius: 9px; font-size: .63rem;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+  color: var(--txt); font-family: monospace; outline: none;
+}
+.ai-key-input:focus { border-color: rgba(212,169,106,.5); }
+.ai-key-btn {
+  padding: 9px 14px; border-radius: 9px; font-size: .63rem; cursor: pointer;
+  background: rgba(212,169,106,.14); border: 1px solid rgba(212,169,106,.3);
+  color: #d4a96a; font-family: inherit; touch-action: manipulation; white-space: nowrap;
+}
+.ai-key-status { font-size: .59rem; color: rgba(255,255,255,.4); margin-top: 6px; }
+.ai-test-btn {
+  margin-top: 8px; font-size: .6rem; color: rgba(212,169,106,.6);
+  background: none; border: none; cursor: pointer; padding: 0;
+  font-family: inherit; touch-action: manipulation;
+}
 
 /* ══════ GREMIO ══════ */
 .guild-overlay {
@@ -5877,6 +5932,18 @@ button:active:not(:disabled), .btn:active:not(:disabled),
         <span class="pwa-lbl">Hora del recordatorio diario</span>
         <input type="time" class="pwa-time" id="pwaTimeInput" value="09:00">
       </div>
+    </div>
+
+    <!-- AI — El Guía -->
+    <div class="ai-settings-section">
+      <div class="ai-settings-title">🤖 IA — El Guía</div>
+      <div class="ai-settings-desc">Añade tu API key de Anthropic para que El Guía genere cartas personalizadas con IA real cada lunes. La key se guarda solo en tu dispositivo.</div>
+      <div class="ai-key-row">
+        <input type="password" class="ai-key-input" id="aiKeyInput" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
+        <button class="ai-key-btn" onclick="saveAnthropicKey()">Guardar</button>
+      </div>
+      <div class="ai-key-status" id="aiKeyStatus">—</div>
+      <button class="ai-test-btn" onclick="testMentorLetterAI()">Probar carta de IA ahora →</button>
     </div>
 
     <div class="profile-auth-row">
@@ -19048,6 +19115,7 @@ function openProfile() {
   }
   // Refresh PWA section state each time profile opens
   _pwaRefreshProfileUI();
+  _refreshAIKeyUI();
 }
 
 function closeProfile() {
@@ -19911,20 +19979,168 @@ function generateMentorLetterData() {
   };
 }
 
-var _mentorLetterData = null;
+var _mentorLetterData   = null;
+var _mentorLetterAiText = null;
 
-function openMentorLetter(data) {
-  _mentorLetterData = data;
+// ── AI MENTOR LETTER ─────────────────────────────────────────────────────────
+function _getAnthropicKey() {
+  return localStorage.getItem('hrpg_anthropic_key') || '';
+}
+
+function saveAnthropicKey() {
+  var inp      = document.getElementById('aiKeyInput');
+  var statusEl = document.getElementById('aiKeyStatus');
+  var key      = inp ? inp.value.trim() : '';
+  if (!key) {
+    localStorage.removeItem('hrpg_anthropic_key');
+    if (statusEl) statusEl.textContent = 'Key eliminada';
+    quickToast('🗑️', 'Key eliminada', 'El Guía usará cartas estáticas');
+    return;
+  }
+  if (!key.startsWith('sk-ant-')) {
+    quickToast('⚠️', 'Key inválida', 'Debe empezar por sk-ant-');
+    return;
+  }
+  localStorage.setItem('hrpg_anthropic_key', key);
+  if (inp) inp.value = key.slice(0, 14) + '…';
+  if (statusEl) statusEl.textContent = '✓ Key guardada — El Guía usará IA cada lunes';
+  quickToast('✨', 'API key guardada', 'El Guía generará cartas con IA real');
+}
+
+function _refreshAIKeyUI() {
+  var key      = _getAnthropicKey();
+  var inp      = document.getElementById('aiKeyInput');
+  var statusEl = document.getElementById('aiKeyStatus');
+  if (inp) inp.value = key ? key.slice(0, 14) + '…' : '';
+  if (statusEl) statusEl.textContent = key
+    ? '✓ Key guardada — El Guía usará IA cada lunes'
+    : 'Sin key — se usará carta estática';
+}
+
+function generateMentorLetterAI(data) {
+  var apiKey = _getAnthropicKey();
+  if (!apiKey) return Promise.resolve(null);
+
+  var clsName = (CLASSES[char.class] || {}).name || char.class || 'Aventurero';
+  var subName = char.subclass || 'ninguna';
+  var state   = data.avgPct >= 70 ? 'brillante' : data.avgPct >= 50 ? 'normal' : data.avgPct >= 30 ? 'cansado' : 'crítico';
+
+  var ctx = [
+    'Nombre del héroe: ' + (char.name || 'Aventurero'),
+    'Clase: ' + clsName + ', Subclase: ' + subName,
+    'Estado del personaje: ' + state,
+    'Racha actual: ' + (char.streak || 0) + ' días',
+    'Promedio de hábitos completados: ' + data.avgPct + '%',
+    'Mejor día: ' + data.bestDay + ' (' + data.bestPct + '%)',
+    'Día más difícil: ' + data.worstDay + ' (' + data.worstPct + '%)',
+    'Bienestar mental promedio: ' + (data.avgWellness !== null ? data.avgWellness + '/5' : 'sin datos'),
+    'Hábito más cumplido: ' + (data.bestHabit || 'sin datos'),
+    'Hábito menos cumplido: ' + (data.worstHabit || 'sin datos'),
+    'Días registrados esta semana: ' + data.daysCount,
+  ].join('\n');
+
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 450,
+      system: 'Eres El Guía, un mentor sabio y empático dentro de una app de hábitos RPG. Tu rol combina la sabiduría de un psicólogo con la épica de un mentor RPG. Escribes cartas semanales personalizadas basadas en el progreso real del usuario. Tus cartas son cálidas, motivadoras y con base psicológica real — nunca condescendientes. Incluyes una reflexión psicológica breve, reconoces los logros específicos de la semana, ofreces perspectiva sobre las dificultades y propones un desafío concreto para la semana siguiente. Máximo 200 palabras. Tono: como un mentor que te conoce y te valora. Escribe directamente el cuerpo de la carta en párrafos cortos separados por salto de línea, sin saludo ni firma (eso se añade aparte). Usa segunda persona.',
+      messages: [{ role: 'user', content: 'Escribe la carta semanal con estos datos:\n' + ctx }],
+    }),
+  }).then(function(resp) {
+    if (!resp.ok) {
+      return resp.text().then(function(body) {
+        throw new Error('HTTP ' + resp.status + ': ' + body.slice(0, 120));
+      });
+    }
+    return resp.json();
+  }).then(function(json) {
+    return (json.content && json.content[0] && json.content[0].text) ? json.content[0].text : null;
+  });
+}
+
+function _typewriter(el, text, speed) {
+  el.textContent = '';
+  var i = 0;
+  function tick() {
+    if (i < text.length) { el.textContent += text[i++]; setTimeout(tick, speed); }
+  }
+  tick();
+}
+
+function openMentorLetterLoading(data) {
+  var el = document.getElementById('mentorOverlay');
+  if (!el) return;
+  document.getElementById('mentorLetterContent').innerHTML =
+    '<div class="mentor-seal">🦉</div>'
+    + '<div class="mentor-letter-title">Carta del Mentor · El Guía</div>'
+    + '<div class="mentor-letter-week">Semana del ' + data.weekKey + '</div>'
+    + '<div class="mentor-loading-body">'
+    +   '<div class="mentor-loading-icon">✍️</div>'
+    +   '<div class="mentor-loading-text">El Guía está escribiendo tu carta<span class="mentor-loading-dots"></span></div>'
+    + '</div>';
+  el.classList.add('open');
+}
+
+function testMentorLetterAI() {
+  var data = generateMentorLetterData();
+  if (!data) {
+    quickToast('⚠️', 'Sin datos', 'Necesitas al menos 2 días registrados la semana pasada');
+    return;
+  }
+  var apiKey = _getAnthropicKey();
+  if (!apiKey) {
+    quickToast('⚠️', 'Sin API key', 'Guarda tu API key de Anthropic primero');
+    return;
+  }
+  openMentorLetterLoading(data);
+  var weekKey = _getISOWeek(new Date());
+  generateMentorLetterAI(data).then(function(aiText) {
+    if (aiText) {
+      localStorage.setItem('hrpg_mentor_ai_' + weekKey, aiText);
+      openMentorLetter(data, aiText);
+    } else {
+      openMentorLetter(data, null);
+      quickToast('⚠️', 'Sin respuesta', 'La IA no devolvió contenido');
+    }
+  }).catch(function(e) {
+    console.error('[El Guía] test error:', e);
+    openMentorLetter(data, null);
+    quickToast('⚠️', 'Error de IA', (e.message || 'Error desconocido').slice(0, 80));
+  });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+function openMentorLetter(data, aiText) {
+  _mentorLetterData   = data;
+  _mentorLetterAiText = aiText || null;
   var el = document.getElementById('mentorOverlay');
   if (!el) return;
 
   var wellStr = data.avgWellness !== null ? data.avgWellness + '/5' : 'Sin datos';
   var bestH   = data.bestHabit  ? '"' + data.bestHabit  + '"' : 'Sin datos suficientes';
-  var worstH  = data.worstHabit ? '"' + data.worstHabit + '"' : 'Sin datos suficientes';
+
+  var aiBadge = aiText
+    ? '<div class="mentor-ai-badge-wrap"><div class="mentor-ai-badge">✨ Generada por IA</div></div>'
+    : '';
+
+  var bodyContent = aiText
+    ? '<div class="mentor-letter-ai-text" id="mentorAiText"></div>'
+    : '<div class="mentor-letter-para">' + data.body + '</div>'
+      + (bestH !== 'Sin datos suficientes' ? '<div class="mentor-letter-para">Tu hábito más consistente fue ' + bestH + ' — eso habla de tus prioridades reales.</div>' : '')
+      + '<div class="mentor-letter-reflection">💭 ' + data.reflection + '</div>'
+      + '<div class="mentor-letter-challenge"><div class="mentor-letter-challenge-ttl">✦ Desafío de la semana</div><div class="mentor-letter-challenge-txt">' + data.challenge + '</div></div>';
 
   document.getElementById('mentorLetterContent').innerHTML =
     '<div class="mentor-seal">🦉</div>'
     + '<div class="mentor-letter-title">Carta del Mentor · El Guía</div>'
+    + aiBadge
     + '<div class="mentor-letter-week">Semana del ' + data.weekKey + ' · ' + data.daysCount + ' días registrados</div>'
     + '<div class="mentor-letter-stats">'
     +   '<div class="mentor-stat-card"><div class="mentor-stat-val">' + data.avgPct + '%</div><div class="mentor-stat-lbl">Promedio semanal</div></div>'
@@ -19934,10 +20150,7 @@ function openMentorLetter(data) {
     + '</div>'
     + '<div class="mentor-letter-body">'
     +   '<div class="mentor-letter-greeting">Querido ' + (char.name || 'aventurero') + ',</div>'
-    +   '<div class="mentor-letter-para">' + data.body + '</div>'
-    + (bestH !== 'Sin datos suficientes' ? '<div class="mentor-letter-para">Tu hábito más consistente fue ' + bestH + ' — eso habla de tus prioridades reales.</div>' : '')
-    +   '<div class="mentor-letter-reflection">💭 ' + data.reflection + '</div>'
-    +   '<div class="mentor-letter-challenge"><div class="mentor-letter-challenge-ttl">✦ Desafío de la semana</div><div class="mentor-letter-challenge-txt">' + data.challenge + '</div></div>'
+    +   bodyContent
     + '</div>'
     + '<div class="mentor-letter-sign">Con cariño y confianza,<br>— El Guía 🦉</div>'
     + '<div class="mentor-letter-btns">'
@@ -19946,6 +20159,11 @@ function openMentorLetter(data) {
     + '</div>';
 
   el.classList.add('open');
+
+  if (aiText) {
+    var aiEl = document.getElementById('mentorAiText');
+    if (aiEl) _typewriter(aiEl, aiText, 16);
+  }
 }
 
 function closeMentorLetter() {
@@ -19959,12 +20177,13 @@ function saveMentorLetterToDiary() {
   var journal = getJournal();
   var key = 'mentor_' + d.weekKey;
   if (!journal.find(function(e){ return e.date === key; })) {
+    var letterBody = _mentorLetterAiText
+      ? _mentorLetterAiText
+      : d.body + '\n\n💭 ' + d.reflection + '\n\n✦ Desafío: ' + d.challenge;
     journal.unshift({
       date: key,
-      dayFeeling: '📜 Carta del Mentor — ' + d.weekKey
-        + '\n\n' + d.body
-        + '\n\n💭 ' + d.reflection
-        + '\n\n✦ Desafío: ' + d.challenge,
+      dayFeeling: '📜 Carta del Mentor — ' + d.weekKey + (_mentorLetterAiText ? ' ✨IA' : '')
+        + '\n\n' + letterBody,
       learned: 'Promedio semanal: ' + d.avgPct + '% | Mejor día: ' + d.bestDay + ' (' + d.bestPct + '%)',
       extra: '',
       savedAt: Date.now(),
@@ -19979,13 +20198,39 @@ function saveMentorLetterToDiary() {
 function checkAndShowMentorLetter() {
   var today = new Date();
   if (today.getDay() !== 1) return; // Only on Monday
-  var weekKey = _getISOWeek(today);
+  var weekKey  = _getISOWeek(today);
   var shownKey = 'hrpg_mentor_shown_' + weekKey;
-  if (localStorage.getItem(shownKey)) return; // Already shown this week
+  if (localStorage.getItem(shownKey)) return;
   var data = generateMentorLetterData();
   if (!data) return;
   localStorage.setItem(shownKey, '1');
-  setTimeout(function(){ openMentorLetter(data); }, 2200); // Short delay after load
+
+  // Use cached AI letter if available
+  var cachedAI = localStorage.getItem('hrpg_mentor_ai_' + weekKey);
+  if (cachedAI) {
+    setTimeout(function(){ openMentorLetter(data, cachedAI); }, 2200);
+    return;
+  }
+
+  var apiKey = _getAnthropicKey();
+  if (apiKey) {
+    setTimeout(function() {
+      openMentorLetterLoading(data);
+      generateMentorLetterAI(data).then(function(aiText) {
+        if (aiText) {
+          localStorage.setItem('hrpg_mentor_ai_' + weekKey, aiText);
+          openMentorLetter(data, aiText);
+        } else {
+          openMentorLetter(data, null);
+        }
+      }).catch(function(e) {
+        console.warn('[El Guía] AI error:', e);
+        openMentorLetter(data, null);
+      });
+    }, 2200);
+  } else {
+    setTimeout(function(){ openMentorLetter(data, null); }, 2200);
+  }
 }
 
 // ═══════════════════════════════════════════
