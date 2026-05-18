@@ -42,7 +42,8 @@
       "Bash(git commit *)",
       "Bash(powershell -Command \"Copy-Item 'habit-rpg.html' 'deploy\\\\index.html' -Force\")",
       "Bash(wc -l \"/mnt/c/Users/juanl/OneDrive/Escritorio/Proyectos/habit-rpg.html\")",
-      "Read(//mnt/c/Users/juanl/OneDrive/Escritorio/Proyectos/**)"
+      "Read(//mnt/c/Users/juanl/OneDrive/Escritorio/Proyectos/**)",
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\")"
     ]
   }
 }
