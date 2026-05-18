@@ -2743,6 +2743,267 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .ci-enemy-entrance{animation:ciEnter .55s cubic-bezier(.34,1.56,.64,1) both}
 @keyframes ciEnter{from{transform:translateX(80px) scale(.5);opacity:0}to{transform:translateX(0) scale(1);opacity:1}}
 .ci-stats-entrance{animation:ciEnter .5s .15s cubic-bezier(.34,1.56,.64,1) both}
+
+/* ══════════════════════════════════════════════
+   COMBAT VFX UPGRADE PACK
+   ══════════════════════════════════════════════ */
+
+/* 1 ── PLAYER SPRITE LARGER (≈30% screen) */
+.battle-avatar-wrap { width: 110px !important; height: 110px !important; position: relative; }
+.battle-avatar-wrap canvas { width: 110px !important; height: 110px !important; }
+.battle-player-sprite.active-turn .battle-avatar-wrap canvas {
+  filter: drop-shadow(0 0 14px var(--class-aura-col, rgba(139,92,246,.7))) !important;
+  animation: combatIdle 2s ease-in-out infinite !important;
+}
+/* Player class aura ring */
+.player-aura-ring {
+  position: absolute; inset: -10px; border-radius: 50%; pointer-events: none; z-index: -1;
+  background: radial-gradient(circle, var(--class-aura-col, rgba(139,92,246,.28)) 0%, transparent 68%);
+  animation: auraPulse 2.2s ease-in-out infinite alternate;
+}
+@keyframes auraPulse {
+  from { opacity: .35; transform: scale(.88); }
+  to   { opacity: .95; transform: scale(1.14); }
+}
+
+/* 2 ── ENEMY SPRITE LARGER (≈25% screen) */
+.battle-enemy-sprite { width: 100px !important; height: 100px !important; overflow: visible !important; position: relative; }
+.battle-enemy-sprite canvas { width: 100px !important; height: 100px !important; }
+/* Expressive breathing idle */
+.battle-enemy-sprite.active-turn canvas {
+  animation: enemyBreathe 2.2s ease-in-out infinite !important;
+}
+@keyframes enemyBreathe {
+  0%,100% { transform: scaleY(1)   translateY(0); }
+  45%     { transform: scaleY(1.05) translateY(-4px); }
+  80%     { transform: scaleY(.97) translateY(1px); }
+}
+/* Hit — recoil + red flash + shake */
+.battle-enemy-sprite.anim-hit canvas {
+  animation: enemyHitRecoil .38s ease-out !important;
+}
+@keyframes enemyHitRecoil {
+  0%   { transform: translateX(0);      filter: drop-shadow(0 0 10px rgba(239,68,68,.5)); }
+  14%  { transform: translateX(16px);   filter: drop-shadow(0 0 0 transparent) brightness(12) sepia(1) saturate(80) hue-rotate(-20deg); }
+  38%  { transform: translateX(-7px);   filter: drop-shadow(0 0 18px rgba(239,68,68,.95)) brightness(2.8); }
+  62%  { transform: translateX(4px);    filter: drop-shadow(0 0 10px rgba(239,68,68,.6)); }
+  100% { transform: translateX(0);      filter: drop-shadow(0 0 10px rgba(239,68,68,.5)); }
+}
+/* Death dissolve */
+.battle-enemy-sprite.anim-dying canvas {
+  animation: enemyDie .7s ease-out forwards !important;
+}
+@keyframes enemyDie {
+  0%   { opacity:1; transform: scale(1)    translateY(0);    filter: brightness(1); }
+  25%  { opacity:1; transform: scale(1.18) translateY(-10px); filter: brightness(4) saturate(3); }
+  100% { opacity:0; transform: scale(.08)  translateY(28px);  filter: brightness(8); }
+}
+/* Boss aura */
+.boss-aura {
+  position: absolute; inset: -16px; border-radius: 50%; pointer-events: none; z-index: 0;
+  background: radial-gradient(circle, rgba(239,68,68,.24) 0%, transparent 68%);
+  border: 1px solid rgba(239,68,68,.28);
+  animation: bossAuraPulse 1.5s ease-in-out infinite alternate;
+}
+@keyframes bossAuraPulse {
+  from { opacity: .3; transform: scale(.82); }
+  to   { opacity: 1;  transform: scale(1.22); }
+}
+
+/* 3 ── DAMAGE NUMBERS — large and colorful */
+.dmg-float {
+  font-family: var(--pxfont) !important;
+  font-size: 2.2rem !important;
+  font-weight: 900 !important;
+  text-shadow: 3px 3px 0 rgba(0,0,0,.9), 0 0 16px currentColor !important;
+  letter-spacing: -.02em !important;
+  pointer-events: none !important;
+  animation: floatDmgNew .88s cubic-bezier(.2,.65,.4,1) forwards !important;
+  position: absolute;
+  z-index: 16;
+}
+@keyframes floatDmgNew {
+  0%   { opacity: 1; transform: translateY(0) scale(1.1); }
+  22%  { opacity: 1; transform: translateY(-22px) scale(1.18); }
+  100% { opacity: 0; transform: translateY(-60px) scale(.75); }
+}
+.dmg-red  { color: #ff2233 !important; }
+.dmg-blue { color: #33bbff !important; }
+.dmg-grn  { color: #22ff7a !important; }
+.dmg-gld  { color: #ffd500 !important; }
+.dmg-pur  { color: #cc44ff !important; }
+.dmg-crit {
+  font-size: 3.8rem !important;
+  color: #ffd500 !important;
+  text-shadow: 3px 3px 0 rgba(0,0,0,.9), 0 0 24px rgba(255,210,0,.9) !important;
+  animation: floatDmgCrit 1s cubic-bezier(.2,.65,.4,1) forwards !important;
+}
+@keyframes floatDmgCrit {
+  0%   { opacity: 1; transform: translateY(0) scale(.25); }
+  16%  { opacity: 1; transform: translateY(-6px) scale(1.65); }
+  42%  { transform: translateY(-26px) scale(1.25); }
+  100% { opacity: 0; transform: translateY(-72px) scale(.65); }
+}
+
+/* 4 ── SKILL FX OVERLAY */
+.skill-fx {
+  position: absolute; inset: 0; z-index: 15; pointer-events: none;
+  border-radius: 14px 14px 0 0;
+}
+/* Fire: left-to-right sweep */
+.skill-fx-fire {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,70,0,.85) 28%, rgba(255,150,0,.7) 60%, transparent 100%);
+  animation: fxFireSweep .72s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes fxFireSweep {
+  0%   { transform: translateX(-110%); opacity: .95; }
+  62%  { opacity: .8; }
+  100% { transform: translateX(110%); opacity: 0; }
+}
+/* Ice: center burst */
+.skill-fx-ice {
+  background: radial-gradient(circle at 50% 50%, rgba(180,240,255,.95) 0%, rgba(60,160,255,.65) 38%, transparent 72%);
+  animation: fxIceBurst .72s ease-out forwards;
+}
+@keyframes fxIceBurst {
+  0%   { transform: scale(0);   opacity: 1; }
+  62%  { transform: scale(1.7); opacity: .6; }
+  100% { transform: scale(3);   opacity: 0; }
+}
+/* Shadow: edges in */
+.skill-fx-shadow {
+  background: radial-gradient(ellipse at 50% 50%, transparent 18%, rgba(24,0,60,.95) 100%);
+  animation: fxShadowPulse .72s ease-out forwards;
+}
+@keyframes fxShadowPulse {
+  0%   { opacity: 0; transform: scale(1.5); }
+  28%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(.6); }
+}
+/* Chi: gold ring expand */
+.skill-fx-chi {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,210,20,.5) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, transparent 22%, rgba(255,180,0,.25) 24%, transparent 26%),
+    radial-gradient(circle at 50% 50%, transparent 38%, rgba(255,160,0,.18) 40%, transparent 42%);
+  animation: fxChiExpand .72s ease-out forwards;
+}
+@keyframes fxChiExpand {
+  0%   { transform: scale(0);   opacity: 1; }
+  68%  { transform: scale(2.2); opacity: .55; }
+  100% { transform: scale(3.8); opacity: 0; }
+}
+/* Nature: green bloom from below */
+.skill-fx-nature {
+  background:
+    radial-gradient(ellipse at 20% 110%, rgba(50,210,80,.88) 0%, transparent 52%),
+    radial-gradient(ellipse at 80% 110%, rgba(30,190,60,.78) 0%, transparent 48%),
+    radial-gradient(ellipse at 50% 55%, rgba(80,230,100,.35) 0%, transparent 68%);
+  animation: fxNatureBloom .72s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes fxNatureBloom {
+  0%   { transform: translateY(52px); opacity: 0; }
+  22%  { opacity: .92; }
+  68%  { transform: translateY(0);    opacity: .58; }
+  100% { transform: translateY(-32px); opacity: 0; }
+}
+/* Physical: white shockwave flash */
+.skill-fx-phys {
+  background: rgba(255,255,255,.9);
+  animation: fxPhysFlash .42s ease-out forwards;
+}
+@keyframes fxPhysFlash {
+  0%   { opacity: .9; }
+  38%  { opacity: .4; }
+  100% { opacity: 0; }
+}
+/* Heal: green glow from below (shares nature bloom) */
+.skill-fx-heal {
+  background: radial-gradient(ellipse at 50% 100%, rgba(52,220,130,.88) 0%, transparent 68%);
+  animation: fxNatureBloom .72s cubic-bezier(.4,0,.2,1) forwards;
+}
+/* Magic: chi variant with purple tint */
+.skill-fx-magic {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(196,130,255,.6) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, transparent 22%, rgba(180,100,255,.22) 24%, transparent 26%);
+  animation: fxChiExpand .72s ease-out forwards;
+}
+/* Light: bright white-yellow burst */
+.skill-fx-light {
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,180,.95) 0%, rgba(255,220,60,.5) 45%, transparent 72%);
+  animation: fxIceBurst .65s ease-out forwards;
+}
+
+/* 5 ── PARALLAX LAYERS */
+.bs-parallax-mid {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 38% 28% at 22% 32%, rgba(255,255,255,.028) 0%, transparent 100%),
+    radial-gradient(ellipse 28% 22% at 74% 62%, rgba(255,255,255,.022) 0%, transparent 100%);
+  animation: parallaxDrift 20s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes parallaxDrift { from { transform: translateX(-5px); } to { transform: translateX(5px); } }
+.bs-parallax-front {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  animation: parallaxFastDrift 9s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes parallaxFastDrift { from { transform: translateX(-12px); } to { transform: translateX(12px); } }
+.bs-parallax-front::before, .bs-parallax-front::after {
+  content: ''; position: absolute; width: 3px; height: 3px; border-radius: 50%;
+  background: rgba(255,255,255,.22);
+  animation: sparkleFloat 4s ease-in-out infinite;
+}
+.bs-parallax-front::before { top: 28%; left: 12%; }
+.bs-parallax-front::after  { top: 58%; left: 80%; animation-delay: -2.1s; }
+@keyframes sparkleFloat { 0%,100%{opacity:0;transform:scale(0)} 50%{opacity:1;transform:scale(1)} }
+/* Parallax shake on attack */
+.bs-parallax-mid.px-atk  { animation: pxAtkMid  .32s ease-out !important; }
+.bs-parallax-front.px-atk { animation: pxAtkFront .32s ease-out !important; }
+@keyframes pxAtkMid   { 0%{transform:translateX(0)} 40%{transform:translateX(-14px)} 100%{transform:translateX(0)} }
+@keyframes pxAtkFront { 0%{transform:translateX(0)} 40%{transform:translateX(-28px)} 100%{transform:translateX(0)} }
+
+/* 6 ── LOW HP DANGER PULSE */
+.battle-scene.scene-danger::after {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,.08) 4px),
+    radial-gradient(ellipse at 50% 100%, rgba(239,68,68,.12) 0%, transparent 65%) !important;
+  animation: dangerPulse 1.1s ease-in-out infinite !important;
+  z-index: 5 !important;
+}
+@keyframes dangerPulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+.enemy-low-hp canvas {
+  filter: drop-shadow(0 0 18px rgba(239,68,68,.9)) hue-rotate(-8deg) saturate(1.6) !important;
+  animation: enemyLowHpFlicker 2s ease-in-out infinite !important;
+}
+@keyframes enemyLowHpFlicker { 0%,100%{filter:drop-shadow(0 0 14px rgba(239,68,68,.8)) saturate(1.5)} 50%{filter:drop-shadow(0 0 24px rgba(239,68,68,1)) saturate(2) brightness(1.2)} }
+
+/* 7 ── VICTORY PARTICLES */
+.vp-spark {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 22;
+  animation: vpFly var(--vp-dur, .9s) cubic-bezier(.18,.8,.32,1) forwards;
+}
+@keyframes vpFly {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--vp-x,0px), var(--vp-y,0px)) scale(0); opacity: 0; }
+}
+
+/* 8 ── CRIT CAMERA SHAKE */
+@keyframes camShakeCrit {
+  0%  { transform: translate(0,0)    rotate(0deg); }
+  10% { transform: translate(-14px, 7px) rotate(-.7deg); }
+  22% { transform: translate(13px,-10px) rotate(.5deg); }
+  34% { transform: translate(-10px, 8px) rotate(-.4deg); }
+  46% { transform: translate( 9px, -6px) rotate(.3deg); }
+  58% { transform: translate(-6px,  4px); }
+  72% { transform: translate( 4px, -2px); }
+  86% { transform: translate(-2px,  1px); }
+  100%{ transform: translate(0,0); }
+}
+.cam-shake-crit { animation: camShakeCrit .54s ease-out !important; }
+
 /* Gacha Victory screen */
 .gacha-screen{text-align:center;padding:18px 16px 14px;position:relative;overflow:hidden;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
 .gacha-title{font-size:1.45rem;font-weight:900;color:var(--gold);animation:victoryGlow 1.4s ease-in-out infinite;text-shadow:0 0 20px rgba(245,158,11,.4)}
@@ -12365,7 +12626,6 @@ function renderCombat(el) {
   const pct     = Math.max(0, adv.playerHP / adv.playerMaxHP * 100);
   const eHpMax  = adv.enemy?.hp_max || ENEMIES[adv.seq[adv.seqIdx]]?.hp || adv.enemy?.hp || 1;
   const eHpPct  = adv.enemy ? Math.max(0, adv.enemy.hp / eHpMax * 100) : 0;
-  const pIcon   = `<div class="battle-avatar-wrap" id="pPixelSprite"></div>`;
   const isBusy  = adv.turn === 'busy';
   const b       = adv.buffs;
   const eb      = adv.enemyBuffs;
@@ -12456,6 +12716,14 @@ function renderCombat(el) {
   const sfxLbl   = SFX.sfxOn   ? '🔊' : '🔇';
   const musicLbl  = SFX.musicOn ? '🎵' : '🎵off';
 
+  // Class aura color for player sprite glow
+  const _clsColor = (CLASSES[char.class] || CLASSES.guerrero || {}).color || '#a78bfa';
+  const _clsAuraCSS = `--class-aura-col:${_clsColor}88`;
+
+  // Boss detection
+  const _isBoss = !!(adv.enemy?.isBoss);
+  const _bossAuraHtml = _isBoss ? '<div class="boss-aura"></div>' : '';
+
   el.innerHTML = `<div class="combat-screen">
     <div class="combat-topbar">
       <span>${adv.dungeon.name} · ${adv.seqIdx+1}/${adv.seq.length}</span>
@@ -12467,18 +12735,26 @@ function renderCombat(el) {
       </div>
     </div>
     <div class="battle-scene ${zoneBg}" id="combatArena">
+      <div class="bs-parallax-mid" id="bsPxMid"></div>
+      <div class="bs-parallax-front" id="bsPxFront"></div>
       <div class="battle-vs">VS</div>
       <div class="battle-enemy">
         <div class="battle-hp-panel" style="text-align:right">
-          <div class="battle-hp-name">${adv.enemy?.name||'?'}${adv.phase2Triggered?' ★':''}</div>
+          <div class="battle-hp-name">${adv.enemy?.name||'?'}${adv.phase2Triggered?' ★':''}${_isBoss?' 👑':''}</div>
           <div class="battle-hpbar"><div class="battle-hpfill efill ${hpColorClass(eHpPct)}" id="eHpFill" style="width:${eHpPct}%"></div></div>
           <div class="battle-hptxt" id="eHpTxt">${adv.enemy?.hp||0} / ${eHpMax} HP</div>
           <div class="cbuffs" style="justify-content:flex-end" id="eBuffPills">${eBuffs}</div>
         </div>
-        <div class="battle-enemy-sprite${adv.turn==='enemy'?' active-turn':''}" id="eSprite"></div>
+        <div class="battle-enemy-sprite${adv.turn==='enemy'?' active-turn':''}" id="eSprite" style="position:relative">
+          ${_bossAuraHtml}
+        </div>
       </div>
-      <div class="battle-player">
-        <div class="battle-player-sprite${adv.turn==='player'?' active-turn':''}" id="pSprite">${pIcon}</div>
+      <div class="battle-player" style="${_clsAuraCSS}">
+        <div class="battle-player-sprite${adv.turn==='player'?' active-turn':''}" id="pSprite">
+          <div class="battle-avatar-wrap" id="pPixelSprite" style="position:relative">
+            <div class="player-aura-ring"></div>
+          </div>
+        </div>
         <div class="battle-hp-panel">
           <div class="battle-hp-name">${pName}</div>
           <div class="battle-hpbar"><div class="battle-hpfill pfill ${hpColorClass(pct)}" id="pHpFill" style="width:${pct}%"></div></div>
@@ -12511,10 +12787,10 @@ function renderCombat(el) {
     const _ppC = buildPixelAvatar(char.avatar || {}, char.class, char.equipped || {}, 64);
     _ppEl.appendChild(_ppC);
   }
-  // Inject enemy pixel sprite
+  // Inject enemy pixel sprite (render at 64, displayed at 100px via CSS)
   const _epEl = el.querySelector('#eSprite');
   if (_epEl && adv.enemy) {
-    const _epC = buildEnemyPixel(adv.enemy.key || '', 48);
+    const _epC = buildEnemyPixel(adv.enemy.key || '', 64);
     _epEl.appendChild(_epC);
   }
   // Check low HP visual state
@@ -12669,10 +12945,12 @@ function floatDmg(txt, cls, side) {
   const d = document.createElement('div');
   d.className = `dmg-float ${cls}`;
   d.textContent = txt;
-  d.style.left = side === 'p' ? '10%' : '62%';
-  d.style.top  = side === 'p' ? '60%' : '16%';
+  // Adjusted for larger sprites: player takes bottom-left, enemy top-right
+  d.style.left = side === 'p' ? '6%' : '50%';
+  d.style.top  = side === 'p' ? '48%' : '8%';
   arena.appendChild(d);
-  setTimeout(() => d.remove(), 900);
+  const isCrit = cls.includes('dmg-crit');
+  setTimeout(() => d.remove(), isCrit ? 1100 : 920);
 }
 
 function animSprite(id, animClass) {
@@ -12756,13 +13034,65 @@ function flashCombat(color, duration=130) {
   setTimeout(() => { ov.style.opacity = '0'; }, duration);
 }
 
-// Camera shake
-function shakeCamera(heavy=false) {
+// Camera shake — heavy for normal crits, crit for critical hits
+function shakeCamera(heavy=false, crit=false) {
   const el = document.getElementById('combatArena');
   if (!el) return;
-  const cls = heavy ? 'cam-shake-heavy' : 'cam-shake';
-  el.classList.remove('cam-shake','cam-shake-heavy'); void el.offsetWidth; el.classList.add(cls);
-  setTimeout(() => el.classList.remove(cls), heavy ? 500 : 420);
+  const cls = crit ? 'cam-shake-crit' : heavy ? 'cam-shake-heavy' : 'cam-shake';
+  el.classList.remove('cam-shake','cam-shake-heavy','cam-shake-crit'); void el.offsetWidth; el.classList.add(cls);
+  setTimeout(() => el.classList.remove(cls), crit ? 560 : heavy ? 500 : 420);
+}
+
+// Full-screen skill element FX overlay on combatArena
+function playSkillFX(type) {
+  const arena = document.getElementById('combatArena');
+  if (!arena) return;
+  const map = {
+    fire:'skill-fx-fire', ice:'skill-fx-ice', shadow:'skill-fx-shadow',
+    chi:'skill-fx-chi', nature:'skill-fx-nature', phys:'skill-fx-phys',
+    heal:'skill-fx-heal', magic:'skill-fx-magic', light:'skill-fx-light',
+    mixed:'skill-fx-chi', arrow:'skill-fx-phys', poison:'skill-fx-nature',
+  };
+  const cls = map[type] || 'skill-fx-phys';
+  const fx = document.createElement('div');
+  fx.className = `skill-fx ${cls}`;
+  arena.appendChild(fx);
+  setTimeout(() => fx.remove(), 800);
+  // Shift parallax layers for impact
+  ['bsPxMid','bsPxFront'].forEach(id => {
+    const lay = document.getElementById(id);
+    if (!lay) return;
+    lay.classList.remove('px-atk'); void lay.offsetWidth; lay.classList.add('px-atk');
+    setTimeout(() => lay.classList.remove('px-atk'), 380);
+  });
+}
+
+// Golden victory particle burst
+function spawnVictoryParticles() {
+  const el = document.getElementById('advContent');
+  if (!el) return;
+  const colors = ['#ffd500','#ffaa00','#ff6600','#ffffff','#ffee44','#fb923c'];
+  const rect = el.getBoundingClientRect();
+  const cx = rect.width / 2, cy = rect.height * 0.38;
+  for (let i = 0; i < 48; i++) {
+    const p = document.createElement('div');
+    p.className = 'vp-spark';
+    const angle = (i / 48) * Math.PI * 2 + (Math.random() - .5) * .25;
+    const dist  = 80 + Math.random() * 140;
+    const size  = 5 + Math.random() * 8;
+    const dur   = (.7 + Math.random() * .55).toFixed(2);
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${cx - size/2}px;top:${cy - size/2}px;
+      background:${colors[i % colors.length]};
+      --vp-x:${Math.round(Math.cos(angle)*dist)}px;
+      --vp-y:${Math.round(Math.sin(angle)*dist)}px;
+      --vp-dur:${dur}s;
+      animation-delay:${(i*0.018).toFixed(3)}s;
+    `;
+    el.appendChild(p);
+    setTimeout(() => p.remove(), (parseFloat(dur) + 0.15) * 1000 + i * 18);
+  }
 }
 
 // Slow-motion flash on kill
@@ -12994,8 +13324,16 @@ function playVictoryAnimation() {
 function checkLowHpVisual() {
   const esp=document.getElementById('eSprite'); if(!esp||!adv.enemy) return;
   const max=adv.enemy.hp_max||1; const pct=adv.enemy.hp/max;
-  if(pct<=0.25&&pct>0){ esp.classList.add('enemy-low-hp'); SFX.setHighIntensity(true); }
-  else{ esp.classList.remove('enemy-low-hp'); SFX.setHighIntensity(false); }
+  const arena=document.getElementById('combatArena');
+  if(pct<=0.25&&pct>0){
+    esp.classList.add('enemy-low-hp');
+    if(arena) arena.classList.add('scene-danger');
+    SFX.setHighIntensity(true);
+  } else {
+    esp.classList.remove('enemy-low-hp');
+    if(arena) arena.classList.remove('scene-danger');
+    SFX.setHighIntensity(false);
+  }
 }
 
 // ── Element color helper ──
@@ -13042,11 +13380,12 @@ function doAttack() {
   if (isCrit) setTimeout(() => SFX.critSound(), 60);
   vibrate(isCrit ? [12, 20, 35] : 15);
   flashCombat(elemColor(pType)+'0.12)');
+  playSkillFX(isCrit ? pType : 'phys');
   animSprite('pSprite', 'anim-atk-r');
   launchProjectile(pType, () => {
     spawnParticles(pType, 'e');
     spawnCanvasParticles(pType, 'e');
-    if (isCrit) shakeCamera(true); else shakeCamera(false);
+    if (isCrit) shakeCamera(true, true); else shakeCamera(false);
     const killed = (adv.enemy.hp - dmg) <= 0;
     if (killed) slowMoFlash();
     dealToEnemy(dmg, isCrit ? 'dmg-crit' : 'dmg-red', `⚔️ <b>${char.name||'Héroe'}</b> ataca${isCrit?' 💥 ¡CRÍTICO!':''} — <b>${dmg}</b> de daño`);
@@ -13178,6 +13517,7 @@ function doSkill(idx) {
   else                       SFX.physAttack();
   if (isCrit) setTimeout(() => SFX.critSound(), 70);
   flashCombat(elemColor(pType)+'0.14)');
+  playSkillFX(pType);
   animSprite('pSprite', 'anim-atk-r');
   const delay = getDelay(isEpic ? 250 : 180);
 
@@ -13186,7 +13526,7 @@ function doSkill(idx) {
     animSprite('eSprite', 'anim-hit');
     spawnParticles(pType, 'e');
     spawnCanvasParticles(pType, 'e', isEpic ? 20 : 12);
-    if (isCrit && n===1) shakeCamera(true); else if (n===1) shakeCamera(false);
+    if (isCrit && n===1) shakeCamera(true, true); else if (n===1) shakeCamera(isEpic);
     floatDmg(`-${d}${isEpic?'!':''}`, floatCls, 'e');
     const killed = adv.enemy.hp - d <= 0;
     if (killed && n===hits) slowMoFlash();
@@ -13669,6 +14009,7 @@ function renderCombatResult(el) {
   }
 
   if (isDailyDg) {
+    setTimeout(spawnVictoryParticles, 120);
     const t = DAILY_TIERS[dailyTier] || {};
     const color = t.color || '#fbbf24';
     const bg    = color + '12';
@@ -13706,6 +14047,9 @@ function renderCombatResult(el) {
     el.querySelector('#crCta')?.addEventListener('click', () => { adv.view = 'map'; renderAdv(); });
     return;
   }
+
+  // Spawn gold victory particles
+  setTimeout(spawnVictoryParticles, 120);
 
   // Normal victory — gacha style
   const newSkills = getAllCombatSkills().filter(sk => {
