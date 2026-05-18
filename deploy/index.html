@@ -290,10 +290,10 @@ h2, h3 { font-family: var(--pxfont); }
   background: rgba(6,6,14,.88);
   backdrop-filter: blur(16px);
   display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity .35s;
+  opacity: 0; pointer-events: none; visibility: hidden;
+  transition: opacity .35s, visibility .35s;
 }
-.overlay.show { opacity: 1; pointer-events: all; }
+.overlay.show { opacity: 1; pointer-events: all; visibility: visible; }
 
 .lvl-card {
   background: var(--s1);
@@ -823,10 +823,10 @@ h2, h3 { font-family: var(--pxfont); }
   position: fixed; inset: 0; z-index: 9999;
   background: rgba(4,3,12,.97);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity .25s;
+  opacity: 0; pointer-events: none; visibility: hidden;
+  transition: opacity .25s, visibility .25s;
 }
-.pom-overlay.visible { opacity: 1; pointer-events: all; }
+.pom-overlay.visible { opacity: 1; pointer-events: all; visibility: visible; }
 .pom-header { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 28px; }
 .pom-counter {
   font-size: .62rem; color: rgba(251,146,60,.8); letter-spacing: .08em;
@@ -4448,10 +4448,10 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .more-backdrop {
   position: fixed; inset: 0; z-index: 870;
   background: rgba(0,0,0,.55);
-  opacity: 0; pointer-events: none;
-  transition: opacity .25s;
+  opacity: 0; pointer-events: none; visibility: hidden;
+  transition: opacity .25s, visibility .25s;
 }
-.more-backdrop.open { opacity: 1; pointer-events: all; }
+.more-backdrop.open { opacity: 1; pointer-events: all; visibility: visible; }
 
 .more-drawer {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 880;
