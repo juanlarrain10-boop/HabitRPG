@@ -89,14 +89,21 @@ self.addEventListener('notificationclick', e => {
   );
 });
 
-// ─── Periodic Background Sync (daily reminder fallback) ──────────────────────
+// ─── RPG rotating daily messages ─────────────────────────────────────────────
+const RPG_DAILY_MSGS = [
+  { title: '⚔️ HabitRPG', body: 'Tu héroe despertó. Las misiones del día te esperan ⚔️' },
+  { title: '🌅 HabitRPG', body: 'Un nuevo día comienza. ¿Estás listo para la aventura? 🌅' },
+  { title: '💪 HabitRPG', body: 'El destino llama. Completa tus misiones y fortalece a tu héroe 💪' },
+  { title: '🌟 HabitRPG', body: 'Hoy es un nuevo capítulo. Tu personaje necesita de ti 🌟' },
+  { title: '🗡️ HabitRPG', body: 'Las puertas del dungeon se abren. ¿Aceptas el desafío? 🗡️' },
+];
+
+// ─── Periodic Background Sync (daily reminder + streak check fallback) ────────
 self.addEventListener('periodicsync', e => {
-  if (e.tag !== 'habitrpg-daily') return;
-  e.waitUntil(checkAndNotify());
+  if (e.tag === 'habitrpg-daily') e.waitUntil(checkAndNotify());
 });
 
 async function checkAndNotify() {
-  // Read reminder time from cache storage (written by the app)
   const db = await caches.open('habitrpg-config');
   const res = await db.match('/sw-config');
   if (!res) return;
@@ -104,19 +111,35 @@ async function checkAndNotify() {
   if (!cfg.reminderEnabled) return;
 
   const now = new Date();
-  const [h, m] = (cfg.reminderTime || '20:00').split(':').map(Number);
   const todayKey = now.toISOString().slice(0, 10);
-  if (cfg.lastNotified === todayKey) return;
-  if (now.getHours() !== h) return;
+  const hour = now.getHours();
 
-  await self.registration.showNotification('⚔️ HabitRPG — Recordatorio diario', {
-    body:    '¡No olvides completar tus hábitos de hoy, aventurero!',
-    icon:    '/icons/icon-192.png',
-    badge:   '/icons/icon-192.png',
-    tag:     'habitrpg-daily',
-    vibrate: [200, 100, 200],
-    data:    { url: '/' },
-  });
+  // Daily morning reminder
+  const [h] = (cfg.reminderTime || '09:00').split(':').map(Number);
+  if (cfg.lastNotified !== todayKey && hour === h) {
+    const idx = Math.floor(Date.now() / 86400000) % RPG_DAILY_MSGS.length;
+    const msg = RPG_DAILY_MSGS[idx];
+    await self.registration.showNotification(msg.title, {
+      body:    msg.body,
+      icon:    '/icons/icon-192.png',
+      badge:   '/icons/icon-192.png',
+      tag:     'habitrpg-daily',
+      vibrate: [200, 100, 200],
+      data:    { url: '/' },
+    });
+  }
+
+  // Streak danger at 20:00
+  if (hour === 20 && (cfg.streak || 0) >= 2 && cfg.lastStreakCheck !== todayKey) {
+    await self.registration.showNotification('🔥 ¡Racha en peligro!', {
+      body:    `Tu racha de ${cfg.streak} días está en peligro — completa al menos una misión antes de medianoche`,
+      icon:    '/icons/icon-192.png',
+      badge:   '/icons/icon-192.png',
+      tag:     'habitrpg-streak',
+      vibrate: [300, 100, 300, 100, 300],
+      data:    { url: '/' },
+    });
+  }
 }
 
 // ─── Message from app ─────────────────────────────────────────────────────────

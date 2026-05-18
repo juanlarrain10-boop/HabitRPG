@@ -5747,8 +5747,8 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <div class="pwa-status" id="pwaNotifStatus">Activa para recibir recordatorios</div>
 
       <div class="pwa-row" id="pwaTimeRow" style="display:none">
-        <span class="pwa-lbl">Hora del recordatorio</span>
-        <input type="time" class="pwa-time" id="pwaTimeInput" value="20:00">
+        <span class="pwa-lbl">Hora del recordatorio diario</span>
+        <input type="time" class="pwa-time" id="pwaTimeInput" value="09:00">
       </div>
     </div>
 
@@ -10324,7 +10324,7 @@ function checkLevelUp() {
     checkAllSubclassUnlocks();
     SFX.levelUp();
     addMasteryPoint('level');
-    pwaNotify('⬆️ ¡Subiste al nivel ' + char.level + '!', '¡Felicidades, aventurero! Nuevo nivel desbloqueado.', 'levelup');
+    pwaNotify('⭐ ¡Tu héroe subió al nivel ' + char.level + '!', 'Nuevas habilidades te esperan — ¡sigue adelante, aventurero!', 'levelup');
     // Milestone tracking
     if (char.level === 2) addMilestone('first_level', 'Primera subida de nivel', '⬆️');
     if ([10,20,30,40,50,60,70,80,90,99].includes(char.level))
@@ -11481,6 +11481,13 @@ function toggleMission(i, rowEl) {
     day.missBonusAwarded = true;
     addXP(MISS_BONUS, 'disciplina', 'Bonus misiones del día');
     floatXP(MISS_BONUS, 'disciplina', rowEl);
+    // Mysterious dungeon notification
+    if (!day.dailyDungeonDone) {
+      const _ddT = getDailyDungeon(cur);
+      if (char.level >= (_ddT.t?.minLevel || 1)) {
+        setTimeout(() => pwaNotify('🌀 HabitRPG', 'Algo apareció en el mapa de tu campamento...', 'dungeon'), 1500);
+      }
+    }
     // Asesino extra bonus
     if (char.class === 'asesino' && !day.classBonuses.asesinoMissXP) {
       day.classBonuses.asesinoMissXP = true;
@@ -18627,12 +18634,23 @@ function pwaNotify(title, body, tag) {
   }
 }
 
+// RPG rotating daily messages (one per day, cycles every 5 days)
+const _RPG_DAILY_MSGS = [
+  { title: '⚔️ HabitRPG', body: 'Tu héroe despertó. Las misiones del día te esperan ⚔️' },
+  { title: '🌅 HabitRPG', body: 'Un nuevo día comienza. ¿Estás listo para la aventura? 🌅' },
+  { title: '💪 HabitRPG', body: 'El destino llama. Completa tus misiones y fortalece a tu héroe 💪' },
+  { title: '🌟 HabitRPG', body: 'Hoy es un nuevo capítulo. Tu personaje necesita de ti 🌟' },
+  { title: '🗡️ HabitRPG', body: 'Las puertas del dungeon se abren. ¿Aceptas el desafío? 🗡️' },
+];
+
 // Save notification config to SW cache so periodic sync can read it
 function _pwaSaveConfig() {
   const cfg = {
     reminderEnabled: localStorage.getItem('pwa_notif_on') === '1',
-    reminderTime:    localStorage.getItem('pwa_notif_time') || '20:00',
+    reminderTime:    localStorage.getItem('pwa_notif_time') || '09:00',
     lastNotified:    localStorage.getItem('pwa_notif_last') || '',
+    streak:          (typeof char !== 'undefined') ? (char.streak || 0) : 0,
+    lastStreakCheck: localStorage.getItem('pwa_streak_check_last') || '',
   };
   navigator.serviceWorker?.ready.then(reg => reg.active?.postMessage({ type: 'SAVE_CONFIG', config: cfg })).catch(() => {});
 }
@@ -18643,20 +18661,52 @@ function _pwaScheduleReminder() {
   if (localStorage.getItem('pwa_notif_on') !== '1') return;
   if (Notification.permission !== 'granted') return;
 
-  const [h, m] = (localStorage.getItem('pwa_notif_time') || '20:00').split(':').map(Number);
+  const [h, m] = (localStorage.getItem('pwa_notif_time') || '09:00').split(':').map(Number);
   const now = new Date();
   const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
-  if (target <= now) target.setDate(target.getDate() + 1); // tomorrow if already past
+  if (target <= now) target.setDate(target.getDate() + 1);
 
-  const ms = target - now;
   window._pwaReminderTimer = setTimeout(() => {
-    const todayKey = new Date().toISOString().slice(0, 10);
-    if (localStorage.getItem('pwa_notif_last') !== todayKey) {
-      localStorage.setItem('pwa_notif_last', todayKey);
-      pwaNotify('⚔️ HabitRPG — Recordatorio diario', '¡No olvides completar tus hábitos de hoy, aventurero!', 'daily');
+    const tKey = new Date().toISOString().slice(0, 10);
+    if (localStorage.getItem('pwa_notif_last') !== tKey) {
+      localStorage.setItem('pwa_notif_last', tKey);
+      const idx = Math.floor(Date.now() / 86400000) % _RPG_DAILY_MSGS.length;
+      const msg = _RPG_DAILY_MSGS[idx];
+      pwaNotify(msg.title, msg.body, 'daily');
     }
-    _pwaScheduleReminder(); // reschedule for tomorrow
-  }, ms);
+    _pwaScheduleReminder();
+  }, target - now);
+}
+
+// ── 3b. Streak danger check — fires at 20:00 if streak ≥ 2 and 0 missions done ──
+function _pwaScheduleStreakCheck() {
+  if (window._pwaStreakTimer) clearTimeout(window._pwaStreakTimer);
+  if (localStorage.getItem('pwa_notif_on') !== '1') return;
+  if (Notification.permission !== 'granted') return;
+
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0);
+  if (target <= now) target.setDate(target.getDate() + 1);
+
+  window._pwaStreakTimer = setTimeout(() => {
+    if (localStorage.getItem('pwa_notif_on') === '1' && Notification.permission === 'granted') {
+      const streak = (typeof char !== 'undefined') ? (char.streak || 0) : 0;
+      if (streak >= 2) {
+        const tKey = new Date().toISOString().slice(0, 10);
+        if (localStorage.getItem('pwa_streak_check_last') !== tKey) {
+          const todayData = (typeof loadDay !== 'undefined') ? loadDay(tKey) : null;
+          const anyDone = todayData?.missions?.some(m => m.done);
+          if (!anyDone) {
+            localStorage.setItem('pwa_streak_check_last', tKey);
+            pwaNotify('🔥 ¡Racha en peligro!',
+              `Tu racha de ${streak} días está en peligro — completa al menos una misión antes de medianoche`,
+              'streak');
+          }
+        }
+      }
+    }
+    _pwaScheduleStreakCheck();
+  }, target - now);
 }
 
 // ── 4. Install prompt (Android/Chrome) ──────────────────────────────────────
@@ -18796,11 +18846,13 @@ function _pwaInitNotifUI() {
       if (Notification.permission === 'granted') {
         localStorage.setItem('pwa_notif_on', '1');
         _pwaScheduleReminder();
+        _pwaScheduleStreakCheck();
         _pwaSaveConfig();
       }
     } else {
       localStorage.setItem('pwa_notif_on', '0');
       if (window._pwaReminderTimer) clearTimeout(window._pwaReminderTimer);
+      if (window._pwaStreakTimer) clearTimeout(window._pwaStreakTimer);
       _pwaSaveConfig();
     }
     _pwaRefreshProfileUI();
@@ -18832,6 +18884,7 @@ function _pwaInitNotifUI() {
 _pwaUpdateInstallButtons();
 _pwaInitNotifUI();
 _pwaScheduleReminder();
+_pwaScheduleStreakCheck();
 
 // ═══════════════════════════════════════════
 // MASTERY POINTS
@@ -19258,6 +19311,27 @@ async function _guildRender() {
     .select('*').eq('guild_id',_guildData.id)
     .gte('day_key', weekStart).lte('day_key', weekEnd);
   var progRows = progRes.data || [];
+
+  // Guild completion notifications — fire once per guildmate per day
+  if (sbUser) {
+    var _todayStr = new Date().toISOString().slice(0, 10);
+    var _todayDone = progRows.filter(function(r) {
+      return r.day_key === _todayStr && r.day_pct >= 100 && r.user_id !== sbUser.id;
+    });
+    var _gPrevKey = 'pwa_guild_done_' + _todayStr;
+    var _gPrev = new Set(JSON.parse(localStorage.getItem(_gPrevKey) || '[]'));
+    var _gNew = _todayDone.filter(function(r) { return !_gPrev.has(r.user_id); });
+    if (_gNew.length > 0) {
+      _gNew.forEach(function(r) {
+        var _gm = (membRes.data || []).find(function(mm) { return mm.user_id === r.user_id; });
+        var _gname = _gm ? _gm.display_name : 'Un compañero';
+        setTimeout(function() {
+          pwaNotify('🏰 Gremio', _gname + ' completó todas sus misiones hoy — ¡tu gremio avanza!', 'guild');
+        }, 600);
+      });
+      localStorage.setItem(_gPrevKey, JSON.stringify([..._gPrev, ..._gNew.map(function(r){ return r.user_id; })]));
+    }
+  }
 
   // Compute week avg per member
   var memberStats = members.map(function(m) {
