@@ -1356,6 +1356,10 @@ h2, h3 { font-family: var(--pxfont); }
   font-size: .7rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .14s;
 }
 .apariencia-toggle-btn:hover { border-color: var(--purp2); color: var(--purp2); }
+.btn-share-hero { margin-top:8px;padding:10px 20px;border-radius:12px;border:1px solid rgba(245,158,11,.45);font-family:inherit;font-size:.78rem;font-weight:900;cursor:pointer;transition:all .18s;background:linear-gradient(135deg,rgba(217,119,6,.2),rgba(245,158,11,.12));color:#fbbf24;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.02em; }
+.btn-share-hero:hover { background:linear-gradient(135deg,rgba(217,119,6,.35),rgba(245,158,11,.22));border-color:rgba(245,158,11,.7);transform:translateY(-1px);box-shadow:0 4px 14px rgba(245,158,11,.18); }
+.btn-share-hero:active { transform:scale(0.97); }
+.btn-share-hero:disabled { opacity:.55;cursor:not-allowed;transform:none;box-shadow:none; }
 .apariencia-editor {
   background: var(--s2); border: 1px solid var(--bd2); border-radius: 12px;
   padding: 12px 14px; margin: 8px 0 4px; display: flex; flex-direction: column; gap: 10px;
@@ -5770,6 +5774,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <div class="char-name-wrap" id="charNameWrap"></div>
       <div class="class-badge-row" id="classBadgeRow"></div>
       <button class="apariencia-toggle-btn" id="aparienciaToggleBtn" onclick="toggleAparienciaEditor()">✏️ Editar apariencia</button>
+      <button class="btn-share-hero" id="btnShareHero" onclick="shareHeroCard()">📤 Compartir mi héroe</button>
     </div>
     <div class="apariencia-editor hide" id="aparienciaEditor">
       <div class="ap-row"><span class="ap-label">Piel</span><div class="swatch-row" id="apSkinRow"></div></div>
@@ -18973,6 +18978,268 @@ function closeProfile() {
   if (panel) panel.classList.remove('profile-open');
   document.body.style.overflow = '';
   setBottomTab('bnHome');
+}
+
+// ═══ TARJETA COMPARTIBLE DEL HÉROE ════════════════════════════════════════
+const _CARD_THEMES = {
+  guerrero: { bg:'#110303', a1:'#dc2626', a2:'#d97706', glow:'rgba(220,38,38,.45)' },
+  mago:     { bg:'#03040f', a1:'#2563eb', a2:'#a78bfa', glow:'rgba(124,58,237,.45)' },
+  monje:    { bg:'#0a0800', a1:'#d97706', a2:'#f5f0e0', glow:'rgba(217,119,6,.45)'  },
+  asesino:  { bg:'#050505', a1:'#6b7280', a2:'#d1d5db', glow:'rgba(107,114,128,.4)' },
+  druida:   { bg:'#020a04', a1:'#16a34a', a2:'#34d399', glow:'rgba(22,163,74,.45)'  },
+  barbaro:  { bg:'#0a0300', a1:'#ea580c', a2:'#b45309', glow:'rgba(234,88,12,.45)'  },
+  arquero:  { bg:'#020810', a1:'#0284c7', a2:'#94a3b8', glow:'rgba(2,132,199,.45)'  },
+  paladin:  { bg:'#060414', a1:'#7c3aed', a2:'#d97706', glow:'rgba(124,58,237,.45)' },
+  brujo:    { bg:'#080212', a1:'#9333ea', a2:'#c084fc', glow:'rgba(147,51,234,.45)' },
+};
+const _CARD_PHRASES = {
+  guerrero:'La batalla forja al héroe',
+  mago:'El conocimiento es poder absoluto',
+  monje:'La calma es mi fortaleza',
+  asesino:'Precisión. Disciplina. Victoria.',
+  druida:'Fluyo con el ritmo del mundo',
+  barbaro:'Todo o nada. Siempre.',
+  arquero:'Un objetivo. Una oportunidad.',
+  paladin:'La justicia guía mi espada',
+  brujo:'El poder oscuro obedece mi voluntad',
+};
+
+function generateHeroCard() {
+  return new Promise(resolve => {
+    const W = 1080, H = 1080;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+
+    const clsKey = char.class || 'guerrero';
+    const theme  = _CARD_THEMES[clsKey] || { bg:'#080612', a1:'#7c3aed', a2:'#c084fc', glow:'rgba(124,58,237,.45)' };
+    const rank   = getRank(char.level);
+    const rs     = rankStyle(rank);
+
+    // Background
+    ctx.fillStyle = theme.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Stone grain texture
+    ctx.save();
+    for (let i = 0; i < 10000; i++) {
+      const g = Math.floor(Math.random() * 140 + 80);
+      ctx.fillStyle = `rgba(${g},${g},${g},0.038)`;
+      ctx.fillRect(Math.random() * W, Math.random() * H, Math.random() * 2.5 + 0.5, Math.random() * 2.5 + 0.5);
+    }
+    ctx.restore();
+
+    // Stars
+    ctx.save();
+    for (let i = 0; i < 200; i++) {
+      const r = Math.random() * 1.6 + 0.3;
+      const a = Math.random() * 0.75 + 0.25;
+      ctx.beginPath();
+      ctx.arc(Math.random() * W, Math.random() * H, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${a})`;
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // Center radial glow
+    const cGrd = ctx.createRadialGradient(W/2, H * 0.47, 40, W/2, H * 0.47, W * 0.56);
+    cGrd.addColorStop(0, theme.glow.replace(')', ',0.22)').replace('rgba(', 'rgba('));
+    cGrd.addColorStop(1, 'transparent');
+    ctx.fillStyle = cGrd;
+    ctx.fillRect(0, 0, W, H);
+
+    // Border lines (top/bottom/sides)
+    const lineGrd = ctx.createLinearGradient(0, 0, W, 0);
+    lineGrd.addColorStop(0, 'transparent');
+    lineGrd.addColorStop(0.5, theme.a2);
+    lineGrd.addColorStop(1, 'transparent');
+    ctx.fillStyle = lineGrd;
+    ctx.fillRect(0, 0, W, 3);
+    ctx.fillRect(0, H - 3, W, 3);
+    const sGrd = ctx.createLinearGradient(0, 0, 0, H);
+    sGrd.addColorStop(0, 'transparent');
+    sGrd.addColorStop(0.5, theme.a1 + 'cc');
+    sGrd.addColorStop(1, 'transparent');
+    ctx.fillStyle = sGrd;
+    ctx.fillRect(0, 0, 3, H);
+    ctx.fillRect(W - 3, 0, 3, H);
+
+    // ── Name ──────────────────────────────────────────────────────────
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const name = (char.name || 'Aventurero').toUpperCase();
+    ctx.font = 'bold 80px Georgia, "Times New Roman", serif';
+    ctx.shadowColor = theme.a1;
+    ctx.shadowBlur = 32;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(name, W / 2, 108);
+    ctx.shadowBlur = 0;
+
+    // ── Class · Subclass ──────────────────────────────────────────────
+    const className = (CLASSES[clsKey]?.name || clsKey);
+    const subName   = char.activeSubclass ? (SUBCLASSES.find(s => s.id === char.activeSubclass)?.name || '') : '';
+    const classLine = subName ? `${className}  ·  ${subName}` : className;
+    ctx.font = 'bold 40px "Segoe UI", Arial, sans-serif';
+    ctx.fillStyle = theme.a2;
+    ctx.shadowColor = theme.a2;
+    ctx.shadowBlur = 14;
+    ctx.fillText(classLine, W / 2, 176);
+    ctx.shadowBlur = 0;
+
+    // ── Level · Rank ──────────────────────────────────────────────────
+    ctx.font = 'bold 48px "Segoe UI", Arial, sans-serif';
+    ctx.fillStyle = rs.color || '#fbbf24';
+    ctx.shadowColor = rs.color || '#fbbf24';
+    ctx.shadowBlur = 18;
+    ctx.fillText(`Nivel ${char.level}  —  Rango ${rank}`, W / 2, 238);
+    ctx.shadowBlur = 0;
+
+    // Separator
+    const sep = ctx.createLinearGradient(0, 0, W, 0);
+    sep.addColorStop(0, 'transparent'); sep.addColorStop(0.5, theme.a1 + 'aa'); sep.addColorStop(1, 'transparent');
+    ctx.fillStyle = sep; ctx.fillRect(80, 272, W - 160, 1.5);
+
+    // ── Streak (top-right) ────────────────────────────────────────────
+    const streak = char.habitStreak?.count || 0;
+    if (streak >= 1) {
+      ctx.font = 'bold 36px "Segoe UI", Arial, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#f97316';
+      ctx.shadowColor = '#f97316';
+      ctx.shadowBlur = 14;
+      ctx.fillText(`🔥 ${streak} días`, W - 58, 150);
+      ctx.shadowBlur = 0;
+    }
+
+    // ── Avatar ────────────────────────────────────────────────────────
+    const AV = 260;
+    const avCv = buildPixelAvatar(char.avatar || {}, clsKey, char.equipped || {}, AV);
+    // Glow behind avatar
+    const avGrd = ctx.createRadialGradient(W/2, 440, 20, W/2, 440, 210);
+    avGrd.addColorStop(0, theme.glow.replace(',0.45)', ',0.18)'));
+    avGrd.addColorStop(1, 'transparent');
+    ctx.fillStyle = avGrd;
+    ctx.fillRect(W/2 - 220, 290, 440, 330);
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(avCv, W/2 - AV/2, 295, AV, AV);
+    ctx.restore();
+
+    // Separator below avatar
+    ctx.fillStyle = sep; ctx.fillRect(80, 578, W - 160, 1.5);
+
+    // ── Stats (2×2 grid) ──────────────────────────────────────────────
+    const STATS = [
+      { key:'fuerza',     label:'Fuerza',     color:'#fca5a5' },
+      { key:'mente',      label:'Mente',       color:'#93c5fd' },
+      { key:'vitalidad',  label:'Vitalidad',   color:'#6ee7b7' },
+      { key:'disciplina', label:'Disciplina',  color:'#fbbf24' },
+    ];
+    const cW = (W - 160) / 2;
+    const sY = 600;
+    STATS.forEach(({ key, label, color }, i) => {
+      const col = i % 2, row = Math.floor(i / 2);
+      const sx = 80 + col * (cW + 40);
+      const sy = sY + row * 92;
+      const lv = statValue ? statValue(key) : Math.min(99, 1 + Math.floor((char.statXP?.[key] || 0) / 25));
+
+      // Card background
+      ctx.fillStyle = 'rgba(255,255,255,0.055)';
+      ctx.beginPath(); ctx.roundRect(sx, sy, cW, 74, 14); ctx.fill();
+
+      // Bar fill
+      const bx = sx + 14, bw = cW - 28, bh = 9;
+      const barFill = Math.max(6, (lv / 99) * bw);
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.beginPath(); ctx.roundRect(bx, sy + 53, bw, bh, 4); ctx.fill();
+      const bGrd = ctx.createLinearGradient(bx, 0, bx + barFill, 0);
+      bGrd.addColorStop(0, color + 'dd'); bGrd.addColorStop(1, color + '55');
+      ctx.fillStyle = bGrd;
+      ctx.beginPath(); ctx.roundRect(bx, sy + 53, barFill, bh, 4); ctx.fill();
+
+      // Label
+      ctx.textAlign = 'left';
+      ctx.font = 'bold 30px "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.72)';
+      ctx.fillText(label, sx + 14, sy + 30);
+
+      // Value
+      ctx.textAlign = 'right';
+      ctx.font = 'bold 34px "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = color;
+      ctx.fillText(`${lv}`, sx + cW - 14, sy + 32);
+    });
+
+    // Separator above phrase
+    ctx.fillStyle = sep; ctx.fillRect(80, 812, W - 160, 1.5);
+
+    // ── Class phrase ──────────────────────────────────────────────────
+    const phrase = _CARD_PHRASES[clsKey] || 'Forja tu leyenda cada día';
+    ctx.font = 'italic 34px Georgia, "Times New Roman", serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText(`"${phrase}"`, W / 2, 858);
+
+    // ── Logo ──────────────────────────────────────────────────────────
+    ctx.font = 'bold 46px Georgia, "Times New Roman", serif';
+    ctx.fillStyle = theme.a2;
+    ctx.shadowColor = theme.a2;
+    ctx.shadowBlur = 16;
+    ctx.fillText('⚔️  HabitRPG', W / 2, 940);
+    ctx.shadowBlur = 0;
+
+    // ── URL ───────────────────────────────────────────────────────────
+    ctx.font = '26px "Segoe UI", Arial, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillText('habit-rpg-nine.vercel.app', W / 2, 1002);
+
+    resolve(cv);
+  });
+}
+
+async function shareHeroCard() {
+  const btn = document.getElementById('btnShareHero');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generando...'; }
+  try {
+    const canvas = await generateHeroCard();
+    canvas.toBlob(async blob => {
+      if (!blob) { if (btn) { btn.disabled = false; btn.textContent = '📤 Compartir mi héroe'; } return; }
+      const file = new File([blob], 'mi-heroe-habitrpg.png', { type: 'image/png' });
+      const shareData = {
+        title: `${char.name || 'Mi Héroe'} — HabitRPG`,
+        text: `¡Mira a mi héroe! ⚔️ Nivel ${char.level} · Rango ${getRank(char.level)} · habit-rpg-nine.vercel.app`,
+        files: [file],
+      };
+      let shared = false;
+      if (navigator.share) {
+        try {
+          if (navigator.canShare && navigator.canShare(shareData)) {
+            await navigator.share(shareData);
+            shared = true;
+          } else {
+            await navigator.share({ title: shareData.title, text: shareData.text });
+            shared = true;
+          }
+        } catch (e) { if (e.name !== 'AbortError') _downloadHeroCard(blob); else shared = true; }
+      }
+      if (!shared) _downloadHeroCard(blob);
+      if (btn) { btn.disabled = false; btn.textContent = '📤 Compartir mi héroe'; }
+    }, 'image/png');
+  } catch (e) {
+    console.error('[shareHeroCard]', e);
+    if (btn) { btn.disabled = false; btn.textContent = '📤 Compartir mi héroe'; }
+  }
+}
+
+function _downloadHeroCard(blob) {
+  const url = URL.createObjectURL(blob);
+  const a   = document.createElement('a');
+  a.href = url;
+  a.download = `heroe-${(char.name || 'habitrpg').replace(/\s+/g,'-').toLowerCase()}.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 8000);
 }
 
 // Dedicated nav wrappers — avoids fragile function reassignment
