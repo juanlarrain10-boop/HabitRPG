@@ -3563,6 +3563,49 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 }
 .ob-anim { animation:obSlideIn .32s cubic-bezier(.25,.46,.45,.94) both; }
 
+/* Class selection grid — Onboarding */
+.ob-welcome-hd { text-align:center; margin-bottom:20px; }
+.ob-welcome-title { font-size:1.7rem; font-weight:900; color:var(--txt); line-height:1.2; margin-bottom:8px; }
+.ob-welcome-sub { font-size:.88rem; color:var(--dim); line-height:1.5; }
+.ob-class-q { font-size:.9rem; font-weight:800; color:var(--txt); margin-bottom:12px; text-align:center; letter-spacing:.01em; }
+.ob-class-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.ob-class-card {
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  padding:13px 8px 11px; border-radius:14px; cursor:pointer;
+  border:2px solid var(--bd2); background:var(--s2);
+  transition:all .22s cubic-bezier(.34,1.56,.64,1); text-align:center; user-select:none;
+}
+.ob-class-card:hover { border-color:var(--purp2); transform:translateY(-2px); }
+.ob-class-card.sel { transform:translateY(-3px) scale(1.04); }
+.ob-class-icon { font-size:1.9rem; line-height:1.2; }
+.ob-class-name { font-size:.84rem; font-weight:800; color:var(--txt); }
+.ob-class-phrase { font-size:.67rem; color:var(--dim); line-height:1.35; }
+.ob-class-card.sel .ob-class-phrase { opacity:.85; }
+
+/* Screen 3 — hero ready */
+.ob-ready { display:flex; flex-direction:column; align-items:center; gap:15px; padding:4px 0 2px; text-align:center; }
+.ob-ready-ttl { font-size:1.2rem; font-weight:900; color:var(--txt); line-height:1.25; }
+.ob-ready-sub { font-size:.78rem; color:var(--dim); margin-top:-8px; }
+.ob-ready-av { position:relative; display:inline-block; }
+.ob-ready-av canvas { image-rendering:pixelated; border-radius:14px; display:block; }
+.ob-name-inp {
+  width:100%; max-width:240px; text-align:center;
+  background:var(--s2); border:1.5px solid var(--bd2); border-radius:12px;
+  color:var(--txt); font:inherit; font-size:1rem; font-weight:800;
+  padding:11px 14px; outline:none; transition:border-color .2s;
+}
+.ob-name-inp:focus { border-color:var(--purp); }
+.ob-start-btn {
+  width:100%; max-width:290px;
+  background:linear-gradient(135deg,var(--purp),#6d28d9);
+  color:#fff; border:none; border-radius:14px;
+  padding:15px 24px; font-size:1rem; font-weight:800;
+  cursor:pointer; font-family:inherit; letter-spacing:.02em;
+  box-shadow:0 6px 24px rgba(109,40,217,.35); transition:all .2s;
+}
+.ob-start-btn:hover { opacity:.88; transform:translateY(-2px); box-shadow:0 10px 32px rgba(109,40,217,.45); }
+.ob-start-btn:active { transform:translateY(0); }
+
 /* ── STATS TABS ─────────────────────────── */
 .stats-tabs { display:flex; gap:4px; border-bottom:1px solid var(--bd); margin-bottom:14px; overflow-x:auto; padding-bottom:0; }
 .stats-tab {
@@ -5674,7 +5717,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
   <div class="ob-card">
     <div class="ob-progress" id="obProgress"></div>
     <div class="ob-screen-wrap" id="obScreenWrap"></div>
-    <div class="ob-nav">
+    <div class="ob-nav" id="obNav">
       <button class="ob-skip-btn" id="obSkipBtn" style="display:none">Saltar →</button>
       <button class="ob-next-btn" id="obNextBtn" disabled>Siguiente →</button>
     </div>
@@ -17679,9 +17722,7 @@ async function onUserLoggedIn(migrate) {
 }
 
 function enterAppAfterAuth() {
-  if (!char.classSet) {
-    showCharCreate();
-  } else if (!char.onboardingDone) {
+  if (!char.onboardingDone) {
     renderAll(); applySubclassAura();
     showOnboarding();
   } else {
@@ -17957,55 +17998,28 @@ function updateAuthChip() {
 // ═══════════════════════════════════════════
 
 const OB_SCREENS = [
-  {
-    id:1, icon:'🎯', field:'goal', type:'single', skippable:true,
-    question:'¿Cuál es tu objetivo principal ahora mismo?',
-    subtitle:'Opcional — puedes saltar si prefieres.',
+  { id:1, type:'class',  field:'class' },
+  { id:2, type:'single', field:'goal', skippable:true, icon:'🎯',
+    title:'¿Cuál es tu objetivo principal ahora mismo?',
     opts:[
-      { id:'salud_fisica',     label:'Mejorar mi salud física',                icon:'💪' },
-      { id:'bienestar_mental', label:'Mejorar mi salud mental',                icon:'🧠' },
-      { id:'productividad',    label:'Ser más productivo',                     icon:'⚡' },
-      { id:'emprender',        label:'Emprender o crecer profesionalmente',     icon:'🚀' },
-      { id:'equilibrio',       label:'Equilibrar todas las áreas de mi vida',  icon:'⚖️' },
+      { id:'salud',        label:'Mejorar mi salud',             icon:'💪' },
+      { id:'productividad',label:'Ser más productivo',           icon:'⚡' },
+      { id:'profesional',  label:'Crecer profesionalmente',      icon:'🚀' },
+      { id:'equilibrio',   label:'Equilibrar mi vida',           icon:'⚖️' },
+      { id:'bienestar',    label:'Mejorar mi bienestar mental',  icon:'🧠' },
     ],
   },
-  {
-    id:2, icon:'🗺️', field:'areas', type:'multi', skippable:true,
-    question:'¿Qué áreas quieres trabajar?',
-    subtitle:'Puedes elegir varias. Opcional.',
-    opts:[
-      { id:'ejercicio',      label:'Ejercicio y movimiento',     icon:'🏃' },
-      { id:'meditacion',     label:'Meditación y mindfulness',   icon:'🧘' },
-      { id:'lectura',        label:'Lectura y aprendizaje',      icon:'📚' },
-      { id:'alimentacion',   label:'Alimentación saludable',     icon:'🥗' },
-      { id:'sueno',          label:'Sueño y descanso',           icon:'🌙' },
-      { id:'relaciones',     label:'Relaciones y vínculos',      icon:'❤️' },
-      { id:'trabajo',        label:'Trabajo o estudio',          icon:'💼' },
-      { id:'emprendimiento', label:'Emprendimiento',             icon:'💡' },
-      { id:'juego',          label:'Tiempo libre y juego',       icon:'🎮' },
-    ],
-  },
-  {
-    id:3, icon:'💙', field:'mental', type:'single', skippable:true,
-    question:'¿Hay algo específico que quieras trabajar en tu bienestar mental?',
-    subtitle:'Opcional — puedes saltar esta pregunta.',
-    opts:[
-      { id:'ansiedad',   label:'Ansiedad o estrés',        icon:'🌪️' },
-      { id:'animo',      label:'Estado de ánimo bajo',      icon:'🌧️' },
-      { id:'autoestima', label:'Autoestima y confianza',    icon:'🌟' },
-      { id:'relaciones', label:'Relaciones y vínculos',     icon:'🤝' },
-      { id:'proposito',  label:'Propósito y motivación',   icon:'🔥' },
-      { id:'skip',       label:'Prefiero no especificar',   icon:'🔒' },
-    ],
-  },
+  { id:3, type:'ready', field:null },
 ];
 
-let obCurrent = 1;
-let obAnswers = { goal:'', areas:[], mental:'' };
+let obCurrent   = 1;
+let obPrefsMode = false;
+let obAnswers   = { class:'', goal:'', name:'' };
 
 function showOnboarding() {
-  obCurrent = 1;
-  obAnswers = { goal:'', areas:[], mental:'' };
+  obPrefsMode = false;
+  obCurrent   = 1;
+  obAnswers   = { class: char.class || '', goal: char.onboarding?.goal || '', name: char.name || 'Aventurero' };
   document.getElementById('obOverlay').classList.remove('hide');
   obGoTo(1);
 }
@@ -18016,73 +18030,143 @@ function hideOnboarding() {
 
 function obGoTo(n) {
   obCurrent = n;
-  const total = OB_SCREENS.length;
+  const sc  = OB_SCREENS[n - 1];
 
   // Progress dots
+  const dotTotal  = obPrefsMode ? 1 : OB_SCREENS.length;
+  const dotActive = obPrefsMode ? 1 : n;
   const prog = document.getElementById('obProgress');
   prog.innerHTML = '';
-  for (let i = 1; i <= total; i++) {
+  for (let i = 1; i <= dotTotal; i++) {
     const d = document.createElement('div');
-    d.className = 'ob-prog-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    d.className = 'ob-prog-dot' + (i < dotActive ? ' done' : i === dotActive ? ' active' : '');
     prog.appendChild(d);
   }
 
-  // Build current screen
-  const sc = OB_SCREENS[n - 1];
   const wrap = document.getElementById('obScreenWrap');
-  const isMulti = sc.type === 'multi';
-  wrap.innerHTML = `
-    <div class="ob-screen-icon">${sc.icon}</div>
-    <div class="ob-q-num">Pregunta ${n} de ${total}</div>
-    <div class="ob-title">${sc.question}</div>
-    ${sc.subtitle ? `<div class="ob-subtitle">${sc.subtitle}</div>` : ''}
-    <div class="ob-opts" id="obOpts">
-      ${sc.opts.map(o => {
-        const val = obAnswers[sc.field];
-        const sel = isMulti ? val.includes(o.id) : val === o.id;
-        return `<div class="ob-opt${sel?' sel':''}" data-opt="${o.id}">
-          <div class="ob-check">${sel?'✓':''}</div>
-          <span class="ob-opt-icon">${o.icon}</span>
-          <span>${o.label}</span>
-        </div>`;
-      }).join('')}
-    </div>
-  `;
+  wrap.innerHTML = '';
+
+  if (sc.type === 'class') {
+    // ── Pantalla 1: Bienvenida + grid de clases ──
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <div class="ob-welcome-hd">
+        <div class="ob-welcome-title">⚔️ Bienvenido a HabitRPG</div>
+        <div class="ob-welcome-sub">Tu vida real. Tu aventura épica.</div>
+      </div>
+      <div class="ob-class-q">¿Con qué héroe te identificas?</div>
+      <div class="ob-class-grid" id="obClassGrid">
+        ${Object.values(CLASSES).map(cls => {
+          const sel = obAnswers.class === cls.id;
+          const st  = sel ? `border-color:${cls.color};background:${cls.bg};color:${cls.color}` : '';
+          return `<div class="ob-class-card${sel?' sel':''}" data-cls="${cls.id}" style="${st}">
+            <div class="ob-class-icon">${cls.icon}</div>
+            <div class="ob-class-name">${cls.name}</div>
+            <div class="ob-class-phrase" style="${sel?'color:inherit':''}">${cls.desc}</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    wrap.appendChild(div);
+
+  } else if (sc.type === 'single') {
+    // ── Pantalla 2: Objetivo ──
+    const val = obAnswers[sc.field] || '';
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <div class="ob-screen-icon">${sc.icon}</div>
+      <div class="ob-title">${sc.title}</div>
+      <div class="ob-opts" id="obOpts">
+        ${sc.opts.map(o => {
+          const sel = val === o.id;
+          return `<div class="ob-opt${sel?' sel':''}" data-opt="${o.id}">
+            <div class="ob-check">${sel?'✓':''}</div>
+            <span class="ob-opt-icon">${o.icon}</span>
+            <span>${o.label}</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    wrap.appendChild(div);
+
+  } else if (sc.type === 'ready') {
+    // ── Pantalla 3: Héroe listo ──
+    const cls = CLASSES[obAnswers.class] || CLASSES.guerrero;
+    const avCv = buildPixelAvatar(char.avatar || {}, obAnswers.class || 'guerrero', null, 120);
+    const div = document.createElement('div');
+    div.className = 'ob-ready';
+    div.innerHTML = `
+      <div class="ob-ready-ttl">¡Tu héroe está listo!</div>
+      <div class="ob-ready-sub">Ponle nombre y comienza tu aventura.</div>`;
+    const avWrap = document.createElement('div');
+    avWrap.className = 'ob-ready-av';
+    avWrap.style.filter = `drop-shadow(0 0 18px ${cls.color}66)`;
+    avWrap.appendChild(avCv);
+    div.appendChild(avWrap);
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.maxLength = 24; inp.className = 'ob-name-inp';
+    inp.value = obAnswers.name || 'Aventurero';
+    inp.placeholder = 'Nombre de aventurero...'; inp.id = 'obNameInp';
+    inp.oninput = () => { obAnswers.name = inp.value; };
+    div.appendChild(inp);
+    const btn = document.createElement('button');
+    btn.className = 'ob-start-btn';
+    btn.textContent = 'Comenzar mi aventura ⚔️';
+    btn.onclick = obFinish;
+    div.appendChild(btn);
+    wrap.appendChild(div);
+  }
+
   wrap.classList.remove('ob-anim');
   void wrap.offsetWidth;
   wrap.classList.add('ob-anim');
 
-  // Skip button visibility
-  document.getElementById('obSkipBtn').style.display = sc.skippable ? '' : 'none';
-
-  obUpdateNextBtn();
+  // Nav
+  const nav     = document.getElementById('obNav');
+  const skipBtn = document.getElementById('obSkipBtn');
+  const nextBtn = document.getElementById('obNextBtn');
+  if (sc.type === 'ready') {
+    nav.style.display = 'none';
+  } else {
+    nav.style.display = '';
+    if (obPrefsMode) {
+      skipBtn.style.display = ''; skipBtn.textContent = 'Cancelar';
+    } else {
+      skipBtn.style.display = sc.skippable ? '' : 'none'; skipBtn.textContent = 'Saltar →';
+    }
+    nextBtn.textContent = obPrefsMode ? 'Guardar' : 'Siguiente →';
+    obUpdateNextBtn();
+  }
 }
 
 function obUpdateNextBtn() {
-  const sc = OB_SCREENS[obCurrent - 1];
+  const sc  = OB_SCREENS[obCurrent - 1];
   const btn = document.getElementById('obNextBtn');
   if (!btn) return;
-  const isLast = obCurrent === OB_SCREENS.length;
-  btn.textContent = isLast ? 'Comenzar aventura ⚔️' : 'Siguiente →';
-  const val = obAnswers[sc.field];
-  const has = sc.type === 'multi' ? val.length > 0 : val !== '';
-  btn.disabled = !has && !sc.skippable;
+  const val = obAnswers[sc.field] || '';
+  btn.disabled = !val && !sc.skippable;
+}
+
+function obSelectClass(clsId) {
+  obAnswers.class = clsId;
+  const cls = CLASSES[clsId];
+  document.querySelectorAll('#obClassGrid .ob-class-card').forEach(el => {
+    const sel = el.dataset.cls === clsId;
+    el.classList.toggle('sel', sel);
+    if (sel) {
+      el.style.borderColor = cls.color; el.style.background = cls.bg; el.style.color = cls.color;
+      el.querySelector('.ob-class-phrase').style.color = 'inherit';
+    } else {
+      el.style.borderColor = ''; el.style.background = ''; el.style.color = '';
+      el.querySelector('.ob-class-phrase').style.color = '';
+    }
+  });
+  obUpdateNextBtn();
 }
 
 function obSelectOpt(optId) {
   const sc = OB_SCREENS[obCurrent - 1];
-  if (sc.type === 'single') {
-    obAnswers[sc.field] = optId;
-  } else {
-    const arr = obAnswers[sc.field];
-    const idx = arr.indexOf(optId);
-    if (idx === -1) arr.push(optId); else arr.splice(idx, 1);
-  }
-  // Re-render options in place to update sel states
-  const val = obAnswers[sc.field];
+  obAnswers[sc.field] = optId;
   document.querySelectorAll('#obOpts .ob-opt').forEach(el => {
-    const oid = el.dataset.opt;
-    const sel = sc.type === 'multi' ? val.includes(oid) : val === oid;
+    const sel = el.dataset.opt === optId;
     el.classList.toggle('sel', sel);
     el.querySelector('.ob-check').textContent = sel ? '✓' : '';
   });
@@ -18090,30 +18174,25 @@ function obSelectOpt(optId) {
 }
 
 function obNext() {
-  const sc = OB_SCREENS[obCurrent - 1];
-  if (sc.skippable && sc.type === 'single' && obAnswers[sc.field] === '') obAnswers[sc.field] = 'skip';
-  if (obCurrent < OB_SCREENS.length) {
-    obGoTo(obCurrent + 1);
-  } else {
-    obFinish();
-  }
+  if (obPrefsMode) { obFinishPrefs(); return; }
+  if (obCurrent < OB_SCREENS.length) { obGoTo(obCurrent + 1); } else { obFinish(); }
 }
 
 function obSkip() {
-  const sc = OB_SCREENS[obCurrent - 1];
-  if (sc.type === 'single') obAnswers[sc.field] = 'skip';
-  // multi: leave empty array — counts as skipped
+  if (obPrefsMode) { hideOnboarding(); return; }
   if (obCurrent < OB_SCREENS.length) obGoTo(obCurrent + 1); else obFinish();
 }
 
 function obFinish() {
+  const clsId = obAnswers.class || 'guerrero';
+  char.class    = clsId; char.classSet = true; char.lastClassChangeLevel = char.level;
+  const nm = (document.getElementById('obNameInp')?.value.trim()) || obAnswers.name || 'Aventurero';
+  char.name    = nm || 'Aventurero'; char.nameSet = true; char.lastNameChangeLevel = char.level;
   if (!char.onboarding) char.onboarding = {};
-  char.onboarding.goal   = obAnswers.goal;
-  char.onboarding.areas  = [...obAnswers.areas];
-  char.onboarding.mental = obAnswers.mental;
-  char.onboardingDone         = true;
+  char.onboarding.goal  = obAnswers.goal || '';
+  char.onboarding.areas = [];
+  char.onboardingDone   = true;
   saveChar();
-  // Generate today's missions based on fresh onboarding answers
   day.missions = generateDayMissions();
   saveDay();
   hideOnboarding();
@@ -18122,58 +18201,54 @@ function obFinish() {
   maybeShowTutorial();
 }
 
+function obFinishPrefs() {
+  if (!char.onboarding) char.onboarding = {};
+  char.onboarding.goal = obAnswers.goal || '';
+  saveChar();
+  hideOnboarding();
+  renderChar();
+}
+
 function getOnboardingXPMul(cat) {
-  if (!char.onboardingDone || !char.onboarding || !char.onboarding.goal) return 1;
-  const goal  = char.onboarding.goal;
-  const areas = Array.isArray(char.onboarding.areas) ? char.onboarding.areas : [];
-  const cls   = char.class;
-  // Goal-based rules: [class, goal, cats, multiplier]
-  const goalRules = [
-    ['guerrero', 'salud_fisica',     ['fuerza'],                                              2.0],
-    ['barbaro',  'salud_fisica',     ['fuerza'],                                              2.5],
-    ['monje',    'bienestar_mental', ['bienestar', 'mente'],                                  2.5],
-    ['asesino',  'productividad',    ['disciplina'],                                          2.0],
-    ['druida',   'equilibrio',       ['fuerza','mente','vitalidad','disciplina','bienestar'], 1.3],
+  if (!char.onboardingDone || !char.onboarding?.goal) return 1;
+  const goal = char.onboarding.goal;
+  const cls  = char.class;
+  const rules = [
+    ['guerrero', 'salud',        ['fuerza'],                                              2.0],
+    ['barbaro',  'salud',        ['fuerza'],                                              2.5],
+    ['monje',    'bienestar',    ['bienestar','mente'],                                   2.5],
+    ['asesino',  'productividad',['disciplina'],                                          2.0],
+    ['druida',   'equilibrio',   ['fuerza','mente','vitalidad','disciplina','bienestar'], 1.3],
   ];
-  for (const [rc, rg, rcats, rmul] of goalRules) {
+  for (const [rc, rg, rcats, rmul] of rules) {
     if (cls === rc && goal === rg && rcats.includes(cat)) return rmul;
   }
-  // Area-based rules: Mago/Arquero activate on Mente when 'lectura' area is selected
-  if ((cls === 'mago' || cls === 'arquero') && areas.includes('lectura') && cat === 'mente') return 2.0;
+  if ((cls === 'mago' || cls === 'arquero') && cat === 'mente') return 1.5;
   return 1;
 }
 
 function getOnboardingAlignLabel() {
   if (!char.onboardingDone || !char.onboarding?.goal || !char.class) return '';
-  const goal  = char.onboarding.goal;
-  const areas = Array.isArray(char.onboarding.areas) ? char.onboarding.areas : [];
-  const cls   = char.class;
-  const goalPairs = {
-    'guerrero+salud_fisica':  '💪×2 Fuerza',
-    'barbaro+salud_fisica':   '🔥×2.5 Fuerza',
-    'monje+bienestar_mental': '🧘×2.5 Bienestar',
-    'asesino+productividad':  '⚡×2 Disciplina',
-    'druida+equilibrio':      '⚖️×1.3 Todo',
+  const goal = char.onboarding.goal;
+  const cls  = char.class;
+  const pairs = {
+    'guerrero+salud':        '💪×2 Fuerza',
+    'barbaro+salud':         '🔥×2.5 Fuerza',
+    'monje+bienestar':       '🧘×2.5 Bienestar',
+    'asesino+productividad': '⚡×2 Disciplina',
+    'druida+equilibrio':     '⚖️×1.3 Todo',
   };
-  if (goalPairs[cls + '+' + goal]) return goalPairs[cls + '+' + goal];
-  if ((cls === 'mago' || cls === 'arquero') && areas.includes('lectura')) return '📚×2 Mente';
+  if (pairs[`${cls}+${goal}`]) return pairs[`${cls}+${goal}`];
+  if (cls === 'mago' || cls === 'arquero') return '📚×1.5 Mente';
   return '';
 }
 
 function openObPrefs() {
   if (!char.onboardingDone) { showOnboarding(); return; }
-  const ob = char.onboarding || {};
-  obAnswers = {
-    occupation:  ob.occupation  || '',
-    living:      ob.living      || '',
-    goal:        ob.goal        || '',
-    areas:       Array.isArray(ob.areas) ? [...ob.areas] : [],
-    lifestyle:   ob.lifestyle   || '',
-    consistency: ob.consistency || '',
-    mental:      ob.mental      || '',
-  };
+  obPrefsMode = true; obCurrent = 2;
+  obAnswers   = { class: char.class || '', goal: char.onboarding?.goal || '', name: char.name || '' };
   document.getElementById('obOverlay').classList.remove('hide');
-  obGoTo(1);
+  obGoTo(2);
 }
 
 // ═══════════════════════════════════════════
@@ -18229,7 +18304,9 @@ document.getElementById('obNextBtn').addEventListener('click', obNext);
 document.getElementById('obSkipBtn').addEventListener('click', obSkip);
 document.getElementById('obOverlay').addEventListener('click', e => {
   const opt = e.target.closest('.ob-opt');
-  if (opt && opt.dataset.opt) obSelectOpt(opt.dataset.opt);
+  if (opt && opt.dataset.opt) { obSelectOpt(opt.dataset.opt); return; }
+  const cls = e.target.closest('.ob-class-card');
+  if (cls && cls.dataset.cls) obSelectClass(cls.dataset.cls);
 });
 
 // ── App listeners ──
