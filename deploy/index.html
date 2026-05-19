@@ -4910,91 +4910,132 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 .pwa-big-btn:disabled { opacity: .45; cursor: default; }
 
 /* ══════ SKILL TREE ══════ */
+/* ══ SKILL TREE CONSTELLATION ══ */
 .st-overlay {
   position: fixed; inset: 0; z-index: 9000;
   display: none; flex-direction: column;
-  background: #030309;
+  background: #02020e;
   background-image:
-    radial-gradient(1px 1px at 5% 12%,  rgba(255,255,255,.55) 0%,transparent 100%),
-    radial-gradient(1px 1px at 18% 68%, rgba(255,255,255,.45) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 33% 30%, rgba(255,255,255,.6) 0%,transparent 100%),
-    radial-gradient(1px 1px at 47% 85%, rgba(255,255,255,.4) 0%,transparent 100%),
-    radial-gradient(1px 1px at 62% 10%, rgba(255,255,255,.5) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 75% 55%, rgba(255,255,255,.55) 0%,transparent 100%),
-    radial-gradient(1px 1px at 88% 32%, rgba(255,255,255,.45) 0%,transparent 100%),
-    radial-gradient(1px 1px at 12% 90%, rgba(255,255,255,.4) 0%,transparent 100%),
-    radial-gradient(1px 1px at 55% 48%, rgba(255,255,255,.5) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 93% 78%, rgba(255,255,255,.5) 0%,transparent 100%),
-    #030309;
+    radial-gradient(1px 1px at 3% 7%,    rgba(255,255,255,.7)  0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 11% 22%,rgba(255,255,255,.55) 0%,transparent 100%),
+    radial-gradient(1px 1px at 24% 61%,  rgba(200,180,255,.6)  0%,transparent 100%),
+    radial-gradient(2px 2px at 37% 43%,  rgba(255,255,255,.38) 0%,transparent 100%),
+    radial-gradient(1px 1px at 48% 14%,  rgba(180,220,255,.65) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 59% 78%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 70% 36%,  rgba(220,200,255,.55) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 82% 54%,rgba(255,255,255,.45) 0%,transparent 100%),
+    radial-gradient(1px 1px at 91% 18%,  rgba(255,255,255,.58) 0%,transparent 100%),
+    radial-gradient(2px 2px at 96% 83%,  rgba(200,230,255,.48) 0%,transparent 100%),
+    radial-gradient(1px 1px at 17% 89%,  rgba(255,255,255,.4)  0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 44% 96%,rgba(180,200,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 75% 94%,  rgba(255,255,255,.42) 0%,transparent 100%),
+    #02020e;
 }
 .st-overlay.open { display: flex; animation: mobileSlideUp .22s ease both; }
+/* Header */
 .st-header {
-  flex-shrink: 0; display: flex; align-items: center; gap: 8px;
-  padding: 14px 14px 8px;
-  background: rgba(3,3,9,.85);
-  border-bottom: 1px solid rgba(255,255,255,.07);
+  flex-shrink: 0; display: flex; align-items: center; gap: 5px;
+  padding: 11px 11px 7px;
+  background: rgba(2,2,14,.92); border-bottom: 1px solid rgba(255,255,255,.06);
 }
 .st-back {
-  background: rgba(255,255,255,.08); border: none; border-radius: 8px;
+  background: rgba(255,255,255,.07); border: none; border-radius: 8px;
   color: #e2e8f0; font-size: 1rem; width: 34px; height: 34px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; flex-shrink: 0;
   touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
-.st-back:active { background: rgba(255,255,255,.15); }
-.st-title { font-family: var(--pxfont); font-size: .52rem; letter-spacing: .1em; color: #c4b5fd; flex: 1; }
+.st-back:active { background: rgba(255,255,255,.15); transform: scale(.92); }
+/* View toggle tabs in header */
+.st-htabs { display: flex; gap: 3px; flex: 1; }
+.st-htab {
+  flex: 1; padding: 5px 4px; border-radius: 9px; border: 1px solid rgba(255,255,255,.09);
+  background: rgba(255,255,255,.04); color: var(--dim);
+  font-size: .44rem; font-family: var(--pxfont); letter-spacing: .03em;
+  cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: all .15s; white-space: nowrap;
+}
+.st-htab.active { background: rgba(167,139,250,.18); border-color: rgba(167,139,250,.4); color: #c4b5fd; }
+.st-htab.life-tab.active { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.38); color: #86efac; }
+.st-htab.all-tab.active  { background: rgba(251,191,36,.12); border-color: rgba(251,191,36,.35); color: #fbbf24; }
+/* Mastery points badge */
 .st-mp {
-  display: flex; align-items: center; gap: 5px;
-  background: rgba(124,58,237,.2); border: 1px solid rgba(167,139,250,.35);
-  border-radius: 10px; padding: 5px 12px;
-  font-size: .72rem; font-weight: 700; color: #a78bfa;
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(124,58,237,.18); border: 1px solid rgba(167,139,250,.3);
+  border-radius: 10px; padding: 5px 9px;
+  font-size: .68rem; font-weight: 700; color: #a78bfa; flex-shrink: 0;
 }
+/* Class sub-tabs (combat mode only) */
 .st-tabs {
-  flex-shrink: 0; display: flex; gap: 4px; overflow-x: auto;
-  padding: 7px 10px 5px; border-bottom: 1px solid rgba(255,255,255,.06);
-  scrollbar-width: none;
+  flex-shrink: 0; display: flex; gap: 3px; overflow-x: auto;
+  padding: 5px 10px 4px; border-bottom: 1px solid rgba(255,255,255,.05);
+  scrollbar-width: none; transition: max-height .2s, opacity .2s, padding .2s;
+  max-height: 40px; opacity: 1; overflow: hidden;
 }
+.st-tabs.hidden { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; }
 .st-tabs::-webkit-scrollbar { display: none; }
 .st-tab {
-  flex-shrink: 0; padding: 5px 12px; border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04);
-  color: var(--dim); font-size: .52rem; font-family: var(--pxfont);
-  letter-spacing: .05em; cursor: pointer;
+  flex-shrink: 0; padding: 4px 10px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.09); background: rgba(255,255,255,.03);
+  color: var(--dim); font-size: .46rem; font-family: var(--pxfont);
+  letter-spacing: .04em; cursor: pointer;
   touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   transition: all .15s; white-space: nowrap;
 }
-.st-tab.active { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); color: #fff; }
-.st-wrap {
-  flex: 1; overflow: auto; position: relative;
-  -webkit-overflow-scrolling: touch;
+.st-tab.active { background: rgba(255,255,255,.11); border-color: rgba(255,255,255,.28); color: #fff; }
+/* Pan / zoom canvas */
+.st-canvas-wrap {
+  flex: 1; overflow: hidden; position: relative;
+  cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
 }
+.st-canvas-wrap:active { cursor: grabbing; }
+.st-canvas-inner { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
 .st-svg { display: block; }
-.st-panel {
-  flex-shrink: 0; background: rgba(3,3,9,.97);
-  border-top: 1px solid rgba(255,255,255,.1);
-  padding: 14px 16px calc(env(safe-area-inset-bottom, 0px) + 12px);
-  max-height: 0; overflow: hidden; opacity: 0;
-  transition: max-height .25s ease, opacity .2s ease;
+/* Center / reset-view button */
+.st-center-btn {
+  position: absolute; right: 11px; bottom: 11px; z-index: 5;
+  background: rgba(124,58,237,.28); border: 1px solid rgba(167,139,250,.38);
+  color: #c4b5fd; font-size: .58rem; border-radius: 10px; padding: 7px 11px;
+  cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(6px); transition: background .15s;
 }
-.st-panel.open { max-height: 260px; opacity: 1; }
-.st-dp-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
-.st-dp-icon { font-size: 1.6rem; line-height: 1; }
+.st-center-btn:active { background: rgba(124,58,237,.5); transform: scale(.94); }
+/* Progress bar for life nodes */
+.st-dp-prog { margin: 5px 0 9px; }
+.st-dp-prog-bar { height: 5px; background: rgba(255,255,255,.08); border-radius: 3px; margin-top: 3px; }
+.st-dp-prog-fill { height: 100%; border-radius: 3px; transition: width .4s; }
+.st-dp-prog-lbl { font-size: .61rem; color: var(--dim); }
+/* Node detail panel */
+.st-panel {
+  flex-shrink: 0; background: rgba(2,2,14,.97);
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding: 13px 15px calc(env(safe-area-inset-bottom, 0px) + 10px);
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height .28s ease, opacity .22s ease;
+}
+.st-panel.open { max-height: 310px; opacity: 1; }
+.st-dp-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 7px; }
+.st-dp-icon { font-size: 1.8rem; line-height: 1; }
 .st-dp-info { flex: 1; }
-.st-dp-name { font-family: var(--pxfont); font-size: .56rem; letter-spacing: .06em; margin-bottom: 3px; }
-.st-dp-zone { font-size: .62rem; color: var(--dim); }
-.st-dp-desc { font-size: .78rem; line-height: 1.55; color: var(--txt); margin-bottom: 10px; }
+.st-dp-name { font-family: var(--pxfont); font-size: .54rem; letter-spacing: .06em; margin-bottom: 3px; }
+.st-dp-zone { font-size: .61rem; color: var(--dim); }
+.st-dp-desc { font-size: .76rem; line-height: 1.55; color: var(--txt); margin-bottom: 7px; }
 .st-dp-foot { display: flex; align-items: center; gap: 10px; }
-.st-dp-cost { font-size: .7rem; color: #a78bfa; flex: 1; }
+.st-dp-cost { font-size: .66rem; color: #a78bfa; flex: 1; line-height: 1.5; }
+.st-dp-cost.life-cost { color: #86efac; }
+.st-dp-cost.fusion-cost { color: #fbbf24; }
 .st-dp-btn {
-  padding: 10px 18px; border-radius: 10px; border: none; font-family: var(--pxfont);
-  font-size: .5rem; letter-spacing: .06em; cursor: pointer;
+  padding: 10px 16px; border-radius: 10px; border: none; font-family: var(--pxfont);
+  font-size: .46rem; letter-spacing: .06em; cursor: pointer;
   touch-action: manipulation; white-space: nowrap;
 }
 .st-dp-btn.can  { background: linear-gradient(135deg,#5b21b6,#7c3aed); color: #fff; }
+.st-dp-btn.life { background: linear-gradient(135deg,#166534,#16a34a); color: #fff; }
+.st-dp-btn.fusion{ background: linear-gradient(135deg,#92400e,#d97706); color: #fff; }
 .st-dp-btn.done { background: rgba(52,211,153,.15); border: 1px solid rgba(52,211,153,.4); color: #34d399; cursor: default; }
 .st-dp-btn.no   { background: rgba(255,255,255,.06); color: var(--dim); cursor: default; }
-.st-bottom-row { flex-shrink: 0; display: flex; justify-content: flex-end; padding: 5px 14px 6px; }
-.st-reset { padding: 6px 13px; border-radius: 8px; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: #f87171; font-size: .6rem; cursor: pointer; touch-action: manipulation; }
+.st-bottom-row { flex-shrink: 0; display: flex; justify-content: flex-end; padding: 5px 13px 5px; }
+.st-reset { padding: 6px 12px; border-radius: 8px; background: rgba(239,68,68,.09); border: 1px solid rgba(239,68,68,.22); color: #f87171; font-size: .57rem; cursor: pointer; touch-action: manipulation; }
 
 /* ══════ CHARACTER STATE ══════ */
 .cs-avatar-wrap {
@@ -10839,6 +10880,8 @@ function loadChar() {
     if (!c.monthlyEventHistory || typeof c.monthlyEventHistory !== 'object') c.monthlyEventHistory = {};
     if (typeof c.masteryPoints !== 'number') c.masteryPoints = 0;
     if (!c.skillTree || typeof c.skillTree !== 'object') c.skillTree = {};
+    if (!Array.isArray(c.skillTree.life))   c.skillTree.life   = [];
+    if (!Array.isArray(c.skillTree.fusion)) c.skillTree.fusion = [];
     if (!('guildId' in c)) c.guildId = null;
     return c;
   } catch { return defChar(); }
@@ -12887,6 +12930,46 @@ function getAdvStatus() {
   return { done, total, pct, xpT, available, played, remaining };
 }
 
+function getLifeBonuses() {
+  var life   = (char.skillTree && Array.isArray(char.skillTree.life))   ? char.skillTree.life   : [];
+  var fusion = (char.skillTree && Array.isArray(char.skillTree.fusion)) ? char.skillTree.fusion : [];
+  var all = life.concat(fusion);
+  var b = { hpPct:0, defPct:0, atkPct:0, magPct:0, allStatsPct:0, evasionPct:0,
+            xpPct:0, combatRegen:0, bossDmgPct:0, cdReduce:0,
+            immuneConfuse:false, immuneDebuff:false, immuneDebuffAll:false,
+            immuneFear:false, immuneFirst:false, healOnEvade:false,
+            regenBetween:false, regenInCombat:false, aura:false, legendaryAura:false };
+  if (!all.length || typeof LIFE_TREE_DATA === 'undefined') return b;
+  var allNodes = [];
+  Object.values(LIFE_TREE_DATA).forEach(function(ch){ allNodes = allNodes.concat(ch); });
+  if (typeof FUSION_NODES !== 'undefined') FUSION_NODES.forEach(function(fn){ allNodes.push(fn); });
+  allNodes.forEach(function(node) {
+    if (all.indexOf(node.id) < 0 || !node.bonus) return;
+    var bon = node.bonus;
+    if (bon.hpPct)        b.hpPct        += bon.hpPct;
+    if (bon.defPct)       b.defPct       += bon.defPct;
+    if (bon.atkPct)       b.atkPct       += bon.atkPct;
+    if (bon.magPct)       b.magPct       += bon.magPct;
+    if (bon.allStatsPct)  b.allStatsPct  += bon.allStatsPct;
+    if (bon.evasionPct)   b.evasionPct   += bon.evasionPct;
+    if (bon.xpPct)        b.xpPct        += bon.xpPct;
+    if (bon.combatRegen)  b.combatRegen   = Math.max(b.combatRegen, bon.combatRegen);
+    if (bon.bossDmgPct)   b.bossDmgPct   += bon.bossDmgPct;
+    if (bon.cdReduce)     b.cdReduce     += bon.cdReduce;
+    if (bon.immuneConfuse)   b.immuneConfuse   = true;
+    if (bon.immuneDebuff)    b.immuneDebuff    = true;
+    if (bon.immuneDebuffAll) b.immuneDebuffAll = true;
+    if (bon.immuneFear)      b.immuneFear      = true;
+    if (bon.immuneFirst)     b.immuneFirst     = true;
+    if (bon.healOnEvade)     b.healOnEvade     = true;
+    if (bon.regenBetween)    b.regenBetween    = true;
+    if (bon.regenInCombat)   b.regenInCombat   = true;
+    if (bon.aura)            b.aura            = true;
+    if (bon.legendaryAura)   b.legendaryAura   = true;
+  });
+  return b;
+}
+
 function getCombatStats() {
   const fz = statValue('fuerza'), mn = statValue('mente'),
         vt = statValue('vitalidad'), dp = statValue('disciplina'),
@@ -12903,16 +12986,19 @@ function getCombatStats() {
     eRegen   += item.combatStats.hpRegen   || 0;
     eEvasion += item.combatStats.evasion   || 0;
   });
+  const lb = getLifeBonuses();
+  const asp = 1 + lb.allStatsPct;
+  const baseHP = Math.round(50 + vt * 3.5);
   return {
-    maxHP:      Math.round(50 + vt * 3.5),
-    atk:        Math.round(5  + fz * 0.85) + eAtk,
-    def:        Math.round(2  + dp * 0.45) + eDef,
-    mag:        Math.round(5  + mn * 0.85),
-    heal:       Math.round(10 + bw * 0.55 + vt * 0.3),
-    critChance: eCrit + Math.round(dp * 0.45),
-    hpRegen:    eRegen,
-    evasion:    eEvasion + Math.round(vt * 0.28),
-    fz, mn, vt, dp, bw,
+    maxHP:      Math.round(baseHP * (1 + lb.hpPct) * asp),
+    atk:        Math.round((Math.round(5  + fz * 0.85) + eAtk) * (1 + lb.atkPct) * asp),
+    def:        Math.round((Math.round(2  + dp * 0.45) + eDef) * (1 + lb.defPct) * asp),
+    mag:        Math.round(Math.round(5  + mn * 0.85) * (1 + lb.magPct) * asp),
+    heal:       Math.round(Math.round(10 + bw * 0.55 + vt * 0.3) * asp),
+    critChance: eCrit + Math.round(dp * 0.45 * asp),
+    hpRegen:    eRegen + Math.round(lb.combatRegen * baseHP),
+    evasion:    Math.round((eEvasion + Math.round(vt * 0.28)) * (1 + lb.evasionPct) * asp),
+    fz, mn, vt, dp, bw, lb,
   };
 }
 
@@ -21434,7 +21520,218 @@ const SKILL_TREE_DATA = (function() {
   };
 }());
 
-var _stClass = null, _stNodeId = null;
+// ═══════════════════════════════════════════════════════════
+// LIFE TREE DATA — Habit-based permanent bonuses
+// ═══════════════════════════════════════════════════════════
+const LIFE_TREE_DATA = (function() {
+  // Each chain: [tier1=7, tier2=21, tier3=30 completions]
+  // lifeReq: { type:'habit'|'sueno'|'wellness'|'streak', ... }
+  return {
+    ejercicio: [
+      { id:'lt_ej0', x:560, y:88,  name:'Cuerpo Activo',   icon:'💪', size:'sm',
+        bonus:{hpPct:.10},
+        desc:'Ejercicio 7 veces. +10% HP permanente.',         lifeReq:{type:'habit',habit:'ejercicio',count:7} },
+      { id:'lt_ej1', x:560, y:210, name:'Resistencia',      icon:'🛡️', size:'md',
+        bonus:{defPct:.15}, req:['lt_ej0'],
+        desc:'Ejercicio 21 veces. +15% defensa permanente.',   lifeReq:{type:'habit',habit:'ejercicio',count:21} },
+      { id:'lt_ej2', x:560, y:330, name:'Cuerpo de Acero',  icon:'⚙️', size:'lg',
+        bonus:{hpPct:.20,atkPct:.10}, req:['lt_ej1'],
+        desc:'Ejercicio 30 veces. +20% HP y +10% ataque.',     lifeReq:{type:'habit',habit:'ejercicio',count:30} },
+    ],
+    meditacion: [
+      { id:'lt_me0', x:710, y:88,  name:'Mente Clara',      icon:'🧘', size:'sm',
+        bonus:{immuneConfuse:true},
+        desc:'Meditación 7 veces. Inmune a confusión en combate.', lifeReq:{type:'habit',habit:'meditacion',count:7} },
+      { id:'lt_me1', x:710, y:210, name:'Enfoque Profundo',  icon:'🔮', size:'md',
+        bonus:{magPct:.15}, req:['lt_me0'],
+        desc:'Meditación 21 veces. +15% daño mágico.',         lifeReq:{type:'habit',habit:'meditacion',count:21} },
+      { id:'lt_me2', x:710, y:330, name:'Mente de Cristal',  icon:'💎', size:'lg',
+        bonus:{immuneDebuff:true}, req:['lt_me1'],
+        desc:'Meditación 30 veces. Inmune a todos los debuffs.',lifeReq:{type:'habit',habit:'meditacion',count:30} },
+    ],
+    sueno: [
+      { id:'lt_su0', x:560, y:420, name:'Descanso Reparador',icon:'🌙', size:'sm',
+        bonus:{combatRegen:.05},
+        desc:'7+ horas de sueño 7 veces. Regenera 5% HP al inicio de combate.', lifeReq:{type:'sueno',hours:7,count:7} },
+      { id:'lt_su1', x:560, y:535, name:'Sueño Profundo',    icon:'🌌', size:'md',
+        bonus:{combatRegen:.10}, req:['lt_su0'],
+        desc:'7+ horas de sueño 21 veces. Regenera 10% HP al inicio.',          lifeReq:{type:'sueno',hours:7,count:21} },
+      { id:'lt_su2', x:560, y:650, name:'Maestro del Descanso',icon:'⭐', size:'lg',
+        bonus:{combatRegen:.15,immuneFirst:true}, req:['lt_su1'],
+        desc:'7+ horas de sueño 30 veces. Regenera 15% HP e inmune al primer ataque.', lifeReq:{type:'sueno',hours:7,count:30} },
+    ],
+    hidratacion: [
+      { id:'lt_hi0', x:710, y:420, name:'Bien Hidratado',    icon:'💧', size:'sm',
+        bonus:{allStatsPct:.05},
+        desc:'Meta de agua 7 veces. +5% a todos los stats.',  lifeReq:{type:'habit',habit:'hidratacion',count:7} },
+      { id:'lt_hi1', x:710, y:535, name:'Flujo Vital',       icon:'🌊', size:'md',
+        bonus:{evasionPct:.15}, req:['lt_hi0'],
+        desc:'Meta de agua 21 veces. +15% evasión permanente.', lifeReq:{type:'habit',habit:'hidratacion',count:21} },
+      { id:'lt_hi2', x:710, y:650, name:'Fuente de Vida',    icon:'🏞️', size:'lg',
+        bonus:{healOnEvade:true}, req:['lt_hi1'],
+        desc:'Meta de agua 30 veces. Recuperas HP al evadir ataques.', lifeReq:{type:'habit',habit:'hidratacion',count:30} },
+    ],
+    bienestar: [
+      { id:'lt_bi0', x:560, y:745, name:'Equilibrio',        icon:'☯️', size:'sm',
+        bonus:{allStatsPct:.10},
+        desc:'Bienestar ≥7 por 7 días. +10% a todos los stats.', lifeReq:{type:'wellness',score:7,days:7} },
+      { id:'lt_bi1', x:560, y:858, name:'Paz Interior',      icon:'🕊️', size:'md',
+        bonus:{immuneFear:true}, req:['lt_bi0'],
+        desc:'Bienestar ≥7 por 14 días. Inmune a miedo y parálisis.', lifeReq:{type:'wellness',score:7,days:14} },
+      { id:'lt_bi2', x:560, y:970, name:'Equilibrio Interior',icon:'🌟', size:'lg',
+        bonus:{immuneDebuffAll:true}, req:['lt_bi1'],
+        desc:'Bienestar ≥7 por 21 días. Nunca puede ser debuffado.', lifeReq:{type:'wellness',score:7,days:21} },
+    ],
+    lectura: [
+      { id:'lt_le0', x:710, y:745, name:'Mente Curiosa',     icon:'📚', size:'sm',
+        bonus:{xpPct:.10},
+        desc:'Lectura 7 veces. +10% XP ganado en combate.',   lifeReq:{type:'habit',habit:'lectura',count:7} },
+      { id:'lt_le1', x:710, y:858, name:'Sabiduría',         icon:'📖', size:'md',
+        bonus:{bossDmgPct:.15}, req:['lt_le0'],
+        desc:'Lectura 21 veces. +15% daño a jefes.',          lifeReq:{type:'habit',habit:'lectura',count:21} },
+      { id:'lt_le2', x:710, y:970, name:'Gran Sabio',        icon:'🦉', size:'lg',
+        bonus:{cdReduce:1}, req:['lt_le1'],
+        desc:'Lectura 30 veces. Habilidades con menos cooldown.', lifeReq:{type:'habit',habit:'lectura',count:30} },
+    ],
+    alimentacion: [
+      { id:'lt_al0', x:560, y:1060, name:'Nutrición Base',   icon:'🥗', size:'sm',
+        bonus:{hpPct:.10},
+        desc:'Alimentación saludable 7 veces. +10% HP máximo.', lifeReq:{type:'habit',habit:'alimentacion',count:7} },
+      { id:'lt_al1', x:560, y:1170, name:'Cuerpo Nutrido',   icon:'🫁', size:'md',
+        bonus:{regenBetween:true}, req:['lt_al0'],
+        desc:'Alimentación saludable 21 veces. Regenera HP entre combates.', lifeReq:{type:'habit',habit:'alimentacion',count:21} },
+      { id:'lt_al2', x:560, y:1280, name:'Templo Vivo',      icon:'🌺', size:'lg',
+        bonus:{hpPct:.20,regenInCombat:true}, req:['lt_al1'],
+        desc:'Alimentación saludable 30 veces. +20% HP y regen en combate.', lifeReq:{type:'habit',habit:'alimentacion',count:30} },
+    ],
+    racha: [
+      { id:'lt_ra0', x:710, y:1060, name:'Constante',        icon:'🔥', size:'sm',
+        bonus:{allStatsPct:.05},
+        desc:'Racha de 7 días. +5% a todos los stats.',        lifeReq:{type:'streak',count:7} },
+      { id:'lt_ra1', x:710, y:1170, name:'Disciplinado',     icon:'💫', size:'md',
+        bonus:{allStatsPct:.10}, req:['lt_ra0'],
+        desc:'Racha de 21 días. +10% a todos los stats.',      lifeReq:{type:'streak',count:21} },
+      { id:'lt_ra2', x:710, y:1280, name:'Imparable',        icon:'⚡', size:'lg',
+        bonus:{allStatsPct:.15,aura:true}, req:['lt_ra1'],
+        desc:'Racha de 30 días. +15% a todos los stats y aura especial.', lifeReq:{type:'streak',count:30} },
+      { id:'lt_ra3', x:710, y:1380, name:'Leyenda',          icon:'👑', size:'xl',
+        bonus:{allStatsPct:.25,legendaryAura:true}, req:['lt_ra2'],
+        desc:'Racha de 100 días. Stats legendarios y título especial.', lifeReq:{type:'streak',count:100} },
+    ],
+  };
+}());
+
+// Fusion nodes — one per class (8-pointed gold star, center bridge x≈450)
+const FUSION_NODES = [
+  { id:'fn_guerrero', x:450, y:195,  cls:'guerrero', icon:'🌟', name:'Guerrero Iluminado',
+    desc:'Modo Berserker + Mente de Cristal. Daño ×4 cuando HP <30%.',
+    bonus:{lowHpBoost:4.0}, reqCombat:'g_z2n6', reqLife:'lt_me2' },
+  { id:'fn_mago',     x:450, y:370,  cls:'mago',     icon:'🌌', name:'Archiemago Eterno',
+    desc:'Ultimate Mago + Enfoque Profundo. Daño mágico ×2 y regenera HP con cada hechizo.',
+    bonus:{magMult:2.0}, reqCombat:'m_z1n10', reqLife:'lt_me1' },
+  { id:'fn_monje',    x:450, y:545,  cls:'monje',    icon:'☯️', name:'Monje Trascendente',
+    desc:'Ultimate Monje + Equilibrio Interior. Inmune a daño cuando HP >70%.',
+    bonus:{immuneAbove70:true}, reqCombat:'mn_z1n10', reqLife:'lt_bi2' },
+  { id:'fn_asesino',  x:450, y:720,  cls:'asesino',  icon:'🌑', name:'Asesino Sombrío',
+    desc:'Modo Berserker Asesino + Maestro del Descanso. Primer ataque siempre crítico ×3.',
+    bonus:{firstCritX3:true}, reqCombat:'as_z2n6', reqLife:'lt_su2' },
+  { id:'fn_druida',   x:450, y:895,  cls:'druida',   icon:'🌿', name:'Guardián de la Naturaleza',
+    desc:'Ultimate Druida + Templo Vivo. Regenera HP masivo cada 2 turnos.',
+    bonus:{regenPerTurn:.12}, reqCombat:'dr_z1n10', reqLife:'lt_al2' },
+  { id:'fn_arquero',  x:450, y:1070, cls:'arquero',  icon:'✨', name:'Arquero Celestial',
+    desc:'Ultimate Arquero + Fuente de Vida. Cada evasión aumenta el próximo daño un 50%.',
+    bonus:{evasionDmgStack:.50}, reqCombat:'ar_z1n10', reqLife:'lt_hi2' },
+  { id:'fn_barbaro',  x:450, y:1245, cls:'barbaro',  icon:'💀', name:'Bárbaro Inmortal',
+    desc:'Ultimate Bárbaro + Cuerpo de Acero. El sacrificio de HP se convierte en escudo.',
+    bonus:{hpToShield:true}, reqCombat:'bb_z1n10', reqLife:'lt_ej2' },
+];
+
+// ─── Life tree helpers ───────────────────────────────────────
+function _ltHabitCount(habitType) {
+  var count = 0;
+  var today = new Date();
+  for (var d = 0; d < 90; d++) {
+    var dt  = new Date(today.getTime() - d * 86400000);
+    var key = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+    var raw = localStorage.getItem('hrpg_day_' + key);
+    if (!raw) continue;
+    try {
+      var day = JSON.parse(raw); var ok = false;
+      var mrn = day.morning || [], mis = day.missions || [];
+      if (habitType === 'ejercicio')
+        ok = mrn.some(function(m,i){ return MORNING_ITEMS[i]&&MORNING_ITEMS[i].id==='mr3'&&m.done; })
+          || mis.some(function(m){ return m.done&&(m.cat==='fuerza'||(m.label&&m.label.toLowerCase().includes('ejercici'))); });
+      else if (habitType === 'meditacion')
+        ok = mrn.some(function(m,i){ return MORNING_ITEMS[i]&&MORNING_ITEMS[i].id==='mr2'&&m.done; })
+          || mis.some(function(m){ return m.done&&m.label&&(m.label.toLowerCase().includes('medita')||m.label.toLowerCase().includes('mindful')); });
+      else if (habitType === 'lectura')
+        ok = mrn.some(function(m,i){ return MORNING_ITEMS[i]&&MORNING_ITEMS[i].id==='mr4'&&m.done; })
+          || mis.some(function(m){ return m.done&&m.label&&(m.label.toLowerCase().includes('lectura')||m.label.toLowerCase().includes('aprendiz')); });
+      else if (habitType === 'alimentacion')
+        ok = mis.some(function(m){ return m.done&&(m.cat==='vitalidad'||(m.label&&m.label.toLowerCase().includes('aliment'))); });
+      else if (habitType === 'hidratacion')
+        ok = (day.water || 0) >= 8;
+      if (ok) count++;
+    } catch(e) {}
+  }
+  return count;
+}
+function _ltSleepCount(minHours) {
+  var count = 0, today = new Date();
+  for (var d = 0; d < 90; d++) {
+    var dt  = new Date(today.getTime() - d * 86400000);
+    var key = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+    var raw = localStorage.getItem('hrpg_day_' + key);
+    if (!raw) continue;
+    try {
+      var day = JSON.parse(raw);
+      if (day.bedtime && day.waketime) {
+        var b = day.bedtime.split(':'), w = day.waketime.split(':');
+        var dur = (parseInt(w[0]||0)*60+parseInt(w[1]||0)) - (parseInt(b[0]||0)*60+parseInt(b[1]||0));
+        if (dur < 0) dur += 1440;
+        if (dur >= minHours * 60) count++;
+      }
+    } catch(e) {}
+  }
+  return count;
+}
+function _ltWellnessDays(minScore) {
+  var count = 0, today = new Date();
+  for (var d = 0; d < 90; d++) {
+    var dt  = new Date(today.getTime() - d * 86400000);
+    var key = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+    var raw = localStorage.getItem('hrpg_day_' + key);
+    if (!raw) continue;
+    try { var day = JSON.parse(raw); if (day.checkinEven && day.checkinEven.score >= minScore) count++; } catch(e) {}
+  }
+  return count;
+}
+function _ltFindNode(nid) {
+  var chains = Object.values(LIFE_TREE_DATA);
+  for (var c = 0; c < chains.length; c++) { var f = chains[c].find(function(n){ return n.id===nid; }); if (f) return f; }
+  return null;
+}
+function ltProgress(node) {
+  var r = node.lifeReq; if (!r) return {current:0,needed:0};
+  if (r.type === 'habit')    return {current:Math.min(_ltHabitCount(r.habit), r.count),  needed:r.count};
+  if (r.type === 'sueno')    return {current:Math.min(_ltSleepCount(r.hours), r.count),  needed:r.count};
+  if (r.type === 'wellness') return {current:Math.min(_ltWellnessDays(r.score), r.days), needed:r.days};
+  if (r.type === 'streak')   return {current:Math.min(char.streak||0, r.count),          needed:r.count};
+  return {current:0,needed:0};
+}
+function canUnlockLifeNode(node) {
+  if (!node.lifeReq) return true;
+  var p = ltProgress(node); return p.current >= p.needed;
+}
+function ltState(nid) {
+  var node = _ltFindNode(nid); if (!node) return 'locked';
+  var ul = (char.skillTree && Array.isArray(char.skillTree.life)) ? char.skillTree.life : [];
+  if (ul.indexOf(nid) >= 0) return 'unlocked';
+  if (node.req && node.req.length && !node.req.every(function(r){ return ul.indexOf(r)>=0; })) return 'locked';
+  return canUnlockLifeNode(node) ? 'available' : 'locked';
+}
+
+var _stClass = null, _stNodeId = null, _stView = 'combat';
 
 function canUnlockSTNode(cls, node) {
   var ul = char.skillTree[cls] || [];
@@ -21455,19 +21752,94 @@ function stState(cls, nid) {
   return canUnlockSTNode(cls, node) ? 'available' : 'locked';
 }
 
+// ─── Pan / Zoom state ──────────────────────────────────────
+var _stZoom = 1, _stX = 0, _stY = 0, _stGestureInited = false;
+
+function _stApplyTransform() {
+  var inner = document.getElementById('stCanvasInner');
+  if (inner) inner.style.transform = 'translate('+_stX+'px,'+_stY+'px) scale('+_stZoom+')';
+}
+
+function stCenterView() {
+  var wrap = document.getElementById('stCanvasWrap');
+  var svg  = document.getElementById('stSVG');
+  if (!wrap || !svg) return;
+  var svgW = parseFloat(svg.getAttribute('width') || 460);
+  var svgH = parseFloat(svg.getAttribute('height') || 1070);
+  var wW = wrap.clientWidth || 360, wH = wrap.clientHeight || 500;
+  var scl = Math.min(wW / svgW, wH / svgH) * 0.92;
+  _stZoom = Math.max(0.3, Math.min(2.5, scl));
+  _stX = (wW - svgW * _stZoom) / 2;
+  _stY = 0;
+  _stApplyTransform();
+}
+
+function stInitGestures() {
+  if (_stGestureInited) return;
+  _stGestureInited = true;
+  var wrap = document.getElementById('stCanvasWrap');
+  if (!wrap) return;
+  var drag = null, pinchDist = null;
+  // Mouse drag
+  wrap.addEventListener('mousedown', function(e){ drag = {ox:e.clientX-_stX, oy:e.clientY-_stY}; });
+  window.addEventListener('mousemove', function(e){ if (!drag) return; _stX=e.clientX-drag.ox; _stY=e.clientY-drag.oy; _stApplyTransform(); });
+  window.addEventListener('mouseup', function(){ drag=null; });
+  // Mouse wheel zoom
+  wrap.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var factor = e.deltaY > 0 ? 0.88 : 1.14;
+    _stZoom = Math.max(0.3, Math.min(2.5, _stZoom * factor));
+    _stApplyTransform();
+  }, { passive: false });
+  // Touch drag + pinch
+  wrap.addEventListener('touchstart', function(e){
+    if (e.touches.length === 1) { drag = {ox:e.touches[0].clientX-_stX, oy:e.touches[0].clientY-_stY}; pinchDist=null; }
+    else if (e.touches.length === 2) { drag=null; pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); }
+  }, {passive:true});
+  wrap.addEventListener('touchmove', function(e){
+    e.preventDefault();
+    if (e.touches.length === 1 && drag) { _stX=e.touches[0].clientX-drag.ox; _stY=e.touches[0].clientY-drag.oy; _stApplyTransform(); }
+    else if (e.touches.length === 2 && pinchDist !== null) {
+      var nd = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+      _stZoom = Math.max(0.3, Math.min(2.5, _stZoom * (nd/pinchDist)));
+      pinchDist = nd; _stApplyTransform();
+    }
+  }, {passive:false});
+  wrap.addEventListener('touchend', function(){ drag=null; pinchDist=null; });
+}
+
+// ─── Open / Close ──────────────────────────────────────────
 function openSkillTree() {
   closeMoreDrawer();
-  _stClass = (char.class && SKILL_TREE_DATA[char.class]) ? char.class : 'guerrero';
+  _stClass  = (char.class && SKILL_TREE_DATA[char.class]) ? char.class : 'guerrero';
   _stNodeId = null;
+  _stView   = 'combat';
   document.getElementById('stMPCount').textContent = char.masteryPoints || 0;
+  _stUpdateViewTabs();
   _stBuildTabs();
   _stRender(_stClass);
   document.getElementById('stOverlay').classList.add('open');
   history.pushState({hrpgOverlay: 'skilltree'}, '');
+  setTimeout(function(){ stInitGestures(); stCenterView(); }, 60);
 }
 function closeSkillTree() {
   document.getElementById('stOverlay').classList.remove('open');
   document.getElementById('stPanel').classList.remove('open');
+}
+
+function stSetView(view) {
+  _stView = view;
+  _stUpdateViewTabs();
+  var tabs = document.getElementById('stTabs');
+  if (tabs) tabs.classList.toggle('hidden', view !== 'combat');
+  _stClosePanel();
+  _stRender(_stClass);
+}
+function _stUpdateViewTabs() {
+  ['combat','life','all'].forEach(function(v) {
+    var el = document.getElementById('stHTab' + v.charAt(0).toUpperCase() + v.slice(1));
+    if (el) el.classList.toggle('active', v === _stView);
+  });
 }
 
 function _stBuildTabs() {
@@ -21483,179 +21855,311 @@ function _stBuildTabs() {
   });
 }
 
-var _ST_W = 460, _ST_H = 1068;
-
+// ─── Unified Constellation Renderer ────────────────────────
 function _stRender(cls) {
-  var data = SKILL_TREE_DATA[cls];
-  if (!data) return;
+  _stZoom=1; _stX=0; _stY=0; _stApplyTransform();
+  var view = _stView || 'combat';
+  var W = view==='all' ? 900 : 460;
+  var H = view==='life' ? 1460 : (view==='all' ? 1460 : 1070);
   var svg = document.getElementById('stSVG');
-  svg.setAttribute('viewBox','0 0 '+_ST_W+' '+_ST_H);
-  svg.setAttribute('width', _ST_W);
-  svg.setAttribute('height', _ST_H);
-
-  var nodeMap = {};
-  data.nodes.forEach(function(n){ nodeMap[n.id] = n; });
-
-  function lineClr(aid, bid) {
-    var sa = stState(cls,aid), sb = stState(cls,bid);
-    if (sa==='unlocked' && sb==='unlocked') return {c:data.color,o:.72,w:2,d:''};
-    if (sa==='unlocked') return {c:data.color,o:.28,w:1,d:'4 5'};
-    return {c:'#1e1b30',o:.45,w:1,d:'4 5'};
-  }
-
-  // Collect unique lines
-  var lineSet = {}, lines = [];
-  data.nodes.forEach(function(n) {
-    var srcs = (n.req||[]).concat(n.reqAny||[]).concat(n.connects||[]);
-    srcs.forEach(function(r) {
-      if (!nodeMap[r]) return;
-      var k = [r,n.id].sort().join('|');
-      if (!lineSet[k]) { lineSet[k]=1; lines.push([r,n.id]); }
-    });
-  });
-
-  var nR = { stat:13, skill:19, ultimate:27, cross:16 };
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.setAttribute('width', W); svg.setAttribute('height', H);
 
   var h = '<defs>'
-    +'<filter id="stglow" x="-70%" y="-70%" width="240%" height="240%">'
-    +'<feGaussianBlur stdDeviation="5" result="b"/>'
-    +'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
-    +'<filter id="stglow2" x="-100%" y="-100%" width="300%" height="300%">'
-    +'<feGaussianBlur stdDeviation="9" result="b"/>'
-    +'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
-    +'<filter id="stavail" x="-50%" y="-50%" width="200%" height="200%">'
-    +'<feGaussianBlur stdDeviation="3" result="b"/>'
-    +'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'<filter id="stg1" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'<filter id="stg2" x="-120%" y="-120%" width="340%" height="340%"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'<filter id="stga" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'<filter id="ltg1" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'<filter id="ltg2" x="-120%" y="-120%" width="340%" height="340%"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'<filter id="fng"  x="-140%" y="-140%" width="380%" height="380%"><feGaussianBlur stdDeviation="14" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
     +'</defs>';
+  h += '<rect width="'+W+'" height="'+H+'" fill="#02020e"/>';
 
-  h += '<rect width="'+_ST_W+'" height="'+_ST_H+'" fill="#030309"/>';
-  // Zone dividers
-  h += '<line x1="230" y1="20" x2="230" y2="585" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="5 7"/>';
-  h += '<line x1="20" y1="596" x2="'+(_ST_W-20)+'" y2="596" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="5 7"/>';
-  // Zone labels
-  var zl = [{t:data.zones[0],x:115,y:26},{t:data.zones[1],x:345,y:26},{t:data.zones[2],x:230,y:642}];
-  zl.forEach(function(z){
-    h += '<text x="'+z.x+'" y="'+z.y+'" text-anchor="middle" fill="'+data.color+'" font-family="\'Press Start 2P\',monospace" font-size="6.5" opacity=".4" letter-spacing="1">'+z.t.toUpperCase()+'</text>';
-  });
+  // Starfield
+  var stars = [[30,55],[82,28],[140,92],[195,44],[248,120],[320,38],[378,82],[420,160],[58,180],[115,240],[200,310],[350,280],[410,330],[72,400],[230,445],[380,490],[140,560],[300,610],[450,580],[55,680],[170,740],[340,720],[430,800],[85,870],[260,920],[400,960],[130,1040],[310,1090],[455,1120],[60,1200],[200,1250],[370,1300],[490,1380]];
+  if (view === 'all') { var more=[[520,60],[580,120],[640,45],[700,100],[760,80],[820,140],[870,60],[530,250],[650,290],[750,210],[850,280],[540,420],[700,380],[810,450],[560,560],[700,620],[840,590],[520,730],[660,770],[800,740],[550,900],[700,850],[860,910],[530,1050],[660,1020],[790,1080],[550,1180],[700,1150],[850,1200],[540,1350],[680,1380],[810,1350]]; stars = stars.concat(more); }
+  stars.forEach(function(s,i){ var r=(i%3===0?1.5:i%2===0?1:0.7); h+='<circle cx="'+s[0]+'" cy="'+s[1]+'" r="'+r+'" fill="rgba(255,255,255,'+(0.18+((i*37)%42)/100)+')" />'; });
 
-  // Lines
-  lines.forEach(function(pair) {
-    var a = nodeMap[pair[0]], b = nodeMap[pair[1]];
-    if (!a||!b) return;
-    var lc = lineClr(pair[0],pair[1]);
-    var da = lc.d ? ' stroke-dasharray="'+lc.d+'"' : '';
-    h += '<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+lc.c+'" stroke-width="'+lc.w+'" stroke-opacity="'+lc.o+'"'+da+'/>';
-  });
+  // Zone separator (all view)
+  if (view==='all') {
+    var data0 = SKILL_TREE_DATA[cls] || {};
+    h += '<line x1="462" y1="0" x2="462" y2="'+H+'" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="6 9"/>';
+    h += _svgLabel(230,22,(data0.color||'#a78bfa'),'⚔ ÁRBOL DE COMBATE');
+    h += _svgLabel(682,22,'#4ade80','🌿 ÁRBOL DE VIDA');
+    h += _svgLabel(450,22,'#fbbf24','✦');
+  }
 
-  // Nodes
-  data.nodes.forEach(function(n) {
-    var st = stState(cls, n.id);
-    var r  = nR[n.type] || 15;
-    var fill, stroke, sw, filt='', tOp;
-    if (st==='unlocked') {
-      fill=data.color; stroke='#fff'; sw=2; tOp=1;
-      filt = n.type==='ultimate' ? ' filter="url(#stglow2)"' : ' filter="url(#stglow)"';
-    } else if (st==='available') {
-      fill='#0d0d1a'; stroke=data.color; sw=1.5; tOp=0.9;
-      filt=' filter="url(#stavail)"';
-    } else {
-      fill='#080812'; stroke='#25213a'; sw=1; tOp=0.3;
-    }
-    var fs = n.type==='ultimate' ? 15 : (n.type==='stat' ? 10 : 12);
-    var ty = n.y + Math.round(fs*0.38);
+  // ── COMBAT TREE ──────────────────────────────────────────
+  if (view !== 'life') {
+    var cData = SKILL_TREE_DATA[cls]; if (!cData) return;
+    var nodeMap = {}; cData.nodes.forEach(function(n){ nodeMap[n.id]=n; });
+    var lineSet={}, pairs=[];
+    cData.nodes.forEach(function(n){
+      (n.req||[]).concat(n.reqAny||[]).concat(n.connects||[]).forEach(function(r){
+        if (!nodeMap[r]) return;
+        var k=[r,n.id].sort().join('|');
+        if (!lineSet[k]){ lineSet[k]=1; pairs.push([r,n.id]); }
+      });
+    });
+    var nR = {stat:13,skill:20,ultimate:28,cross:17};
+    pairs.forEach(function(p){
+      var a=nodeMap[p[0]], b=nodeMap[p[1]]; if(!a||!b) return;
+      var sa=stState(cls,p[0]), sb=stState(cls,p[1]);
+      var clr, op, w, da='';
+      if(sa==='unlocked'&&sb==='unlocked'){clr=cData.color;op=.85;w=2.5;}
+      else if(sa==='unlocked'){clr=cData.color;op=.3;w=1.5;da='stroke-dasharray="4 6"';}
+      else{clr='rgba(60,50,90,.5)';op=.5;w=1;da='stroke-dasharray="4 6"';}
+      h+='<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+clr+'" stroke-width="'+w+'" stroke-opacity="'+op+'" '+da+'/>';
+    });
+    cData.nodes.forEach(function(n){
+      var st=stState(cls,n.id), r=nR[n.type]||15;
+      var fill,stroke,sw,filt='',tOp;
+      if(st==='unlocked'){ fill=cData.color;stroke='#fff';sw=2.5;tOp=1; filt=n.type==='ultimate'?' filter="url(#stg2)"':' filter="url(#stg1)"'; }
+      else if(st==='available'){ fill='rgba(8,6,22,.85)';stroke=cData.color;sw=2;tOp=.95; filt=' filter="url(#stga)"'; }
+      else { fill='rgba(5,4,14,.6)';stroke='rgba(50,44,80,.55)';sw=1;tOp=.3; }
+      var fs=n.type==='ultimate'?17:(n.type==='stat'?11:13);
+      h+='<g onclick="stTap(\''+cls+'\',\''+n.id+'\')" style="cursor:pointer">';
+      if(st==='available') h+='<circle cx="'+n.x+'" cy="'+n.y+'" r="'+(r+7)+'" fill="none" stroke="'+cData.color+'" stroke-width="1" opacity=".22" stroke-dasharray="4 4"/>';
+      if(st==='unlocked'&&n.type==='ultimate'){ h+='<circle cx="'+n.x+'" cy="'+n.y+'" r="'+(r+12)+'" fill="'+cData.color+'" opacity=".1"/>'; h+='<circle cx="'+n.x+'" cy="'+n.y+'" r="'+(r+6)+'" fill="'+cData.color+'" opacity=".08"/>'; }
+      h+='<circle cx="'+n.x+'" cy="'+n.y+'" r="'+r+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'" opacity="'+(st==='locked'?.28:1)+'"'+filt+'/>';
+      h+='<text x="'+n.x+'" y="'+(n.y+Math.round(fs*.4))+'" text-anchor="middle" font-size="'+fs+'" opacity="'+tOp+'" style="pointer-events:none;user-select:none">'+n.icon+'</text>';
+      if(st==='available'){ var bx=n.x+r, by=n.y-r; h+='<circle cx="'+bx+'" cy="'+by+'" r="8.5" fill="#7c3aed" stroke="#02020e" stroke-width="1.5"/>'; h+='<text x="'+bx+'" y="'+(by+3.5)+'" text-anchor="middle" font-size="8" fill="#fff" style="pointer-events:none;font-weight:900">'+n.cost+'</text>'; }
+      h+='</g>';
+    });
+    // Zone labels
+    var zl=[{t:cData.zones[0],x:115,y:30},{t:cData.zones[1],x:345,y:30},{t:cData.zones[2],x:230,y:656}];
+    zl.forEach(function(z){ h+=_svgLabel(z.x,z.y,cData.color,z.t); });
+    h+='<line x1="230" y1="24" x2="230" y2="596" stroke="rgba(255,255,255,.035)" stroke-width="1" stroke-dasharray="5 8"/>';
+    h+='<line x1="18" y1="606" x2="442" y2="606" stroke="rgba(255,255,255,.035)" stroke-width="1" stroke-dasharray="5 8"/>';
+  }
 
-    h += '<g onclick="stTap(\''+cls+'\',\''+n.id+'\')" style="cursor:pointer">';
-    if (st==='available') {
-      h += '<circle cx="'+n.x+'" cy="'+n.y+'" r="'+(r+5)+'" fill="none" stroke="'+data.color+'" stroke-width="1" opacity=".2"/>';
-    }
-    if (n.type==='ultimate' && st==='unlocked') {
-      h += '<circle cx="'+n.x+'" cy="'+n.y+'" r="'+(r+8)+'" fill="'+data.color+'" opacity=".08"/>';
-    }
-    h += '<circle cx="'+n.x+'" cy="'+n.y+'" r="'+r+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'" opacity="'+(st==='locked'?.4:1)+'"'+filt+'/>';
-    h += '<text x="'+n.x+'" y="'+ty+'" text-anchor="middle" font-size="'+fs+'" opacity="'+tOp+'" style="pointer-events:none;user-select:none">'+n.icon+'</text>';
-    if (st==='available') {
-      var bx=n.x+r-2, by=n.y-r+2;
-      h += '<circle cx="'+bx+'" cy="'+by+'" r="7" fill="#7c3aed" stroke="#030309" stroke-width="1.5"/>';
-      h += '<text x="'+bx+'" y="'+(by+3)+'" text-anchor="middle" font-size="7" fill="#fff" style="pointer-events:none">'+n.cost+'</text>';
-    }
-    h += '</g>';
-  });
+  // ── LIFE TREE ────────────────────────────────────────────
+  if (view !== 'combat') {
+    var xOff = (view==='life') ? -450 : 0;
+    var ltCol='#4ade80', ltMid='#86efac';
+    var ulLife = (char.skillTree&&Array.isArray(char.skillTree.life))?char.skillTree.life:[];
+    var allLN=[]; Object.values(LIFE_TREE_DATA).forEach(function(ch){allLN=allLN.concat(ch);});
+    var lnMap={}; allLN.forEach(function(n){lnMap[n.id]=n;});
+
+    // Chain section labels
+    var chainLbls=[
+      {t:'EJERCICIO',x:560,y:58},{t:'MEDITACIÓN',x:710,y:58},
+      {t:'SUEÑO',x:560,y:390},{t:'HIDRATACIÓN',x:710,y:390},
+      {t:'BIENESTAR',x:560,y:715},{t:'LECTURA',x:710,y:715},
+      {t:'ALIMENTACIÓN',x:560,y:1028},{t:'RACHA',x:710,y:1028},
+    ];
+    chainLbls.forEach(function(lb){ h+=_svgLabel(lb.x+xOff,lb.y,ltMid,lb.t); });
+
+    // Horizontal row separators
+    [375,710,1015].forEach(function(y){ h+='<line x1="'+(505+xOff)+'" y1="'+y+'" x2="'+(765+xOff)+'" y2="'+y+'" stroke="rgba(74,222,128,.08)" stroke-width="1" stroke-dasharray="4 7"/>'; });
+
+    // Lines
+    allLN.forEach(function(n){
+      (n.req||[]).forEach(function(rid){
+        var pn=lnMap[rid]; if(!pn) return;
+        var sn=ltState(n.id), sp=ltState(rid);
+        var lc,lo,lw,ld='';
+        if(sn==='unlocked'&&sp==='unlocked'){lc=ltCol;lo=.85;lw=2.5;}
+        else if(sp==='unlocked'){lc=ltCol;lo=.32;lw=1.5;ld='stroke-dasharray="4 6"';}
+        else{lc='rgba(20,60,20,.5)';lo=.45;lw=1;ld='stroke-dasharray="4 6"';}
+        h+='<line x1="'+(pn.x+xOff)+'" y1="'+pn.y+'" x2="'+(n.x+xOff)+'" y2="'+n.y+'" stroke="'+lc+'" stroke-width="'+lw+'" stroke-opacity="'+lo+'" '+ld+'/>';
+      });
+    });
+
+    // Nodes (diamonds)
+    var szMap={sm:14,md:20,lg:28,xl:36};
+    allLN.forEach(function(n){
+      var st=ltState(n.id), r=szMap[n.size]||16;
+      var fill,stroke,sw,filt='',tOp;
+      if(st==='unlocked'){ fill='rgba(74,222,128,.82)';stroke='#86efac';sw=2.5;tOp=1; filt=(n.size==='lg'||n.size==='xl')?' filter="url(#ltg2)"':' filter="url(#ltg1)"'; }
+      else if(st==='available'){ fill='rgba(4,18,6,.85)';stroke=ltCol;sw=2;tOp=.95; filt=' filter="url(#stga)"'; }
+      else { fill='rgba(3,10,3,.55)';stroke='rgba(20,55,20,.5)';sw=1;tOp=.32; }
+      var nx=n.x+xOff, fs=n.size==='xl'?18:(n.size==='lg'?15:(n.size==='md'?13:11));
+      h+='<g onclick="ltTap(\''+n.id+'\')" style="cursor:pointer">';
+      if(st==='available') h+='<rect x="'+(nx-r-6)+'" y="'+(n.y-r-6)+'" width="'+(r*2+12)+'" height="'+(r*2+12)+'" rx="4" fill="none" stroke="'+ltCol+'" stroke-width="1" opacity=".2" stroke-dasharray="4 4" transform="rotate(45,'+nx+','+n.y+')"/>';
+      if(st==='unlocked'&&(n.size==='lg'||n.size==='xl')){ h+='<rect x="'+(nx-r-9)+'" y="'+(n.y-r-9)+'" width="'+(r*2+18)+'" height="'+(r*2+18)+'" rx="5" fill="rgba(74,222,128,.07)" transform="rotate(45,'+nx+','+n.y+')" />'; }
+      h+='<rect x="'+(nx-r)+'" y="'+(n.y-r)+'" width="'+(r*2)+'" height="'+(r*2)+'" rx="'+(r*.22)+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'" opacity="'+(st==='locked'?.25:1)+'" transform="rotate(45,'+nx+','+n.y+')"'+filt+'/>';
+      h+='<text x="'+nx+'" y="'+(n.y+Math.round(fs*.42))+'" text-anchor="middle" font-size="'+fs+'" opacity="'+tOp+'" style="pointer-events:none;user-select:none">'+n.icon+'</text>';
+      h+='</g>';
+    });
+  }
+
+  // ── FUSION NODES (all view only) ─────────────────────────
+  if (view === 'all') {
+    var fCol='#fbbf24';
+    var ulFus=(char.skillTree&&Array.isArray(char.skillTree.fusion))?char.skillTree.fusion:[];
+    FUSION_NODES.forEach(function(fn){
+      var isCls=(fn.cls===char.class);
+      var isUnlocked=ulFus.indexOf(fn.id)>=0;
+      var ulCombat=(char.skillTree&&char.skillTree[fn.cls])||[];
+      var ulLife2=(char.skillTree&&Array.isArray(char.skillTree.life))?char.skillTree.life:[];
+      var lifeMet=ulLife2.indexOf(fn.reqLife)>=0;
+      var combatMet=ulCombat.indexOf(fn.reqCombat)>=0;
+      var isAvail=isCls&&!isUnlocked&&lifeMet&&combatMet;
+      var r=21, fill,stroke,sw,filt='',tOp;
+      if(isUnlocked){ fill=fCol;stroke='#fff';sw=2.5;tOp=1; filt=' filter="url(#fng)"'; }
+      else if(isAvail){ fill='rgba(22,14,2,.85)';stroke=fCol;sw=2;tOp=.92; }
+      else if(isCls){ fill='rgba(14,10,2,.65)';stroke='rgba(120,90,15,.55)';sw=1.5;tOp=.55; }
+      else { fill='rgba(6,6,2,.4)';stroke='rgba(60,45,8,.3)';sw=1;tOp=.18; }
+      // Connector lines
+      if(isCls) {
+        var cD2=SKILL_TREE_DATA[fn.cls]||{nodes:[]};
+        var rn2=cD2.nodes.find(function(x){return x.id===fn.reqCombat;});
+        if(rn2) h+='<line x1="'+rn2.x+'" y1="'+rn2.y+'" x2="'+fn.x+'" y2="'+fn.y+'" stroke="'+fCol+'" stroke-width="1.5" stroke-opacity="'+(combatMet?.4:.1)+'" stroke-dasharray="5 6"/>';
+        var allLN2=[]; Object.values(LIFE_TREE_DATA).forEach(function(ch){allLN2=allLN2.concat(ch);});
+        var lnR=allLN2.find(function(x){return x.id===fn.reqLife;});
+        if(lnR) h+='<line x1="'+fn.x+'" y1="'+fn.y+'" x2="'+lnR.x+'" y2="'+lnR.y+'" stroke="#4ade80" stroke-width="1.5" stroke-opacity="'+(lifeMet?.4:.1)+'" stroke-dasharray="5 6"/>';
+      }
+      h+='<g onclick="fnTap(\''+fn.id+'\')" style="cursor:pointer;opacity:'+((!isCls&&!isUnlocked)?.15:1)+'">';
+      if(isAvail) h+='<rect x="'+(fn.x-r-7)+'" y="'+(fn.y-r-7)+'" width="'+(r*2+14)+'" height="'+(r*2+14)+'" rx="3" fill="none" stroke="'+fCol+'" stroke-width="1" opacity=".3" stroke-dasharray="4 4" transform="rotate(22.5,'+fn.x+','+fn.y+')" />';
+      if(isUnlocked){ h+='<rect x="'+(fn.x-r-10)+'" y="'+(fn.y-r-10)+'" width="'+(r*2+20)+'" height="'+(r*2+20)+'" rx="3" fill="'+fCol+'" opacity=".08" transform="rotate(22.5,'+fn.x+','+fn.y+')" />'; }
+      // 8-pointed star = two squares rotated
+      h+='<rect x="'+(fn.x-r)+'" y="'+(fn.y-r)+'" width="'+(r*2)+'" height="'+(r*2)+'" rx="3" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'" opacity="'+tOp+'"'+filt+' transform="rotate(0,'+fn.x+','+fn.y+')" />';
+      h+='<rect x="'+(fn.x-r)+'" y="'+(fn.y-r)+'" width="'+(r*2)+'" height="'+(r*2)+'" rx="3" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'" opacity="'+tOp+'" transform="rotate(45,'+fn.x+','+fn.y+')" />';
+      h+='<text x="'+fn.x+'" y="'+(fn.y+7)+'" text-anchor="middle" font-size="16" opacity="'+tOp+'" style="pointer-events:none;user-select:none">'+fn.icon+'</text>';
+      h+='</g>';
+    });
+  }
 
   svg.innerHTML = h;
+  setTimeout(stCenterView, 20);
 }
 
+function _svgLabel(x, y, color, text) {
+  return '<text x="'+x+'" y="'+y+'" text-anchor="middle" fill="'+color+'" font-family="\'Press Start 2P\',monospace" font-size="5.8" opacity=".38" letter-spacing="1">'+text.toUpperCase()+'</text>';
+}
+
+// ─── Node taps ─────────────────────────────────────────────
 function stTap(cls, nid) {
   _stClass  = cls;
   _stNodeId = nid;
-  var data = SKILL_TREE_DATA[cls];
-  var node = null;
-  for (var i = 0; i < data.nodes.length; i++) { if (data.nodes[i].id===nid){ node=data.nodes[i]; break; } }
+  var data  = SKILL_TREE_DATA[cls];
+  var node  = null;
+  for (var i=0;i<data.nodes.length;i++){ if(data.nodes[i].id===nid){ node=data.nodes[i]; break; } }
   if (!node) return;
-
-  var st = stState(cls, nid);
-  var zLabel = nid.indexOf('_cr') >= 0 ? 'Nodo de Cruce'
-    : nid.indexOf('_z1') >= 0 ? data.zones[0]
-    : nid.indexOf('_z2') >= 0 ? data.zones[1]
-    : data.zones[2];
+  var st     = stState(cls, nid);
+  var zLabel = nid.indexOf('_cr')>=0?'Nodo de Cruce':nid.indexOf('_z1')>=0?data.zones[0]:nid.indexOf('_z2')>=0?data.zones[1]:data.zones[2];
   var tLabel = {stat:'Estadística',skill:'Habilidad Activa',ultimate:'Ultimate',cross:'Nodo Especial'}[node.type]||'';
-
   document.getElementById('stDPIcon').textContent = node.icon;
   document.getElementById('stDPName').textContent = node.name;
-  document.getElementById('stDPZone').textContent = zLabel + ' · ' + tLabel;
+  document.getElementById('stDPZone').textContent = zLabel+' · '+tLabel;
   document.getElementById('stDPDesc').textContent = node.desc;
-  document.getElementById('stDPCost').textContent = '✨ Coste: ' + node.cost + ' Punto' + (node.cost>1?'s':'') + ' de Maestría';
+  document.getElementById('stDPCost').className  = 'st-dp-cost';
+  document.getElementById('stDPCost').textContent = '✨ Coste: '+node.cost+' Punto'+(node.cost>1?'s':'')+' de Maestría';
+  var progEl=document.getElementById('stDPProg'); if(progEl) progEl.style.display='none';
+  var btn=document.getElementById('stDPBtn');
+  if(st==='unlocked'){ btn.textContent='✓ Desbloqueado'; btn.className='st-dp-btn done'; btn.disabled=true; }
+  else if(st==='available'){ var mp=char.masteryPoints||0; if(mp>=node.cost){ btn.textContent='✨ Desbloquear'; btn.className='st-dp-btn can'; btn.disabled=false; } else{ btn.textContent='Sin PM ('+mp+'/'+node.cost+')'; btn.className='st-dp-btn no'; btn.disabled=true; } }
+  else{ btn.textContent='🔒 Requisitos no cumplidos'; btn.className='st-dp-btn no'; btn.disabled=true; }
+  document.getElementById('stPanel').classList.add('open');
+}
 
-  var btn = document.getElementById('stDPBtn');
-  if (st==='unlocked') {
-    btn.textContent='✓ Desbloqueado'; btn.className='st-dp-btn done'; btn.disabled=true;
-  } else if (st==='available') {
-    var mp = char.masteryPoints||0;
-    if (mp>=node.cost){ btn.textContent='✨ Desbloquear'; btn.className='st-dp-btn can'; btn.disabled=false; }
-    else { btn.textContent='Sin PM ('+mp+'/'+node.cost+')'; btn.className='st-dp-btn no'; btn.disabled=true; }
-  } else {
-    btn.textContent='🔒 Requisitos no cumplidos'; btn.className='st-dp-btn no'; btn.disabled=true;
-  }
+function ltTap(nid) {
+  var node = _ltFindNode(nid); if (!node) return;
+  _stNodeId = nid; _stClass = null;
+  var st = ltState(nid);
+  var prog = ltProgress(node);
+  document.getElementById('stDPIcon').textContent = node.icon;
+  document.getElementById('stDPName').textContent = node.name;
+  document.getElementById('stDPZone').textContent = '🌿 Árbol de Vida';
+  document.getElementById('stDPDesc').textContent = node.desc;
+  document.getElementById('stDPCost').className  = 'st-dp-cost life-cost';
+  document.getElementById('stDPCost').textContent = st==='unlocked' ? '✓ Activo en combate' : st==='available' ? '🌿 Activa gratis — logro completado' : '🔒 Completa el hábito requerido';
+  var progEl=document.getElementById('stDPProg'), progLbl=document.getElementById('stDPProgLbl'), progFill=document.getElementById('stDPProgFill');
+  if (progEl && prog.needed > 0) {
+    progEl.style.display='block'; progLbl.textContent='Progreso: '+prog.current+' / '+prog.needed;
+    var pct=Math.round(prog.current/prog.needed*100);
+    progFill.style.width=pct+'%'; progFill.style.background=pct>=100?'#4ade80':'rgba(74,222,128,.45)';
+  } else if (progEl) progEl.style.display='none';
+  var btn=document.getElementById('stDPBtn');
+  if(st==='unlocked'){ btn.textContent='✓ Activo'; btn.className='st-dp-btn done'; btn.disabled=true; }
+  else if(st==='available'){ btn.textContent='🌿 Activar'; btn.className='st-dp-btn life'; btn.disabled=false; }
+  else{ btn.textContent='🔒 Bloqueado'; btn.className='st-dp-btn no'; btn.disabled=true; }
+  document.getElementById('stPanel').classList.add('open');
+}
+
+function fnTap(fnid) {
+  var fn=FUSION_NODES.find(function(f){return f.id===fnid;}); if(!fn) return;
+  _stNodeId=fnid; _stClass=null;
+  var ulLife=(char.skillTree&&Array.isArray(char.skillTree.life))?char.skillTree.life:[];
+  var ulC=(char.skillTree&&char.skillTree[fn.cls])||[];
+  var ulF=(char.skillTree&&Array.isArray(char.skillTree.fusion))?char.skillTree.fusion:[];
+  var isUnlocked=ulF.indexOf(fn.id)>=0;
+  var lifeMet=ulLife.indexOf(fn.reqLife)>=0, combatMet=ulC.indexOf(fn.reqCombat)>=0;
+  var isCls=fn.cls===char.class, isAvail=isCls&&!isUnlocked&&lifeMet&&combatMet;
+  var cD3=SKILL_TREE_DATA[fn.cls]||{nodes:[]}, allLN3=[];
+  Object.values(LIFE_TREE_DATA).forEach(function(ch){allLN3=allLN3.concat(ch);});
+  var combNode=cD3.nodes.find(function(x){return x.id===fn.reqCombat;})||{name:'?'};
+  var lifeNode=allLN3.find(function(x){return x.id===fn.reqLife;})||{name:'?'};
+  document.getElementById('stDPIcon').textContent = fn.icon;
+  document.getElementById('stDPName').textContent = fn.name;
+  document.getElementById('stDPZone').textContent = '✦ Nodo de Fusión · '+(SKILL_TREE_DATA[fn.cls]||{name:fn.cls}).name;
+  document.getElementById('stDPDesc').textContent = fn.desc;
+  document.getElementById('stDPCost').className  = 'st-dp-cost fusion-cost';
+  document.getElementById('stDPCost').textContent = '⚔ '+(combatMet?'✓':'✗')+' '+combNode.name+' · 🌿 '+(lifeMet?'✓':'✗')+' '+lifeNode.name+(isCls?'':' (solo clase '+fn.cls+')');
+  var progEl=document.getElementById('stDPProg'); if(progEl) progEl.style.display='none';
+  var btn=document.getElementById('stDPBtn');
+  if(isUnlocked){ btn.textContent='✦ Fusión activa'; btn.className='st-dp-btn done'; btn.disabled=true; }
+  else if(isAvail){ btn.textContent='✦ Fusionar — Gratis'; btn.className='st-dp-btn fusion'; btn.disabled=false; }
+  else{ btn.textContent='🔒 Requisitos incompletos'; btn.className='st-dp-btn no'; btn.disabled=true; }
   document.getElementById('stPanel').classList.add('open');
 }
 
 function _stClosePanel() { document.getElementById('stPanel').classList.remove('open'); }
 
+// ─── Unlock ────────────────────────────────────────────────
 function stUnlock() {
-  if (!_stClass||!_stNodeId) return;
-  var data = SKILL_TREE_DATA[_stClass];
-  var node = null;
-  for (var i=0;i<data.nodes.length;i++){if(data.nodes[i].id===_stNodeId){node=data.nodes[i];break;}}
-  if (!node || stState(_stClass,_stNodeId)!=='available') return;
-  var mp = char.masteryPoints||0;
-  if (mp<node.cost){ quickToast('⚠️','Puntos insuficientes','Necesitas '+node.cost+' PM'); return; }
-  char.masteryPoints = mp - node.cost;
-  if (!char.skillTree[_stClass]) char.skillTree[_stClass]=[];
+  if (!_stNodeId) return;
+  // Life node
+  if (_stNodeId.startsWith('lt_')) {
+    var node=_ltFindNode(_stNodeId); if(!node||ltState(_stNodeId)!=='available') return;
+    if (!char.skillTree) char.skillTree={};
+    if (!Array.isArray(char.skillTree.life)) char.skillTree.life=[];
+    char.skillTree.life.push(_stNodeId);
+    saveChar(); _stRender(_stClass||char.class||'guerrero'); ltTap(_stNodeId);
+    quickToast(node.icon, node.name, '¡Poder de vida activado!'); return;
+  }
+  // Fusion node
+  if (_stNodeId.startsWith('fn_')) {
+    var fn=FUSION_NODES.find(function(f){return f.id===_stNodeId;}); if(!fn) return;
+    var ulL=(char.skillTree&&Array.isArray(char.skillTree.life))?char.skillTree.life:[];
+    var ulC2=(char.skillTree&&char.skillTree[fn.cls])||[];
+    if(ulL.indexOf(fn.reqLife)<0||ulC2.indexOf(fn.reqCombat)<0){ quickToast('🔒','Requisitos','Completa ambas ramas primero'); return; }
+    if(!char.skillTree.fusion) char.skillTree.fusion=[];
+    char.skillTree.fusion.push(fn.id);
+    saveChar(); _stRender(char.class||'guerrero'); fnTap(_stNodeId);
+    quickToast(fn.icon, fn.name, '¡Fusión de poder completada!'); return;
+  }
+  // Combat node
+  if (!_stClass) return;
+  var data=SKILL_TREE_DATA[_stClass]; if(!data) return;
+  var cnode=null;
+  for(var i=0;i<data.nodes.length;i++){if(data.nodes[i].id===_stNodeId){cnode=data.nodes[i];break;}}
+  if(!cnode||stState(_stClass,_stNodeId)!=='available') return;
+  var mp=char.masteryPoints||0;
+  if(mp<cnode.cost){ quickToast('⚠️','Puntos insuficientes','Necesitas '+cnode.cost+' PM'); return; }
+  char.masteryPoints=mp-cnode.cost;
+  if(!char.skillTree[_stClass]) char.skillTree[_stClass]=[];
   char.skillTree[_stClass].push(_stNodeId);
   saveChar();
   document.getElementById('stMPCount').textContent = char.masteryPoints;
-  _stRender(_stClass);
-  stTap(_stClass, _stNodeId);
-  quickToast(node.icon, node.name, '¡Habilidad desbloqueada!');
+  _stRender(_stClass); stTap(_stClass,_stNodeId);
+  quickToast(cnode.icon, cnode.name, '¡Habilidad desbloqueada!');
 }
 
 function stResetTree() {
-  if (!_stClass) return;
-  var cost = 500;
-  if ((char.gold||0)<cost){ quickToast('🪙','Oro insuficiente','Necesitas '+cost+' monedas'); return; }
-  if (!confirm('¿Reiniciar el árbol de '+SKILL_TREE_DATA[_stClass].name+'?\nCoste: '+cost+' 🪙\nRecuperarás todos los Puntos de Maestría gastados.')) return;
-  var nodes = char.skillTree[_stClass]||[];
-  var refund = 0;
-  nodes.forEach(function(id){
-    var n = SKILL_TREE_DATA[_stClass].nodes.find(function(x){return x.id===id;});
-    if (n) refund += n.cost;
-  });
-  char.masteryPoints = (char.masteryPoints||0) + refund;
-  char.gold = (char.gold||0) - cost;
-  char.skillTree[_stClass] = [];
+  var cls=_stClass||char.class; if(!cls||!SKILL_TREE_DATA[cls]) return;
+  var cost=500;
+  if((char.gold||0)<cost){ quickToast('🪙','Oro insuficiente','Necesitas '+cost+' monedas'); return; }
+  if(!confirm('¿Reiniciar el árbol de combate de '+SKILL_TREE_DATA[cls].name+'?\nCoste: '+cost+' 🪙')) return;
+  var nodes=char.skillTree[cls]||[], refund=0;
+  nodes.forEach(function(id){ var n=SKILL_TREE_DATA[cls].nodes.find(function(x){return x.id===id;}); if(n) refund+=n.cost; });
+  char.masteryPoints=(char.masteryPoints||0)+refund;
+  char.gold=(char.gold||0)-cost;
+  char.skillTree[cls]=[];
   saveChar();
   document.getElementById('stMPCount').textContent = char.masteryPoints;
-  _stClosePanel();
-  _stRender(_stClass);
+  _stClosePanel(); _stRender(cls);
   quickToast('♻️','Árbol reiniciado','+'+refund+' PM devueltos');
 }
 
@@ -21706,12 +22210,19 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 <div class="st-overlay" id="stOverlay">
   <div class="st-header">
     <button class="st-back" onclick="closeSkillTree()">←</button>
-    <span class="st-title">Árbol de Habilidades</span>
-    <div class="st-mp">✨ <span id="stMPCount">0</span> PM</div>
+    <div class="st-htabs">
+      <button class="st-htab active"   id="stHTabCombat" onclick="stSetView('combat')">⚔️ Combate</button>
+      <button class="st-htab life-tab" id="stHTabLife"   onclick="stSetView('life')">🌿 Vida</button>
+      <button class="st-htab all-tab"  id="stHTabAll"    onclick="stSetView('all')">✦ Constelación</button>
+    </div>
+    <div class="st-mp">✨ <span id="stMPCount">0</span></div>
   </div>
   <div class="st-tabs" id="stTabs"></div>
-  <div class="st-wrap">
-    <svg class="st-svg" id="stSVG" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="st-canvas-wrap" id="stCanvasWrap">
+    <div class="st-canvas-inner" id="stCanvasInner">
+      <svg class="st-svg" id="stSVG" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <button class="st-center-btn" onclick="stCenterView()">⊕ Centrar</button>
   </div>
   <div class="st-panel" id="stPanel">
     <div class="st-dp-header">
@@ -21722,13 +22233,17 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
       </div>
     </div>
     <div class="st-dp-desc" id="stDPDesc"></div>
+    <div class="st-dp-prog" id="stDPProg" style="display:none">
+      <div class="st-dp-prog-lbl" id="stDPProgLbl"></div>
+      <div class="st-dp-prog-bar"><div class="st-dp-prog-fill" id="stDPProgFill" style="width:0%"></div></div>
+    </div>
     <div class="st-dp-foot">
       <div class="st-dp-cost" id="stDPCost"></div>
       <button class="st-dp-btn" id="stDPBtn" onclick="stUnlock()">Desbloquear</button>
     </div>
   </div>
   <div class="st-bottom-row">
-    <button class="st-reset" onclick="stResetTree()">♻ Reiniciar árbol (500 🪙)</button>
+    <button class="st-reset" onclick="stResetTree()">♻ Reiniciar combate (500 🪙)</button>
   </div>
 </div>
 
