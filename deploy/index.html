@@ -20529,7 +20529,7 @@ function generateMentorLetterAI(data) {
 
   var systemPrompt = 'Eres El Guía, un mentor sabio y empático dentro de una app de hábitos RPG. Tu rol combina la sabiduría de un psicólogo con la épica de un mentor RPG. Escribes cartas semanales personalizadas basadas en el progreso real del usuario. Tus cartas son cálidas, motivadoras y con base psicológica real — nunca condescendientes. Incluyes una reflexión psicológica breve, reconoces los logros específicos de la semana, ofreces perspectiva sobre las dificultades y propones un desafío concreto para la semana siguiente. Máximo 200 palabras. Tono: como un mentor que te conoce y te valora. Escribe directamente el cuerpo de la carta en párrafos cortos separados por salto de línea, sin saludo ni firma (eso se añade aparte). Usa segunda persona.';
 
-  return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey, {
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' + apiKey, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
