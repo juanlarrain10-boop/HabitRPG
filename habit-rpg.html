@@ -1933,6 +1933,110 @@ h2, h3 { font-family: var(--pxfont); }
   transition: all .16s; margin-top: 8px;
 }
 .ch-read-btn:hover { opacity: .88; transform: translateY(-1px); }
+
+/* ══════ VISUAL NOVEL MODE ══════ */
+.vn-overlay {
+  position: fixed; inset: 0; z-index: 1060;
+  display: flex; flex-direction: column;
+  transition: opacity .3s; opacity: 1; pointer-events: all;
+}
+.vn-overlay.hide { opacity: 0; pointer-events: none; }
+.vn-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, #0a0315 0%, #1a0830 100%);
+  transition: background 1.2s; z-index: 0;
+}
+.vn-bg-ch1 { animation: vnP1 9s ease-in-out infinite alternate; }
+.vn-bg-ch2 { animation: vnP2 8s ease-in-out infinite alternate; }
+.vn-bg-ch3 { animation: vnP3 10s ease-in-out infinite alternate; }
+.vn-bg-ch4 { animation: vnP4 11s ease-in-out infinite alternate; }
+.vn-bg-ch5 { animation: vnP5 8s ease-in-out infinite alternate; }
+@keyframes vnP1 { from{filter:brightness(1)}       to{filter:brightness(1.18) saturate(1.25)} }
+@keyframes vnP2 { from{filter:brightness(.88)}      to{filter:brightness(1.1)} }
+@keyframes vnP3 { from{filter:brightness(.95)}      to{filter:brightness(1.15) hue-rotate(12deg)} }
+@keyframes vnP4 { from{filter:brightness(.75)}      to{filter:brightness(1.02)} }
+@keyframes vnP5 { from{filter:brightness(1) saturate(1)} to{filter:brightness(1.3) saturate(1.4)} }
+.vn-world-tint {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none; transition: background .9s;
+}
+.vn-world-tint.brilliant { background: radial-gradient(ellipse at 50% 30%, rgba(255,215,80,.09) 0%, transparent 65%); }
+.vn-world-tint.tired     { background: radial-gradient(ellipse at 50% 50%, rgba(0,20,70,.14) 0%, transparent 80%); }
+.vn-world-tint.dark      { background: rgba(0,0,0,.30); }
+.vn-top-bar {
+  position: relative; z-index: 3;
+  display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 0;
+}
+.vn-ch-label {
+  font-size: .58rem; color: rgba(255,255,255,.38); letter-spacing: .12em;
+  font-family: var(--pxfont); text-transform: uppercase;
+}
+.vn-close-btn {
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.45); padding: 5px 12px; border-radius: 20px;
+  font-size: .6rem; cursor: pointer; font-family: inherit; touch-action: manipulation;
+}
+.vn-portrait-area {
+  position: relative; z-index: 2; flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 8px 0; overflow: hidden;
+}
+.vn-portrait {
+  font-size: 5.5rem; line-height: 1;
+  filter: drop-shadow(0 0 32px rgba(255,255,255,.22));
+  transition: opacity .35s, transform .35s;
+}
+.vn-portrait.vn-hidden   { opacity: 0; transform: scale(.5); }
+.vn-portrait.vn-right    { transform: scaleX(-1); }
+.vn-portrait.vn-right.vn-hidden { transform: scaleX(-1) scale(.5); }
+.vn-portrait-label {
+  margin-top: 8px; font-size: .58rem; letter-spacing: .08em;
+  padding: 3px 12px; border-radius: 20px; font-family: var(--pxfont);
+  background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.6); transition: color .3s, border-color .3s;
+}
+.vn-portrait-label.lbl-mentor { color: #a78bfa; border-color: rgba(167,139,250,.3); }
+.vn-portrait-label.lbl-rival  { color: #f87171; border-color: rgba(248,113,113,.3); }
+.vn-portrait-label.lbl-ally   { color: #fcd34d; border-color: rgba(252,211,77,.3); }
+.vn-textbox {
+  position: relative; z-index: 3;
+  background: rgba(5,5,14,.90); backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255,255,255,.09);
+  padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 7px;
+  min-height: 148px;
+}
+.vn-speaker {
+  font-size: .6rem; font-family: var(--pxfont); letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(255,255,255,.35);
+}
+.vn-speaker.sp-mentor { color: #a78bfa; }
+.vn-speaker.sp-rival  { color: #f87171; }
+.vn-speaker.sp-ally   { color: #fcd34d; }
+.vn-speaker.sp-narr   { color: rgba(255,255,255,.28); font-style: italic; }
+.vn-text { font-size: .88rem; line-height: 1.76; color: rgba(255,255,255,.88); flex: 1; min-height: 54px; }
+.vn-tap-hint {
+  font-size: .58rem; color: rgba(255,255,255,.25); text-align: right;
+  animation: vnHB 2s ease-in-out infinite;
+}
+@keyframes vnHB { 0%,100%{opacity:.25} 50%{opacity:.55} }
+.vn-decisions {
+  position: relative; z-index: 4;
+  background: rgba(5,5,14,.94); backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,.09);
+  padding: 18px 18px 22px; display: flex; flex-direction: column; gap: 10px;
+}
+.vn-dec-q {
+  font-size: .82rem; color: rgba(255,255,255,.65); line-height: 1.6; margin-bottom: 4px; font-style: italic;
+}
+.vn-dec-btn {
+  padding: 13px 16px; border-radius: 13px; text-align: left;
+  background: rgba(99,102,241,.09); border: 1px solid rgba(99,102,241,.28);
+  color: rgba(255,255,255,.82); font-size: .83rem; cursor: pointer;
+  font-family: inherit; transition: all .15s; touch-action: manipulation;
+}
+.vn-dec-btn:hover { background: rgba(99,102,241,.2); border-color: rgba(99,102,241,.6); transform: translateX(5px); }
+.vn-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: rgba(255,255,255,.05); z-index: 5; }
+.vn-progress-fill { height: 100%; background: rgba(99,102,241,.55); transition: width .45s ease; }
+
 .cel-overlay {
   position: fixed; inset: 0; z-index: 1100;
   background: rgba(6,6,14,.96); backdrop-filter: blur(24px);
@@ -6487,6 +6591,26 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     <div id="storyContent"></div>
   </div>
 </div>
+<!-- ══ VISUAL NOVEL OVERLAY ══ -->
+<div class="vn-overlay hide" id="vnOverlay" onclick="vnTap(event)">
+  <div class="vn-bg" id="vnBg"></div>
+  <div class="vn-world-tint" id="vnWorldTint"></div>
+  <div class="vn-top-bar">
+    <div class="vn-ch-label" id="vnChLabel">—</div>
+    <button class="vn-close-btn" onclick="event.stopPropagation();vnClose()">✕ Salir</button>
+  </div>
+  <div class="vn-portrait-area">
+    <div class="vn-portrait vn-hidden" id="vnPortrait"></div>
+    <div class="vn-portrait-label" id="vnPortraitLabel"></div>
+  </div>
+  <div class="vn-textbox" id="vnTextbox">
+    <div class="vn-speaker" id="vnSpeaker"></div>
+    <div class="vn-text" id="vnText"></div>
+    <div class="vn-tap-hint" id="vnTapHint">Toca para continuar ›</div>
+  </div>
+  <div class="vn-decisions" id="vnDecisions" style="display:none"></div>
+  <div class="vn-progress-bar"><div class="vn-progress-fill" id="vnProgressFill"></div></div>
+</div>
 <!-- CRISIS OVERLAY — El Guía -->
 <div class="crisis-overlay hide" id="crisisOverlay">
   <div class="crisis-card">
@@ -7131,6 +7255,147 @@ const STORY_CHARS = {
   mentor: { name:'Aldric', icon:'🧙‍♂️', type:'mentor' },
   rival:  { name:'El Sombra', icon:'🌑', type:'rival' },
   ally:   { name:'Lyra', icon:'✨', type:'ally' },
+};
+
+// ── VISUAL NOVEL CHAPTER DATA ─────────────────────────────────────────────────
+// t: 'narr'=narrator, 'dlg'=dialogue, 'dec'=decision
+// dynTxt(dec, ws) → dynamic text based on saved decisions + world state
+// dec keys: c1d1, c2d1, c3d1, c4d1, c5d1
+// ws values: 'brilliant' | 'normal' | 'tired' | 'dark'
+const CHAPTER_VN = {
+  ch1: {
+    bg: { a:'#0a0315', b:'#1a0830' },
+    scenes: [
+      { t:'narr', txt:'La oscuridad era todo lo que conocías. Pero en algún punto — un instante, una decisión — algo dentro de ti se negó a seguir durmiendo.' },
+      { t:'narr', txt:'El mundo en el que despiertas no es el que recuerdas. Las sombras consumen los bordes de cada cosa. Pero tú estás de pie. Eso, por ahora, es suficiente.' },
+      { t:'dlg', who:'mentor', txt:'Hay dos tipos de personas que llegan aquí: los que buscan escapar del dolor y los que buscan construir algo nuevo. Solo los segundos llegan al final.' },
+      { t:'dec', id:'c1d1', txt:'El Guía te mira fijamente. Sus ojos ven más allá de tu respuesta. "Antes de seguir — ¿desde dónde construyes?"',
+        ch:[{ id:'fuerza', lbl:'🗡️ Desde la fuerza — la disciplina es mi base' },
+            { id:'sabiduria', lbl:'📖 Desde la sabiduría — la conciencia es mi guía' }] },
+      { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          return dec.c1d1 === 'sabiduria'
+            ? 'La sabiduría es paciente. Requiere observar antes de actuar, escuchar antes de hablar. Es el camino más largo — y el más fiel a quien realmente eres.'
+            : 'La fuerza es honesta. Te pedirá todo lo que tienes. Y cuando creas que ya no te queda nada — descubrirás que tenías mucho más de lo que imaginabas.';
+        }},
+      { t:'dlg', who:'rival', right:true, txt:'Mírate. Despertando tarde, creyendo que un poco de esfuerzo lo cambia todo. He visto a cientos como tú. Duran una semana.' },
+      { t:'dlg', who:'ally', txt:'No le hagas caso. Lo que importa es que hoy elegiste estar aquí. Ese es el primer paso — y es el más valioso de todos.' },
+      { t:'narr', final:true, dynTxt: function(dec, ws) {
+          if (ws === 'brilliant') return 'Tu constancia esta semana ilumina el camino. La semilla del cambio no solo fue plantada — ya está germinando.';
+          if (ws === 'dark') return 'Esta semana fue difícil. Pero seguiste apareciendo. Y eso es exactamente lo que el primer capítulo requería de ti.';
+          return 'La semilla del cambio fue plantada. Lo que crece de aquí depende únicamente de ti. Fin del Capítulo I.';
+        }},
+    ]
+  },
+  ch2: {
+    bg: { a:'#060e04', b:'#0d1a08' },
+    scenes: [
+      { t:'narr', txt:'Las ruinas que encuentras en tu camino no son accidentales. Cada piedra caída cuenta la historia de alguien que llegó hasta aquí y no continuó.' },
+      { t:'narr', txt:'Pero entre los escombros también hay señales de los que sí lo lograron. Y tú, día a día, estás dejando las tuyas.' },
+      { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          return dec.c1d1 === 'fuerza'
+            ? 'La fuerza que elegiste al principio ya dejó marcas visibles. Un hábito no es lo que haces cuando tienes motivación — es lo que haces cuando no la tienes.'
+            : 'La sabiduría que elegiste al principio te trajo más lejos de lo que esperabas. Eso es exactamente lo que hace: silenciosa, acumulativa, inevitable.';
+        }},
+      { t:'dlg', who:'rival', right:true, txt:'¿Cuántos días seguidos llevas? ¿Cuántos fallaste? El progreso intermitente no cuenta. O eres constante o no eres nada.' },
+      { t:'dlg', who:'ally', txt:'Lyra sonríe. "Mira cuánto camino hay detrás tuyo. Cada tarea completada, cada hábito sostenido — eso no se borra. Eso ya es tuyo para siempre."' },
+      { t:'dec', id:'c2d1', txt:'Las ruinas tienen dos entradas. Ambas llevan al mismo lugar — pero el camino habla de quién eres.',
+        ch:[{ id:'oscuro', lbl:'🌑 La entrada oscura — enfrento lo difícil directamente' },
+            { id:'ilum',   lbl:'🕯️ El pasaje iluminado — elijo el camino prudente' }] },
+      { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          return dec.c2d1 === 'oscuro'
+            ? 'Elegiste la oscuridad. No para buscarla — sino para demostrarle que no te domina. Eso tiene un nombre preciso: valentía sostenida.'
+            : 'Elegiste la luz. La prudencia no es debilidad — es la sabiduría de saber cuándo conservar energía para las batallas que importan de verdad.';
+        }},
+      { t:'narr', final:true, dynTxt: function(dec, ws) {
+          if (ws === 'brilliant') return 'Las ruinas no te vencieron. Esta semana lo demuestra. Encontraste orden donde había caos. Fin del Capítulo II.';
+          if (ws === 'dark') return 'Atravesaste las ruinas en tu peor semana. Eso es más valioso que hacerlo en la mejor. Fin del Capítulo II.';
+          return 'Las ruinas quedaron atrás. La disciplina empieza a tomar forma en tu interior. Fin del Capítulo II.';
+        }},
+    ]
+  },
+  ch3: {
+    bg: { a:'#100d00', b:'#1f1600' },
+    scenes: [
+      { t:'narr', txt:'La torre no tiene techo visible. Desde abajo parece infinita. Pero eso ya no te detiene — porque aprendiste que el techo no importa. Importa el siguiente peldaño.' },
+      { t:'narr', txt:'En cada piso hay una versión de ti mismo que debiste superar: el que procrastinaba, el que se excusaba, el que cedía al cansancio. Ya no son tus dueños.' },
+      { t:'dlg', who:'mentor', dynTxt: function(dec, ws) {
+          var streak = (typeof char !== 'undefined' && char && char.streak) || 0;
+          return streak >= 14
+            ? 'Tu racha de ' + streak + ' días no es un número. Es arquitectura del alma. Cada día fue un ladrillo en esta torre que ahora escalas sin mirar atrás.'
+            : 'La inconsistencia no es fracaso — es información exacta. Te dice dónde están tus límites reales. Y los límites reales siempre son más amplios de lo que creías.';
+        }},
+      { t:'dlg', who:'rival', right:true, txt:'¿Cuántas veces pensaste en rendirte? Cada caída, cada noche difícil, cada día fallido. El patrón no cambia.' },
+      { t:'dlg', who:'ally', txt:'Lo que él no dice es que cada vez que caíste, elegiste levantarte. Eso no es debilidad. Es la definición exacta de fortaleza real.' },
+      { t:'dec', id:'c3d1', txt:'En el tercer piso hay una puerta sellada. Nadie sabe qué hay al otro lado.',
+        ch:[{ id:'forzar', lbl:'⚔️ Forzarla — sea lo que sea, lo enfrento' },
+            { id:'llave',  lbl:'🔑 Buscar la llave — con paciencia y método' }] },
+      { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          return dec.c3d1 === 'forzar'
+            ? 'La derrumbaste. Al otro lado solo había un espejo. Te miraste y viste a alguien que ya no reconoces del todo — más real, más íntegro, más tú.'
+            : 'La llave estaba tres pisos arriba, donde menos la esperabas. La puerta se abrió sola. No todo requiere fuerza — requiere visión.';
+        }},
+      { t:'narr', final:true, dynTxt: function(dec, ws) {
+          if (ws === 'brilliant') return 'La torre siente tu energía. Cada hábito esta semana es un peldaño más. Seguiste subiendo. Fin del Capítulo III.';
+          if (ws === 'dark') return 'La torre es pesada algunos días. Pero incluso un solo peldaño sigue siendo avance real. Eso es todo lo que se requiere. Fin del Capítulo III.';
+          return 'Has ascendido más alto que cualquier versión anterior de ti. La torre sigue — y tú también. Fin del Capítulo III.';
+        }},
+    ]
+  },
+  ch4: {
+    bg: { a:'#060213', b:'#120628' },
+    scenes: [
+      { t:'narr', txt:'El abismo no es un lugar. Es un estado. El momento en que todo lo que construiste se enfrenta a la pregunta más difícil: ¿por qué?' },
+      { t:'narr', txt:'No hay respuesta fácil aquí. Pero los que llegan hasta este punto ya saben algo que los demás no: la pregunta misma tiene un valor incalculable.' },
+      { t:'dlg', who:'mentor', dynTxt: function(dec, ws) {
+          return ws === 'brilliant'
+            ? 'Tu bienestar mental estas semanas es visible. No eres el mismo que empezó — y eso no es solo disciplina. Es crecimiento interior real, profundo, tuyo.'
+            : 'El sufrimiento no desaparece cuando lo empujas hacia abajo. Se transforma cuando lo miras directo, lo nombras y le permites estar sin que te defina.';
+        }},
+      { t:'dlg', who:'rival', right:true, txt:'El Sombra parece más pequeño aquí. Casi triste. "Ya no puedo detenerte. Pero sigo contigo. No como enemigo... como sombra. Eso es lo que soy."' },
+      { t:'dlg', who:'ally', txt:'Lyra te mira con calma. "El rival no era tu enemigo. Era la parte de ti que tenía miedo. Y el miedo... también tiene su lugar en la historia."' },
+      { t:'dec', id:'c4d1', txt:'El abismo te habla. Una voz sin forma dice: "¿Qué buscas realmente en todo esto?"',
+        ch:[{ id:'escucha', lbl:'👁️ Escuchar — me quedo en el silencio' },
+            { id:'camina',  lbl:'🚶 Seguir caminando — ya lo sé' }] },
+      { t:'dlg', who:'ally', dynTxt: function(dec) {
+          return dec.c4d1 === 'escucha'
+            ? 'Lyra susurra: "Los que escuchan al abismo descubren que la voz era la suya propia. Todo este tiempo, la respuesta estaba dentro de ti."'
+            : 'Lyra asiente lento. "Los que siguen caminando también tienen razón. A veces la respuesta no es entender — es simplemente moverse."';
+        }},
+      { t:'narr', final:true, dynTxt: function(dec, ws) {
+          if (ws === 'brilliant') return 'Tu salud mental esta semana refleja el trabajo que has hecho. El abismo no te asustó — te enseñó. Fin del Capítulo IV.';
+          if (ws === 'dark') return 'Esta semana fue oscura. Pero estás aquí, en el abismo, mirándolo de frente. Eso es exactamente lo que este capítulo requería. Fin del Capítulo IV.';
+          return 'Miraste al abismo y no parpadeaste. Lo que encontraste no fue vacío, sino la raíz de tu fuerza. Fin del Capítulo IV.';
+        }},
+    ]
+  },
+  ch5: {
+    bg: { a:'#0a0806', b:'#201408' },
+    scenes: [
+      { t:'narr', txt:'No es que la oscuridad desaparezca. Es que ya no la temes. La luz que encontraste no vino de fuera — creció desde adentro, despacio, hábito a hábito, día a día.' },
+      { t:'narr', txt:'Llegaste aquí no a pesar de tus luchas, sino a través de ellas. Esta no es la línea de meta. Es el punto desde donde realmente empieza todo.' },
+      { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          var clsName = (typeof CLASSES !== 'undefined' && char && CLASSES[char.class]) ? CLASSES[char.class].name : 'héroe';
+          var streak  = (typeof char !== 'undefined' && char && char.streak) || 0;
+          var path    = dec.c1d1 === 'sabiduria' ? 'la sabiduría' : 'la fuerza';
+          return 'Llegaste hasta aquí porque elegiste ' + path + ' al principio, como ' + clsName + '. Y lo mantuviste — ' + (streak > 0 ? streak + ' días de racha lo prueban' : 'cada día, una y otra vez') + '. Eso es lo que eres ahora.';
+        }},
+      { t:'dlg', who:'rival', right:true, txt:'La sombra camina ahora a tu lado, tranquila. "Ahora lo entiendo. No era tu enemiga. Era la prueba de que la luz necesita oscuridad para ser visible."' },
+      { t:'dlg', who:'ally', txt:'Lyra ríe. "¿Lo ves? La luz que buscabas nunca estuvo afuera. Siempre fue tuya. Solo necesitabas recordarlo."' },
+      { t:'dec', id:'c5d1', txt:'El camino termina aquí — y al mismo tiempo, empieza de nuevo. ¿Cómo llevas esta victoria?',
+        ch:[{ id:'personal',  lbl:'🌟 Es mía — silenciosa y profunda' },
+            { id:'compartir', lbl:'🤝 La comparto — el cambio crece en comunidad' }] },
+      { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          return dec.c5d1 === 'personal'
+            ? 'Las victorias más profundas no necesitan aplausos. Llevas algo nuevo contigo. Nadie puede quitártelo — porque nadie más sabe exactamente lo que te costó.'
+            : 'Las personas que comparten su crecimiento no lo pierden — lo multiplican. Lo que has construido ahora puede ser semilla en otros.';
+        }},
+      { t:'narr', final:true, dynTxt: function(dec, ws) {
+          var c1  = dec.c1d1 === 'sabiduria' ? 'la sabiduría' : 'la fuerza';
+          var c5  = dec.c5d1 === 'compartir' ? 'y decidiste compartirla con el mundo' : 'y la llevas en silencio, profunda';
+          return 'Comenzaste eligiendo ' + c1 + '. Terminaste con una victoria ' + c5 + '. Esta no es la línea de meta — es el punto desde donde realmente empieza todo. Fin del Capítulo V.';
+        }},
+    ]
+  },
 };
 
 const CHAPTERS = [
@@ -10379,7 +10644,7 @@ function defChar() {
     inventory: [],
     equipped: { weapon:null, armor:null, accessory:null, head:null, legs:null, feet:null, leftHand:null, cape:null },
     dungeonsCompleted: {},
-    storyProgress: { chaptersRead: [], celebrationSeen: [] },
+    storyProgress: { chaptersRead: [], celebrationSeen: [], decisions: {} },
     battlesWon: 0,
     battlesAttempted: 0,
     achievements: {},
@@ -10551,6 +10816,7 @@ function loadChar() {
     if (!c.storyProgress || typeof c.storyProgress !== 'object') c.storyProgress = defChar().storyProgress;
     if (!Array.isArray(c.storyProgress.chaptersRead)) c.storyProgress.chaptersRead = [];
     if (!Array.isArray(c.storyProgress.celebrationSeen)) c.storyProgress.celebrationSeen = [];
+    if (!c.storyProgress.decisions || typeof c.storyProgress.decisions !== 'object') c.storyProgress.decisions = {};
     if (typeof c.battlesWon !== 'number') c.battlesWon = 0;
     if (!c.achievements || typeof c.achievements !== 'object') c.achievements = {};
     if (!c.habitStreak    || typeof c.habitStreak    !== 'object') c.habitStreak    = { count:0, lastDate:'' };
@@ -16348,6 +16614,7 @@ function chapterUnlocked(ch) { return char.level >= ch.levelReq; }
 function chapterRead(ch)     { return char.storyProgress.chaptersRead.includes(ch.id); }
 
 function openStory() {
+  try { checkAllChapterUnlocks(); } catch(e) {}
   renderStoryList();
   document.getElementById('storyOverlay').classList.remove('hide');
 }
@@ -16355,67 +16622,63 @@ function closeStory() {
   document.getElementById('storyOverlay').classList.add('hide');
 }
 
+var _CH_LOCK_HINT = {
+  ch2: '7 días de uso',
+  ch3: 'Racha de 14 días',
+  ch4: 'Bienestar promedio ≥7',
+  ch5: 'Árbol de habilidades 50%',
+};
+
 function renderStoryList() {
-  const wrap = document.getElementById('storyContent');
-  const html = `<div class="ch-list">${CHAPTERS.map(ch => {
-    const unlocked = chapterUnlocked(ch);
-    const read     = chapterRead(ch);
-    const lockedCls = unlocked ? '' : ' ch-locked';
-    const readCls   = read ? ' ch-read' : '';
-    let badge, badgeCls;
-    if (!unlocked) { badge = '🔒 Bloqueado'; badgeCls = 'badge-locked'; }
-    else if (read) { badge = '✓ Leído';     badgeCls = 'badge-done'; }
-    else           { badge = 'Disponible';   badgeCls = ''; }
-    return `<div class="ch-card${lockedCls}${readCls}" onclick="(${unlocked}&&openChapter('${ch.id}'))">
-      <div class="ch-num${unlocked?'':' locked'}">${ch.icon}</div>
-      <div class="ch-info">
-        <div class="ch-name">Capítulo ${ch.num}: ${ch.name}</div>
-        <div class="ch-sub">${ch.levelRange}</div>
-      </div>
-      <div class="ch-badge ${badgeCls}">${badge}</div>
-    </div>`;
-  }).join('')}</div>`;
+  var wrap = document.getElementById('storyContent');
+  var html = '<div class="ch-list">' + CHAPTERS.map(function(ch) {
+    var unlocked  = chapterUnlocked(ch);
+    var read      = chapterRead(ch);
+    var lockedCls = unlocked ? '' : ' ch-locked';
+    var readCls   = read ? ' ch-read' : '';
+    var badge, badgeCls;
+    if (!unlocked) {
+      var hint = _CH_LOCK_HINT[ch.id] ? ' · ' + _CH_LOCK_HINT[ch.id] : '';
+      badge = '🔒 Nv.' + ch.levelReq + hint; badgeCls = 'badge-locked';
+    } else if (read) { badge = '✓ Leído'; badgeCls = 'badge-done'; }
+    else             { badge = '▶ Jugar'; badgeCls = ''; }
+    return '<div class="ch-card' + lockedCls + readCls + '" onclick="(' + unlocked + '&&openChapter(\'' + ch.id + '\'))">'
+      + '<div class="ch-num' + (unlocked ? '' : ' locked') + '">' + ch.icon + '</div>'
+      + '<div class="ch-info"><div class="ch-name">Capítulo ' + ch.num + ': ' + ch.name + '</div>'
+      + '<div class="ch-sub">' + ch.levelRange + '</div></div>'
+      + '<div class="ch-badge ' + badgeCls + '">' + badge + '</div>'
+      + '</div>';
+  }).join('') + '</div>';
   wrap.innerHTML = html;
 }
 
 function openChapter(id) {
-  const ch = CHAPTERS.find(c => c.id === id);
+  var ch = CHAPTERS.find(function(c){ return c.id === id; });
   if (!ch || !chapterUnlocked(ch)) return;
-  const wrap = document.getElementById('storyContent');
-
-  const introHTML = ch.intro.map(p => `<p>${p}</p>`).join('');
-
-  const scenesHTML = ch.scenes.map(s => {
-    const c = STORY_CHARS[s.char];
-    const right = s.side === 'right';
-    return `<div class="char-bubble${right?' bubble-right':''}">
-      <div class="cb-avatar${s.char==='rival'?' rival':s.char==='ally'?' ally':''}"><span>${c.icon}</span></div>
-      <div class="cb-body">
-        <div class="cb-name">${c.name}</div>
-        <div class="cb-text${s.char==='rival'?' rival':s.char==='ally'?' ally':''}">${s.text}</div>
-      </div>
-    </div>`;
+  // Launch visual novel reader if VN data exists
+  if (CHAPTER_VN[id]) { vnOpen(id); return; }
+  // Fallback: static text view
+  var wrap = document.getElementById('storyContent');
+  var introHTML = ch.intro.map(function(p){ return '<p>' + p + '</p>'; }).join('');
+  var scenesHTML = ch.scenes.map(function(s) {
+    var c = STORY_CHARS[s.char] || { name: s.char, icon: '👤' };
+    var right = s.side === 'right';
+    return '<div class="char-bubble' + (right ? ' bubble-right' : '') + '">'
+      + '<div class="cb-avatar' + (s.char === 'rival' ? ' rival' : s.char === 'ally' ? ' ally' : '') + '"><span>' + c.icon + '</span></div>'
+      + '<div class="cb-body"><div class="cb-name">' + c.name + '</div>'
+      + '<div class="cb-text' + (s.char === 'rival' ? ' rival' : s.char === 'ally' ? ' ally' : '') + '">' + s.text + '</div></div></div>';
   }).join('');
-
-  const alreadyRead = chapterRead(ch);
-  const btnLabel = alreadyRead ? 'Volver a la lista' : 'Marcar como leído ✓';
-
-  wrap.innerHTML = `<div class="ch-detail">
-    <div class="ch-detail-hd">
-      <div class="ch-detail-icon">${ch.icon}</div>
-      <div>
-        <div class="ch-detail-title">Capítulo ${ch.num}: ${ch.name}</div>
-        <div class="ch-detail-sub">${ch.levelRange}</div>
-      </div>
-    </div>
-    <div class="ch-intro">${introHTML}</div>
-    <div class="char-bubbles">${scenesHTML}</div>
-    <div class="mentor-quote">
-      <div class="mq-text">"${ch.mentorQuote.text}"</div>
-      <div class="mq-author">— ${ch.mentorQuote.author}</div>
-    </div>
-    <button class="ch-read-btn" onclick="markChapterRead('${ch.id}')">${btnLabel}</button>
-  </div>`;
+  var alreadyRead = chapterRead(ch);
+  wrap.innerHTML = '<div class="ch-detail">'
+    + '<div class="ch-detail-hd"><div class="ch-detail-icon">' + ch.icon + '</div>'
+    + '<div><div class="ch-detail-title">Capítulo ' + ch.num + ': ' + ch.name + '</div>'
+    + '<div class="ch-detail-sub">' + ch.levelRange + '</div></div></div>'
+    + '<div class="ch-intro">' + introHTML + '</div>'
+    + '<div class="char-bubbles">' + scenesHTML + '</div>'
+    + '<div class="mentor-quote"><div class="mq-text">"' + ch.mentorQuote.text + '"</div>'
+    + '<div class="mq-author">— ' + ch.mentorQuote.author + '</div></div>'
+    + '<button class="ch-read-btn" onclick="markChapterRead(\'' + ch.id + '\')">' + (alreadyRead ? 'Volver a la lista' : 'Marcar como leído ✓') + '</button>'
+    + '</div>';
 }
 
 function markChapterRead(id) {
@@ -16457,6 +16720,229 @@ document.getElementById('storyOverlay').addEventListener('click', e => {
 document.getElementById('celBtn').addEventListener('click', () => {
   document.getElementById('celOverlay').classList.add('hide');
 });
+
+// ═══════════════════════════════════════════════════════════
+// VISUAL NOVEL ENGINE
+// ═══════════════════════════════════════════════════════════
+
+var _vnChId    = null;
+var _vnScenes  = [];
+var _vnIdx     = 0;
+var _vnTyping  = false;
+var _vnTimer   = null;
+var _vnDec     = {};
+var _vnWS      = 'normal';
+
+function _storyWorldState() {
+  try {
+    var today = new Date(), entries = [], i, d, k, raw;
+    for (i = 1; i <= 7; i++) {
+      d = new Date(today); d.setDate(today.getDate() - i);
+      k = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      raw = localStorage.getItem('hrpg_day_' + k);
+      if (raw) { try { entries.push(JSON.parse(raw)); } catch(e){} }
+    }
+    if (!entries.length) return 'normal';
+    var pcts = entries.map(function(e){ return getDayMissionStats(e).pct; });
+    var avg  = pcts.reduce(function(a,b){return a+b;},0) / pcts.length;
+    return avg >= 75 ? 'brilliant' : avg >= 45 ? 'normal' : avg >= 22 ? 'tired' : 'dark';
+  } catch(e) { return 'normal'; }
+}
+
+function vnOpen(chId) {
+  var ch    = CHAPTERS.find(function(c){ return c.id === chId; });
+  var vnCh  = CHAPTER_VN[chId];
+  if (!ch || !vnCh || !chapterUnlocked(ch)) return;
+
+  _vnChId   = chId;
+  _vnScenes = vnCh.scenes;
+  _vnIdx    = 0;
+  _vnTyping = false;
+  _vnDec    = (char.storyProgress && char.storyProgress.decisions) || {};
+  _vnWS     = _storyWorldState();
+
+  var bgEl  = document.getElementById('vnBg');
+  var tntEl = document.getElementById('vnWorldTint');
+  if (bgEl) {
+    bgEl.style.background = 'linear-gradient(160deg,' + vnCh.bg.a + ' 0%,' + vnCh.bg.b + ' 100%)';
+    bgEl.className = 'vn-bg vn-bg-' + chId;
+  }
+  if (tntEl) tntEl.className = 'vn-world-tint ' + _vnWS;
+
+  var labEl = document.getElementById('vnChLabel');
+  if (labEl) labEl.textContent = 'Capítulo ' + ch.num + ' · ' + ch.name;
+
+  document.getElementById('vnOverlay').classList.remove('hide');
+  document.body.style.overflow = 'hidden';
+  vnRenderScene();
+}
+
+function vnClose() {
+  clearTimeout(_vnTimer); _vnTyping = false;
+  document.getElementById('vnOverlay').classList.add('hide');
+  document.body.style.overflow = '';
+  if (_vnChId) { markChapterRead(_vnChId); }
+  renderStoryList();
+}
+
+function vnTap(e) {
+  if (e.target.closest('.vn-close-btn') || e.target.closest('.vn-dec-btn')) return;
+  var sc = _vnScenes[_vnIdx];
+  if (!sc || sc.t === 'dec') return;
+  if (_vnTyping) {
+    clearTimeout(_vnTimer); _vnTyping = false;
+    var el = document.getElementById('vnText');
+    if (el) el.textContent = _vnGetText(sc);
+    document.getElementById('vnTapHint').style.opacity = '1';
+    return;
+  }
+  if (sc.final) { vnClose(); return; }
+  _vnIdx++;
+  vnRenderScene();
+}
+
+function vnChoose(decId, choiceId) {
+  if (!char.storyProgress.decisions) char.storyProgress.decisions = {};
+  char.storyProgress.decisions[decId] = choiceId;
+  _vnDec[decId] = choiceId;
+  saveChar();
+  _vnIdx++;
+  vnRenderScene();
+}
+
+function _vnGetText(sc) {
+  if (sc.dynTxt) return sc.dynTxt(_vnDec, _vnWS);
+  return sc.txt || '';
+}
+
+function _vnTypewriter(el, text, speed) {
+  el.textContent = ''; var i = 0; _vnTyping = true;
+  document.getElementById('vnTapHint').style.opacity = '0';
+  function tick() {
+    if (i < text.length) { el.textContent += text[i++]; _vnTimer = setTimeout(tick, speed); }
+    else { _vnTyping = false; document.getElementById('vnTapHint').style.opacity = '1'; }
+  }
+  tick();
+}
+
+function vnRenderScene() {
+  if (_vnIdx >= _vnScenes.length) { vnClose(); return; }
+  var sc = _vnScenes[_vnIdx];
+
+  var portEl  = document.getElementById('vnPortrait');
+  var lblEl   = document.getElementById('vnPortraitLabel');
+  var spkEl   = document.getElementById('vnSpeaker');
+  var txtEl   = document.getElementById('vnText');
+  var hntEl   = document.getElementById('vnTapHint');
+  var decEl   = document.getElementById('vnDecisions');
+  var boxEl   = document.getElementById('vnTextbox');
+  var fillEl  = document.getElementById('vnProgressFill');
+
+  // Progress bar
+  var total = _vnScenes.filter(function(s){ return s.t !== 'dec'; }).length;
+  var done  = _vnScenes.slice(0, _vnIdx + 1).filter(function(s){ return s.t !== 'dec'; }).length;
+  if (fillEl) fillEl.style.width = Math.round(done / total * 100) + '%';
+
+  if (sc.t === 'dec') {
+    boxEl.style.display = 'none';
+    decEl.style.display = 'flex';
+    decEl.innerHTML = '<div class="vn-dec-q">' + (sc.txt || '') + '</div>'
+      + sc.ch.map(function(c) {
+          return '<button class="vn-dec-btn" onclick="event.stopPropagation();vnChoose(\'' + sc.id + '\',\'' + c.id + '\')">' + c.lbl + '</button>';
+        }).join('');
+    portEl.textContent = '⚖️';
+    portEl.className = 'vn-portrait';
+    lblEl.textContent = '';
+    lblEl.className = 'vn-portrait-label';
+    return;
+  }
+
+  decEl.style.display = 'none';
+  boxEl.style.display = 'flex';
+
+  var text = _vnGetText(sc);
+
+  if (sc.t === 'narr') {
+    portEl.textContent = '';
+    portEl.className = 'vn-portrait vn-hidden';
+    lblEl.textContent = '';
+    lblEl.className = 'vn-portrait-label';
+    spkEl.textContent = '— Narrador —';
+    spkEl.className = 'vn-speaker sp-narr';
+  } else {
+    var c = STORY_CHARS[sc.who] || { name: sc.who, icon: '👤' };
+    portEl.textContent = c.icon;
+    portEl.className = 'vn-portrait' + (sc.right ? ' vn-right' : '');
+    lblEl.textContent = c.name;
+    lblEl.className = 'vn-portrait-label lbl-' + (sc.who || '');
+    spkEl.textContent = c.name;
+    spkEl.className = 'vn-speaker sp-' + (sc.who || '');
+  }
+
+  hntEl.textContent = sc.final ? 'Toca para terminar el capítulo ✓' : 'Toca para continuar ›';
+  _vnTypewriter(txtEl, text, 20);
+}
+
+// ── Updated chapterUnlocked: level + extra conditions ──────────────────────────
+function chapterUnlocked(ch) {
+  if (!ch) return false;
+  if (ch.id === 'ch1') return true;
+  if (!char || char.level < ch.levelReq) return false;
+  if (ch.id === 'ch2') {
+    // Level 6 + at least 7 days of recorded data
+    var total = 0;
+    var today = new Date();
+    for (var i = 1; i <= 60; i++) {
+      var d2 = new Date(today); d2.setDate(today.getDate() - i);
+      var k2 = d2.getFullYear() + '-' + String(d2.getMonth()+1).padStart(2,'0') + '-' + String(d2.getDate()).padStart(2,'0');
+      if (localStorage.getItem('hrpg_day_' + k2)) total++;
+    }
+    return total >= 7;
+  }
+  if (ch.id === 'ch3') {
+    return (char.streak || 0) >= 14;
+  }
+  if (ch.id === 'ch4') {
+    // Level 21 + avg wellness >= 7/10 over last 14 days
+    var wSum = 0, wN = 0;
+    var today3 = new Date();
+    for (var j = 1; j <= 14; j++) {
+      var dj = new Date(today3); dj.setDate(today3.getDate() - j);
+      var kj = dj.getFullYear() + '-' + String(dj.getMonth()+1).padStart(2,'0') + '-' + String(dj.getDate()).padStart(2,'0');
+      var rawj = localStorage.getItem('hrpg_day_' + kj);
+      if (rawj) {
+        try {
+          var dobj = JSON.parse(rawj);
+          if (dobj.checkinMorn && dobj.checkinMorn.score) { wSum += dobj.checkinMorn.score; wN++; }
+          if (dobj.checkinEven && dobj.checkinEven.score) { wSum += dobj.checkinEven.score; wN++; }
+        } catch(e) {}
+      }
+    }
+    return wN > 0 && (wSum / wN) >= 7;
+  }
+  if (ch.id === 'ch5') {
+    // Level 31 + 50% of skill tree nodes unlocked
+    var treeData = (typeof SKILL_TREE_DATA !== 'undefined') ? SKILL_TREE_DATA[char.class || 'guerrero'] : null;
+    if (!treeData) return true;
+    var allNodes = [];
+    Object.values(treeData).forEach(function(tier) {
+      if (Array.isArray(tier)) allNodes = allNodes.concat(tier);
+    });
+    if (!allNodes.length) return true;
+    var bought = allNodes.filter(function(sk) { return char.skillTree && char.skillTree[sk.id]; }).length;
+    return bought >= Math.ceil(allNodes.length * 0.5);
+  }
+  return true;
+}
+
+// ── Check all chapter unlocks (called outside of level-up) ────────────────────
+function checkAllChapterUnlocks() {
+  CHAPTERS.forEach(function(ch) {
+    if (chapterUnlocked(ch) && !char.storyProgress.celebrationSeen.includes(ch.id)) {
+      showChapterCelebration(ch);
+    }
+  });
+}
 
 // ═══════════════════════════════════════════
 // GM PANEL
@@ -18710,6 +19196,7 @@ function setBottomTab(id) {
   var _SVG_TAVERN = '<svg viewBox="0 0 40 40" width="38" height="38" xmlns="http://www.w3.org/2000/svg"><rect x="7" y="17" width="20" height="19" rx="3" fill="#7a4e1a" stroke="#a06828" stroke-width="1.3"/><path d="M27,21 Q37,21 37,29 Q37,37 27,37" fill="none" stroke="#a06828" stroke-width="3.2" stroke-linecap="round"/><ellipse cx="17" cy="17" rx="10" ry="4.5" fill="#ede8d0"/><ellipse cx="12" cy="14.5" rx="4.5" ry="3.5" fill="#f8f4ec"/><ellipse cx="20" cy="13.5" rx="4" ry="3.5" fill="#f8f4ec"/><ellipse cx="24" cy="15" rx="3.5" ry="3" fill="#ede8d0"/><rect x="8" y="18" width="18" height="5" rx="1.5" fill="#c47a08" opacity=".65"/><line x1="7" y1="27" x2="27" y2="27" stroke="#7a4010" stroke-width="1.4"/></svg>';
   var _SVG_TREE = '<svg viewBox="0 0 40 40" width="38" height="38" xmlns="http://www.w3.org/2000/svg"><rect x="17" y="25" width="6" height="11" rx="2.5" fill="#6b3a10"/><path d="M20,36 Q13,33 9,38" stroke="#6b3a10" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M20,36 Q27,33 31,38" stroke="#6b3a10" stroke-width="2.2" fill="none" stroke-linecap="round"/><ellipse cx="20" cy="23" rx="13" ry="9" fill="#145a2e" opacity=".92"/><ellipse cx="20" cy="17" rx="10" ry="8" fill="#166534"/><ellipse cx="20" cy="12" rx="7.5" ry="7" fill="#15803d"/><circle cx="13" cy="19" r="2.2" fill="#86efac" opacity=".78"/><circle cx="27" cy="17" r="2" fill="#86efac" opacity=".72"/><circle cx="20" cy="7" r="2.2" fill="#bbf7d0" opacity=".85"/><circle cx="15" cy="13" r="1.4" fill="#bbf7d0" opacity=".65"/><circle cx="25" cy="14" r="1.2" fill="#bbf7d0" opacity=".6"/></svg>';
   var _SVG_HERO = '<svg viewBox="0 0 40 40" width="38" height="38" xmlns="http://www.w3.org/2000/svg"><path d="M8,27 Q8,8 20,6 Q32,8 32,27 Z" fill="#484e60" stroke="#8090a8" stroke-width="1.3"/><path d="M10,25 L10,31 Q10,35 20,35 Q30,35 30,31 L30,25 Z" fill="#383e50" stroke="#6878a0" stroke-width="1.1"/><rect x="13" y="26" width="14" height="3.5" rx="1.75" fill="#c8a828" opacity=".88"/><path d="M10,25 Q8,29 10,32" stroke="#5868a0" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M30,25 Q32,29 30,32" stroke="#5868a0" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M20,6 Q17,2 14,0 Q17,3 20,2 Q23,3 26,0 Q23,2 20,6" fill="#c01818" opacity=".88"/><path d="M14,11 Q18,8.5 23,11" stroke="#c8d8e8" stroke-width="1.6" fill="none" opacity=".55"/></svg>';
+  var _SVG_STORY = '<svg viewBox="0 0 40 40" width="38" height="38" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="5" width="24" height="30" rx="3" fill="#1e1257" stroke="#818cf8" stroke-width="1.3"/><rect x="11" y="9" width="18" height="2" rx="1" fill="#818cf8" opacity=".75"/><rect x="11" y="14" width="18" height="2" rx="1" fill="#818cf8" opacity=".55"/><rect x="11" y="19" width="12" height="2" rx="1" fill="#818cf8" opacity=".38"/><circle cx="20" cy="28.5" r="4.8" fill="#4f46e5" opacity=".92"/><polygon points="20,25.5 21.5,27.5 23.5,27.5 22,29 22.8,31 20,29.8 17.2,31 18,29 16.5,27.5 18.5,27.5" fill="#e0e7ff" opacity=".95"/></svg>';
 
   var ZONES = [
     { id:'battle',    icon:_SVG_BATTLE,    name:'Sala de Batalla', desc:'Dungeons y combate',        fn: function(){ closeThrone(true); setTimeout(openAdventure, 260); } },
@@ -18719,6 +19206,7 @@ function setBottomTab(id) {
     { id:'tavern',    icon:_SVG_TAVERN,    name:'Taberna',           desc:'Tu equipo de aventureros',   fn: function(){ closeThrone(true); setTimeout(openGuild, 260); } },
     { id:'tree',      icon:_SVG_TREE,      name:'Árbol Sagrado',     desc:'Tu camino de poder',         fn: function(){ closeThrone(true); setTimeout(openSkillTree, 260); } },
     { id:'hero',      icon:_SVG_HERO,      name:'Cámara del Héroe',  desc:'Tu personaje y stats',       fn: function(){ closeThrone(true); setTimeout(openProfile, 260); } },
+    { id:'story',     icon:_SVG_STORY,     name:'Sala de Historia',   desc:'Tu aventura épica',           fn: function(){ closeThrone(true); setTimeout(openStory, 260); } },
   ];
 
   var _audioCtx = null, _audioOn = false, _audioNodes = null;
