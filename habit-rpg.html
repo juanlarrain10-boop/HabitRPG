@@ -5937,10 +5937,10 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     <!-- AI — El Guía -->
     <div class="ai-settings-section">
       <div class="ai-settings-title">🤖 IA — El Guía</div>
-      <div class="ai-settings-desc">Añade tu API key de Anthropic para que El Guía genere cartas personalizadas con IA real cada lunes. La key se guarda solo en tu dispositivo.</div>
+      <div class="ai-settings-desc">Añade tu API key de Gemini (gratuita) para que El Guía genere cartas personalizadas con IA real cada lunes. La key se guarda solo en tu dispositivo.<br><a href="https://aistudio.google.com" target="_blank" rel="noopener" style="color:#d4a96a;font-size:.59rem">Obtén tu key gratuita en aistudio.google.com →</a></div>
       <div class="ai-key-row">
-        <input type="password" class="ai-key-input" id="aiKeyInput" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
-        <button class="ai-key-btn" onclick="saveAnthropicKey()">Guardar</button>
+        <input type="password" class="ai-key-input" id="aiKeyInput" placeholder="AIzaSy…" autocomplete="off" spellcheck="false">
+        <button class="ai-key-btn" onclick="saveGeminiKey()">Guardar</button>
       </div>
       <div class="ai-key-status" id="aiKeyStatus">—</div>
       <button class="ai-test-btn" onclick="testMentorLetterAI()">Probar carta de IA ahora →</button>
@@ -19983,42 +19983,42 @@ var _mentorLetterData   = null;
 var _mentorLetterAiText = null;
 
 // ── AI MENTOR LETTER ─────────────────────────────────────────────────────────
-function _getAnthropicKey() {
-  return localStorage.getItem('hrpg_anthropic_key') || '';
+function _getGeminiKey() {
+  return localStorage.getItem('hrpg_gemini_key') || '';
 }
 
-function saveAnthropicKey() {
+function saveGeminiKey() {
   var inp      = document.getElementById('aiKeyInput');
   var statusEl = document.getElementById('aiKeyStatus');
   var key      = inp ? inp.value.trim() : '';
   if (!key) {
-    localStorage.removeItem('hrpg_anthropic_key');
+    localStorage.removeItem('hrpg_gemini_key');
     if (statusEl) statusEl.textContent = 'Key eliminada';
     quickToast('🗑️', 'Key eliminada', 'El Guía usará cartas estáticas');
     return;
   }
-  if (!key.startsWith('sk-ant-')) {
-    quickToast('⚠️', 'Key inválida', 'Debe empezar por sk-ant-');
+  if (!key.startsWith('AIza')) {
+    quickToast('⚠️', 'Key inválida', 'La key de Gemini debe empezar por AIza');
     return;
   }
-  localStorage.setItem('hrpg_anthropic_key', key);
-  if (inp) inp.value = key.slice(0, 14) + '…';
+  localStorage.setItem('hrpg_gemini_key', key);
+  if (inp) inp.value = key.slice(0, 10) + '…';
   if (statusEl) statusEl.textContent = '✓ Key guardada — El Guía usará IA cada lunes';
   quickToast('✨', 'API key guardada', 'El Guía generará cartas con IA real');
 }
 
 function _refreshAIKeyUI() {
-  var key      = _getAnthropicKey();
+  var key      = _getGeminiKey();
   var inp      = document.getElementById('aiKeyInput');
   var statusEl = document.getElementById('aiKeyStatus');
-  if (inp) inp.value = key ? key.slice(0, 14) + '…' : '';
+  if (inp) inp.value = key ? key.slice(0, 10) + '…' : '';
   if (statusEl) statusEl.textContent = key
     ? '✓ Key guardada — El Guía usará IA cada lunes'
     : 'Sin key — se usará carta estática';
 }
 
 function generateMentorLetterAI(data) {
-  var apiKey = _getAnthropicKey();
+  var apiKey = _getGeminiKey();
   if (!apiKey) return Promise.resolve(null);
 
   var clsName = (CLASSES[char.class] || {}).name || char.class || 'Aventurero';
@@ -20039,19 +20039,15 @@ function generateMentorLetterAI(data) {
     'Días registrados esta semana: ' + data.daysCount,
   ].join('\n');
 
-  return fetch('https://api.anthropic.com/v1/messages', {
+  var systemPrompt = 'Eres El Guía, un mentor sabio y empático dentro de una app de hábitos RPG. Tu rol combina la sabiduría de un psicólogo con la épica de un mentor RPG. Escribes cartas semanales personalizadas basadas en el progreso real del usuario. Tus cartas son cálidas, motivadoras y con base psicológica real — nunca condescendientes. Incluyes una reflexión psicológica breve, reconoces los logros específicos de la semana, ofreces perspectiva sobre las dificultades y propones un desafío concreto para la semana siguiente. Máximo 200 palabras. Tono: como un mentor que te conoce y te valora. Escribe directamente el cuerpo de la carta en párrafos cortos separados por salto de línea, sin saludo ni firma (eso se añade aparte). Usa segunda persona.';
+
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 450,
-      system: 'Eres El Guía, un mentor sabio y empático dentro de una app de hábitos RPG. Tu rol combina la sabiduría de un psicólogo con la épica de un mentor RPG. Escribes cartas semanales personalizadas basadas en el progreso real del usuario. Tus cartas son cálidas, motivadoras y con base psicológica real — nunca condescendientes. Incluyes una reflexión psicológica breve, reconoces los logros específicos de la semana, ofreces perspectiva sobre las dificultades y propones un desafío concreto para la semana siguiente. Máximo 200 palabras. Tono: como un mentor que te conoce y te valora. Escribe directamente el cuerpo de la carta en párrafos cortos separados por salto de línea, sin saludo ni firma (eso se añade aparte). Usa segunda persona.',
-      messages: [{ role: 'user', content: 'Escribe la carta semanal con estos datos:\n' + ctx }],
+      system_instruction: { parts: [{ text: systemPrompt }] },
+      contents: [{ role: 'user', parts: [{ text: 'Escribe la carta semanal con estos datos:\n' + ctx }] }],
+      generationConfig: { maxOutputTokens: 450 },
     }),
   }).then(function(resp) {
     if (!resp.ok) {
@@ -20061,7 +20057,10 @@ function generateMentorLetterAI(data) {
     }
     return resp.json();
   }).then(function(json) {
-    return (json.content && json.content[0] && json.content[0].text) ? json.content[0].text : null;
+    var text = json.candidates && json.candidates[0] && json.candidates[0].content
+      && json.candidates[0].content.parts && json.candidates[0].content.parts[0]
+      && json.candidates[0].content.parts[0].text;
+    return text || null;
   });
 }
 
@@ -20094,9 +20093,9 @@ function testMentorLetterAI() {
     quickToast('⚠️', 'Sin datos', 'Necesitas al menos 2 días registrados la semana pasada');
     return;
   }
-  var apiKey = _getAnthropicKey();
+  var apiKey = _getGeminiKey();
   if (!apiKey) {
-    quickToast('⚠️', 'Sin API key', 'Guarda tu API key de Anthropic primero');
+    quickToast('⚠️', 'Sin API key', 'Guarda tu API key de Gemini primero');
     return;
   }
   openMentorLetterLoading(data);
