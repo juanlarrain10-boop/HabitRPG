@@ -4914,6 +4914,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 .st-overlay {
   position: fixed; inset: 0; z-index: 9000;
   display: none; flex-direction: column;
+  pointer-events: none; visibility: hidden;
   background: #02020e;
   background-image:
     radial-gradient(1px 1px at 3% 7%,    rgba(255,255,255,.7)  0%,transparent 100%),
@@ -4931,7 +4932,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     radial-gradient(1px 1px at 75% 94%,  rgba(255,255,255,.42) 0%,transparent 100%),
     #02020e;
 }
-.st-overlay.open { display: flex; animation: mobileSlideUp .22s ease both; }
+.st-overlay.open { display: flex; pointer-events: auto; visibility: visible; animation: mobileSlideUp .22s ease both; }
 /* Header */
 .st-header {
   flex-shrink: 0; display: flex; align-items: center; gap: 5px;
@@ -4986,8 +4987,9 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 /* Pan / zoom canvas */
 .st-canvas-wrap {
   flex: 1; overflow: hidden; position: relative;
-  cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  cursor: grab; touch-action: auto; user-select: none; -webkit-user-select: none;
 }
+.st-overlay.open .st-canvas-wrap { touch-action: none; }
 .st-canvas-wrap:active { cursor: grabbing; }
 .st-canvas-inner { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
 .st-svg { display: block; }
@@ -18579,9 +18581,13 @@ function showAuthOverlay() {
   document.getElementById('authOverlay').classList.remove('hide');
   setAuthTab('login');
   showAuthForm();
-  // Hide camp screen to prevent iOS Safari scroll-swallow during auth
+  // Hide camp screen + force-close skill tree to prevent iOS Safari touch-swallow
   var camp = document.getElementById('campScreen');
   if (camp) camp.classList.add('hidden');
+  var stOv = document.getElementById('stOverlay');
+  if (stOv) { stOv.classList.remove('open'); }
+  var stPn = document.getElementById('stPanel');
+  if (stPn) { stPn.classList.remove('open'); }
 }
 function hideAuthOverlay() {
   document.getElementById('authOverlay').classList.add('hide');
@@ -21780,9 +21786,10 @@ function stInitGestures() {
   var wrap = document.getElementById('stCanvasWrap');
   if (!wrap) return;
   var drag = null, pinchDist = null;
-  // Mouse drag
-  wrap.addEventListener('mousedown', function(e){ drag = {ox:e.clientX-_stX, oy:e.clientY-_stY}; });
-  window.addEventListener('mousemove', function(e){ if (!drag) return; _stX=e.clientX-drag.ox; _stY=e.clientY-drag.oy; _stApplyTransform(); });
+  // Mouse drag (guard: only active when overlay is open)
+  function isSTOpen(){ return document.getElementById('stOverlay').classList.contains('open'); }
+  wrap.addEventListener('mousedown', function(e){ if(!isSTOpen()) return; drag = {ox:e.clientX-_stX, oy:e.clientY-_stY}; });
+  window.addEventListener('mousemove', function(e){ if (!drag || !isSTOpen()) return; _stX=e.clientX-drag.ox; _stY=e.clientY-drag.oy; _stApplyTransform(); });
   window.addEventListener('mouseup', function(){ drag=null; });
   // Mouse wheel zoom
   wrap.addEventListener('wheel', function(e){
