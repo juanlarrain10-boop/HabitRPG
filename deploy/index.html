@@ -361,31 +361,111 @@ h2, h3 { font-family: var(--pxfont); }
 .xf-bienestar  { color: #67e8f9; }
 
 /* ── DAY SUMMARY RING ───────────────────────── */
-.day-summary {
-  display: flex; align-items: center; gap: 16px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 16px; padding: 14px 16px;
-  margin: 10px 12px 2px;
+/* ── Missions Hero Ring ── */
+.mis-hero {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 18px 16px 8px; gap: 6px;
 }
-.ds-circle-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
-.ds-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
-.ds-ring-bg  { fill: none; stroke: rgba(255,255,255,.08); stroke-width: 7; }
-.ds-ring-fill {
-  fill: none; stroke: var(--purp2); stroke-width: 7; stroke-linecap: round;
-  stroke-dasharray: 207.3 207.3; stroke-dashoffset: 207.3;
-  transition: stroke-dashoffset .6s ease, stroke .4s;
+.mis-ring-wrap {
+  position: relative; width: 200px; height: 200px; flex-shrink: 0;
 }
-.ds-pct {
+.mis-ring-svg {
+  width: 200px; height: 200px;
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 0 8px rgba(167,139,250,.18));
+  transition: filter .5s;
+}
+.mrs-bg   { fill: none; stroke: rgba(255,255,255,.07); stroke-width: 12; }
+.mrs-fill {
+  fill: none; stroke: #a78bfa; stroke-width: 12; stroke-linecap: round;
+  stroke-dasharray: 552.9 552.9; stroke-dashoffset: 552.9;
+  transition: stroke-dashoffset .7s cubic-bezier(.4,0,.2,1), stroke .5s ease;
+}
+.mrs-fill.pulse-urgent {
+  animation: ringUrgent 2.2s ease-in-out infinite;
+}
+@keyframes ringUrgent {
+  0%,100% { filter: drop-shadow(0 0 4px #f97316); }
+  50%      { filter: drop-shadow(0 0 18px #f97316); }
+}
+.mis-ring-svg.burst { animation: ringBurst .5s cubic-bezier(.34,1.56,.64,1); }
+@keyframes ringBurst {
+  0%   { transform: rotate(-90deg) scale(1); }
+  30%  { transform: rotate(-90deg) scale(1.08); }
+  60%  { transform: rotate(-90deg) scale(.97); }
+  100% { transform: rotate(-90deg) scale(1); }
+}
+.mis-ring-center {
   position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.05rem; font-weight: 900; color: var(--txt); letter-spacing: -.03em;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; pointer-events: none;
 }
-.ds-stats { display: flex; flex: 1; justify-content: space-around; }
-.ds-stat  { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.ds-stat-icon { font-size: 1.2rem; }
-.ds-stat-val  { font-size: 1rem; font-weight: 800; color: var(--txt); letter-spacing: -.03em; }
-.ds-stat-lbl  { font-size: .58rem; color: var(--dim); text-transform: uppercase; letter-spacing: .05em; }
+.mis-ring-pct {
+  font-size: 2.8rem; font-weight: 900; color: var(--txt); letter-spacing: -.04em;
+  transition: color .5s;
+  line-height: 1;
+}
+.mis-ring-lbl {
+  font-size: .62rem; color: var(--dim); letter-spacing: .07em; text-transform: uppercase;
+}
+.mis-ctx-msg {
+  font-size: .74rem; color: var(--dim); text-align: center; min-height: 18px;
+  transition: color .4s, opacity .4s;
+  padding: 0 20px;
+}
+.mis-ctx-msg.msg-urgent  { color: #f97316; animation: ctxPulse 2.2s ease-in-out infinite; }
+.mis-ctx-msg.msg-perfect { color: #22c55e; font-weight: 700; }
+.mis-ctx-msg.msg-mid     { color: #eab308; }
+.mis-ctx-msg.msg-waiting { color: var(--purp2); font-style: italic; }
+@keyframes ctxPulse { 0%,100%{opacity:.7} 50%{opacity:1} }
+.mis-hero-stats {
+  display: flex; align-items: center; gap: 10px;
+  font-size: .72rem; padding: 4px 12px 2px;
+}
+.mis-hstat { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.mis-hstat-val  { font-size: .95rem; font-weight: 800; color: var(--txt); }
+.mis-hstat-lbl  { font-size: .55rem; color: var(--dim); text-transform: uppercase; letter-spacing: .05em; }
+.mis-hstat-sep  { color: var(--dim); font-size: .7rem; opacity: .4; }
+/* Row flash on complete */
+@keyframes habitFlash {
+  0%   { background: transparent; }
+  18%  { background: var(--flash-bg, rgba(250,200,50,.22)); }
+  100% { background: transparent; }
+}
+.habit-row.flashing { animation: habitFlash .55s ease-out; }
+/* Category borders */
+#sectMorning  { border-left: 3px solid #f59e0b !important; border-radius: 12px; }
+#sectMiss     { border-left: 3px solid #60a5fa !important; border-radius: 12px; }
+#sectWater    { border-left: 3px solid #22d3ee !important; border-radius: 12px; }
+#sectSleep    { border-left: 3px solid #a78bfa !important; border-radius: 12px; }
+#sectBien     { border-left: 3px solid #4ade80 !important; border-radius: 12px; }
+/* Camp return summary toast */
+.mis-toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(0);
+  background: rgba(12,12,26,.97); border: 1px solid rgba(250,200,50,.35);
+  border-radius: 16px; padding: 14px 24px; z-index: 1050;
+  color: #fff; font-size: .82rem; text-align: center; line-height: 1.55;
+  pointer-events: none; white-space: nowrap;
+  animation: toastSlideIn .38s cubic-bezier(.34,1.56,.64,1);
+}
+.mis-toast b { color: #fbbf24; }
+.mis-toast.out { animation: toastSlideOut .28s ease-in forwards; }
+@keyframes toastSlideIn  { from{opacity:0;transform:translateX(-50%) translateY(28px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+@keyframes toastSlideOut { to{opacity:0;transform:translateX(-50%) translateY(28px)} }
+/* Golden ring glow at 100% */
+.mis-ring-svg.ring-perfect {
+  filter: drop-shadow(0 0 18px #22c55e) drop-shadow(0 0 36px rgba(34,197,94,.4));
+}
+/* Gold burst particles */
+.ring-particle {
+  position: fixed; width: 7px; height: 7px; border-radius: 50%;
+  pointer-events: none; z-index: 1200;
+  animation: ringPart .7s ease-out forwards;
+}
+@keyframes ringPart {
+  0%  { opacity: 1; transform: translate(0,0) scale(1); }
+  100%{ opacity: 0; transform: translate(var(--pdx),var(--pdy)) scale(.3); }
+}
 
 /* ── CONFETTI ───────────────────────────────── */
 .confetti-dot {
@@ -6274,30 +6354,33 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <button class="qnr-btn" onclick="openProfile()">👤 Perfil</button>
     </div>
 
-    <!-- Daily visual summary -->
-    <div class="day-summary" id="daySummary">
-      <div class="ds-circle-wrap">
-        <svg class="ds-ring" viewBox="0 0 80 80">
-          <circle class="ds-ring-bg"   cx="40" cy="40" r="33"/>
-          <circle class="ds-ring-fill" cx="40" cy="40" r="33" id="dsRingFill"/>
+    <!-- Daily visual summary — hero ring -->
+    <div class="mis-hero" id="daySummary">
+      <div class="mis-ring-wrap">
+        <svg class="mis-ring-svg" id="misRingSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <circle class="mrs-bg"   cx="100" cy="100" r="88"/>
+          <circle class="mrs-fill" cx="100" cy="100" r="88" id="misRingFill"/>
         </svg>
-        <div class="ds-pct" id="dsPct">0%</div>
+        <div class="mis-ring-center">
+          <div class="mis-ring-pct" id="misRingPct">0%</div>
+          <div class="mis-ring-lbl" id="misRingLbl">del día</div>
+        </div>
       </div>
-      <div class="ds-stats">
-        <div class="ds-stat">
-          <div class="ds-stat-icon">🔥</div>
-          <div class="ds-stat-val" id="dsStreak">0</div>
-          <div class="ds-stat-lbl">racha</div>
+      <div class="mis-ctx-msg" id="misCtxMsg"></div>
+      <div class="mis-hero-stats">
+        <div class="mis-hstat">
+          <span class="mis-hstat-val" id="misHStatXP">0</span>
+          <span class="mis-hstat-lbl">XP hoy</span>
         </div>
-        <div class="ds-stat">
-          <div class="ds-stat-icon">⚡</div>
-          <div class="ds-stat-val" id="dsXPToday">0</div>
-          <div class="ds-stat-lbl">XP hoy</div>
+        <span class="mis-hstat-sep">·</span>
+        <div class="mis-hstat">
+          <span class="mis-hstat-val" id="misHStatDone">0/0</span>
+          <span class="mis-hstat-lbl">completadas</span>
         </div>
-        <div class="ds-stat">
-          <div class="ds-stat-icon">💧</div>
-          <div class="ds-stat-val" id="dsWater">0/8</div>
-          <div class="ds-stat-lbl">vasos</div>
+        <span class="mis-hstat-sep">·</span>
+        <div class="mis-hstat">
+          <span class="mis-hstat-val" id="misHStatStreak">0 🔥</span>
+          <span class="mis-hstat-lbl">racha</span>
         </div>
       </div>
     </div>
@@ -6377,7 +6460,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     <div class="trackers">
 
       <!-- Water -->
-      <div class="tcard">
+      <div class="tcard" id="sectWater">
         <div class="tcard-head">
           <div class="sect-icon si-watr">💧</div>
           <div>
@@ -6396,7 +6479,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       </div>
 
       <!-- Sleep -->
-      <div class="tcard">
+      <div class="tcard" id="sectSleep">
         <div class="tcard-head">
           <div class="sect-icon si-slep">🌙</div>
           <div>
@@ -6426,7 +6509,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
     </div>
 
   <!-- ── BIENESTAR MENTAL ── -->
-    <div class="sect">
+    <div class="sect" id="sectBien">
       <div class="sect-head">
         <div class="sect-icon" style="background:rgba(34,211,238,.1)">🧠</div>
         <div>
@@ -11066,33 +11149,104 @@ function floatXP(amount, cat, el) {
   setTimeout(() => div.remove(), 1400);
 }
 
+var _dsLastPct = -1;
 function renderDaySummary() {
-  const fill  = document.getElementById('dsRingFill');
-  const pctEl = document.getElementById('dsPct');
+  var fill   = document.getElementById('misRingFill');
+  var pctEl  = document.getElementById('misRingPct');
+  var lbl    = document.getElementById('misRingLbl');
+  var svg    = document.getElementById('misRingSvg');
+  var ctxEl  = document.getElementById('misCtxMsg');
   if (!fill || !pctEl) return;
 
-  const mornDone  = (day.morning || []).filter(m => m.done).length;
-  const mornTotal = typeof MORNING_ITEMS !== 'undefined' ? MORNING_ITEMS.length : 4;
-  const missDone  = (day.missions || []).filter(m => m.done).length;
-  const missTotal = (day.missions || []).length;
+  var mornDone  = (day.morning || []).filter(function(m){ return m.done; }).length;
+  var mornTotal = typeof MORNING_ITEMS !== 'undefined' ? MORNING_ITEMS.length : 4;
+  var missDone  = (day.missions || []).filter(function(m){ return m.done; }).length;
+  var missTotal = (day.missions || []).length;
+  var classDone = (day.classMission && day.classMission.done) ? 1 : 0;
+  var done  = mornDone + missDone + classDone;
+  var total = mornTotal + missTotal + (char && char.classSet ? 1 : 0);
+  var pct   = total > 0 ? Math.round(done / total * 100) : 0;
 
-  const done  = mornDone + missDone;
-  const total = mornTotal + missTotal;
-  const pct   = total > 0 ? Math.round(done / total * 100) : 0;
-
-  const circ   = 207.3;
+  // Circumference for r=88: 2π×88 ≈ 552.9
+  var circ  = 552.9;
   fill.style.strokeDashoffset = circ * (1 - pct / 100);
-  fill.style.stroke = pct >= 100 ? '#10b981' : pct >= 50 ? '#a78bfa' : 'var(--purp2)';
+
+  // Dynamic color
+  var col = pct >= 91 ? '#22c55e' : pct >= 61 ? '#eab308' : pct >= 31 ? '#f97316' : '#ef4444';
+  if (pct === 0) col = 'rgba(167,139,250,.4)';
+  fill.style.stroke = col;
+  pctEl.style.color = pct >= 91 ? '#22c55e' : pct >= 61 ? '#eab308' : pct >= 31 ? '#f97316' : 'var(--txt)';
+
   pctEl.textContent = pct + '%';
+  if (lbl) lbl.textContent = pct >= 100 ? '¡Perfecto!' : 'del día';
 
-  const streakEl = document.getElementById('dsStreak');
-  if (streakEl) streakEl.textContent = char?.habitStreak?.count || 0;
+  // Ring perfect glow at 100%
+  if (svg) {
+    svg.classList.toggle('ring-perfect', pct >= 100);
+    fill.classList.remove('pulse-urgent');
+  }
 
-  const xpEl = document.getElementById('dsXPToday');
+  // 100% celebration (only first time reaching 100)
+  if (pct >= 100 && _dsLastPct < 100) {
+    _dsRingBurst();
+    if (svg) { svg.classList.add('burst'); setTimeout(function(){ svg && svg.classList.remove('burst'); }, 520); }
+    try { SFX.missionComplete && SFX.missionComplete(); } catch(e){}
+  }
+
+  // Late-night urgent pulse: 9PM+ and under 30%
+  var h = new Date().getHours();
+  if (h >= 21 && pct < 30 && svg) { fill.classList.add('pulse-urgent'); }
+
+  _dsLastPct = pct;
+
+  // Contextual message
+  if (ctxEl) {
+    ctxEl.className = 'mis-ctx-msg';
+    if (pct >= 100) {
+      ctxEl.textContent = '¡Día perfecto! Tu héroe está orgulloso';
+      ctxEl.classList.add('msg-perfect');
+    } else if (h >= 21 && pct < 30) {
+      ctxEl.textContent = 'Poco tiempo — ¡tu héroe necesita esto!';
+      ctxEl.classList.add('msg-urgent');
+    } else if (pct >= 50) {
+      ctxEl.textContent = 'A mitad del camino — sigue adelante';
+      ctxEl.classList.add('msg-mid');
+    } else if (_misLastOpened && (Date.now() - _misLastOpened > 7200000)) {
+      ctxEl.textContent = 'Tu héroe te espera';
+      ctxEl.classList.add('msg-waiting');
+    } else {
+      ctxEl.textContent = '';
+    }
+  }
+
+  // Stats row
+  var xpEl = document.getElementById('misHStatXP');
   if (xpEl) xpEl.textContent = day.xpToday || 0;
+  var doneEl = document.getElementById('misHStatDone');
+  if (doneEl) doneEl.textContent = done + '/' + total;
+  var strEl = document.getElementById('misHStatStreak');
+  if (strEl) strEl.textContent = (char && char.habitStreak ? char.habitStreak.count : 0) + ' 🔥';
+}
 
-  const waterEl = document.getElementById('dsWater');
-  if (waterEl) waterEl.textContent = (day.water || 0) + '/8';
+function _dsRingBurst() {
+  var wrap = document.getElementById('misRingFill');
+  if (!wrap) return;
+  var rect = (document.getElementById('misRingSvg') || document.body).getBoundingClientRect();
+  var cx = rect.left + rect.width / 2;
+  var cy = rect.top + rect.height / 2;
+  var colors = ['#fbbf24','#f59e0b','#22c55e','#facc15','#86efac','#fde68a','#fff','#f97316'];
+  for (var i = 0; i < 22; i++) {
+    var p = document.createElement('div');
+    p.className = 'ring-particle';
+    var angle = (i / 22) * 360 + Math.random() * 15;
+    var dist  = 80 + Math.random() * 80;
+    var dx = Math.cos(angle * Math.PI / 180) * dist;
+    var dy = Math.sin(angle * Math.PI / 180) * dist;
+    p.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;background:' + colors[i % colors.length]
+      + ';--pdx:' + dx + 'px;--pdy:' + dy + 'px';
+    document.body.appendChild(p);
+    setTimeout(function(){ p.remove(); }, 720);
+  }
 }
 
 function spawnConfetti(el) {
@@ -11188,12 +11342,32 @@ function completeDailySpecial() {
 function showCampScreen() {
   var camp = document.getElementById('campScreen');
   var mis  = document.getElementById('misionesScreen');
+  var wasOnMisiones = mis && mis.classList.contains('active');
   if (camp) camp.classList.remove('hidden');
   if (mis)  mis.classList.remove('active');
   renderCampScreen();
   setBottomTab('bnHome');
+  if (wasOnMisiones) _showMisCampSummary();
+}
+function _showMisCampSummary() {
+  var mornDone = (day.morning || []).filter(function(m){ return m.done; }).length;
+  var missDone = (day.missions || []).filter(function(m){ return m.done; }).length;
+  var classDone = (day.classMission && day.classMission.done) ? 1 : 0;
+  var total = mornDone + missDone + classDone;
+  if (total === 0) return;
+  var xp     = day.xpToday || 0;
+  var streak = (char && char.habitStreak) ? char.habitStreak.count : 0;
+  var el = document.createElement('div');
+  el.className = 'mis-toast';
+  el.innerHTML = 'Completaste <b>' + total + '</b> misiones &nbsp;·&nbsp; <b>+' + xp + ' XP</b> &nbsp;·&nbsp; Racha: <b>' + streak + ' 🔥</b>';
+  document.body.appendChild(el);
+  setTimeout(function(){
+    el.classList.add('out');
+    setTimeout(function(){ el.remove(); }, 300);
+  }, 3000);
 }
 
+var _misLastOpened = 0;
 function showMisionesScreen() {
   var camp = document.getElementById('campScreen');
   var mis  = document.getElementById('misionesScreen');
@@ -11202,6 +11376,8 @@ function showMisionesScreen() {
   _campStopFire();
   setBottomTab('bnHome');
   history.pushState({ hrpgOverlay: 'misiones' }, '');
+  _misLastOpened = Date.now();
+  try { renderDaySummary(); } catch(e) {}
 }
 
 function renderCampScreen() {
@@ -11931,6 +12107,22 @@ function renderMorning() {
   }
 }
 
+var _CAT_FLASH = {
+  fuerza:     'rgba(239,68,68,.22)',
+  mente:      'rgba(99,102,241,.22)',
+  vitalidad:  'rgba(34,197,94,.22)',
+  disciplina: 'rgba(167,139,250,.22)',
+  bienestar:  'rgba(6,182,212,.22)',
+};
+function _habitFlash(rowEl, cat) {
+  if (!rowEl) return;
+  rowEl.style.setProperty('--flash-bg', _CAT_FLASH[cat] || 'rgba(250,200,50,.2)');
+  rowEl.classList.remove('flashing');
+  void rowEl.offsetWidth; // reflow to restart animation
+  rowEl.classList.add('flashing');
+  setTimeout(function(){ rowEl.classList.remove('flashing'); }, 560);
+}
+
 function toggleMorning(i, rowEl) {
   const mState = day.morning[i];
   const item   = MORNING_ITEMS[i];
@@ -11943,6 +12135,7 @@ function toggleMorning(i, rowEl) {
       mState.xpAmount  = xpAmt;
       addXP(xpAmt, item.cat, item.label);
       floatXP(xpAmt, item.cat, rowEl);
+      _habitFlash(rowEl, item.cat);
       SFX.habitDone();
       spawnConfetti(rowEl);
       updateMorningStreak();
@@ -12067,7 +12260,8 @@ function toggleClassMission(rowEl) {
     }
   }
   checkBerserk();
-  saveDay(); renderMissions(); renderChar();
+  if (!st.done) _habitFlash(rowEl, cm ? cm.cat : 'disciplina');
+  saveDay(); renderMissions(); renderChar(); renderDaySummary();
 }
 
 function renderMissions() {
@@ -12128,6 +12322,7 @@ function toggleMission(i, rowEl) {
       m.xpAmount  = xpAmt;
       addXP(xpAmt, m.cat, m.label);
       floatXP(xpAmt, m.cat, rowEl);
+      _habitFlash(rowEl, m.cat);
       checkDruidaBonus();
       SFX.habitDone();
       spawnConfetti(rowEl);
@@ -12182,7 +12377,7 @@ function toggleMission(i, rowEl) {
     floatXP(30, 'disciplina', rowEl);
   }
   checkBerserk();
-  saveDay(); renderMissions(); renderChar();
+  saveDay(); renderMissions(); renderChar(); renderDaySummary();
 }
 
 function removeMission(i) {
