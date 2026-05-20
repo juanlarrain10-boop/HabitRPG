@@ -45,7 +45,8 @@
       "Read(//mnt/c/Users/juanl/OneDrive/Escritorio/Proyectos/**)",
       "PowerShell(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\")",
       "Bash(grep -o 'onclick=\"[^\"]*\"' habit-rpg.html | sed 's/onclick=\"//' | sed 's/\".*//' | sort -u > /tmp/onclick_funcs.txt && head -50 /tmp/onclick_funcs.txt)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\" -Force; $src = \\(Get-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\"\\).Length; $dst = \\(Get-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\"\\).Length; \"src=$src dst=$dst match=$\\($src -eq $dst\\)\")"
     ]
   }
 }

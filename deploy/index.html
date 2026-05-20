@@ -467,6 +467,51 @@ h2, h3 { font-family: var(--pxfont); }
   100%{ opacity: 0; transform: translate(var(--pdx),var(--pdy)) scale(.3); }
 }
 
+/* ── ONBOARDING ──────────────────────────────── */
+.onb-tooltip {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  top: 38%; z-index: 1300;
+  background: rgba(10,8,20,.97); border: 1.5px solid rgba(167,139,250,.55);
+  border-radius: 18px; padding: 20px 26px; max-width: 290px;
+  text-align: center; font-size: .83rem; color: var(--txt);
+  line-height: 1.6; pointer-events: none;
+  box-shadow: 0 10px 36px rgba(0,0,0,.75), 0 0 28px rgba(139,92,246,.18);
+  animation: onbFadeIn .5s ease both;
+}
+.onb-tooltip b { color: var(--purp2); }
+.onb-tooltip.hide { display: none; }
+@keyframes onbFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.onb-arrow {
+  position: fixed; bottom: 108px; left: 15%;
+  z-index: 1300; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  animation: onbArrowBounce 1s ease-in-out infinite;
+}
+.onb-arrow.hide { display: none; }
+.onb-arrow-label { font-size: .6rem; color: var(--purp2); font-weight: 700;
+  white-space: nowrap; text-shadow: 0 0 8px rgba(167,139,250,.5); }
+.onb-arrow-icon { font-size: 1.4rem; line-height: 1; }
+@keyframes onbArrowBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+.newuser-banner {
+  margin: 0 12px 8px;
+  background: linear-gradient(135deg, rgba(139,92,246,.1), rgba(99,102,241,.08));
+  border: 1px solid rgba(139,92,246,.25); border-radius: 12px;
+  padding: 10px 14px; display: flex; flex-direction: column; gap: 3px;
+}
+.nub-day    { font-size: .72rem; font-weight: 800; color: var(--purp2); }
+.nub-unlock { font-size: .62rem; color: var(--dim); }
+.thr-locked { opacity: .48 !important; cursor: not-allowed !important; }
+.thr-locked:active { transform: none !important; }
+.thr-lock-badge {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0,0,0,.72); border: 1px solid rgba(255,255,255,.14);
+  border-radius: 8px; padding: 2px 6px; font-size: .5rem;
+  color: rgba(255,255,255,.52); z-index: 5;
+}
+
 /* ── CONFETTI ───────────────────────────────── */
 .confetti-dot {
   position: fixed; width: 7px; height: 7px; border-radius: 50%;
@@ -6293,6 +6338,8 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       </div>
       <!-- Event banner (injected by JS) -->
       <div id="eventBanner"></div>
+      <!-- New user progress banner (injected by JS) -->
+      <div id="newuserBanner"></div>
       <!-- News cards -->
       <div class="camp-news-section">
         <div class="camp-news-label">Novedades del día</div>
@@ -6315,6 +6362,12 @@ button:active:not(:disabled), .btn:active:not(:disabled),
           <span class="cnb-label">Perfil</span>
           <span class="cnb-sub" id="cnbProfileSub">Nv.1</span>
         </button>
+      </div>
+      <!-- Onboarding elements (fixed-position, visible on camp screen) -->
+      <div id="onbTooltip" class="onb-tooltip hide">Bienvenido a tu campamento —<br><b>aquí comienza tu aventura</b></div>
+      <div id="onbArrow" class="onb-arrow hide">
+        <div class="onb-arrow-label">¡Empieza aquí!</div>
+        <div class="onb-arrow-icon">👇</div>
       </div>
     </div><!-- /camp-screen -->
 
@@ -11339,6 +11392,114 @@ function completeDailySpecial() {
   renderCampScreen();
 }
 
+// ═══════════════════════════════════════════
+// ONBOARDING — FIRST-TIME USER GUIDE
+// ═══════════════════════════════════════════
+
+function _onbDaysSinceStart() {
+  if (!char || !char.startDate) return 99;
+  var ms = new Date(todayKey()) - new Date(char.startDate);
+  return Math.max(0, Math.floor(ms / 86400000));
+}
+
+function _onbInit() {
+  var days = _onbDaysSinceStart();
+  if (days > 6) { _onbHideAll(); return; }
+  if (!localStorage.getItem('hr_onb_welcome')) {
+    _onbShowWelcome();
+  } else if (!localStorage.getItem('hr_onb_arrow_done')) {
+    var arrowEl = document.getElementById('onbArrow');
+    if (arrowEl) arrowEl.classList.remove('hide');
+  }
+}
+
+function _onbShowWelcome() {
+  localStorage.setItem('hr_onb_welcome', '1');
+  var el = document.getElementById('onbTooltip');
+  if (!el) return;
+  el.classList.remove('hide');
+  setTimeout(function() {
+    el.classList.add('hide');
+    if (!localStorage.getItem('hr_onb_arrow_done')) {
+      var arrowEl = document.getElementById('onbArrow');
+      if (arrowEl) arrowEl.classList.remove('hide');
+    }
+  }, 3000);
+}
+
+function _onbHideAll() {
+  var t = document.getElementById('onbTooltip');
+  var a = document.getElementById('onbArrow');
+  if (t) t.classList.add('hide');
+  if (a) a.classList.add('hide');
+}
+
+function _onbFirstMissionCelebration() {
+  if (localStorage.getItem('hr_onb_first_mis')) return;
+  localStorage.setItem('hr_onb_first_mis', '1');
+  localStorage.setItem('hr_onb_arrow_done', '1');
+  var arrowEl = document.getElementById('onbArrow');
+  if (arrowEl) arrowEl.classList.add('hide');
+  addXP(50, 'disciplina', '¡Primera misión completada!');
+  saveChar();
+  var el = document.createElement('div');
+  el.className = 'mis-toast';
+  el.style.cssText = 'white-space:normal;max-width:310px;text-align:center;line-height:1.65;bottom:120px;';
+  el.innerHTML = '🎉 <b>¡Primera misión completada!</b><br><span style="font-size:.75rem;opacity:.8">Tu héroe está creciendo — +50 XP bonus</span>';
+  document.body.appendChild(el);
+  setTimeout(function() {
+    el.classList.add('out');
+    setTimeout(function() { el.remove(); }, 300);
+  }, 4000);
+}
+
+function _onbTutorialComplete(rowEl) {
+  addXP(50, 'disciplina', 'Tutorial: +50 XP bonus');
+  floatXP(50, 'disciplina', rowEl);
+  saveChar();
+  setTimeout(function() {
+    var el = document.createElement('div');
+    el.className = 'mis-toast';
+    el.style.cssText = 'white-space:normal;max-width:310px;text-align:center;line-height:1.65;bottom:130px;';
+    el.innerHTML = '📜 <b>¡Tutorial completado! +50 XP</b><br><span style="font-size:.73rem;opacity:.82">El Guía dice: Cada hábito fortalece a tu héroe. ¡Sigue construyendo día a día!</span>';
+    document.body.appendChild(el);
+    setTimeout(function() {
+      el.classList.add('out');
+      setTimeout(function() { el.remove(); }, 300);
+    }, 5000);
+  }, 900);
+}
+
+function _onbRenderBanner() {
+  var bannerEl = document.getElementById('newuserBanner');
+  if (!bannerEl) return;
+  var days = _onbDaysSinceStart();
+  if (days > 6) { bannerEl.innerHTML = ''; return; }
+  var lv = (char && char.level) || 1;
+  var unlockTxt = '';
+  if (lv < 3)       unlockTxt = 'Faltan ' + (3 - lv) + ' niveles para desbloquear el Mercado';
+  else if (lv < 5)  unlockTxt = 'Faltan ' + (5 - lv) + ' niveles para desbloquear Archivo y Santuario';
+  else if (lv < 8)  unlockTxt = 'Faltan ' + (8 - lv) + ' niveles para desbloquear Taberna y Árbol';
+  else if (lv < 10) unlockTxt = 'Faltan ' + (10 - lv) + ' niveles para desbloquear la Sala de Historia';
+  else              unlockTxt = '¡Todas las zonas desbloqueadas!';
+  bannerEl.innerHTML = '<div class="newuser-banner">'
+    + '<div class="nub-day">⚔️ Día ' + (days + 1) + ' de tu aventura</div>'
+    + '<div class="nub-unlock">' + unlockTxt + '</div>'
+    + '</div>';
+}
+
+function _injectTutorialMission() {
+  if (!char || !char.startDate) return;
+  if (char.startDate !== todayKey()) return;
+  if (day.missions.some(function(m) { return m.id === 'tutorial'; })) return;
+  day.missions.unshift({
+    id: 'tutorial', label: 'Completa tu rutina matutina por primera vez',
+    icon: '📜', cat: 'disciplina', xp: 30,
+    done: false, xpAwarded: false, isTutorial: true
+  });
+  saveDay();
+}
+
 function showCampScreen() {
   var camp = document.getElementById('campScreen');
   var mis  = document.getElementById('misionesScreen');
@@ -11377,6 +11538,7 @@ function showMisionesScreen() {
   setBottomTab('bnHome');
   history.pushState({ hrpgOverlay: 'misiones' }, '');
   _misLastOpened = Date.now();
+  try { _injectTutorialMission(); } catch(e) {}
   try { renderDaySummary(); } catch(e) {}
 }
 
@@ -11388,6 +11550,8 @@ function renderCampScreen() {
   try { _campRenderChar(); }    catch(e) {}
   try { _campRenderCards(); }   catch(e) {}
   try { _campRenderBottomNav(); } catch(e) {}
+  try { _onbRenderBanner(); }   catch(e) {}
+  try { _onbInit(); }           catch(e) {}
 }
 
 function _campRenderBg() {
@@ -12139,6 +12303,7 @@ function toggleMorning(i, rowEl) {
       SFX.habitDone();
       spawnConfetti(rowEl);
       updateMorningStreak();
+      try { _onbFirstMissionCelebration(); } catch(e) {}
       // Monje: meditation gives extra bienestar
       if (char.class === 'monje' && item.id === 'mr2' && !day.classBonuses.monjeMeditXP) {
         day.classBonuses.monjeMeditXP = true;
@@ -12327,6 +12492,8 @@ function toggleMission(i, rowEl) {
       SFX.habitDone();
       spawnConfetti(rowEl);
       updateHabitStreak();
+      try { _onbFirstMissionCelebration(); } catch(e) {}
+      if (m.isTutorial) { try { _onbTutorialComplete(rowEl); } catch(e) {} }
     }
   } else {
     m.done = false;
@@ -19493,14 +19660,14 @@ function setBottomTab(id) {
   var _SVG_STORY = '<svg viewBox="0 0 40 40" width="38" height="38" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="5" width="24" height="30" rx="3" fill="#1e1257" stroke="#818cf8" stroke-width="1.3"/><rect x="11" y="9" width="18" height="2" rx="1" fill="#818cf8" opacity=".75"/><rect x="11" y="14" width="18" height="2" rx="1" fill="#818cf8" opacity=".55"/><rect x="11" y="19" width="12" height="2" rx="1" fill="#818cf8" opacity=".38"/><circle cx="20" cy="28.5" r="4.8" fill="#4f46e5" opacity=".92"/><polygon points="20,25.5 21.5,27.5 23.5,27.5 22,29 22.8,31 20,29.8 17.2,31 18,29 16.5,27.5 18.5,27.5" fill="#e0e7ff" opacity=".95"/></svg>';
 
   var ZONES = [
-    { id:'battle',    icon:_SVG_BATTLE,    name:'Sala de Batalla', desc:'Dungeons y combate',        fn: function(){ closeThrone(true); setTimeout(openAdventure, 260); } },
-    { id:'market',    icon:_SVG_MARKET,    name:'Mercado',          desc:'Equipamiento y items',       fn: function(){ closeThrone(true); setTimeout(openShop, 260); } },
-    { id:'archive',   icon:_SVG_ARCHIVE,   name:'Archivo',           desc:'Tus memorias y logros',     fn: function(){ closeThrone(true); setTimeout(openDiary, 260); } },
-    { id:'sanctuary', icon:_SVG_SANCTUARY, name:'Santuario',         desc:'Salud mental y equilibrio',  fn: function(){ closeThrone(true); setTimeout(openWellness, 260); } },
-    { id:'tavern',    icon:_SVG_TAVERN,    name:'Taberna',           desc:'Tu equipo de aventureros',   fn: function(){ closeThrone(true); setTimeout(openGuild, 260); } },
-    { id:'tree',      icon:_SVG_TREE,      name:'Árbol Sagrado',     desc:'Tu camino de poder',         fn: function(){ closeThrone(true); setTimeout(openSkillTree, 260); } },
-    { id:'hero',      icon:_SVG_HERO,      name:'Cámara del Héroe',  desc:'Tu personaje y stats',       fn: function(){ closeThrone(true); setTimeout(openProfile, 260); } },
-    { id:'story',     icon:_SVG_STORY,     name:'Sala de Historia',   desc:'Tu aventura épica',           fn: function(){ closeThrone(true); setTimeout(openStory, 260); } },
+    { id:'battle',    minLevel:0,  icon:_SVG_BATTLE,    name:'Sala de Batalla', desc:'Dungeons y combate',        fn: function(){ closeThrone(true); setTimeout(openAdventure, 260); } },
+    { id:'market',    minLevel:3,  icon:_SVG_MARKET,    name:'Mercado',          desc:'Equipamiento y items',       fn: function(){ closeThrone(true); setTimeout(openShop, 260); } },
+    { id:'archive',   minLevel:5,  icon:_SVG_ARCHIVE,   name:'Archivo',           desc:'Tus memorias y logros',     fn: function(){ closeThrone(true); setTimeout(openDiary, 260); } },
+    { id:'sanctuary', minLevel:5,  icon:_SVG_SANCTUARY, name:'Santuario',         desc:'Salud mental y equilibrio',  fn: function(){ closeThrone(true); setTimeout(openWellness, 260); } },
+    { id:'tavern',    minLevel:8,  icon:_SVG_TAVERN,    name:'Taberna',           desc:'Tu equipo de aventureros',   fn: function(){ closeThrone(true); setTimeout(openGuild, 260); } },
+    { id:'tree',      minLevel:8,  icon:_SVG_TREE,      name:'Árbol Sagrado',     desc:'Tu camino de poder',         fn: function(){ closeThrone(true); setTimeout(openSkillTree, 260); } },
+    { id:'hero',      minLevel:0,  icon:_SVG_HERO,      name:'Cámara del Héroe',  desc:'Tu personaje y stats',       fn: function(){ closeThrone(true); setTimeout(openProfile, 260); } },
+    { id:'story',     minLevel:10, icon:_SVG_STORY,     name:'Sala de Historia',   desc:'Tu aventura épica',           fn: function(){ closeThrone(true); setTimeout(openStory, 260); } },
   ];
 
   var _audioCtx = null, _audioOn = false, _audioNodes = null;
@@ -19601,34 +19768,42 @@ function setBottomTab(id) {
 
     ZONES.forEach(function(z, i) {
       var st = _zoneState(z.id);
-      var isLast = (i === ZONES.length - 1);
+      var isLast   = (i === ZONES.length - 1);
+      var lvl      = (char && char.level) || 1;
+      var isLocked = z.minLevel > 0 && lvl < z.minLevel;
       var card = document.createElement('div');
       card.className = 'throne-zone thr-reveal' +
-        (isLast    ? ' thr-last'         : '') +
-        (st.active ? ' thr-active'       : '') +
-        (st.pulse  ? ' thr-battle-pulse' : '');
+        (isLast              ? ' thr-last'         : '') +
+        (isLocked            ? ' thr-locked'       : '') +
+        (!isLocked&&st.active? ' thr-active'       : '') +
+        (!isLocked&&st.pulse ? ' thr-battle-pulse' : '');
       card.style.animationDelay = (i * 0.065) + 's';
-      card.dataset.tip = st.tip || '';
+      card.dataset.tip = isLocked ? ('Desbloquea al llegar a Nv.' + z.minLevel) : (st.tip || '');
 
       var h = '<div class="thr-zone-glow"></div><div class="thr-zone-light"></div>';
-      h += '<div class="thr-zone-icon">' + z.icon + '</div>';
+      h += '<div class="thr-zone-icon">' + (isLocked ? '🔒' : z.icon) + '</div>';
       h += '<div class="thr-zone-name">' + z.name + '</div>';
-      h += '<div class="thr-zone-desc">' + z.desc + '</div>';
-      if (st.badge) h += '<div class="thr-badge ' + st.badge.cls + '">' + st.badge.t + '</div>';
-      if (st.fx)    h += '<div class="thr-zone-fx">' + st.fx + '</div>';
-      if (z.id === 'hero') {
-        var ci = CLASSES[char.class] || {};
-        h += '<div class="thr-silhouette">' + (ci.icon || '👤') + '</div>';
+      h += '<div class="thr-zone-desc">' + (isLocked ? 'Desbloquea en Nv.' + z.minLevel : z.desc) + '</div>';
+      if (isLocked) {
+        h += '<div class="thr-lock-badge">Nv.' + z.minLevel + '</div>';
+      } else {
+        if (st.badge) h += '<div class="thr-badge ' + st.badge.cls + '">' + st.badge.t + '</div>';
+        if (st.fx)    h += '<div class="thr-zone-fx">' + st.fx + '</div>';
+        if (z.id === 'hero') {
+          var ci = CLASSES[char.class] || {};
+          h += '<div class="thr-silhouette">' + (ci.icon || '👤') + '</div>';
+        }
       }
       card.innerHTML = h;
 
-      // Tap → dark-fade transition to section
-      card.addEventListener('click', (function(fn) {
+      // Tap → dark-fade transition to section (blocked when locked)
+      card.addEventListener('click', (function(fn, locked) {
         return function() {
+          if (locked) return;
           if (navigator.vibrate) navigator.vibrate(25);
           _navTo(fn);
         };
-      })(z.fn));
+      })(z.fn, isLocked));
 
       // Long-press → tooltip
       function _lpStart() {
