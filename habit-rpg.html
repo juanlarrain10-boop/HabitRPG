@@ -7433,6 +7433,8 @@ function preloadSprites() {
   HAIR_STYLE_SPRITES.forEach(s => {
     _loadSpr(`hair_${s}`, `Sprites/lpc-hair/_build/${s}/s.png`);
   });
+  // Class sprite overrides — real images replace pixel art for specific classes
+  _loadSpr('class_guerrero', 'personajes/guerrero.png');
 }
 
 // ── HISTORIA ─────────────────────────────────
@@ -9426,6 +9428,18 @@ function _buildAvatarProcedural(av, cls, equipped, sz) {
 // Falls back to _buildAvatarProcedural() if PNG not yet loaded.
 function buildPixelAvatar(av, cls, equipped, sz) {
   sz = sz || 64;
+
+  // ── Class sprite override (real image replaces pixel art) ────────────────
+  const _clsSprite = _spriteCache.get('class_' + cls);
+  if (_clsSprite && _clsSprite.complete && _clsSprite.naturalWidth > 0) {
+    const spCv = document.createElement('canvas');
+    spCv.width = spCv.height = sz;
+    const spCtx = spCv.getContext('2d');
+    spCtx.imageSmoothingEnabled = true;
+    spCtx.imageSmoothingQuality = 'high';
+    spCtx.drawImage(_clsSprite, 0, 0, sz, sz);
+    return spCv;
+  }
 
   const skinFolder = SKIN_SPRITE_MAP[av.skin ?? 0] || 'Ivory';
   const bodyImg    = _spriteCache.get(`body_${skinFolder}`);
@@ -20239,7 +20253,9 @@ function generateHeroCard() {
     ctx.fillStyle = avGrd;
     ctx.fillRect(W/2 - 220, 290, 440, 330);
     ctx.save();
-    ctx.imageSmoothingEnabled = false;
+    const _avIsSprite = !!(clsKey && _spriteCache.get('class_' + clsKey) && _spriteCache.get('class_' + clsKey).naturalWidth > 0);
+    ctx.imageSmoothingEnabled = _avIsSprite;
+    if (_avIsSprite) ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(avCv, W/2 - AV/2, 295, AV, AV);
     ctx.restore();
 
