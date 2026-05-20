@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/habit-rpg.html" }
+    { "source": "/",                   "destination": "/habit-rpg.html" },
+    { "source": "/personajes/:path*",  "destination": "/deploy/personajes/:path*" }
   ]
 }
