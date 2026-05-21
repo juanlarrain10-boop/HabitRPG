@@ -6149,15 +6149,9 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       </div>
       <div class="char-name-wrap" id="charNameWrap"></div>
       <div class="class-badge-row" id="classBadgeRow"></div>
-      <button class="apariencia-toggle-btn" id="aparienciaToggleBtn" onclick="toggleAparienciaEditor()">✏️ Editar apariencia</button>
       <button class="btn-share-hero" id="btnShareHero" onclick="shareHeroCard()">📤 Compartir mi héroe</button>
     </div>
-    <div class="apariencia-editor hide" id="aparienciaEditor">
-      <div class="ap-row"><span class="ap-label">Piel</span><div class="swatch-row" id="apSkinRow"></div></div>
-      <div class="ap-row"><span class="ap-label">Pelo</span><div class="swatch-row" id="apHairColorRow"></div></div>
-      <div class="ap-row"><span class="ap-label">Ojos</span><div class="swatch-row" id="apEyeRow"></div></div>
-      <div class="ap-row"><span class="ap-label">Estilo</span><div class="btns-row" id="apHairStyleRow"></div></div>
-    </div>
+    <!-- apariencia editor temporalmente oculto -->
 
     <div>
       <div class="level-row">
@@ -9439,6 +9433,7 @@ function buildPixelAvatar(av, cls, equipped, sz) {
   if (_clsSprite && _clsSprite.complete && _clsSprite.naturalWidth > 0) {
     const spCv = document.createElement('canvas');
     spCv.width = spCv.height = sz;
+    spCv.style.imageRendering = 'auto'; // override CSS pixelated rule for crisp photo sprites
     const spCtx = spCv.getContext('2d');
     spCtx.imageSmoothingEnabled = true;
     spCtx.imageSmoothingQuality = 'high';
