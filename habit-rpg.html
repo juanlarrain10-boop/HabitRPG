@@ -7569,13 +7569,21 @@ function preloadSprites() {
     _loadSpr(`hair_${s}`, `Sprites/lpc-hair/_build/${s}/s.png`);
   });
   // Class sprite overrides — real images replace pixel art for specific classes
-  _loadSpr('class_guerrero', 'personajes/guerrero.png');
-  _loadSpr('class_mago',     'personajes/mago.png');
-  _loadSpr('class_monje',    'personajes/monje.png');
-  _loadSpr('class_asesino',  'personajes/asesino.png');
-  _loadSpr('class_druida',   'personajes/druida.png');
-  _loadSpr('class_barbaro',  'personajes/barbaro.png');
-  _loadSpr('class_arquero',  'personajes/arquero.png');
+  _loadSpr('class_guerrero',   'personajes/guerrero.png');
+  _loadSpr('class_mago',       'personajes/mago.png');
+  _loadSpr('class_monje',      'personajes/monje.png');
+  _loadSpr('class_asesino',    'personajes/asesino.png');
+  _loadSpr('class_druida',     'personajes/druida.png');
+  _loadSpr('class_barbaro',    'personajes/barbaro.png');
+  _loadSpr('class_arquero',    'personajes/arquero.png');
+  // Female variants
+  _loadSpr('class_guerrero_f', 'personajes/guerrera.png');
+  _loadSpr('class_mago_f',     'personajes/maga.png');
+  _loadSpr('class_monje_f',    'personajes/monja.png');
+  _loadSpr('class_asesino_f',  'personajes/asesina.png');
+  _loadSpr('class_druida_f',   'personajes/druidaf.png');
+  _loadSpr('class_barbaro_f',  'personajes/barbara.png');
+  _loadSpr('class_arquero_f',  'personajes/arquera.png');
 }
 
 // ── HISTORIA ─────────────────────────────────
@@ -9571,7 +9579,9 @@ function buildPixelAvatar(av, cls, equipped, sz) {
   sz = sz || 64;
 
   // ── Class sprite override (real image replaces pixel art) ────────────────
-  const _clsSprite = _spriteCache.get('class_' + cls);
+  const _isFem = av && av.gender === 'female';
+  const _sprKey = _isFem ? ('class_' + cls + '_f') : ('class_' + cls);
+  const _clsSprite = _spriteCache.get(_sprKey) || (_isFem ? _spriteCache.get('class_' + cls) : null);
   if (_clsSprite && _clsSprite.complete && _clsSprite.naturalWidth > 0) {
     const spCv = document.createElement('canvas');
     spCv.width = spCv.height = sz;
