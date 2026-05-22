@@ -5919,6 +5919,167 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 }
 .throne-tip.hide { opacity: 0; display: none; }
 
+/* ── THRONE THEME SYSTEM ─────────────────────────────── */
+#throneOverlay .throne-bg,
+#throneOverlay .throne-arch-l,
+#throneOverlay .throne-arch-r { transition: background .5s; }
+#throneOverlay .throne-title  { transition: color .5s, text-shadow .5s; }
+
+/* GUERRERO — Sala de Fuego */
+#throneOverlay[data-theme="guerrero"] { --throne-color:#f87171; --throne-glow:rgba(248,113,113,.22); }
+#throneOverlay[data-theme="guerrero"] .throne-bg {
+  background: radial-gradient(ellipse 80% 55% at 50% 80%,#3a0808 0%,#1a0404 40%,#0b0202 100%),
+              repeating-linear-gradient(0deg,transparent,transparent 48px,rgba(0,0,0,.18) 49px),
+              repeating-linear-gradient(90deg,transparent,transparent 48px,rgba(0,0,0,.12) 49px); }
+#throneOverlay[data-theme="guerrero"] .throne-arch-l,
+#throneOverlay[data-theme="guerrero"] .throne-arch-r {
+  background: radial-gradient(ellipse 100% 100% at 50% 0%,rgba(248,113,113,.22) 0%,transparent 70%); }
+#throneOverlay[data-theme="guerrero"] .throne-shadow-a {
+  background: radial-gradient(ellipse 60% 30% at 50% 110%,rgba(251,113,60,.15) 0%,transparent 70%);
+  animation: thrSway 6s ease-in-out infinite; }
+#throneOverlay[data-theme="guerrero"] .throne-title { color:#fb923c; text-shadow:0 0 18px rgba(248,113,113,.7),0 0 36px rgba(251,146,60,.4); }
+
+/* MAGO — Sala Arcana */
+#throneOverlay[data-theme="mago"] { --throne-color:#818cf8; --throne-glow:rgba(129,140,248,.22); }
+#throneOverlay[data-theme="mago"] .throne-bg {
+  background: radial-gradient(ellipse 80% 60% at 50% 70%,#0c0b2e 0%,#07071c 45%,#030310 100%),
+              repeating-linear-gradient(0deg,transparent,transparent 52px,rgba(129,140,248,.04) 53px),
+              repeating-linear-gradient(90deg,transparent,transparent 52px,rgba(192,132,252,.04) 53px); }
+#throneOverlay[data-theme="mago"] .throne-arch-l,
+#throneOverlay[data-theme="mago"] .throne-arch-r {
+  background: radial-gradient(ellipse 100% 100% at 50% 0%,rgba(129,140,248,.28) 0%,transparent 70%); }
+#throneOverlay[data-theme="mago"] .throne-shadow-a {
+  background: radial-gradient(ellipse 40% 40% at 10% 90%,rgba(192,132,252,.1) 0%,transparent 70%),
+              radial-gradient(ellipse 40% 40% at 90% 90%,rgba(129,140,248,.1) 0%,transparent 70%);
+  animation: thrSway 12s ease-in-out infinite alternate; }
+#throneOverlay[data-theme="mago"] .throne-title { color:#818cf8; text-shadow:0 0 18px rgba(129,140,248,.9),0 0 36px rgba(192,132,252,.5); }
+/* rune strips */
+.throne-runes { display:none; position:absolute; inset:0; z-index:2; pointer-events:none; overflow:hidden; }
+#throneOverlay[data-theme="mago"] .throne-runes { display:block; }
+.throne-runes::before { content:'ᚱ  ᚦ  ᛟ  ᚷ  ᛉ  ᚢ  ᛞ  ᚾ  ᛗ  ᚱ  ᚦ  ᛟ  ᚷ  ᛉ';
+  position:absolute; left:0; right:0; top:22%; font-size:.7rem; letter-spacing:1.2rem;
+  color:rgba(129,140,248,.22); text-align:center; animation:thrSway 18s ease-in-out infinite;
+  text-shadow:0 0 12px rgba(192,132,252,.5); }
+.throne-runes::after { content:'ᛗ  ᚾ  ᛞ  ᚢ  ᛉ  ᚷ  ᛟ  ᚦ  ᚱ  ᛗ  ᚾ  ᛞ  ᚢ  ᛉ';
+  position:absolute; left:0; right:0; bottom:25%; font-size:.7rem; letter-spacing:1.2rem;
+  color:rgba(192,132,252,.18); text-align:center; animation:thrSway 22s ease-in-out infinite alternate;
+  text-shadow:0 0 10px rgba(129,140,248,.4); }
+/* crystal corners */
+.throne-atm { position:absolute; inset:0; pointer-events:none; z-index:3; }
+#throneOverlay[data-theme="mago"] .throne-atm::before,
+#throneOverlay[data-theme="mago"] .throne-atm::after {
+  content:'✦'; position:absolute; font-size:2.2rem; color:rgba(129,140,248,.45);
+  text-shadow:0 0 18px rgba(192,132,252,.8),0 0 36px rgba(129,140,248,.5);
+  animation:thrGlow 3s ease-in-out infinite alternate; }
+#throneOverlay[data-theme="mago"] .throne-atm::before { top:15%; left:4%; }
+#throneOverlay[data-theme="mago"] .throne-atm::after  { top:15%; right:4%; }
+
+/* MONJE — Sala Sagrada */
+#throneOverlay[data-theme="monje"] { --throne-color:#fbbf24; --throne-glow:rgba(251,191,36,.22); }
+#throneOverlay[data-theme="monje"] .throne-bg {
+  background: radial-gradient(ellipse 70% 50% at 50% 0%,rgba(251,191,36,.12) 0%,transparent 55%),
+              radial-gradient(ellipse 90% 70% at 50% 85%,#1c1508 0%,#110d04 45%,#080603 100%); }
+#throneOverlay[data-theme="monje"] .throne-arch-l,
+#throneOverlay[data-theme="monje"] .throne-arch-r {
+  background: radial-gradient(ellipse 100% 100% at 50% 0%,rgba(251,191,36,.3) 0%,transparent 65%); }
+#throneOverlay[data-theme="monje"] .throne-shadow-a {
+  background: radial-gradient(ellipse 35% 25% at 50% 0%,rgba(251,239,180,.12) 0%,transparent 60%);
+  animation: thrSway 8s ease-in-out infinite; }
+#throneOverlay[data-theme="monje"] .throne-title { color:#fbbf24; text-shadow:0 0 18px rgba(251,191,36,.7),0 0 32px rgba(253,230,138,.4); }
+#throneOverlay[data-theme="monje"] .throne-atm::before {
+  content:'☯'; position:absolute; top:16%; left:50%; transform:translateX(-50%);
+  font-size:3.5rem; color:rgba(251,191,36,.1); text-shadow:0 0 30px rgba(251,191,36,.3);
+  animation:thrGlow 5s ease-in-out infinite alternate; }
+
+/* ASESINO — Sala de Sombras */
+#throneOverlay[data-theme="asesino"] { --throne-color:#94a3b8; --throne-glow:rgba(148,163,184,.12); }
+#throneOverlay[data-theme="asesino"] .throne-bg {
+  background: radial-gradient(ellipse 90% 80% at 50% 50%,#07090c 0%,#040608 50%,#010203 100%); }
+#throneOverlay[data-theme="asesino"] .throne-arch-l,
+#throneOverlay[data-theme="asesino"] .throne-arch-r {
+  background: radial-gradient(ellipse 100% 100% at 50% 0%,rgba(148,163,184,.08) 0%,transparent 70%); }
+#throneOverlay[data-theme="asesino"] .throne-shadow-a {
+  background: radial-gradient(ellipse 80% 60% at 30% 50%,rgba(0,0,0,.6) 0%,transparent 70%); }
+#throneOverlay[data-theme="asesino"] .throne-shadow-b {
+  background: radial-gradient(ellipse 80% 60% at 70% 50%,rgba(0,0,0,.6) 0%,transparent 70%); }
+@keyframes shadowPulse { 0%,100%{opacity:.7} 50%{opacity:1} }
+#throneOverlay[data-theme="asesino"] .throne-shadow-a,
+#throneOverlay[data-theme="asesino"] .throne-shadow-b { animation:shadowPulse 4s ease-in-out infinite; }
+#throneOverlay[data-theme="asesino"] .throne-title { color:#94a3b8; text-shadow:0 0 8px rgba(148,163,184,.3); letter-spacing:.15em; }
+
+/* DRUIDA — Sala del Bosque */
+#throneOverlay[data-theme="druida"] { --throne-color:#34d399; --throne-glow:rgba(52,211,153,.2); }
+#throneOverlay[data-theme="druida"] .throne-bg {
+  background: radial-gradient(ellipse 80% 60% at 50% 75%,#071a0e 0%,#04100a 45%,#020807 100%),
+              repeating-linear-gradient(175deg,transparent,transparent 80px,rgba(52,211,153,.03) 81px); }
+#throneOverlay[data-theme="druida"] .throne-arch-l,
+#throneOverlay[data-theme="druida"] .throne-arch-r {
+  background: radial-gradient(ellipse 100% 100% at 50% 0%,rgba(52,211,153,.22) 0%,transparent 65%); }
+#throneOverlay[data-theme="druida"] .throne-shadow-a {
+  background: radial-gradient(ellipse 25% 40% at 25% 8%,rgba(52,211,153,.08) 0%,transparent 60%),
+              radial-gradient(ellipse 30% 35% at 70% 5%,rgba(52,211,153,.06) 0%,transparent 55%),
+              radial-gradient(ellipse 20% 30% at 50% 12%,rgba(52,211,153,.07) 0%,transparent 50%);
+  animation: thrSway 9s ease-in-out infinite; }
+#throneOverlay[data-theme="druida"] .throne-title { color:#34d399; text-shadow:0 0 18px rgba(52,211,153,.8),0 0 36px rgba(52,211,153,.4); }
+#throneOverlay[data-theme="druida"] .throne-atm::before,
+#throneOverlay[data-theme="druida"] .throne-atm::after {
+  content:''; position:absolute; bottom:0; width:3px; border-radius:3px;
+  background:linear-gradient(to top,rgba(52,211,153,.35) 0%,transparent 100%);
+  animation:thrSway 6s ease-in-out infinite; }
+#throneOverlay[data-theme="druida"] .throne-atm::before { left:8%; height:22%; animation-delay:-1s; }
+#throneOverlay[data-theme="druida"] .throne-atm::after  { right:8%; height:18%; animation-delay:-3s; }
+
+/* BÁRBARO — Sala de Tormenta */
+#throneOverlay[data-theme="barbaro"] { --throne-color:#fb923c; --throne-glow:rgba(251,146,60,.25); }
+#throneOverlay[data-theme="barbaro"] .throne-bg {
+  background: radial-gradient(ellipse 85% 65% at 50% 80%,#2a0e00 0%,#180800 40%,#090300 100%),
+              repeating-linear-gradient(15deg,transparent,transparent 30px,rgba(0,0,0,.15) 31px),
+              repeating-linear-gradient(170deg,transparent,transparent 45px,rgba(251,146,60,.04) 46px); }
+#throneOverlay[data-theme="barbaro"] .throne-arch-l,
+#throneOverlay[data-theme="barbaro"] .throne-arch-r {
+  background: radial-gradient(ellipse 100% 100% at 50% 0%,rgba(251,146,60,.28) 0%,transparent 65%); }
+#throneOverlay[data-theme="barbaro"] .throne-shadow-a {
+  background: radial-gradient(ellipse 60% 35% at 50% 100%,rgba(251,100,30,.2) 0%,transparent 70%);
+  animation: thrSway 5s ease-in-out infinite; }
+#throneOverlay[data-theme="barbaro"] .throne-title { color:#fb923c; text-shadow:0 0 20px rgba(251,146,60,.8),0 0 40px rgba(239,68,68,.4); letter-spacing:.12em; }
+#throneOverlay[data-theme="barbaro"] .throne-atm::before {
+  content:''; position:absolute; top:30%; left:12%; width:1px; height:35%;
+  background:linear-gradient(to bottom,transparent,rgba(251,146,60,.25) 30%,rgba(251,146,60,.4) 50%,rgba(251,146,60,.25) 70%,transparent);
+  transform:rotate(3deg); }
+#throneOverlay[data-theme="barbaro"] .throne-atm::after {
+  content:''; position:absolute; top:25%; right:12%; width:1px; height:28%;
+  background:linear-gradient(to bottom,transparent,rgba(251,146,60,.22) 30%,rgba(251,146,60,.35) 55%,rgba(251,146,60,.2) 75%,transparent);
+  transform:rotate(-4deg); }
+/* lightning */
+.throne-lightning { display:none; position:absolute; inset:0; z-index:3; pointer-events:none;
+  background:rgba(255,240,200,.06); animation:lightningFlash 8s ease-in-out infinite; }
+#throneOverlay[data-theme="barbaro"] .throne-lightning { display:block; }
+@keyframes lightningFlash { 0%,42%,44%,46%,100%{opacity:0} 43%,45%{opacity:1} }
+
+/* ARQUERO — Sala Estelar */
+#throneOverlay[data-theme="arquero"] { --throne-color:#7dd3fc; --throne-glow:rgba(125,211,252,.18); }
+#throneOverlay[data-theme="arquero"] .throne-bg {
+  background: radial-gradient(ellipse 90% 70% at 50% 60%,#04101e 0%,#020c18 45%,#010610 100%),
+              repeating-linear-gradient(0deg,transparent,transparent 62px,rgba(125,211,252,.025) 63px),
+              repeating-linear-gradient(90deg,transparent,transparent 62px,rgba(125,211,252,.025) 63px); }
+#throneOverlay[data-theme="arquero"] .throne-arch-l,
+#throneOverlay[data-theme="arquero"] .throne-arch-r {
+  background: radial-gradient(ellipse 100% 100% at 50% 0%,rgba(125,211,252,.2) 0%,transparent 65%); }
+#throneOverlay[data-theme="arquero"] .throne-shadow-a {
+  background: radial-gradient(ellipse 70% 30% at 50% 0%,rgba(125,211,252,.08) 0%,transparent 60%);
+  animation: thrSway 14s ease-in-out infinite; }
+#throneOverlay[data-theme="arquero"] .throne-title { color:#bae6fd; text-shadow:0 0 16px rgba(125,211,252,.7),0 0 30px rgba(186,230,253,.4); }
+.throne-constellation { display:none; position:absolute; inset:0; pointer-events:none; z-index:3; }
+#throneOverlay[data-theme="arquero"] .throne-constellation { display:block; }
+.throne-constellation::before {
+  content:'✦  ✧  ✦  ✧  ✦  ✧  ✦'; position:absolute; top:12%; left:0; right:0;
+  text-align:center; font-size:.6rem; letter-spacing:1.8rem; color:rgba(125,211,252,.3);
+  text-shadow:0 0 8px rgba(125,211,252,.6); animation:thrGlow 4s ease-in-out infinite alternate; }
+.throne-constellation::after {
+  content:'✧  ✦  ✧  ✦  ✧  ✦  ✧'; position:absolute; top:20%; left:0; right:0;
+  text-align:center; font-size:.45rem; letter-spacing:2.5rem; color:rgba(125,211,252,.2);
+  text-shadow:0 0 6px rgba(125,211,252,.5); animation:thrGlow 5.5s ease-in-out infinite alternate-reverse; }
+
 /* ── EXPEDICIÓN NARRATIVA ── */
 .exp-cinematic {
   display:flex; flex-direction:column; height:100%; position:relative;
@@ -7032,6 +7193,10 @@ button:active:not(:disabled), .btn:active:not(:disabled),
   <div class="throne-arch-r"></div>
   <!-- Ash particle canvas -->
   <canvas class="throne-particles" id="throneParticles"></canvas>
+  <div class="throne-atm"></div>
+  <div class="throne-runes"></div>
+  <div class="throne-lightning"></div>
+  <div class="throne-constellation"></div>
   <!-- Top bar -->
   <div class="throne-topbar">
     <button class="throne-back-btn" onclick="closeThrone()">← Volver</button>
@@ -20113,8 +20278,16 @@ function setBottomTab(id) {
   }
 
   function _classColors() {
-    var cls = CLASSES[char.class] || CLASSES.guerrero || {};
-    return { color: cls.color || '#fb923c', glow: cls.bg || 'rgba(251,146,60,.15)' };
+    var themes = {
+      guerrero: { color:'#f87171', glow:'rgba(248,113,113,.22)', ptc:'spark',  title:'⚔ SALA DE FUEGO'    },
+      mago:     { color:'#818cf8', glow:'rgba(129,140,248,.22)', ptc:'star',   title:'🔮 SALA ARCANA'     },
+      monje:    { color:'#fbbf24', glow:'rgba(251,191,36,.22)',  ptc:'petal',  title:'🥋 SALA SAGRADA'    },
+      asesino:  { color:'#94a3b8', glow:'rgba(148,163,184,.12)', ptc:'smoke',  title:'🗡 SALA DE SOMBRAS' },
+      druida:   { color:'#34d399', glow:'rgba(52,211,153,.2)',   ptc:'leaf',   title:'🌿 SALA DEL BOSQUE' },
+      barbaro:  { color:'#fb923c', glow:'rgba(251,146,60,.25)',  ptc:'ember',  title:'💢 SALA DE TORMENTA'},
+      arquero:  { color:'#7dd3fc', glow:'rgba(125,211,252,.18)', ptc:'star2',  title:'🏹 SALA ESTELAR'   },
+    };
+    return themes[char.class] || themes.guerrero;
   }
 
   // ── Render ──────────────────────────────────────────────
@@ -20123,6 +20296,9 @@ function setBottomTab(id) {
     var ov = document.getElementById('throneOverlay');
     ov.style.setProperty('--throne-color', col.color);
     ov.style.setProperty('--throne-glow',  col.glow);
+    ov.dataset.theme = char.class || 'guerrero';
+    var tEl = document.getElementById('throneTitle');
+    if (tEl) tEl.textContent = col.title;
 
     var grid = document.getElementById('throneZones');
     grid.innerHTML = '';
@@ -20263,18 +20439,32 @@ function setBottomTab(id) {
     canvas.width  = canvas.offsetWidth  || window.innerWidth;
     canvas.height = canvas.offsetHeight || window.innerHeight;
     var ctx = canvas.getContext('2d');
-    var hex = _classColors().color;
+    var theme = _classColors();
+    var hex = theme.color;
+    var ptc = theme.ptc || 'spark';
+    // Per-type config: count, radius range, vertical speed, horizontal spread, fade speed, sway, max alpha, shape flags
+    var CFG = {
+      spark: { n:40, r0:.3, r1:1.4, vy0:.25, vy1:.8,  vx:.5,  dc:.004, sw:.04,  al:110, blink:false, oval:false },
+      star:  { n:35, r0:.5, r1:1.8, vy0:.05, vy1:.18, vx:.12, dc:.002, sw:.02,  al:120, blink:true,  oval:false },
+      petal: { n:22, r0:1.5,r1:3,   vy0:.08, vy1:.22, vx:.35, dc:.0018,sw:.18,  al:90,  blink:false, oval:true  },
+      smoke: { n:18, r0:2.5,r1:6,   vy0:.04, vy1:.14, vx:.18, dc:.0015,sw:.08,  al:55,  blink:false, oval:false },
+      leaf:  { n:25, r0:1.2,r1:2.5, vy0:.1,  vy1:.28, vx:.4,  dc:.002, sw:.22,  al:100, blink:false, oval:true  },
+      ember: { n:45, r0:.4, r1:2,   vy0:.3,  vy1:1.0, vx:.65, dc:.005, sw:.12,  al:115, blink:false, oval:false },
+      star2: { n:50, r0:.3, r1:1.2, vy0:.03, vy1:.12, vx:.06, dc:.0012,sw:.01,  al:130, blink:true,  oval:false },
+    };
+    var c = CFG[ptc] || CFG.spark;
 
     var ps = [];
-    for (var i = 0; i < 30; i++) {
+    for (var i = 0; i < c.n; i++) {
       ps.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: 0.4 + Math.random() * 1.3,
-        vx: (Math.random() - .5) * .32,
-        vy: -(0.14 + Math.random() * .48),
+        r: c.r0 + Math.random() * (c.r1 - c.r0),
+        vx: (Math.random() - .5) * c.vx,
+        vy: -(c.vy0 + Math.random() * (c.vy1 - c.vy0)),
         life: Math.random(),
-        decay: 0.003 + Math.random() * 0.0038,
+        decay: c.dc * (.7 + Math.random() * .6),
+        rot: Math.random() * Math.PI * 2,
       });
     }
 
@@ -20285,20 +20475,34 @@ function setBottomTab(id) {
       var t = Date.now();
       for (var j = 0; j < ps.length; j++) {
         var p = ps[j];
-        p.x += p.vx + Math.sin(t / 2400 + p.y * .01) * .07;
+        p.x += p.vx + Math.sin(t / 2400 + p.y * .01) * c.sw;
         p.y += p.vy;
         p.life -= p.decay;
-        if (p.life <= 0 || p.y < -8) {
+        p.rot += .008;
+        if (p.life <= 0 || p.y < -10) {
           p.x = Math.random() * canvas.width;
-          p.y = canvas.height + 5;
-          p.life = 0.5 + Math.random() * .5;
-          p.vx = (Math.random() - .5) * .32;
-          p.vy = -(0.14 + Math.random() * .45);
+          p.y = canvas.height + 8;
+          p.life = .4 + Math.random() * .6;
+          p.vx = (Math.random() - .5) * c.vx;
+          p.vy = -(c.vy0 + Math.random() * (c.vy1 - c.vy0));
+          p.r  = c.r0 + Math.random() * (c.r1 - c.r0);
+          p.rot = Math.random() * Math.PI * 2;
         }
-        var alpha = Math.max(0, Math.floor(p.life * 105));
+        var la = p.life;
+        if (c.blink) la *= (.4 + .6 * Math.abs(Math.sin(t / 900 + j * .7)));
+        var alpha = Math.max(0, Math.floor(la * c.al));
         var a = alpha.toString(16).padStart(2, '0');
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        if (c.oval) {
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.scale(1, .45);
+          ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+          ctx.restore();
+        } else {
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        }
         ctx.fillStyle = hex + a;
         ctx.fill();
       }
