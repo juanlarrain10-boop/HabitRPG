@@ -7765,7 +7765,14 @@ const _spriteCache = new Map();
 function _loadSpr(key, src) {
   if (_spriteCache.has(key)) return _spriteCache.get(key);
   const img = new Image();
-  img.onload  = () => _spriteCache.set(key, img);
+  img.onload  = () => {
+    _spriteCache.set(key, img);
+    // Re-render char-create preview if it's open and this is a class sprite
+    if (key.startsWith('class_')) {
+      const _ccOv = document.getElementById('charCreateOverlay');
+      if (_ccOv && !_ccOv.classList.contains('hide')) ccUpdatePreview();
+    }
+  };
   img.onerror = () => _spriteCache.set(key, null);
   img.src = src;
   _spriteCache.set(key, img);
@@ -9792,6 +9799,7 @@ function buildPixelAvatar(av, cls, equipped, sz) {
   const _isFem = av && av.gender === 'female';
   const _sprKey = _isFem ? ('class_' + cls + '_f') : ('class_' + cls);
   const _clsSprite = _spriteCache.get(_sprKey) || (_isFem ? _spriteCache.get('class_' + cls) : null);
+  console.log('[avatar] género=' + (av && av.gender) + ' cls=' + cls + ' key=' + _sprKey + ' sprite=' + (_clsSprite === null ? '✗ error' : !_clsSprite ? '✗ null' : _clsSprite.naturalWidth > 0 ? '✓ cargado' : '⏳ cargando'));
   if (_clsSprite && _clsSprite.complete && _clsSprite.naturalWidth > 0) {
     const spCv = document.createElement('canvas');
     spCv.width = spCv.height = sz;
