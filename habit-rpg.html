@@ -1414,6 +1414,18 @@ h2, h3 { font-family: var(--pxfont); }
   letter-spacing: .13em; color: var(--dim); margin-bottom: 14px;
 }
 
+.cc-gender-row { display:flex; gap:10px; }
+.cc-gend-btn {
+  flex:1; padding:14px 10px; border-radius:12px;
+  border:2px solid var(--bd2); background:var(--s2);
+  color:var(--dim); font-size:.88rem; font-weight:700;
+  cursor:pointer; transition:all .15s; font-family:inherit;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+}
+.cc-gend-btn.on {
+  border-color:var(--purp2); background:rgba(139,92,246,.14); color:#fff;
+  box-shadow:0 0 12px rgba(139,92,246,.22);
+}
 .cc-inp {
   width: 100%; padding: 12px 14px; border-radius: var(--r);
   background: var(--s2); border: 1px solid var(--bd2);
@@ -6287,24 +6299,25 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <input class="cc-inp" id="ccNameInp" type="text" maxlength="24" placeholder="Elige tu nombre de aventurero..." />
     </div>
 
+    <!-- Gender — before class so the sprite preview updates immediately -->
+    <div class="cc-card">
+      <div class="cc-card-ttl">Género</div>
+      <div class="cc-gender-row">
+        <button class="cc-gend-btn on" id="ccGendM" onclick="ccSetGender('male')">👨 Masculino</button>
+        <button class="cc-gend-btn"   id="ccGendF" onclick="ccSetGender('female')">👩 Femenino</button>
+      </div>
+    </div>
+
     <!-- Class -->
     <div class="cc-card">
       <div class="cc-card-ttl">Clase</div>
       <div class="cls-grid" id="ccClsGrid"></div>
     </div>
 
-    <!-- Appearance -->
+    <!-- Appearance (pixel art options — used as fallback) -->
     <div class="cc-card">
-      <div class="cc-card-ttl">Apariencia</div>
+      <div class="cc-card-ttl">Apariencia del avatar</div>
       <div class="app-rows">
-        <!-- Gender -->
-        <div class="app-row">
-          <div class="app-lbl">Género</div>
-          <div class="btns-row">
-            <button class="opt-btn on" id="ccGendM" onclick="ccSetGender('male')">Masculino</button>
-            <button class="opt-btn"    id="ccGendF" onclick="ccSetGender('female')">Femenino</button>
-          </div>
-        </div>
         <!-- Skin -->
         <div class="app-row">
           <div class="app-lbl">Tono de piel</div>
@@ -6451,9 +6464,19 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       </div>
       <div class="char-name-wrap" id="charNameWrap"></div>
       <div class="class-badge-row" id="classBadgeRow"></div>
+      <button class="apariencia-toggle-btn" onclick="toggleAparienciaEditor()">✏️ Apariencia</button>
       <button class="btn-share-hero" id="btnShareHero" onclick="shareHeroCard()">📤 Compartir mi héroe</button>
     </div>
-    <!-- apariencia editor temporalmente oculto -->
+    <div class="apariencia-editor hide" id="aparienciaEditor">
+      <div class="ap-row">
+        <span class="ap-label">🎨 Tono</span>
+        <div class="swatch-row" id="apHairTintRow"></div>
+      </div>
+      <div class="ap-row">
+        <span class="ap-label">✨ Aura</span>
+        <div class="swatch-row" id="apAuraRow"></div>
+      </div>
+    </div>
 
     <div>
       <div class="level-row">
@@ -7689,6 +7712,28 @@ const SKIN_COLORS   = ['#FDDBB4','#F3C096','#C68642','#8D5524','#4A2912'];
 const HAIR_COLORS   = ['#1a0a00','#3d2314','#8B4513','#c8a838','#f0e07a','#cc3300','#e0327f','#7c3aed'];
 const EYE_COLORS    = ['#5c3d1e','#2472a4','#2a7a4b','#8b6914','#9d4edd','#0e5a8a'];
 const OUTFIT_COLORS = { guerrero:'#b91c1c', mago:'#7c3aed', monje:'#92400e', asesino:'#374151', druida:'#065f46', barbaro:'#c2410c', arquero:'#1d4ed8', '':'#374151' };
+// Sprite tint presets (hue-rotate degrees + swatch display color)
+const HAIR_TINTS = [
+  { deg:  0, color:'#aaa' },
+  { deg: 25, color:'#c87832' },
+  { deg: 55, color:'#d4a017' },
+  { deg: 90, color:'#c83218' },
+  { deg:130, color:'#228b22' },
+  { deg:185, color:'#1e6ec8' },
+  { deg:255, color:'#7b2fbe' },
+  { deg:300, color:'#c8288c' },
+];
+// Custom aura presets (CSS class + swatch color)
+const CUSTOM_AURAS = [
+  { key:'',               color:'#666' },
+  { key:'aura-fire',      color:'#ff5010' },
+  { key:'aura-gold',      color:'#ffba14' },
+  { key:'aura-ice',       color:'#50c8ff' },
+  { key:'aura-green',     color:'#32d264' },
+  { key:'aura-lightning', color:'#bef0ff' },
+  { key:'aura-shadow',    color:'#8264c8' },
+  { key:'aura-void',      color:'#b450ff' },
+];
 
 const RARITY_COLORS = {
   comun:      { border:'#6b7280', bg:'rgba(107,114,128,.12)', text:'#9ca3af', label:'Común' },
@@ -9755,6 +9800,7 @@ function buildPixelAvatar(av, cls, equipped, sz) {
     spCtx.imageSmoothingEnabled = true;
     spCtx.imageSmoothingQuality = 'high';
     spCtx.drawImage(_clsSprite, 0, 0, sz, sz);
+    if (av.hairTint) spCv.style.filter = 'hue-rotate(' + av.hairTint + 'deg)';
     return spCv;
   }
 
@@ -11150,7 +11196,7 @@ function defChar() {
     class: '',
     classSet: false,
     lastClassChangeLevel: 0,
-    avatar: { gender:'male', skin:0, hairColor:0, hairStyle:0, eyeColor:0 },
+    avatar: { gender:'male', skin:0, hairColor:0, hairStyle:0, eyeColor:0, hairTint:0, customAura:'' },
     level: 1,
     xp: 0,
     totalXP: 0,
@@ -12190,40 +12236,52 @@ function toggleAparienciaEditor() {
 }
 
 function _buildAparienciaEditor() {
-  const rebuildSwatch = (rowId, colors, currentIdx, isRound, setter) => {
-    const row = document.getElementById(rowId);
-    row.innerHTML = '';
-    colors.forEach((c, i) => {
+  // Hair tint row
+  const tintRow = document.getElementById('apHairTintRow');
+  if (tintRow) {
+    tintRow.innerHTML = '';
+    HAIR_TINTS.forEach((t, i) => {
       const sw = document.createElement('div');
-      sw.className = 'swatch' + (isRound ? '' : ' hair-sw') + (i === currentIdx ? ' on' : '');
-      sw.style.background = c;
+      const curTint = char.avatar.hairTint || 0;
+      sw.className = 'swatch' + (curTint === t.deg ? ' on' : '');
+      sw.style.background = t.color;
+      sw.title = t.deg === 0 ? 'Original' : t.deg + '°';
       sw.addEventListener('click', () => {
-        setter(i);
-        row.querySelectorAll('.swatch').forEach((s, j) => s.classList.toggle('on', j === i));
+        char.avatar.hairTint = t.deg;
+        tintRow.querySelectorAll('.swatch').forEach((s, j) => s.classList.toggle('on', j === i));
         _refreshAparienciaAvatar();
       });
-      row.appendChild(sw);
+      tintRow.appendChild(sw);
     });
-  };
-  const rebuildStyleBtns = () => {
-    const row = document.getElementById('apHairStyleRow');
-    row.innerHTML = '';
-    HAIR_STYLE_NAMES.forEach((nm, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'opt-btn' + (i === (char.avatar.hairStyle || 0) ? ' on' : '');
-      btn.textContent = nm;
-      btn.addEventListener('click', () => {
-        char.avatar.hairStyle = i;
-        row.querySelectorAll('.opt-btn').forEach((b, j) => b.classList.toggle('on', j === i));
+  }
+  // Aura row
+  const auraRow = document.getElementById('apAuraRow');
+  if (auraRow) {
+    auraRow.innerHTML = '';
+    CUSTOM_AURAS.forEach((a, i) => {
+      const sw = document.createElement('div');
+      const curAura = char.avatar.customAura || '';
+      sw.className = 'swatch' + (curAura === a.key ? ' on' : '');
+      sw.style.background = a.color;
+      if (!a.key) {
+        sw.style.background = 'linear-gradient(135deg,#888,#444)';
+        sw.title = 'Clase';
+      }
+      sw.addEventListener('click', () => {
+        char.avatar.customAura = a.key;
+        auraRow.querySelectorAll('.swatch').forEach((s, j) => s.classList.toggle('on', j === i));
         _refreshAparienciaAvatar();
       });
-      row.appendChild(btn);
+      auraRow.appendChild(sw);
     });
-  };
-  rebuildSwatch('apSkinRow',      SKIN_COLORS, char.avatar.skin      ?? 0, true,  i => { char.avatar.skin      = i; });
-  rebuildSwatch('apHairColorRow', HAIR_COLORS, char.avatar.hairColor ?? 0, false, i => { char.avatar.hairColor = i; });
-  rebuildSwatch('apEyeRow',       EYE_COLORS,  char.avatar.eyeColor  ?? 0, true,  i => { char.avatar.eyeColor  = i; });
-  rebuildStyleBtns();
+  }
+}
+
+function _applyCustomAura() {
+  const wrap = document.getElementById('avatarWrap');
+  if (!wrap) return;
+  CUSTOM_AURAS.forEach(a => { if (a.key) wrap.classList.remove(a.key); });
+  if (char.avatar && char.avatar.customAura) wrap.classList.add(char.avatar.customAura);
 }
 
 function _refreshAparienciaAvatar() {
@@ -12238,6 +12296,7 @@ function _refreshAparienciaAvatar() {
     pCanvas.innerHTML = '';
     pCanvas.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 64));
   }
+  _applyCustomAura();
 }
 
 // ═══════════════════════════════════════════
@@ -12278,6 +12337,7 @@ function renderChar() {
   const _pxP = buildPixelAvatar(char.avatar, char.class, char.equipped, 64);
   svgInner.appendChild(_pxP);
   _updateEquipRarityAura();
+  _applyCustomAura();
   const rankBdg = document.getElementById('avatarRankBdg');
   rankBdg.textContent   = rank;
   rankBdg.style.color   = rs.color;
