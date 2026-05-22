@@ -5918,6 +5918,147 @@ button:active:not(:disabled), .btn:active:not(:disabled),
   white-space: normal; word-break: break-word;
 }
 .throne-tip.hide { opacity: 0; display: none; }
+
+/* ── EXPEDICIÓN NARRATIVA ── */
+.exp-cinematic {
+  display:flex; flex-direction:column; height:100%; position:relative;
+  background:rgba(5,4,14,.97); overflow:hidden;
+}
+.exp-topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:5px 10px; background:rgba(0,0,0,.5);
+  border-bottom:1px solid rgba(255,255,255,.06); gap:6px; flex-shrink:0;
+}
+.exp-flee-btn {
+  font-size:.6rem; padding:4px 9px; border-radius:8px;
+  border:1px solid rgba(255,255,255,.15); background:transparent;
+  color:var(--dim); cursor:pointer; letter-spacing:.03em;
+}
+.exp-dungeon-lbl { font-size:.58rem; color:var(--dim); flex:1; text-align:center; }
+.exp-arena {
+  display:flex; flex:1; position:relative; min-height:0; overflow:hidden;
+}
+.exp-player-side {
+  width:42%; display:flex; flex-direction:column;
+  align-items:center; justify-content:flex-end; padding:0 0 8px; position:relative;
+}
+.exp-player-sprite-inner {
+  display:flex; align-items:center; justify-content:center;
+  position:relative; flex:1; width:100%; overflow:hidden;
+}
+.exp-player-sprite-inner canvas { max-width:100%; max-height:200px; }
+.exp-phbar-wrap { width:100%; padding:0 8px; }
+.exp-phbar-name { font-size:.62rem; font-weight:700; color:var(--txt); margin-bottom:2px; }
+.exp-hp-bar { height:9px; background:rgba(255,255,255,.1); border-radius:5px; overflow:hidden; }
+.exp-hp-bar .battle-hpfill { height:100%; border-radius:5px; }
+.exp-hptxt { font-size:.54rem; color:var(--dim); margin-top:1px; }
+.exp-enemy-side {
+  width:58%; display:flex; flex-direction:column;
+  align-items:flex-end; padding:8px 8px 8px 4px; position:relative; gap:4px;
+}
+.exp-enemy-header { width:100%; text-align:right; }
+.exp-enemy-name {
+  font-size:.72rem; font-weight:800; color:#fca5a5;
+  text-shadow:0 0 8px rgba(239,68,68,.35); margin-bottom:3px;
+}
+.exp-enemy-header .exp-hp-bar { margin-bottom:2px; }
+.exp-enemy-sprite-wrap {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  position:relative; width:100%; overflow:hidden;
+}
+.exp-enemy-sprite-wrap canvas { max-width:100%; max-height:180px; }
+.exp-turn-badge {
+  position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+  font-size:.54rem; font-weight:800; padding:3px 10px; border-radius:20px;
+  pointer-events:none; z-index:20; letter-spacing:.05em; white-space:nowrap;
+}
+.exp-turn-badge.pturn { background:rgba(139,92,246,.25); color:#c4b5fd; border:1px solid rgba(139,92,246,.4); }
+.exp-turn-badge.eturn { background:rgba(239,68,68,.2); color:#fca5a5; border:1px solid rgba(239,68,68,.3); }
+.exp-enemy-dlg {
+  position:absolute; top:4px; right:4px; max-width:80%;
+  background:rgba(8,4,20,.92); border:1px solid rgba(239,68,68,.3);
+  border-radius:10px; padding:6px 10px;
+  font-size:.67rem; color:rgba(255,255,255,.88); font-style:italic; z-index:30;
+  animation:dlgFadeIn .4s ease;
+}
+.exp-enemy-dlg.hide { display:none; }
+@keyframes dlgFadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+.exp-narration {
+  flex-shrink:0; padding:8px 14px; min-height:46px;
+  background:rgba(0,0,0,.7); border-top:1px solid rgba(139,92,246,.18);
+  display:flex; align-items:center;
+}
+.exp-narr-text {
+  font-size:.77rem; color:rgba(255,255,255,.88); line-height:1.55;
+  font-style:italic; min-height:1.5em;
+}
+.exp-actions {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:5px; padding:6px 10px 10px; background:rgba(0,0,0,.6); flex-shrink:0;
+}
+.exp-btn {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; padding:9px 6px; border-radius:11px;
+  border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+  color:var(--txt); font-size:.62rem; font-weight:800;
+  cursor:pointer; transition:transform .12s,background .12s;
+  letter-spacing:.04em; text-transform:uppercase; min-height:52px;
+}
+.exp-btn-icon { font-size:1.15rem; line-height:1; }
+.exp-btn:active:not(:disabled) { transform:scale(.93); }
+.exp-btn:disabled { opacity:.35; cursor:not-allowed; }
+.exp-btn.exp-atk  { border-color:rgba(239,68,68,.4); }
+.exp-btn.exp-atk:not(:disabled):active  { background:rgba(239,68,68,.18); }
+.exp-btn.exp-skill { border-color:rgba(167,139,250,.4); }
+.exp-btn.exp-skill:not(:disabled):active { background:rgba(167,139,250,.18); }
+.exp-btn.exp-def  { border-color:rgba(59,130,246,.4); }
+.exp-btn.exp-def:not(:disabled):active  { background:rgba(59,130,246,.18); }
+.exp-btn.exp-pot  { border-color:rgba(34,197,94,.4); }
+.exp-btn.exp-pot:not(:disabled):active  { background:rgba(34,197,94,.18); }
+.exp-btn.exp-ult  {
+  border-color:rgba(245,158,11,.7); background:rgba(245,158,11,.07);
+  grid-column:1/-1; min-height:40px;
+  animation:expUltPulse 1.1s ease-in-out infinite;
+}
+@keyframes expUltPulse { 0%,100%{box-shadow:0 0 0 rgba(245,158,11,0)} 50%{box-shadow:0 0 14px rgba(245,158,11,.45)} }
+.exp-skill-menu {
+  position:absolute; bottom:0; left:0; right:0;
+  background:rgba(8,6,20,.97); border-top:2px solid rgba(139,92,246,.4);
+  border-radius:16px 16px 0 0; padding:12px 10px 18px;
+  z-index:200; max-height:68%; overflow-y:auto;
+  animation:expSkillSlide .22s ease;
+}
+.exp-skill-menu.hide { display:none; }
+@keyframes expSkillSlide { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.exp-skill-menu-title {
+  font-size:.6rem; font-weight:900; color:var(--dim); text-transform:uppercase;
+  letter-spacing:.08em; text-align:center; margin-bottom:10px;
+}
+.exp-skill-menu-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.exp-sk-card {
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding:9px 6px; border-radius:10px;
+  border:1px solid rgba(139,92,246,.25); background:rgba(139,92,246,.06);
+  color:var(--txt); font-size:.62rem; cursor:pointer; transition:transform .1s;
+}
+.exp-sk-card:active:not(:disabled) { transform:scale(.93); }
+.exp-sk-card:disabled { opacity:.38; cursor:not-allowed; }
+.exp-sk-card.epic-skill { border-color:rgba(245,158,11,.4); background:rgba(245,158,11,.06); }
+.exp-sk-card.locked-sk { opacity:.4; }
+.exp-sk-icon { font-size:1.1rem; line-height:1; }
+.exp-sk-name { font-weight:800; font-size:.6rem; }
+.exp-sk-dmg  { color:#fca5a5; font-size:.58rem; }
+.exp-sk-cd   { color:var(--dim); font-size:.56rem; }
+.exp-skill-close {
+  width:100%; margin-top:10px; padding:10px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  border-radius:10px; color:var(--dim); font-size:.68rem; cursor:pointer;
+}
+@keyframes goldParticleFly {
+  from { opacity:1; transform:translateY(0) scale(1); }
+  to   { opacity:0; transform:translateY(-90px) scale(.3); }
+}
+/* ── END EXPEDICIÓN NARRATIVA ── */
 </style>
 </head>
 <body>
@@ -13381,6 +13522,172 @@ function getCombatStats() {
 }
 
 // ── Open / Close ──
+// ═══════════════════════════════════════════════════════
+// EXPEDICIÓN NARRATIVA — Narration + Effect System
+// ═══════════════════════════════════════════════════════
+
+var _expNarrTimer = null;
+
+function expNarrate(text) {
+  var el = document.getElementById('expNarrText');
+  if (!el) return;
+  if (_expNarrTimer) { clearInterval(_expNarrTimer); _expNarrTimer = null; }
+  el.textContent = '';
+  var i = 0;
+  var spd = (typeof combatAnimSpeed !== 'undefined' && combatAnimSpeed === 'fast') ? 5 : 1;
+  var delay = Math.round(20 / spd);
+  _expNarrTimer = setInterval(function() {
+    if (i < text.length) { el.textContent += text[i++]; }
+    else { clearInterval(_expNarrTimer); _expNarrTimer = null; }
+  }, delay);
+}
+
+function _expGetNarr(type, extra) {
+  var n = (char && char.name) || 'El héroe';
+  var e = (adv && adv.enemy && adv.enemy.name) || 'el enemigo';
+  var cls = char && char.class;
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function sub(t) { return t.replace(/{n}/g, n).replace(/{e}/g, e); }
+  var T = {
+    atk_guerrero: ['{n} levanta la espada y descarga un golpe devastador — {e} aúlla de dolor',
+                   'El acero de {n} impacta a {e} — el sonido resuena en la oscuridad'],
+    atk_mago:     ['{n} canaliza energía arcana — un destello de poder sacude a {e}',
+                   'Las manos de {n} liberan magia oscura — {e} es lanzado hacia atrás'],
+    atk_monje:    ['{n} golpea con velocidad sobrenatural — {e} no puede esquivar',
+                   'El chi de {n} fluye en el impacto — {e} siente la fuerza interior'],
+    atk_asesino:  ['{n} emerge de las sombras y clava la hoja — {e} no lo vio venir',
+                   'Una danza letal — {n} encuentra el punto débil de {e}'],
+    atk_druida:   ['La naturaleza responde al llamado de {n} — {e} es sacudido por raíces',
+                   'Energía primordial fluye a través de {n} y golpea a {e}'],
+    atk_barbaro:  ['{n} ruge y descarga toda su furia — {e} tambalea ante el poder bruto',
+                   'Un golpe devastador de {n} hace retroceder a {e} varios pasos'],
+    atk_arquero:  ['La flecha de {n} surca el aire con precisión mortal — {e} es alcanzado',
+                   '{n} suelta la cuerda del arco — el proyectil encuentra su blanco'],
+    atk_crit:     ['💥 ¡GOLPE CRÍTICO! {n} desata todo su poder — {e} recibe el impacto total',
+                   '💥 {n} encuentra el punto débil — ¡un golpe devastador sacude a {e}!'],
+    eAtk:         ['{e} lanza una embestida feroz — {n} retrocede pero se mantiene firme',
+                   '{e} ataca sin piedad — {n} absorbe el golpe con resolución',
+                   'Un asalto salvaje de {e} sacude a {n} — pero el héroe aguanta'],
+    def:          ['{n} adopta postura defensiva — listo para resistir el próximo ataque',
+                   '{n} levanta el escudo — la oscuridad no pasará sin peaje'],
+    pot:          ['{n} bebe la poción — la vitalidad fluye de nuevo por sus venas',
+                   'El elixir restaura las fuerzas de {n} — ¡la batalla continúa!'],
+    victory:      ['El enemigo cae derrotado. La oscuridad retrocede ante la determinación del héroe',
+                   '{e} se desploma. {n} permanece de pie — victorioso en la oscuridad'],
+    defeat:       ['Las fuerzas de {n} se agotan... la oscuridad se cierra sobre el héroe'],
+    phase2:       ['⚠️ {e} se transforma — ¡una nueva amenaza surge con poder renovado!'],
+  };
+  if (type === 'atk') {
+    if (extra && extra.isCrit) return sub(pick(T.atk_crit));
+    var key = 'atk_' + (cls || 'guerrero');
+    return sub(pick(T[key] || T.atk_guerrero));
+  }
+  if (type === 'skill' && extra && extra.sk) {
+    var sk = extra.sk;
+    if (sk.type === 'heal') return sub(n + ' invoca ' + sk.name + ' — la energía sanadora restaura sus fuerzas');
+    if (sk.type === 'buff') return sub(n + ' activa ' + sk.name + ' — una aura poderosa lo envuelve');
+    var dmgWord = sk.type === 'magic' ? 'Una explosión arcana' : 'Un golpe devastador';
+    return sub(n + ' desata ' + sk.name + ' — ' + dmgWord + ' sacude a ' + e);
+  }
+  return sub(pick(T[type] || T.eAtk));
+}
+
+function _expShowEnemyDialogue() {
+  var el = document.getElementById('expEnemyDlg');
+  if (!el || !adv.enemy) return;
+  var boss_dlg = ['"Has llegado demasiado lejos, héroe..."','"¡Nadie ha sobrevivido para contarlo!"','"Tus esfuerzos son inútiles."'];
+  var norm_dlg = ['"¡GRRR... ¡intruso!"','"¡Prepárate para enfrentarme!"','"¡No pasarás!"'];
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  var dlg = adv.enemy.isBoss ? pick(boss_dlg) : pick(norm_dlg);
+  el.innerHTML = '<b>' + adv.enemy.name + '</b>: ' + dlg;
+  el.classList.remove('hide');
+  setTimeout(function() { el.classList.add('hide'); }, 3200);
+}
+
+function _expGoldParticles() {
+  var arena = document.getElementById('combatArena');
+  if (!arena) return;
+  var colors = ['#f59e0b','#fcd34d','#fbbf24','#fde68a'];
+  for (var i = 0; i < 22; i++) {
+    var p = document.createElement('div');
+    var size = 5 + Math.random() * 7;
+    p.style.cssText = 'position:absolute;border-radius:50%;pointer-events:none;z-index:100;'
+      + 'width:' + size + 'px;height:' + size + 'px;'
+      + 'background:' + colors[Math.floor(Math.random() * colors.length)] + ';'
+      + 'left:' + (10 + Math.random() * 80) + '%;'
+      + 'top:' + (20 + Math.random() * 50) + '%;'
+      + 'animation:goldParticleFly ' + (0.7 + Math.random() * 0.9) + 's ease-out ' + (Math.random() * 0.3) + 's forwards';
+    arena.appendChild(p);
+    (function(node) { setTimeout(function() { try { node.remove(); } catch(ex) {} }, 2400); })(p);
+  }
+}
+
+function _expDisableAll() {
+  ['expBtnAtk','expBtnSkill','expBtnDef','expBtnPot','expBtnUlt'].forEach(function(id) {
+    var b = document.getElementById(id); if (b) b.disabled = true;
+  });
+  document.querySelectorAll('.skill-card').forEach(function(b) { b.disabled = true; });
+}
+
+function _expOpenSkillMenu() {
+  var menu = document.getElementById('expSkillMenu');
+  if (!menu) return;
+  var allSkills = getAllCombatSkills();
+  var cs = getCombatStats();
+  var grid = menu.querySelector('.exp-skill-menu-grid');
+  if (grid) {
+    var html = '';
+    allSkills.forEach(function(sk, i) {
+      var cd = adv.skillCDs[sk.id] || 0;
+      var unlocked = isSkillUnlocked(sk);
+      var dmgEst = estimateDmg(sk, cs);
+      var isEpic = (sk.cd >= 5) || ((sk.unlockLevel || 1) >= 15);
+      html += '<button class="exp-sk-card'
+        + (isEpic ? ' epic-skill' : '')
+        + (!unlocked ? ' locked-sk' : '')
+        + '" data-sk="' + i + '" '
+        + ((cd > 0 || !unlocked) ? 'disabled' : '') + '>'
+        + '<span class="exp-sk-icon">' + sk.icon + '</span>'
+        + '<span class="exp-sk-name">' + sk.name + '</span>'
+        + (dmgEst ? '<span class="exp-sk-dmg">' + dmgEst + '</span>' : '')
+        + '<span class="exp-sk-cd">' + (cd > 0 ? cd + 't' : !unlocked ? 'Nv.' + sk.unlockLevel : 'Listo') + '</span>'
+        + '</button>';
+    });
+    grid.innerHTML = html;
+    grid.querySelectorAll('[data-sk]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = parseInt(btn.dataset.sk);
+        _expCloseSkillMenu();
+        _expDisableAll();
+        var sk = allSkills[idx];
+        if (sk) { try { expNarrate(_expGetNarr('skill', { sk: sk })); } catch(ex) {} }
+        doSkill(idx);
+      });
+    });
+  }
+  menu.classList.remove('hide');
+}
+
+function _expCloseSkillMenu() {
+  var menu = document.getElementById('expSkillMenu');
+  if (menu) menu.classList.add('hide');
+}
+
+function doDefend() {
+  if (adv.turn !== 'player') return;
+  adv.buffs.fortress = (adv.buffs.fortress || 0) + 1;
+  adv.buffs.shield = true;
+  try { flashCombat('rgba(59,130,246,0.15)'); } catch(ex) {}
+  try { playSkillFX('magic'); } catch(ex) {}
+  try { animSprite('pSprite', 'anim-atk-r'); } catch(ex) {}
+  try { spawnCanvasParticles('magic', 'p', 8); } catch(ex) {}
+  combatLog('🛡️ <b>' + (char.name || 'Héroe') + '</b> adopta postura defensiva — daño reducido y escudo activo', 'p');
+  try { expNarrate(_expGetNarr('def')); } catch(ex) {}
+  try { SFX.buffSound(); } catch(ex) {}
+  tickBuffs();
+  afterPlayerAction();
+}
+
 function openAdventure() {
   adv.view = 'map';
   document.getElementById('advOverlay').classList.remove('hide');
@@ -13812,8 +14119,11 @@ function renderCombatIntro(el) {
   el.querySelector('#ciStartBtn').addEventListener('click', () => {
     adv.view = 'combat';
     combatLog(`⚔️ ¡${enemy.name||'El enemigo'} aparece! Prepárate para la batalla.`, 's');
-    // Show 2s cinematic standoff before first turn
     renderAdv();
+    setTimeout(function() {
+      try { _expShowEnemyDialogue(); } catch(ex) {}
+      try { expNarrate('Un nuevo encuentro comienza. ¡En guardia, ' + (char.name || 'héroe') + '!'); } catch(ex) {}
+    }, 220);
     setTimeout(() => {
       const arena = document.getElementById('combatArena');
       if (arena) showCombatCinematic(enemy.icon||'⚔️', null);
@@ -13844,7 +14154,7 @@ function renderCombat(el) {
   const pct     = Math.max(0, adv.playerHP / adv.playerMaxHP * 100);
   const eHpMax  = adv.enemy?.hp_max || ENEMIES[adv.seq[adv.seqIdx]]?.hp || adv.enemy?.hp || 1;
   const eHpPct  = adv.enemy ? Math.max(0, adv.enemy.hp / eHpMax * 100) : 0;
-  const isBusy  = adv.turn === 'busy';
+  const isBusy  = adv.turn !== 'player';
   const b       = adv.buffs;
   const eb      = adv.enemyBuffs;
   const zoneBg  = getZoneBg(adv.zoneId);
@@ -13879,109 +14189,87 @@ function renderCombat(el) {
   if (eb.curse>0)   eBuffs+=`<span class="cbuff-pill pur">👁Maldito×${eb.curse}</span>`;
   if (eb.marked)    eBuffs+=`<span class="cbuff-pill red">🎯Marcado</span>`;
 
-  // Skill deck
+  // Hidden legacy skill deck (updateCombatUI uses these IDs for enable/disable)
   const allSkills = getAllCombatSkills();
-  let deckHtml = `<button class="skill-card catk" id="cActAtk" ${isBusy?'disabled':''}>
-    <div class="sk-icon">⚔️</div>
-    <div class="sk-name">Atacar</div>
-    <div class="sk-dmg">~${Math.max(1,cs.atk-(adv.enemy?.def||0)+2)}</div>
-    <div class="sk-cd">Normal</div>
-  </button>`;
-
+  let deckHtml = `<button class="skill-card catk" id="cActAtk" ${isBusy?'disabled':''}></button>`;
   allSkills.forEach((sk,i) => {
-    const cd      = adv.skillCDs[sk.id] || 0;
+    const cd = adv.skillCDs[sk.id] || 0;
     const unlocked = isSkillUnlocked(sk);
-    const isEpic  = (sk.cd >= 5) || ((sk.unlockLevel||1) >= 15);
-    const dmgEst  = estimateDmg(sk, cs);
-    const cdLbl   = cd > 0 ? `${cd}t` : !unlocked ? `Nv.${sk.unlockLevel}` : 'Listo';
-    deckHtml += `<button class="skill-card${isEpic?' epic-skill':''}${!unlocked?' locked-sk':''}"
-      id="cActSk${i}" data-sk="${i}"
-      ${(isBusy||cd>0||!unlocked)?'disabled':''}>
-      <div class="sk-icon">${sk.icon}</div>
-      <div class="sk-name">${sk.name}</div>
-      ${dmgEst?`<div class="sk-dmg">${dmgEst}</div>`:''}
-      <div class="sk-cd">${cdLbl}</div>
-    </button>`;
+    deckHtml += `<button class="skill-card" id="cActSk${i}" data-sk="${i}" ${(isBusy||cd>0||!unlocked)?'disabled':''}></button>`;
   });
-
   const potCount = adv.potions ?? 0;
-  deckHtml += `<button class="skill-card cpot" id="cActPot" ${(isBusy||potCount<=0)?'disabled':''}>
-    <div class="sk-icon">💊</div>
-    <div class="sk-name">Poción</div>
-    <div class="sk-dmg">+${Math.round(adv.playerMaxHP*0.4+cs.heal)}HP</div>
-    <div class="sk-cd">${potCount>0?`×${potCount}`:'Agotado'}</div>
-  </button>`;
+  deckHtml += `<button class="skill-card cpot" id="cActPot" ${(isBusy||potCount<=0)?'disabled':''}></button>`;
   if (adv.ultimateReady) {
-    deckHtml += `<button class="skill-card ult-btn" id="cActUlt" ${isBusy?'disabled':''}>
-      <div class="sk-icon">⚡</div>
-      <div class="sk-name">${CLASS_ULT[char.class]||'⚡ DEFINITIVO'}</div>
-      <div class="sk-dmg" style="color:#f59e0b;font-weight:800">¡DEFINITIVO!</div>
-      <div class="sk-cd">Listo ✓</div>
-    </button>`;
+    deckHtml += `<button class="skill-card ult-btn" id="cActUlt" ${isBusy?'disabled':''}></button>`;
   }
-  deckHtml += `<button class="skill-card cfle" id="cActFle" ${isBusy?'disabled':''}>
-    <div class="sk-icon">🏃</div>
-    <div class="sk-name">Huir</div>
-    <div class="sk-cd">Al mapa</div>
-  </button>`;
+  deckHtml += `<button class="skill-card cfle" id="cActFle" ${isBusy?'disabled':''}></button>`;
 
   const logLines = [...adv.log].slice(-6).map(l =>
     `<div class="clog ${l.who==='p'?'cl-p':l.who==='e'?'cl-e':'cl-s'}">${l.txt}</div>`
   ).join('');
-  const speedLbl = combatAnimSpeed === 'fast' ? '⚡Rápido' : '🐢Normal';
-  const pName    = char.name || 'Héroe';
-
-  const sfxLbl   = SFX.sfxOn   ? '🔊' : '🔇';
-  const musicLbl  = SFX.musicOn ? '🎵' : '🎵off';
-
-  // Class aura color for player sprite glow
+  const speedLbl  = combatAnimSpeed === 'fast' ? '⚡Rápido' : '🐢Normal';
+  const pName     = char.name || 'Héroe';
+  const sfxLbl    = SFX.sfxOn    ? '🔊' : '🔇';
+  const musicLbl  = SFX.musicOn  ? '🎵' : '🎵off';
   const _clsColor = (CLASSES[char.class] || CLASSES.guerrero || {}).color || '#a78bfa';
   const _clsAuraCSS = `--class-aura-col:${_clsColor}88`;
-
-  // Boss detection
-  const _isBoss = !!(adv.enemy?.isBoss);
+  const _isBoss   = !!(adv.enemy?.isBoss);
   const _bossAuraHtml = _isBoss ? '<div class="boss-aura"></div>' : '';
 
-  el.innerHTML = `<div class="combat-screen">
-    <div class="combat-topbar">
-      <span>${adv.dungeon.name} · ${adv.seqIdx+1}/${adv.seq.length}</span>
-      <span class="cturn ${adv.turn==='player'?'pturn':'eturn'}">${adv.turn==='player'?'⚔️ Tu turno':'💀 Enemigo'}</span>
+  el.innerHTML = `<div class="combat-screen exp-cinematic">
+    <!-- Hidden legacy skill deck — updateCombatUI() relies on these IDs -->
+    <div class="skill-deck" style="display:none">${deckHtml}</div>
+    <div class="combat-log" id="combatLog" style="display:none">${logLines||''}</div>
+
+    <!-- Top controls bar -->
+    <div class="exp-topbar">
+      <button class="exp-flee-btn" id="expFleeCombat">← Huir</button>
+      <span class="exp-dungeon-lbl">${adv.dungeon.name} · ${adv.seqIdx+1}/${adv.seq.length}</span>
       <div style="display:flex;gap:4px;align-items:center">
         <button class="combat-vol-btn${SFX.sfxOn?' sfx-on':''}" id="cSfxBtn">${sfxLbl}</button>
         <button class="combat-vol-btn${SFX.musicOn?' music-on':''}" id="cMusicBtn">${musicLbl}</button>
         <button class="speed-btn" id="cSpeedBtn">${speedLbl}</button>
       </div>
     </div>
-    <div class="battle-scene ${zoneBg}" id="combatArena">
+
+    <!-- Battle arena -->
+    <div class="exp-arena battle-scene ${zoneBg}" id="combatArena">
       <div class="bs-parallax-mid" id="bsPxMid"></div>
       <div class="bs-parallax-front" id="bsPxFront"></div>
-      <div class="battle-vs">VS</div>
-      <div class="battle-enemy">
-        <div class="battle-hp-panel" style="text-align:right">
-          <div class="battle-hp-name">${adv.enemy?.name||'?'}${adv.phase2Triggered?' ★':''}${_isBoss?' 👑':''}</div>
-          <div class="battle-hpbar"><div class="battle-hpfill efill ${hpColorClass(eHpPct)}" id="eHpFill" style="width:${eHpPct}%"></div></div>
-          <div class="battle-hptxt" id="eHpTxt">${adv.enemy?.hp||0} / ${eHpMax} HP</div>
-          <div class="cbuffs" style="justify-content:flex-end" id="eBuffPills">${eBuffs}</div>
-        </div>
-        <div class="battle-enemy-sprite${adv.turn==='enemy'?' active-turn':''}" id="eSprite" style="position:relative">
-          ${_bossAuraHtml}
-        </div>
-      </div>
-      <div class="battle-player" style="${_clsAuraCSS}">
+
+      <div class="exp-turn-badge ${adv.turn==='player'?'pturn':'eturn'}">${adv.turn==='player'?'⚔️ Tu turno':'💀 Enemigo'}</div>
+
+      <!-- Player side (left 42%) -->
+      <div class="exp-player-side" style="${_clsAuraCSS}">
         <div class="battle-player-sprite${adv.turn==='player'?' active-turn':''}" id="pSprite">
-          <div class="battle-avatar-wrap" id="pPixelSprite" style="position:relative">
+          <div class="exp-player-sprite-inner" id="pPixelSprite" style="position:relative">
             <div class="player-aura-ring"></div>
           </div>
         </div>
-        <div class="battle-hp-panel">
-          <div class="battle-hp-name">${pName}</div>
-          <div class="battle-hpbar"><div class="battle-hpfill pfill ${hpColorClass(pct)}" id="pHpFill" style="width:${pct}%"></div></div>
-          <div class="battle-hptxt" id="pHpTxt">${adv.playerHP} / ${adv.playerMaxHP} HP</div>
+        <div class="exp-phbar-wrap">
+          <div class="exp-phbar-name">${pName}</div>
+          <div class="exp-hp-bar"><div class="battle-hpfill pfill ${hpColorClass(pct)}" id="pHpFill" style="width:${pct}%"></div></div>
+          <div class="exp-hptxt" id="pHpTxt">${adv.playerHP} / ${adv.playerMaxHP}</div>
           <div class="cbuffs" id="pBuffPills">${pBuffs}</div>
         </div>
       </div>
+
+      <!-- Enemy side (right 58%) -->
+      <div class="exp-enemy-side">
+        <div class="exp-enemy-header">
+          <div class="exp-enemy-name">${adv.enemy?.name||'?'}${adv.phase2Triggered?' ★':''}${_isBoss?' 👑':''}</div>
+          <div class="exp-hp-bar"><div class="battle-hpfill efill ${hpColorClass(eHpPct)}" id="eHpFill" style="width:${eHpPct}%"></div></div>
+          <div class="exp-hptxt" id="eHpTxt">${adv.enemy?.hp||0} / ${eHpMax} HP</div>
+          <div class="cbuffs" style="justify-content:flex-end" id="eBuffPills">${eBuffs}</div>
+        </div>
+        <div class="exp-enemy-sprite-wrap battle-enemy-sprite${adv.turn==='enemy'?' active-turn':''}" id="eSprite" style="position:relative">
+          ${_bossAuraHtml}
+          <div class="exp-enemy-dlg hide" id="expEnemyDlg"></div>
+        </div>
+      </div>
     </div>
-    <div class="combat-log" id="combatLog">${logLines||'<div class="clog cl-s">⚔️ ¡El combate comienza!</div>'}</div>
+
+    <!-- Ultimate bar -->
     <div class="ult-bar-wrap">
       <span class="ult-label">⚡ Definitivo</span>
       <div class="ult-bar${adv.ultimateReady?' ult-ready':''}" id="ultBar">
@@ -13989,29 +14277,56 @@ function renderCombat(el) {
       </div>
       <span class="ult-pct" id="ultPct">${adv.ultimateCharge||0}%</span>
     </div>
-    <div class="skill-deck">${deckHtml}</div>
+
+    <!-- Narration zone -->
+    <div class="exp-narration">
+      <div class="exp-narr-text" id="expNarrText">⚔️ ¡El combate comienza!</div>
+    </div>
+
+    <!-- 4 action buttons -->
+    <div class="exp-actions" id="expActions">
+      <button class="exp-btn exp-atk" id="expBtnAtk" ${isBusy?'disabled':''}>
+        <span class="exp-btn-icon">⚔️</span>ATACAR
+      </button>
+      <button class="exp-btn exp-skill" id="expBtnSkill" ${isBusy?'disabled':''}>
+        <span class="exp-btn-icon">✨</span>HABILIDAD
+      </button>
+      <button class="exp-btn exp-def" id="expBtnDef" ${isBusy?'disabled':''}>
+        <span class="exp-btn-icon">🛡️</span>DEFENDER
+      </button>
+      <button class="exp-btn exp-pot" id="expBtnPot" ${(isBusy||potCount<=0)?'disabled':''}>
+        <span class="exp-btn-icon">🧪</span>POCIÓN ×${potCount}
+      </button>
+      ${adv.ultimateReady?`<button class="exp-btn exp-ult" id="expBtnUlt" ${isBusy?'disabled':''}><span class="exp-btn-icon">⚡</span>${CLASS_ULT[char.class]||'DEFINITIVO'}</button>`:''}
+    </div>
+
+    <!-- Skill submenu overlay -->
+    <div class="exp-skill-menu hide" id="expSkillMenu">
+      <div class="exp-skill-menu-title">✨ Elige una habilidad</div>
+      <div class="exp-skill-menu-grid"></div>
+      <button class="exp-skill-close" id="expSkillClose">✕ Cancelar</button>
+    </div>
   </div>`;
 
   const logEl = el.querySelector('#combatLog');
   if (logEl) logEl.scrollTop = logEl.scrollHeight;
 
-  // Re-attach canvas layers (they get wiped by innerHTML)
   reattachBgCanvas();
   reattachWxCanvas();
   reattachPCanvas();
-  // Inject pixel avatar into battle sprite slot
+
+  // Player sprite — larger (160px) for cinematic view
   const _ppEl = el.querySelector('#pPixelSprite');
   if (_ppEl) {
-    const _ppC = buildPixelAvatar(char.avatar || {}, char.class, char.equipped || {}, 64);
+    const _ppC = buildPixelAvatar(char.avatar || {}, char.class, char.equipped || {}, 160);
     _ppEl.appendChild(_ppC);
   }
-  // Inject enemy pixel sprite (render at 64, displayed at 100px via CSS)
+  // Enemy sprite — larger (96px)
   const _epEl = el.querySelector('#eSprite');
   if (_epEl && adv.enemy) {
-    const _epC = buildEnemyPixel(adv.enemy.key || '', 64);
+    const _epC = buildEnemyPixel(adv.enemy.key || '', 96);
     _epEl.appendChild(_epC);
   }
-  // Check low HP visual state
   checkLowHpVisual();
 
   el.querySelector('#cSpeedBtn')?.addEventListener('click', () => {
@@ -14019,22 +14334,19 @@ function renderCombat(el) {
     localStorage.setItem('hrpg_anim_speed', combatAnimSpeed);
     renderAdv();
   });
-  el.querySelector('#cSfxBtn')?.addEventListener('click', () => {
-    SFX.toggleSfx(); renderAdv();
-  });
-  el.querySelector('#cMusicBtn')?.addEventListener('click', () => {
-    SFX.toggleMusic(); renderAdv();
-  });
+  el.querySelector('#cSfxBtn')?.addEventListener('click',   () => { SFX.toggleSfx();   renderAdv(); });
+  el.querySelector('#cMusicBtn')?.addEventListener('click', () => { SFX.toggleMusic(); renderAdv(); });
+  el.querySelector('#expFleeCombat')?.addEventListener('click', doFlee);
 
-  const disableAll = () => el.querySelectorAll('.skill-card').forEach(b => b.disabled = true);
-  el.querySelector('#cActAtk')?.addEventListener('click', () => { disableAll(); doAttack(); });
-  el.querySelectorAll('[id^="cActSk"]').forEach(btn => {
-    btn.addEventListener('click', () => { disableAll(); doSkill(parseInt(btn.dataset.sk)); });
-  });
-  el.querySelector('#cActPot')?.addEventListener('click', () => { disableAll(); doPotion(); });
-  el.querySelector('#cActFle')?.addEventListener('click', doFlee);
-  el.querySelector('#cActUlt')?.addEventListener('click', () => { disableAll(); doUltimate(); });
-  // Swipe: → atacar, ↑ primera habilidad disponible
+  // 4 cinematic action buttons
+  el.querySelector('#expBtnAtk')?.addEventListener('click',   () => { _expDisableAll(); doAttack(); });
+  el.querySelector('#expBtnSkill')?.addEventListener('click', _expOpenSkillMenu);
+  el.querySelector('#expBtnDef')?.addEventListener('click',   () => { _expDisableAll(); doDefend(); });
+  el.querySelector('#expBtnPot')?.addEventListener('click',   () => { _expDisableAll(); doPotion(); });
+  el.querySelector('#expBtnUlt')?.addEventListener('click',   () => { _expDisableAll(); doUltimate(); });
+  el.querySelector('#expSkillClose')?.addEventListener('click', _expCloseSkillMenu);
+
+  // Swipe: → attack, ↑ open skill menu
   let _swX=0, _swY=0;
   const _swEl = el.querySelector('#combatArena') || el;
   _swEl.addEventListener('touchstart', e=>{_swX=e.touches[0].clientX;_swY=e.touches[0].clientY;},{passive:true});
@@ -14042,9 +14354,9 @@ function renderCombat(el) {
     if (adv.turn !== 'player') return;
     const dx=e.changedTouches[0].clientX-_swX, dy=e.changedTouches[0].clientY-_swY;
     if (Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy) && dx>0) {
-      const ab=el.querySelector('#cActAtk'); if(ab&&!ab.disabled){disableAll();doAttack();}
+      const ab=document.getElementById('expBtnAtk'); if(ab&&!ab.disabled){_expDisableAll();doAttack();}
     } else if (dy<-55 && Math.abs(dy)>Math.abs(dx)) {
-      const sb=el.querySelector('[id^="cActSk"]:not([disabled])'); if(sb){disableAll();doSkill(parseInt(sb.dataset.sk));}
+      _expOpenSkillMenu();
     }
   },{passive:true});
 }
@@ -14145,9 +14457,29 @@ function updateCombatUI() {
   const pPills=document.getElementById('pBuffPills'); if(pPills) pPills.innerHTML=_buildPBuffPills();
   const ePills=document.getElementById('eBuffPills'); if(ePills) ePills.innerHTML=_buildEBuffPills();
 
-  // Combat log
+  // Combat log (hidden in cinematic mode but kept for game logic)
   const logEl=document.getElementById('combatLog');
   if(logEl){ logEl.innerHTML=[...adv.log].slice(-6).map(l=>`<div class="clog ${l.who==='p'?'cl-p':l.who==='e'?'cl-e':'cl-s'}">${l.txt}</div>`).join(''); logEl.scrollTop=logEl.scrollHeight; }
+
+  // Sync cinematic exp-actions buttons
+  const _expBusy = adv.turn !== 'player';
+  const _eBA=document.getElementById('expBtnAtk');   if(_eBA) _eBA.disabled=_expBusy;
+  const _eBSk=document.getElementById('expBtnSkill'); if(_eBSk) _eBSk.disabled=_expBusy;
+  const _eBDf=document.getElementById('expBtnDef');  if(_eBDf) _eBDf.disabled=_expBusy;
+  const _eBPt=document.getElementById('expBtnPot');
+  if(_eBPt){ _eBPt.disabled=_expBusy||(adv.potions??0)<=0; _eBPt.innerHTML='<span class="exp-btn-icon">🧪</span>POCIÓN ×'+(adv.potions??0); }
+  const _expActs=document.getElementById('expActions');
+  const _expUltEx=document.getElementById('expBtnUlt');
+  if(adv.ultimateReady && !_expUltEx && _expActs){
+    const _eub=document.createElement('button');
+    _eub.className='exp-btn exp-ult'; _eub.id='expBtnUlt'; _eub.disabled=_expBusy;
+    _eub.innerHTML='<span class="exp-btn-icon">⚡</span>'+(CLASS_ULT[char.class]||'DEFINITIVO');
+    _eub.addEventListener('click',function(){_expDisableAll();doUltimate();});
+    _expActs.appendChild(_eub);
+  } else if(!adv.ultimateReady && _expUltEx){ _expUltEx.remove(); }
+  else if(_expUltEx){ _expUltEx.disabled=_expBusy; }
+  const _expTB=document.querySelector('.exp-turn-badge');
+  if(_expTB){ _expTB.className='exp-turn-badge '+(adv.turn==='player'?'pturn':'eturn'); _expTB.textContent=adv.turn==='player'?'⚔️ Tu turno':'💀 Enemigo'; }
 
   checkLowHpVisual();
 }
@@ -14600,6 +14932,7 @@ function doAttack() {
   flashCombat(elemColor(pType)+'0.12)');
   playSkillFX(isCrit ? pType : 'phys');
   animSprite('pSprite', 'anim-atk-r');
+  try { expNarrate(_expGetNarr('atk', { isCrit: isCrit })); } catch(ex) {}
   launchProjectile(pType, () => {
     spawnParticles(pType, 'e');
     spawnCanvasParticles(pType, 'e');
@@ -14797,6 +15130,7 @@ function doPotion() {
   adv.playerHP = Math.min(adv.playerMaxHP, adv.playerHP + amt);
   floatDmg(`+${amt}`, 'dmg-grn', 'p');
   combatLog(`💊 Poción: recuperas <b>${amt}</b> HP — quedan ${adv.potions}`, 'p');
+  try { expNarrate(_expGetNarr('pot')); } catch(ex) {}
   tickBuffs();
   afterPlayerAction();
 }
@@ -15013,7 +15347,8 @@ function afterPlayerAction() {
     combatLog(`💀 ¡${adv.enemy.name} derrotado!`, 's');
     adv.seqIdx++;
     if (adv.seqIdx >= adv.seq.length) {
-      endCombat(true);
+      try { expNarrate(_expGetNarr('victory')); _expGoldParticles(); } catch(ex) {}
+      setTimeout(function() { endCombat(true); }, 900);
     } else {
       loadNextEnemy();
       adv.phase2Triggered = false;
@@ -15142,6 +15477,7 @@ function applyDamageToPlayer(dmg, logMsg) {
   const _heavyHit = dmg > adv.playerMaxHP * 0.15;
   if (_heavyHit) shakeCamera(true); else shakeCamera(false);
   flashCombat('rgba(239,68,68,0.13)');
+  try { expNarrate(_expGetNarr('eAtk')); } catch(ex) {}
   vibrate(_heavyHit ? [20, 15, 40] : 22);
   adv.playerHP -= dmg;
   adv.ultimateCharge = Math.min(100, (adv.ultimateCharge||0) + Math.round(dmg / adv.playerMaxHP * 16));
