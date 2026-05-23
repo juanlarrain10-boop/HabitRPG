@@ -4537,6 +4537,25 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .camp-char-state-label.state-cansado   { color:#f59e0b; border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.08); }
 .camp-char-state-label.state-critico   { color:#ef4444; border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.1); }
 
+/* ── Hero sprite animations (camp + missions) ── */
+@keyframes heroBreath { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+@keyframes heroBounce { 0%{transform:translateY(0)} 25%{transform:translateY(-14px)} 55%{transform:translateY(-4px)} 75%{transform:translateY(-10px)} 90%{transform:translateY(-2px)} 100%{transform:translateY(0)} }
+@keyframes heroJump   { 0%{transform:translateY(0) scale(1)} 28%{transform:translateY(-28px) scale(1.06)} 62%{transform:translateY(-8px) scale(.97)} 100%{transform:translateY(0) scale(1)} }
+@keyframes heroGolden { 0%,100%{filter:drop-shadow(0 0 0px #fbbf24)} 50%{filter:drop-shadow(0 0 20px #fbbf24) drop-shadow(0 0 40px #f59e0b)} }
+@keyframes heroGreet  { 0%{transform:rotate(0deg) translateY(0)} 22%{transform:rotate(-8deg) translateY(-5px)} 50%{transform:rotate(0deg) translateY(0)} 72%{transform:rotate(-4deg) translateY(-2px)} 100%{transform:rotate(0deg) translateY(0)} }
+.hero-anim-wrap { display:inline-flex;transform-origin:bottom center;animation:heroBreath 2.2s ease-in-out infinite; }
+.hero-anim-wrap.do-bounce { animation:heroBounce .75s ease-out; }
+.hero-anim-wrap.do-jump   { animation:heroJump .9s cubic-bezier(.22,1,.36,1); }
+.hero-anim-wrap.do-golden { animation:heroGolden 2.2s ease-in-out 3; }
+.hero-anim-wrap.do-greet  { animation:heroGreet 1.3s ease-in-out; }
+/* Boss dialogue portrait: circular head-clip */
+.boss-dlg-portrait { width:72px;height:72px;border-radius:50%;overflow:hidden;position:relative;border:2.5px solid;flex-shrink:0;animation:cineHeroEnter .5s cubic-bezier(.34,1.56,.64,1) both; }
+.boss-dlg-portrait canvas { position:absolute;top:0;left:50%;transform:translateX(-50%); }
+.boss-dlg-portrait .prt-fallback { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.2rem; }
+/* Missions mini sprite */
+.mis-mini-sprite { display:flex;justify-content:center;align-items:flex-end;height:88px;overflow:visible;margin:2px 0 0; }
+.mis-mini-sprite .hero-anim-wrap { overflow:visible; }
+
 /* ── News cards ── */
 .camp-news-section { position: relative; z-index: 1; padding-bottom: 8px; }
 .camp-news-label {
@@ -6917,6 +6936,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
           <div class="mis-ring-lbl" id="misRingLbl">del día</div>
         </div>
       </div>
+      <div class="mis-mini-sprite" id="misMiniSprite"></div>
       <div class="mis-ctx-msg" id="misCtxMsg"></div>
       <div class="mis-hero-stats">
         <div class="mis-hstat">
@@ -12341,7 +12361,9 @@ function floatXP(amount, cat, el, big) {
   setTimeout(() => div.remove(), big ? 1650 : 1400);
 }
 
-var _dsLastPct = -1;
+var _dsLastPct  = -1;
+var _dsLastDone = -1;
+var _campHeroAnimState = { lastDone: -1, greetedDate: '' };
 function renderDaySummary() {
   var fill   = document.getElementById('misRingFill');
   var pctEl  = document.getElementById('misRingPct');
@@ -12418,6 +12440,30 @@ function renderDaySummary() {
   if (doneEl) doneEl.textContent = done + '/' + total;
   var strEl = document.getElementById('misHStatStreak');
   if (strEl) strEl.textContent = (char && char.habitStreak ? char.habitStreak.count : 0) + ' 🔥';
+
+  // Mini sprite in missions
+  var miniEl = document.getElementById('misMiniSprite');
+  if (miniEl && typeof buildPixelAvatar === 'function' && char && char.avatar) {
+    var isFirst = !miniEl._spClass || miniEl._spClass !== char.class;
+    if (isFirst) {
+      miniEl.innerHTML = '';
+      var aw = document.createElement('div');
+      aw.className = 'hero-anim-wrap';
+      aw.id = 'misHeroAnimWrap';
+      aw.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 88));
+      miniEl.appendChild(aw);
+      miniEl._spClass = char.class;
+    }
+    if (!isFirst && done !== _dsLastDone && done > 0) {
+      var mAnim = pct >= 1 ? 'do-golden' : done >= 4 ? 'do-jump' : 'do-bounce';
+      var mDur  = mAnim === 'do-golden' ? 6600 : mAnim === 'do-jump' ? 900 : 750;
+      setTimeout((function(ac,ad){ return function(){ _heroTriggerAnim('misHeroAnimWrap',ac,ad); }; })(mAnim,mDur), 200);
+      if (mAnim !== 'do-bounce') {
+        setTimeout((function(ac){ return function(){ _heroSpawnParticles('misHeroAnimWrap', ac==='do-golden'); }; })(mAnim), 300);
+      }
+    }
+    _dsLastDone = done;
+  }
 }
 
 function _dsRingBurst() {
@@ -12822,6 +12868,39 @@ function _campRenderMsg() {
   lineEl.textContent = msgs[variant];
 }
 
+function _heroTriggerAnim(id, cls, dur) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  ['do-bounce','do-jump','do-golden','do-greet'].forEach(function(c){ el.classList.remove(c); });
+  void el.offsetWidth; // force reflow to restart animation
+  el.classList.add(cls);
+  if (dur) setTimeout(function(){ var e=document.getElementById(id); if(e) e.classList.remove(cls); }, dur);
+}
+
+function _heroSpawnParticles(id, golden) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var rect = el.getBoundingClientRect();
+  var cx = rect.left + rect.width / 2;
+  var cy = rect.top + rect.height / 2;
+  var colors = golden
+    ? ['#fbbf24','#f59e0b','#facc15','#fde68a','#fff','#86efac','#a78bfa','#f97316']
+    : ['#a78bfa','#818cf8','#e0e7ff','#ddd6fe','#c4b5fd'];
+  var count = golden ? 22 : 10;
+  for (var i = 0; i < count; i++) {
+    var p = document.createElement('div');
+    p.className = 'ring-particle';
+    var angle = (i / count) * 360 + Math.random() * (360 / count);
+    var dist  = (golden ? 55 : 30) + Math.random() * (golden ? 55 : 25);
+    var dx = Math.cos(angle * Math.PI / 180) * dist;
+    var dy = Math.sin(angle * Math.PI / 180) * dist;
+    p.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;background:' + colors[i % colors.length]
+      + ';--pdx:' + dx + 'px;--pdy:' + dy + 'px';
+    document.body.appendChild(p);
+    setTimeout((function(pp){ return function(){ pp.remove(); }; })(p), 720);
+  }
+}
+
 function _campRenderChar() {
   var ring    = document.getElementById('campCharRing');
   var svgWrap = document.getElementById('campCharSvg');
@@ -12830,7 +12909,35 @@ function _campRenderChar() {
   if (!ring || !svgWrap) return;
   svgWrap.innerHTML = '';
   if (typeof buildPixelAvatar === 'function' && char && char.avatar) {
-    svgWrap.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 132));
+    var animWrap = document.createElement('div');
+    animWrap.className = 'hero-anim-wrap';
+    animWrap.id = 'campHeroAnimWrap';
+    animWrap.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 132));
+    svgWrap.appendChild(animWrap);
+    // First-open-today greeting
+    var todayStr = new Date().toDateString();
+    if (_campHeroAnimState.greetedDate !== todayStr) {
+      _campHeroAnimState.greetedDate = todayStr;
+      setTimeout(function(){ _heroTriggerAnim('campHeroAnimWrap', 'do-greet', 1300); }, 500);
+    }
+    // Task-progress animation
+    var mornDone  = (day && day.morning  || []).filter(function(m){ return m.done; }).length;
+    var missDone  = (day && day.missions || []).filter(function(m){ return m.done; }).length;
+    var classDone = (day && day.classMission && day.classMission.done) ? 1 : 0;
+    var campDone  = mornDone + missDone + classDone;
+    var campTot   = ((typeof MORNING_ITEMS!=='undefined')?MORNING_ITEMS.length:4)
+                  + (day&&day.missions?day.missions.length:0)
+                  + (char&&char.classSet?1:0);
+    var campPct   = campTot > 0 ? campDone / campTot : 0;
+    if (campDone > 0 && campDone !== _campHeroAnimState.lastDone) {
+      var cCls = campPct >= 1 ? 'do-golden' : campDone >= 4 ? 'do-jump' : 'do-bounce';
+      var cDur = cCls === 'do-golden' ? 6600 : cCls === 'do-jump' ? 900 : 750;
+      setTimeout((function(ac,ad){ return function(){ _heroTriggerAnim('campHeroAnimWrap',ac,ad); }; })(cCls,cDur), 350);
+      if (cCls !== 'do-bounce') {
+        setTimeout(function(ac){ return function(){ _heroSpawnParticles('campHeroAnimWrap', ac==='do-golden'); }; }(cCls), 450);
+      }
+    }
+    _campHeroAnimState.lastDone = campDone;
   }
   if (nameEl) nameEl.textContent = (char && char.name) || 'Aventurero';
   var state = (typeof getCharacterState === 'function') ? getCharacterState() : 'normal';
@@ -15395,6 +15502,9 @@ function renderBossDialogue(el) {
     const icons = { guerrero:'⚔️', mago:'🧙', monje:'🥋', asesino:'🗡️', druida:'🌿', barbaro:'🪓', arquero:'🏹' };
     return icons[heroSprite] || '🧑';
   })();
+  const CLASS_COLORS = { guerrero:'#ef4444',mago:'#818cf8',monje:'#f97316',asesino:'#a78bfa',druida:'#22c55e',barbaro:'#f59e0b',arquero:'#06b6d4' };
+  const heroColor = CLASS_COLORS[(typeof char!=='undefined'&&char.class)||''] || 'var(--purp2)';
+  const charName  = (typeof char!=='undefined'&&char.name) || 'Héroe';
 
   const state   = adv._dlgState = adv._dlgState || { exchIdx:0, phase:'boss', choiceMade:false, choiceIdx:-1 };
   const exch    = dlg.exchanges[state.exchIdx];
@@ -15419,11 +15529,14 @@ function renderBossDialogue(el) {
     <div class="boss-dlg">
       <div class="boss-dlg-scene">
         <span class="boss-dlg-personality-tag">${dlg.personalityLabel}</span>
-        <div style="flex:1;display:flex;justify-content:flex-start;align-items:flex-end;padding:0 24px 18px">
-          <span class="boss-dlg-hero-icon">${heroIcon}</span>
+        <div class="boss-dlg-hero-col">
+          <div class="boss-dlg-portrait" id="bdHeroPortrait" style="border-color:${heroColor}"></div>
+          <div class="boss-dlg-char-name">${charName}</div>
         </div>
-        <div style="flex:1;display:flex;justify-content:flex-end;align-items:flex-end;padding:0 24px 10px">
+        <div class="boss-dlg-vs-col"><span class="boss-dlg-vs-txt">VS</span></div>
+        <div class="boss-dlg-boss-col">
           <span class="boss-dlg-boss-icon">${dlg.bossIcon}</span>
+          <div class="boss-dlg-boss-name">${adv.enemy?.name || 'Jefe'}</div>
         </div>
       </div>
       <div class="boss-dlg-bubble" id="bdBubble">
@@ -15436,6 +15549,17 @@ function renderBossDialogue(el) {
       ${reactionHtml}
       ${fightBtnHtml}
     </div>`;
+
+  // Inject portrait canvas (DOM elements can't go inside template strings)
+  var portraitEl = el.querySelector('#bdHeroPortrait');
+  if (portraitEl) {
+    if (typeof buildPixelAvatar === 'function' && typeof char !== 'undefined' && char && char.avatar) {
+      var pCv = buildPixelAvatar(char.avatar, char.class, char.equipped, 144);
+      portraitEl.appendChild(pCv);
+    } else {
+      portraitEl.innerHTML = '<div class="prt-fallback">' + heroIcon + '</div>';
+    }
+  }
 
   // Typewriter effect for boss line
   if (!state.choiceMade) {
