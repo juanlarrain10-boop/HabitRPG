@@ -7785,22 +7785,23 @@ function preloadSprites() {
   HAIR_STYLE_SPRITES.forEach(s => {
     _loadSpr(`hair_${s}`, `Sprites/lpc-hair/_build/${s}/s.png`);
   });
-  // Class sprite overrides — real images replace pixel art for specific classes
-  _loadSpr('class_guerrero',   'personajes/guerrero.png');
-  _loadSpr('class_mago',       'personajes/mago.png');
-  _loadSpr('class_monje',      'personajes/monje.png');
-  _loadSpr('class_asesino',    'personajes/asesino.png');
-  _loadSpr('class_druida',     'personajes/druida.png');
-  _loadSpr('class_barbaro',    'personajes/barbaro.png');
-  _loadSpr('class_arquero',    'personajes/arquero.png');
+  // Class sprite overrides — paths use deploy/personajes/ so they work both
+  // locally (relative to project root) and on Vercel (served as static files)
+  _loadSpr('class_guerrero',   'deploy/personajes/guerrero.png');
+  _loadSpr('class_mago',       'deploy/personajes/mago.png');
+  _loadSpr('class_monje',      'deploy/personajes/monje.png');
+  _loadSpr('class_asesino',    'deploy/personajes/asesino.png');
+  _loadSpr('class_druida',     'deploy/personajes/druida.png');
+  _loadSpr('class_barbaro',    'deploy/personajes/barbaro.png');
+  _loadSpr('class_arquero',    'deploy/personajes/arquero.png');
   // Female variants
-  _loadSpr('class_guerrero_f', 'personajes/guerrera.png');
-  _loadSpr('class_mago_f',     'personajes/maga.png');
-  _loadSpr('class_monje_f',    'personajes/monja.png');
-  _loadSpr('class_asesino_f',  'personajes/asesina.png');
-  _loadSpr('class_druida_f',   'personajes/druidaf.png');
-  _loadSpr('class_barbaro_f',  'personajes/barbara.png');
-  _loadSpr('class_arquero_f',  'personajes/arquera.png');
+  _loadSpr('class_guerrero_f', 'deploy/personajes/guerrera.png');
+  _loadSpr('class_mago_f',     'deploy/personajes/maga.png');
+  _loadSpr('class_monje_f',    'deploy/personajes/monja.png');
+  _loadSpr('class_asesino_f',  'deploy/personajes/asesina.png');
+  _loadSpr('class_druida_f',   'deploy/personajes/druidaf.png');
+  _loadSpr('class_barbaro_f',  'deploy/personajes/barbara.png');
+  _loadSpr('class_arquero_f',  'deploy/personajes/arquera.png');
 }
 
 // ── HISTORIA ─────────────────────────────────
