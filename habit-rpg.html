@@ -2217,6 +2217,11 @@ h2, h3 { font-family: var(--pxfont); }
 @keyframes vnP3 { from{filter:brightness(.95)}      to{filter:brightness(1.15) hue-rotate(12deg)} }
 @keyframes vnP4 { from{filter:brightness(.75)}      to{filter:brightness(1.02)} }
 @keyframes vnP5 { from{filter:brightness(1) saturate(1)} to{filter:brightness(1.3) saturate(1.4)} }
+.vn-narrator-state { position:absolute;top:12px;left:50%;transform:translateX(-50%);font-size:.58rem;font-weight:700;padding:3px 10px;border-radius:10px;white-space:nowrap;z-index:10;letter-spacing:.06em;pointer-events:none; }
+.vn-narrator-state.brilliant { background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.4);color:#fbbf24; }
+.vn-narrator-state.tired     { background:rgba(100,116,139,.18);border:1px solid rgba(100,116,139,.35);color:#94a3b8; }
+.vn-narrator-state.dark      { background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.3);color:#fca5a5; }
+.vn-narrator-state.normal    { display:none; }
 .vn-world-tint {
   position: absolute; inset: 0; z-index: 1; pointer-events: none; transition: background .9s;
 }
@@ -4586,6 +4591,14 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .camp-news-card.card-done    { opacity: .5; }
 .camp-news-card.card-event { border-color:rgba(255,185,40,.9);background:linear-gradient(135deg,rgba(22,12,0,.97) 0%,rgba(10,5,0,.99) 100%);animation:scrollIn .35s cubic-bezier(.34,1.56,.64,1) both,eventCardGlow 3.5s ease-in-out infinite; }
 .camp-news-card.card-event::before { background:linear-gradient(145deg,rgba(255,185,40,.22) 0%,transparent 58%);animation:eventShimmer 3s ease-in-out infinite; }
+/* Pergamino — Historia event card */
+.camp-news-card.card-story { border-color:rgba(167,139,250,.9);background:linear-gradient(135deg,rgba(8,4,20,.98) 0%,rgba(4,2,14,.99) 100%);animation:scrollIn .4s cubic-bezier(.34,1.56,.64,1) both,storyCardGlow 4s ease-in-out infinite; }
+.camp-news-card.card-story::before { background:linear-gradient(145deg,rgba(167,139,250,.2) 0%,transparent 60%);animation:eventShimmer 4s ease-in-out infinite; }
+@keyframes storyCardGlow { 0%,100%{box-shadow:0 0 10px rgba(139,92,246,.15)} 50%{box-shadow:0 0 28px rgba(167,139,250,.35),inset 0 0 12px rgba(139,92,246,.08)} }
+/* El Sombra rival card */
+.camp-news-card.card-rival { border-color:rgba(239,68,68,.8);background:linear-gradient(135deg,rgba(20,2,2,.98) 0%,rgba(10,1,1,.99) 100%);animation:scrollIn .4s cubic-bezier(.34,1.56,.64,1) both,rivalCardGlow 3s ease-in-out infinite; }
+.camp-news-card.card-rival::before { background:linear-gradient(145deg,rgba(239,68,68,.18) 0%,transparent 60%);animation:eventShimmer 3s ease-in-out infinite; }
+@keyframes rivalCardGlow { 0%,100%{box-shadow:0 0 10px rgba(239,68,68,.14)} 50%{box-shadow:0 0 24px rgba(239,68,68,.32),inset 0 0 10px rgba(220,38,38,.07)} }
 @keyframes eventCardGlow { 0%,100%{box-shadow:0 0 10px rgba(255,185,40,.12)} 50%{box-shadow:0 0 26px rgba(255,200,70,.32),inset 0 0 10px rgba(255,185,40,.06)} }
 @keyframes eventShimmer { 0%{opacity:.35;transform:translateX(-50%) skewX(-12deg)} 50%{opacity:.9} 100%{opacity:.35;transform:translateX(150%) skewX(-12deg)} }
 .event-banner { display:flex;align-items:center;gap:10px;padding:10px 14px;margin:0 16px 10px;background:linear-gradient(135deg,rgba(255,180,30,.07) 0%,rgba(255,140,0,.04) 100%);border:1px solid rgba(255,180,30,.35);border-radius:12px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;animation:eventBannerPulse 3.5s ease-in-out infinite; }
@@ -7266,6 +7279,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 <div class="vn-overlay hide" id="vnOverlay" onclick="vnTap(event)">
   <div class="vn-bg" id="vnBg"></div>
   <div class="vn-world-tint" id="vnWorldTint"></div>
+  <div class="vn-narrator-state normal" id="vnNarrState"></div>
   <div class="vn-top-bar">
     <div class="vn-ch-label" id="vnChLabel">—</div>
     <button class="vn-close-btn" onclick="event.stopPropagation();vnClose()">✕ Salir</button>
@@ -7989,21 +8003,31 @@ const CHAPTER_VN = {
     scenes: [
       { t:'narr', txt:'La oscuridad era todo lo que conocías. Pero en algún punto — un instante, una decisión — algo dentro de ti se negó a seguir durmiendo.' },
       { t:'narr', txt:'El mundo en el que despiertas no es el que recuerdas. Las sombras consumen los bordes de cada cosa. Pero tú estás de pie. Eso, por ahora, es suficiente.' },
-      { t:'dlg', who:'mentor', txt:'Hay dos tipos de personas que llegan aquí: los que buscan escapar del dolor y los que buscan construir algo nuevo. Solo los segundos llegan al final.' },
+      { t:'dlg', who:'mentor', dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          return 'Hay dos tipos de personas que llegan aquí, ' + ctx.name + ': los que buscan escapar del dolor y los que buscan construir algo nuevo. Solo los segundos llegan al final.';
+        }},
       { t:'dec', id:'c1d1', txt:'El Guía te mira fijamente. Sus ojos ven más allá de tu respuesta. "Antes de seguir — ¿desde dónde construyes?"',
         ch:[{ id:'fuerza', lbl:'🗡️ Desde la fuerza — la disciplina es mi base' },
             { id:'sabiduria', lbl:'📖 Desde la sabiduría — la conciencia es mi guía' }] },
       { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          var ctx = _storyGetContext();
           return dec.c1d1 === 'sabiduria'
-            ? 'La sabiduría es paciente. Requiere observar antes de actuar, escuchar antes de hablar. Es el camino más largo — y el más fiel a quien realmente eres.'
-            : 'La fuerza es honesta. Te pedirá todo lo que tienes. Y cuando creas que ya no te queda nada — descubrirás que tenías mucho más de lo que imaginabas.';
+            ? 'La sabiduría es paciente, ' + ctx.name + '. Requiere observar antes de actuar. Es el camino más largo — y el más fiel a quien realmente eres.'
+            : 'La fuerza es honesta, ' + ctx.name + '. Te pedirá todo. Y cuando creas que no te queda nada — descubrirás que tenías mucho más de lo que imaginabas.';
         }},
-      { t:'dlg', who:'rival', right:true, txt:'Mírate. Despertando tarde, creyendo que un poco de esfuerzo lo cambia todo. He visto a cientos como tú. Duran una semana.' },
-      { t:'dlg', who:'ally', txt:'No le hagas caso. Lo que importa es que hoy elegiste estar aquí. Ese es el primer paso — y es el más valioso de todos.' },
+      { t:'dlg', who:'rival', right:true, dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          return _storyRivalLine(ctx).replace(/^"|"$/g, '');
+        }},
+      { t:'dlg', who:'ally', dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          return 'No le hagas caso, ' + ctx.name + '. Lo que importa es que hoy elegiste estar aquí. Ese es el primer paso — y es el más valioso de todos.';
+        }},
       { t:'narr', final:true, dynTxt: function(dec, ws) {
-          if (ws === 'brilliant') return 'Tu constancia esta semana ilumina el camino. La semilla del cambio no solo fue plantada — ya está germinando.';
-          if (ws === 'dark') return 'Esta semana fue difícil. Pero seguiste apareciendo. Y eso es exactamente lo que el primer capítulo requería de ti.';
-          return 'La semilla del cambio fue plantada. Lo que crece de aquí depende únicamente de ti. Fin del Capítulo I.';
+          var ctx = _storyGetContext();
+          var base = _storyNarrLine(ctx);
+          return base + ' La semilla del cambio fue plantada. Fin del Capítulo I.';
         }},
     ]
   },
@@ -8013,24 +8037,34 @@ const CHAPTER_VN = {
       { t:'narr', txt:'Las ruinas que encuentras en tu camino no son accidentales. Cada piedra caída cuenta la historia de alguien que llegó hasta aquí y no continuó.' },
       { t:'narr', txt:'Pero entre los escombros también hay señales de los que sí lo lograron. Y tú, día a día, estás dejando las tuyas.' },
       { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          var ctx = _storyGetContext();
+          var path = dec.c1d1 === 'fuerza' ? 'la fuerza' : 'la sabiduría';
           return dec.c1d1 === 'fuerza'
-            ? 'La fuerza que elegiste al principio ya dejó marcas visibles. Un hábito no es lo que haces cuando tienes motivación — es lo que haces cuando no la tienes.'
-            : 'La sabiduría que elegiste al principio te trajo más lejos de lo que esperabas. Eso es exactamente lo que hace: silenciosa, acumulativa, inevitable.';
+            ? 'La fuerza que elegiste ya dejó marcas visibles, ' + ctx.name + '. Un hábito no es lo que haces cuando tienes motivación — es lo que haces cuando no la tienes.'
+            : 'La sabiduría que elegiste te trajo más lejos de lo que esperabas, ' + ctx.name + '. Eso es exactamente lo que hace: silenciosa, acumulativa, inevitable.';
         }},
-      { t:'dlg', who:'rival', right:true, txt:'¿Cuántos días seguidos llevas? ¿Cuántos fallaste? El progreso intermitente no cuenta. O eres constante o no eres nada.' },
-      { t:'dlg', who:'ally', txt:'Lyra sonríe. "Mira cuánto camino hay detrás tuyo. Cada tarea completada, cada hábito sostenido — eso no se borra. Eso ya es tuyo para siempre."' },
+      { t:'dlg', who:'rival', right:true, dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          if (ctx.streak > 0) return '¿' + ctx.streak + ' días seguidos? Impresionante. Pero recuerdo cuántas veces empezaste así antes, ' + ctx.name + '.';
+          return _storyRivalLine(ctx).replace(/^"|"$/g, '');
+        }},
+      { t:'dlg', who:'ally', dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          return 'Lyra sonríe. "Mira cuánto camino hay detrás tuyo, ' + ctx.name + '. Cada tarea completada — eso no se borra. Eso ya es tuyo para siempre."';
+        }},
       { t:'dec', id:'c2d1', txt:'Las ruinas tienen dos entradas. Ambas llevan al mismo lugar — pero el camino habla de quién eres.',
         ch:[{ id:'oscuro', lbl:'🌑 La entrada oscura — enfrento lo difícil directamente' },
             { id:'ilum',   lbl:'🕯️ El pasaje iluminado — elijo el camino prudente' }] },
       { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          var ctx = _storyGetContext();
           return dec.c2d1 === 'oscuro'
-            ? 'Elegiste la oscuridad. No para buscarla — sino para demostrarle que no te domina. Eso tiene un nombre preciso: valentía sostenida.'
-            : 'Elegiste la luz. La prudencia no es debilidad — es la sabiduría de saber cuándo conservar energía para las batallas que importan de verdad.';
+            ? 'Elegiste la oscuridad, ' + ctx.name + '. No para buscarla — sino para demostrarle que no te domina. Eso tiene un nombre preciso: valentía sostenida.'
+            : 'Elegiste la luz, ' + ctx.name + '. La prudencia no es debilidad — es saber cuándo conservar energía para las batallas que importan de verdad.';
         }},
       { t:'narr', final:true, dynTxt: function(dec, ws) {
-          if (ws === 'brilliant') return 'Las ruinas no te vencieron. Esta semana lo demuestra. Encontraste orden donde había caos. Fin del Capítulo II.';
-          if (ws === 'dark') return 'Atravesaste las ruinas en tu peor semana. Eso es más valioso que hacerlo en la mejor. Fin del Capítulo II.';
-          return 'Las ruinas quedaron atrás. La disciplina empieza a tomar forma en tu interior. Fin del Capítulo II.';
+          var ctx = _storyGetContext();
+          var base = _storyNarrLine(ctx);
+          return base + ' Las ruinas quedaron atrás. La disciplina empieza a tomar forma. Fin del Capítulo II.';
         }},
     ]
   },
@@ -8040,25 +8074,33 @@ const CHAPTER_VN = {
       { t:'narr', txt:'La torre no tiene techo visible. Desde abajo parece infinita. Pero eso ya no te detiene — porque aprendiste que el techo no importa. Importa el siguiente peldaño.' },
       { t:'narr', txt:'En cada piso hay una versión de ti mismo que debiste superar: el que procrastinaba, el que se excusaba, el que cedía al cansancio. Ya no son tus dueños.' },
       { t:'dlg', who:'mentor', dynTxt: function(dec, ws) {
-          var streak = (typeof char !== 'undefined' && char && char.streak) || 0;
-          return streak >= 14
-            ? 'Tu racha de ' + streak + ' días no es un número. Es arquitectura del alma. Cada día fue un ladrillo en esta torre que ahora escalas sin mirar atrás.'
-            : 'La inconsistencia no es fracaso — es información exacta. Te dice dónde están tus límites reales. Y los límites reales siempre son más amplios de lo que creías.';
+          var ctx = _storyGetContext();
+          return ctx.streak >= 14
+            ? ctx.name + ', tu racha de ' + ctx.streak + ' días no es un número. Es arquitectura del alma. Cada día fue un ladrillo en esta torre que ahora escalas.'
+            : 'La inconsistencia no es fracaso, ' + ctx.name + ' — es información exacta. Te dice dónde están tus límites reales. Y los límites reales siempre son más amplios.';
         }},
-      { t:'dlg', who:'rival', right:true, txt:'¿Cuántas veces pensaste en rendirte? Cada caída, cada noche difícil, cada día fallido. El patrón no cambia.' },
-      { t:'dlg', who:'ally', txt:'Lo que él no dice es que cada vez que caíste, elegiste levantarte. Eso no es debilidad. Es la definición exacta de fortaleza real.' },
+      { t:'dlg', who:'rival', right:true, dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          if (ctx.weakHabit) return '¿Cuántas veces pensaste en rendirte? Y ' + ctx.weakHabit + ' — ese sigue siendo tu punto ciego, ' + ctx.name + '. El patrón no cambia.';
+          return '¿Cuántas veces pensaste en rendirte? Cada caída, cada día fallido. El patrón no cambia, ' + ctx.name + '.';
+        }},
+      { t:'dlg', who:'ally', dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          return 'Lo que él no dice, ' + ctx.name + ', es que cada vez que caíste elegiste levantarte. Eso no es debilidad. Es la definición exacta de fortaleza real.';
+        }},
       { t:'dec', id:'c3d1', txt:'En el tercer piso hay una puerta sellada. Nadie sabe qué hay al otro lado.',
         ch:[{ id:'forzar', lbl:'⚔️ Forzarla — sea lo que sea, lo enfrento' },
             { id:'llave',  lbl:'🔑 Buscar la llave — con paciencia y método' }] },
       { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          var ctx = _storyGetContext();
           return dec.c3d1 === 'forzar'
-            ? 'La derrumbaste. Al otro lado solo había un espejo. Te miraste y viste a alguien que ya no reconoces del todo — más real, más íntegro, más tú.'
-            : 'La llave estaba tres pisos arriba, donde menos la esperabas. La puerta se abrió sola. No todo requiere fuerza — requiere visión.';
+            ? 'La derrumbaste, ' + ctx.name + '. Al otro lado había un espejo. Te miraste y viste a alguien más real, más íntegro, más tú.'
+            : 'La llave estaba tres pisos arriba, ' + ctx.name + ', donde menos la esperabas. No todo requiere fuerza — requiere visión.';
         }},
       { t:'narr', final:true, dynTxt: function(dec, ws) {
-          if (ws === 'brilliant') return 'La torre siente tu energía. Cada hábito esta semana es un peldaño más. Seguiste subiendo. Fin del Capítulo III.';
-          if (ws === 'dark') return 'La torre es pesada algunos días. Pero incluso un solo peldaño sigue siendo avance real. Eso es todo lo que se requiere. Fin del Capítulo III.';
-          return 'Has ascendido más alto que cualquier versión anterior de ti. La torre sigue — y tú también. Fin del Capítulo III.';
+          var ctx = _storyGetContext();
+          var base = _storyNarrLine(ctx);
+          return base + ' Has ascendido más alto que cualquier versión anterior de ti. Pero el siguiente peldaño ya te llama. Fin del Capítulo III.';
         }},
     ]
   },
@@ -8068,24 +8110,32 @@ const CHAPTER_VN = {
       { t:'narr', txt:'El abismo no es un lugar. Es un estado. El momento en que todo lo que construiste se enfrenta a la pregunta más difícil: ¿por qué?' },
       { t:'narr', txt:'No hay respuesta fácil aquí. Pero los que llegan hasta este punto ya saben algo que los demás no: la pregunta misma tiene un valor incalculable.' },
       { t:'dlg', who:'mentor', dynTxt: function(dec, ws) {
-          return ws === 'brilliant'
-            ? 'Tu bienestar mental estas semanas es visible. No eres el mismo que empezó — y eso no es solo disciplina. Es crecimiento interior real, profundo, tuyo.'
-            : 'El sufrimiento no desaparece cuando lo empujas hacia abajo. Se transforma cuando lo miras directo, lo nombras y le permites estar sin que te defina.';
+          var ctx = _storyGetContext();
+          if (ctx.wellness >= 7) return ctx.name + ', tu bienestar mental esta semana es visible. No eres el mismo que empezó — y eso no es solo disciplina. Es crecimiento real, tuyo.';
+          if (ctx.ws === 'dark') return 'El sufrimiento no desaparece cuando lo empujas hacia abajo, ' + ctx.name + '. Se transforma cuando lo nombras y le permites estar sin que te defina.';
+          return 'El abismo no es tu enemigo, ' + ctx.name + '. Es la pregunta más honesta que puedes hacerte. Y tú ya tienes la respuesta — aunque todavía no la escuches.';
         }},
-      { t:'dlg', who:'rival', right:true, txt:'El Sombra parece más pequeño aquí. Casi triste. "Ya no puedo detenerte. Pero sigo contigo. No como enemigo... como sombra. Eso es lo que soy."' },
-      { t:'dlg', who:'ally', txt:'Lyra te mira con calma. "El rival no era tu enemigo. Era la parte de ti que tenía miedo. Y el miedo... también tiene su lugar en la historia."' },
+      { t:'dlg', who:'rival', right:true, dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          return 'El Sombra parece más pequeño aquí. Casi triste. "Ya no puedo detenerte, ' + ctx.name + '. Pero sigo contigo. No como enemigo... como sombra. Eso es lo que soy."';
+        }},
+      { t:'dlg', who:'ally', dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          return 'Lyra te mira con calma. "El rival no era tu enemigo, ' + ctx.name + '. Era la parte de ti que tenía miedo. Y el miedo... también tiene su lugar en la historia."';
+        }},
       { t:'dec', id:'c4d1', txt:'El abismo te habla. Una voz sin forma dice: "¿Qué buscas realmente en todo esto?"',
         ch:[{ id:'escucha', lbl:'👁️ Escuchar — me quedo en el silencio' },
             { id:'camina',  lbl:'🚶 Seguir caminando — ya lo sé' }] },
       { t:'dlg', who:'ally', dynTxt: function(dec) {
+          var ctx = _storyGetContext();
           return dec.c4d1 === 'escucha'
-            ? 'Lyra susurra: "Los que escuchan al abismo descubren que la voz era la suya propia. Todo este tiempo, la respuesta estaba dentro de ti."'
-            : 'Lyra asiente lento. "Los que siguen caminando también tienen razón. A veces la respuesta no es entender — es simplemente moverse."';
+            ? 'Lyra susurra: "Los que escuchan al abismo descubren que la voz era la suya propia, ' + ctx.name + '. Todo este tiempo, la respuesta estaba dentro de ti."'
+            : 'Lyra asiente lento. "Los que siguen caminando también tienen razón, ' + ctx.name + '. A veces la respuesta no es entender — es simplemente moverse."';
         }},
       { t:'narr', final:true, dynTxt: function(dec, ws) {
-          if (ws === 'brilliant') return 'Tu salud mental esta semana refleja el trabajo que has hecho. El abismo no te asustó — te enseñó. Fin del Capítulo IV.';
-          if (ws === 'dark') return 'Esta semana fue oscura. Pero estás aquí, en el abismo, mirándolo de frente. Eso es exactamente lo que este capítulo requería. Fin del Capítulo IV.';
-          return 'Miraste al abismo y no parpadeaste. Lo que encontraste no fue vacío, sino la raíz de tu fuerza. Fin del Capítulo IV.';
+          var ctx = _storyGetContext();
+          var base = _storyNarrLine(ctx);
+          return base + ' Miraste al abismo y no parpadeaste. Lo que encontraste no fue vacío. Fue la raíz de tu fuerza. Fin del Capítulo IV.';
         }},
     ]
   },
@@ -8095,25 +8145,35 @@ const CHAPTER_VN = {
       { t:'narr', txt:'No es que la oscuridad desaparezca. Es que ya no la temes. La luz que encontraste no vino de fuera — creció desde adentro, despacio, hábito a hábito, día a día.' },
       { t:'narr', txt:'Llegaste aquí no a pesar de tus luchas, sino a través de ellas. Esta no es la línea de meta. Es el punto desde donde realmente empieza todo.' },
       { t:'dlg', who:'mentor', dynTxt: function(dec) {
-          var clsName = (typeof CLASSES !== 'undefined' && char && CLASSES[char.class]) ? CLASSES[char.class].name : 'héroe';
-          var streak  = (typeof char !== 'undefined' && char && char.streak) || 0;
-          var path    = dec.c1d1 === 'sabiduria' ? 'la sabiduría' : 'la fuerza';
-          return 'Llegaste hasta aquí porque elegiste ' + path + ' al principio, como ' + clsName + '. Y lo mantuviste — ' + (streak > 0 ? streak + ' días de racha lo prueban' : 'cada día, una y otra vez') + '. Eso es lo que eres ahora.';
+          var ctx  = _storyGetContext();
+          var path = dec.c1d1 === 'sabiduria' ? 'la sabiduría' : 'la fuerza';
+          var cls  = ctx.className || 'héroe';
+          var streakTxt = ctx.streak > 0 ? ctx.streak + ' días de racha lo demuestran' : 'cada decisión que tomaste lo demuestra';
+          return ctx.name + ', llegaste hasta aquí porque elegiste ' + path + ' al principio. Como ' + cls + ' que eres, lo mantuviste — ' + streakTxt + '. Eso es lo que eres ahora.';
         }},
-      { t:'dlg', who:'rival', right:true, txt:'La sombra camina ahora a tu lado, tranquila. "Ahora lo entiendo. No era tu enemiga. Era la prueba de que la luz necesita oscuridad para ser visible."' },
-      { t:'dlg', who:'ally', txt:'Lyra ríe. "¿Lo ves? La luz que buscabas nunca estuvo afuera. Siempre fue tuya. Solo necesitabas recordarlo."' },
+      { t:'dlg', who:'rival', right:true, dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          return 'La sombra camina ahora a tu lado, tranquila. "Ahora lo entiendo, ' + ctx.name + '. No era tu enemiga. Era la prueba de que la luz necesita oscuridad para ser visible."';
+        }},
+      { t:'dlg', who:'ally', dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
+          return 'Lyra ríe. "¿Lo ves, ' + ctx.name + '? La luz que buscabas nunca estuvo afuera. Siempre fue tuya. Solo necesitabas recordarlo."';
+        }},
       { t:'dec', id:'c5d1', txt:'El camino termina aquí — y al mismo tiempo, empieza de nuevo. ¿Cómo llevas esta victoria?',
         ch:[{ id:'personal',  lbl:'🌟 Es mía — silenciosa y profunda' },
             { id:'compartir', lbl:'🤝 La comparto — el cambio crece en comunidad' }] },
       { t:'dlg', who:'mentor', dynTxt: function(dec) {
+          var ctx = _storyGetContext();
           return dec.c5d1 === 'personal'
-            ? 'Las victorias más profundas no necesitan aplausos. Llevas algo nuevo contigo. Nadie puede quitártelo — porque nadie más sabe exactamente lo que te costó.'
-            : 'Las personas que comparten su crecimiento no lo pierden — lo multiplican. Lo que has construido ahora puede ser semilla en otros.';
+            ? 'Las victorias más profundas no necesitan aplausos, ' + ctx.name + '. Llevas algo nuevo contigo — nadie puede quitártelo porque nadie sabe lo que te costó.'
+            : ctx.name + ', las personas que comparten su crecimiento no lo pierden — lo multiplican. Lo que construiste puede ser semilla en otros.';
         }},
       { t:'narr', final:true, dynTxt: function(dec, ws) {
+          var ctx = _storyGetContext();
           var c1  = dec.c1d1 === 'sabiduria' ? 'la sabiduría' : 'la fuerza';
-          var c5  = dec.c5d1 === 'compartir' ? 'y decidiste compartirla con el mundo' : 'y la llevas en silencio, profunda';
-          return 'Comenzaste eligiendo ' + c1 + '. Terminaste con una victoria ' + c5 + '. Esta no es la línea de meta — es el punto desde donde realmente empieza todo. Fin del Capítulo V.';
+          var c5  = dec.c5d1 === 'compartir' ? 'y la compartes con el mundo' : 'y la llevas en silencio, profunda';
+          var streakLine = ctx.streak > 0 ? ' Con ' + ctx.streak + ' días de racha en tu haber.' : '';
+          return ctx.name + ' comenzó eligiendo ' + c1 + '.' + streakLine + ' Terminó con una victoria que lleva consigo ' + c5 + '. Esta no es la línea de meta — es el punto desde donde realmente empieza todo. Fin del Capítulo V.';
         }},
     ]
   },
@@ -8915,6 +8975,9 @@ const ENEMIES = {
   ev_rey_nomuerto:   { name:'Rey No Muerto',            icon:'💀',  hp:2500, atk:155, def:94,  xp:1400, gold:1050, isBoss:true, isEventBoss:true },
   ev_espectro_prim:  { name:'Espectro Primordial',      icon:'👻',  hp:2600, atk:160, def:98,  xp:1450, gold:1100, isBoss:true, isEventBoss:true },
   ev_dios_guerra:    { name:'Dios de la Guerra',        icon:'⚔️',  hp:2800, atk:168, def:102, xp:1550, gold:1180, isBoss:true, isEventBoss:true },
+  // ── El Rival de la Historia ─────────────────────────────────────────────────
+  // Scale dynamically with char.level in enterRivalEncounter()
+  el_sombra:         { name:'El Sombra',                icon:'🌑',  hp:300,  atk:42,  def:18,  xp:180,  gold:120,  isBoss:true, isRival:true },
 };
 const ZONES = [
   { id:'z1', name:'Bosque Oscuro', icon:'🌲', color:'#16a34a', minLevel:1, maxLevel:10,
@@ -9440,6 +9503,10 @@ const ENEMY_META = {
   el_vacio:     {desc:'EL VACÍO PRIMORDIAL — La nada absoluta que existe antes y después de todo. El desafío máximo.',weakness:'La voluntad inquebrantable',
     skills:[{name:'Aniquilación',icon:'🌌',every:2,mult:3.5,msg:'usa Aniquilación'},{name:'Devorar Realidad',icon:'🌑',every:3,mult:4.0,msg:'devora la realidad misma'},{name:'Restauración Vacía',icon:'🌀',every:4,type:'heal_self',amount:0.25,msg:'usa la Restauración del Vacío'},{name:'Colapso Universal',icon:'💀',every:5,mult:5.5,msg:'provoca un Colapso Universal'},{name:'Extinción Total',icon:'🌌',every:7,mult:8.0,effect:'ignoredef',msg:'usa la EXTINCIÓN TOTAL'}],
     phase2:{icon:'🌌💀',name:'El Vacío Primordial Desatado',atkMult:2.8,msg:'¡EL VACÍO PRIMORDIAL SE DESATA — La realidad colapsa a tu alrededor!'}},
+  // ── El Rival de la Historia ──────────────────────────────────────────────────
+  el_sombra:    {desc:'Tu propia sombra tomó forma. Cada mal hábito que ignoraste le dio fuerza.',weakness:'La constancia',
+    skills:[{name:'Golpe de Duda',icon:'🌑',every:3,mult:1.8,msg:'usa Golpe de Duda'},{name:'Susurro del Fracaso',icon:'💭',every:4,type:'curse',msg:'susurra tus fracasos pasados'}],
+    phase2:{icon:'🌑💀',name:'La Sombra Verdadera',atkMult:1.6,msg:'¡La Sombra revela tu mayor miedo!'}},
 };
 
 // ── Boss Dialogues ──────────────────────────────────────────────────────────
@@ -9602,6 +9669,22 @@ const BOSS_DIALOGUES = {
           { text:'No hoy. No por ti.', reaction:'Esa certeza... es nueva. No la había visto antes. Interesante variable.', effectDesc:'Lo sorprendes: −20% ATK y DEF del jefe', effect:{ atkMult:0.8, defMult:0.8 } },
           { text:'Si todo termina, entonces tú también terminarás.', reaction:'Lógica impecable. Sí. Algún día yo también. Pero ese día... no es hoy.', effectDesc:'El Señor se prepara al máximo: +30% ATK y DEF', effect:{ atkMult:1.3, defMult:1.3 } },
           { text:'[Atacas sin filosofías. El fin puede esperar.]', reaction:'...Pragmatismo. Nunca nadie me respondió así. Empecemos, entonces.', effectDesc:'Inicio rápido: ganas el primer turno', effect:{ firstStrike:true } }
+        ]
+      }
+    ]
+  },
+  el_sombra: {
+    personality:'rival',
+    personalityLabel:'🌑 Tu Sombra',
+    intro:'Tu propia sombra te bloquea el camino. Tiene tu forma. Conoce tus miedos. Y sonríe.',
+    bossIcon:'🌑',
+    exchanges:[
+      {
+        boss:'Volviste. Sabía que romperías la racha. Siempre lo haces. Soy la prueba.',
+        choices:[
+          { text:'Las rachas se rompen. Lo que importa es levantarse.', reaction:'Palabras bonitas. ¿Cuántas veces las has dicho antes de volver a caer?', effectDesc:'La Sombra se burla: +20% ATK pero −20% DEF', effect:{ atkMult:1.2, defMult:0.8 } },
+          { text:'Tú no eres yo. Eres lo que queda cuando me rindo.', reaction:'...Eso duele. Porque es verdad. Y la verdad siempre tiene precio.', effectDesc:'La Sombra tambalea: −25% ATK', effect:{ atkDebuff:0.75 } },
+          { text:'[Sin palabras. Atacas directamente.]', reaction:'¡Ah! ¡Acción! Olvidé lo que se siente cuando realmente decides—', effectDesc:'La sorprendes: primer turno garantizado', effect:{ firstStrike:true } }
         ]
       }
     ]
@@ -11882,7 +11965,7 @@ function defChar() {
     inventory: [],
     equipped: { weapon:null, armor:null, accessory:null, head:null, legs:null, feet:null, leftHand:null, cape:null },
     dungeonsCompleted: {},
-    storyProgress: { chaptersRead: [], celebrationSeen: [], decisions: {} },
+    storyProgress: { chaptersRead: [], celebrationSeen: [], decisions: {}, rivalDefeated: [], newChapterSeen: [], guideBuff: 0 },
     battlesWon: 0,
     battlesAttempted: 0,
     achievements: {},
@@ -12055,6 +12138,9 @@ function loadChar() {
     if (!Array.isArray(c.storyProgress.chaptersRead)) c.storyProgress.chaptersRead = [];
     if (!Array.isArray(c.storyProgress.celebrationSeen)) c.storyProgress.celebrationSeen = [];
     if (!c.storyProgress.decisions || typeof c.storyProgress.decisions !== 'object') c.storyProgress.decisions = {};
+    if (!Array.isArray(c.storyProgress.rivalDefeated))  c.storyProgress.rivalDefeated  = [];
+    if (!Array.isArray(c.storyProgress.newChapterSeen)) c.storyProgress.newChapterSeen = [];
+    if (typeof c.storyProgress.guideBuff !== 'number')  c.storyProgress.guideBuff = 0;
     if (typeof c.battlesWon !== 'number') c.battlesWon = 0;
     if (!c.achievements || typeof c.achievements !== 'object') c.achievements = {};
     if (!c.habitStreak    || typeof c.habitStreak    !== 'object') c.habitStreak    = { count:0, lastDate:'' };
@@ -12790,7 +12876,7 @@ function _campRenderCards() {
   var SEAL_COLORS = {
     'card-streak':'#b91c1c','card-dungeon':'#7c3aed',
     'card-special':'#b45309','card-progress':'#047857','card-guild':'#1d4ed8',
-    'card-event':'#b45309'
+    'card-event':'#b45309','card-story':'#6d28d9','card-rival':'#991b1b'
   };
   var cards = _campBuildCards();
   cards.forEach(function(card, idx) {
@@ -12843,6 +12929,41 @@ function _campBuildCards() {
       action:'⚔️ Ir al evento →',
       done: false,
       onClick: function(){ navAdv(); } });
+  }
+
+  // ── Pergamino: new chapter available ───────────────────────────────────────
+  var newCh = null;
+  try { newCh = _storyHasNewChapter(); } catch(e) {}
+  if (newCh) {
+    cards.push({ type:'card-story', icon:'📜', title:'El Guía tiene algo que decirte',
+      body: '"' + newCh.name + '" — un nuevo capítulo te espera',
+      sub: '✨ Urgente · El momento no durará para siempre',
+      action:'📖 Abrir Historia →',
+      onClick: function() {
+        try {
+          if (!char.storyProgress.newChapterSeen.includes(newCh.id))
+            char.storyProgress.newChapterSeen.push(newCh.id);
+          saveChar();
+        } catch(e) {}
+        openStory();
+      }
+    });
+  }
+
+  // ── El Sombra: rival encounter when streak broken ────────────────────────────
+  var rivalActive = false;
+  try { rivalActive = _rivalShouldAppear(); } catch(e) {}
+  if (rivalActive) {
+    var rivalCtx = null;
+    try { rivalCtx = _storyGetContext(); } catch(e) {}
+    var rivalTaunt = '';
+    try { rivalTaunt = _storyRivalLine(rivalCtx); } catch(e) {}
+    cards.push({ type:'card-rival', icon:'🌑', title:'El Sombra ha aparecido',
+      body: rivalTaunt || '"Tu racha se rompió. Y yo estaba esperando."',
+      sub: '⚔️ Derrótalo para desbloquear el siguiente capítulo',
+      action:'🌑 Enfrentar a El Sombra →',
+      onClick: function() { enterRivalEncounter(); }
+    });
   }
 
   // Progress
@@ -15028,6 +15149,102 @@ function enterMonthlyEventDungeon() {
   }, 3200);
 }
 
+// ── Rival Encounter (El Sombra — triggered from camp when streak broken) ──────
+function enterRivalEncounter() {
+  // Scale El Sombra with player level
+  const lv  = (char && char.level) || 1;
+  const base = ENEMIES.el_sombra;
+  const scale = Math.max(1, lv / 10);
+  const scaledEnemy = {
+    ...base,
+    hp:  Math.round(base.hp  * scale),
+    atk: Math.round(base.atk * scale),
+    def: Math.round(base.def * scale),
+    xp:  Math.round(base.xp  * scale),
+    gold:Math.round(base.gold * scale),
+  };
+  // Temporarily patch ENEMIES so loadNextEnemy() picks the scaled version
+  ENEMIES._el_sombra_scaled = scaledEnemy;
+
+  const cs = getCombatStats();
+  adv.view      = 'boss_dialogue';
+  adv.dungeon   = { id:'story_rival', name:'Encuentro con El Sombra', seq:['_el_sombra_scaled'], reward:{ xp: scaledEnemy.xp, gold: scaledEnemy.gold } };
+  adv.zoneId    = null;
+  adv.seq       = ['_el_sombra_scaled'];
+  adv.seqIdx    = 0;
+  adv.playerHP  = cs.maxHP;
+  adv.playerMaxHP = cs.maxHP;
+  adv.buffs     = { berserk:0, stealth:false, atk_up:0, shield:false,
+                    meditate:0, eagleeye:0, ally:0, regen:0, immunity:0,
+                    fortress:0, counter:false, trance:false, berserker_mode:0,
+                    invincible:0, godmode:0, power_gain:0, revive_ready:false };
+  adv.enemyBuffs= { stun:0, poison:0, burn:0, bleed:0, def_down:0, curse:0, marked:false };
+  adv.skillCDs  = {};
+  adv.potions   = 2;
+  adv.healUsed  = false;
+  adv.turn      = 'player';
+  adv.log       = [];
+  adv.rewards   = { xp: scaledEnemy.xp, gold: scaledEnemy.gold };
+  adv.won             = false;
+  adv.ultimateCharge  = 0;
+  adv.ultimateReady   = false;
+  adv.enemyTurn       = 0;
+  adv.phase2Triggered = false;
+  adv.bossDialogueShown   = false;
+  adv.bossDialogueKey     = 'el_sombra';
+  adv._dlgState           = null;
+  adv.dialogueEffects     = { atkMult:1, defMult:1, hpMult:1, firstStrike:false, atkDebuff:1 };
+  adv._isRivalEncounter   = true;
+
+  // Load the scaled enemy
+  adv.enemy = { ...scaledEnemy, hp: scaledEnemy.hp, hp_max: scaledEnemy.hp, key: '_el_sombra_scaled' };
+
+  // Update the boss dialogue intro to use real taunt data
+  const ctx = _storyGetContext();
+  const rivalTaunt = _storyRivalLine(ctx);
+  if (BOSS_DIALOGUES.el_sombra && BOSS_DIALOGUES.el_sombra.exchanges[0]) {
+    BOSS_DIALOGUES.el_sombra.exchanges[0].boss = rivalTaunt.replace(/^"|"$/g, '');
+  }
+
+  // Navigate to adventure view
+  navAdv();
+  setTimeout(() => renderAdv(), 100);
+}
+
+// Called when rival is defeated — unlock next chapter, grant guide buff
+function _onRivalDefeated() {
+  if (!adv._isRivalEncounter) return;
+  adv._isRivalEncounter = false;
+  delete ENEMIES._el_sombra_scaled;
+
+  const sp = char.storyProgress;
+  const now = new Date().toISOString().slice(0, 10);
+  if (!sp.rivalDefeated.includes(now)) sp.rivalDefeated.push(now);
+
+  // Find the first locked chapter and unlock notification
+  let unlockedMsg = '';
+  for (let i = 0; i < CHAPTERS.length; i++) {
+    const ch = CHAPTERS[i];
+    if (!sp.chaptersRead.includes(ch.id) && !sp.newChapterSeen.includes(ch.id)) {
+      sp.newChapterSeen = sp.newChapterSeen.filter(id => id !== ch.id); // ensure fresh notification
+      unlockedMsg = `¡Capítulo "${ch.name}" ahora disponible!`;
+      break;
+    }
+  }
+
+  // Grant guide buff (1 charge) for next boss combat
+  sp.guideBuff = Math.min((sp.guideBuff || 0) + 1, 3);
+  saveChar();
+
+  if (unlockedMsg) {
+    setTimeout(() => {
+      try {
+        showToast('📖 ' + unlockedMsg + ' Aldric te espera en la Historia.', 5000);
+      } catch(e) {}
+    }, 1200);
+  }
+}
+
 // ── Enter Dungeon ──
 function enterDungeon(dgId) {
   const zone = ZONES.find(z => z.dungeons.some(d => d.id === dgId));
@@ -15264,6 +15481,18 @@ function bossDialogueChoose(idx) {
 }
 
 function bossDialogueStart() {
+  // Apply Guía buff if available (bonus HP before boss fight)
+  try {
+    const sp = char && char.storyProgress;
+    if (sp && sp.guideBuff > 0) {
+      const bonus = Math.round(adv.playerMaxHP * 0.15);
+      adv.playerHP     = Math.min(adv.playerHP + bonus, adv.playerMaxHP);
+      sp.guideBuff--;
+      saveChar();
+      combatLog(`🌿 ¡Aldric te da su bendición! +${bonus} HP antes del combate.`, 's');
+    }
+  } catch(e) {}
+
   // Apply dialogue effects to the live enemy
   const e   = adv.enemy;
   const eff = adv.dialogueEffects;
@@ -16667,6 +16896,7 @@ function endCombat(won) {
   adv.view = 'result';
   char.battlesAttempted = (char.battlesAttempted || 0) + 1;
   if (won) {
+    try { if (adv._isRivalEncounter) _onRivalDefeated(); } catch(e) {}
     const isDailyDg = adv.dungeon?.isDaily;
     const isMonthlyEvent = adv.dungeon?.isMonthlyEvent;
     if (isDailyDg) {
@@ -18809,8 +19039,144 @@ function _storyWorldState() {
     if (!entries.length) return 'normal';
     var pcts = entries.map(function(e){ return getDayMissionStats(e).pct; });
     var avg  = pcts.reduce(function(a,b){return a+b;},0) / pcts.length;
+    // Boost to 'dark' if wellness has been consistently low
+    var wSum = 0, wN = 0;
+    entries.forEach(function(e) {
+      if (e.checkinMorn && e.checkinMorn.score) { wSum += e.checkinMorn.score; wN++; }
+      if (e.checkinEven && e.checkinEven.score) { wSum += e.checkinEven.score; wN++; }
+    });
+    var avgWell = wN > 0 ? wSum / wN : 5;
+    if (avgWell <= 3 && avg < 50) return 'dark';
     return avg >= 75 ? 'brilliant' : avg >= 45 ? 'normal' : avg >= 22 ? 'tired' : 'dark';
   } catch(e) { return 'normal'; }
+}
+
+// ── Story Context: real-life data for dynamic narrative ──────────────────────
+function _storyGetContext() {
+  var ctx = {
+    name:      (char && char.name)  || 'héroe',
+    className: '',
+    streak:    (char && char.habitStreak && char.habitStreak.count) || 0,
+    level:     (char && char.level) || 1,
+    ws:        _storyWorldState(),
+    wellness:  5,
+    weakHabit: null,
+    completePct: 0,
+  };
+
+  // Class display name
+  try {
+    if (char && char.class && typeof CLASSES !== 'undefined') {
+      ctx.className = (CLASSES[char.class] && CLASSES[char.class].name) || char.class;
+    }
+  } catch(e) {}
+
+  // Average wellness this week
+  try {
+    var today = new Date(), wSum = 0, wN = 0;
+    for (var i = 1; i <= 7; i++) {
+      var d = new Date(today); d.setDate(today.getDate() - i);
+      var k = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      var raw = localStorage.getItem('hrpg_day_' + k);
+      if (raw) {
+        var e = JSON.parse(raw);
+        if (e.checkinMorn && e.checkinMorn.score) { wSum += e.checkinMorn.score; wN++; }
+        if (e.checkinEven && e.checkinEven.score) { wSum += e.checkinEven.score; wN++; }
+      }
+    }
+    if (wN > 0) ctx.wellness = Math.round(wSum / wN * 10) / 10;
+  } catch(e) {}
+
+  // Weakest habit — habit with lowest 7-day completion rate
+  try {
+    var habitStats = {};
+    var today2 = new Date();
+    for (var j = 1; j <= 14; j++) {
+      var dj = new Date(today2); dj.setDate(today2.getDate() - j);
+      var kj = dj.getFullYear() + '-' + String(dj.getMonth()+1).padStart(2,'0') + '-' + String(dj.getDate()).padStart(2,'0');
+      var rawj = localStorage.getItem('hrpg_day_' + kj);
+      if (rawj) {
+        var ej = JSON.parse(rawj);
+        (ej.missions || []).forEach(function(m) {
+          if (!m.id) return;
+          if (!habitStats[m.id]) habitStats[m.id] = { label: m.text || m.id, done: 0, total: 0 };
+          habitStats[m.id].total++;
+          if (m.done) habitStats[m.id].done++;
+        });
+      }
+    }
+    var worst = null, worstPct = 1;
+    Object.keys(habitStats).forEach(function(id) {
+      var h = habitStats[id];
+      if (h.total < 3) return;
+      var p = h.done / h.total;
+      if (p < worstPct) { worstPct = p; worst = h.label; }
+    });
+    ctx.weakHabit = worst;
+  } catch(e) {}
+
+  // Today's completion %
+  try {
+    var mis = (day.missions || []).filter(function(m){ return m.done; }).length;
+    var mor = (day.morning  || []).filter(function(m){ return m.done; }).length;
+    var tot = (day.missions || []).length + (day.morning || []).length;
+    ctx.completePct = tot > 0 ? Math.round((mis + mor) / tot * 100) : 0;
+  } catch(e) {}
+
+  return ctx;
+}
+
+// Returns a taunt line for El Sombra based on real habit data
+function _storyRivalLine(ctx) {
+  ctx = ctx || _storyGetContext();
+  if (ctx.weakHabit) return '"Tu punto débil sigue siendo ' + ctx.weakHabit + '. Lo sé. Siempre lo supe."';
+  if (ctx.streak === 0) return '"Sin racha. Sin constancia. Solo excusas. Exactamente como esperaba."';
+  if (ctx.streak < 3)  return '"Dos días. Eso es todo lo que duraste. ¿Y esperas que te tema?"';
+  if (ctx.ws === 'dark') return '"Tu propia mente te pesa. Ni siquiera necesito atacarte — ya lo haces tú."';
+  if (ctx.wellness < 4) return '"Tu bienestar está por el suelo. No estás bien — y lo finges."';
+  return '"Llegaste más lejos de lo esperado. Pero eso solo hace la caída más larga."';
+}
+
+// Returns the narrator line based on world state
+function _storyNarrLine(ctx) {
+  ctx = ctx || _storyGetContext();
+  if (ctx.ws === 'brilliant') {
+    if (ctx.streak >= 7) return ctx.name + ' avanza con paso firme. ' + ctx.streak + ' días de constancia — la luz guía su camino.';
+    return ctx.name + ' brilla con una fuerza que pocos conocen. El héroe se acerca a su mejor versión.';
+  }
+  if (ctx.ws === 'dark') {
+    if (ctx.wellness < 4) return 'Una niebla oscura rodea a ' + ctx.name + '. Su mente busca claridad en la tormenta.';
+    return 'Las sombras pesan sobre ' + ctx.name + '. Pero sigue avanzando. Eso ya es victoria.';
+  }
+  if (ctx.ws === 'tired') return ctx.name + ' camina con cansancio en los hombros. Pero cada paso cuenta — aunque pese.';
+  return ctx.name + ' continúa su camino. Hábito a hábito, día a día.';
+}
+
+// Check if El Sombra should appear (streak was broken: last streak date is 2+ days ago)
+function _rivalShouldAppear() {
+  try {
+    if (!char.storyProgress) return false;
+    var hs = char.habitStreak || {};
+    if (!hs.lastDate) return false;
+    // Streak broken: last date is more than 1 day before today
+    var last = new Date(hs.lastDate + 'T12:00:00');
+    var now  = new Date();
+    var diffDays = Math.floor((now - last) / 86400000);
+    return diffDays >= 2;
+  } catch(e) { return false; }
+}
+
+// Check if there's a newly unlocked chapter that hasn't been seen in camp
+function _storyHasNewChapter() {
+  try {
+    for (var i = 0; i < CHAPTERS.length; i++) {
+      var ch = CHAPTERS[i];
+      if (chapterUnlocked(ch) && !chapterRead(ch) && !char.storyProgress.newChapterSeen.includes(ch.id)) {
+        return ch;
+      }
+    }
+  } catch(e) {}
+  return null;
 }
 
 function vnOpen(chId) {
@@ -18832,6 +19198,14 @@ function vnOpen(chId) {
     bgEl.className = 'vn-bg vn-bg-' + chId;
   }
   if (tntEl) tntEl.className = 'vn-world-tint ' + _vnWS;
+
+  // Show narrator state badge
+  var narrEl = document.getElementById('vnNarrState');
+  if (narrEl) {
+    var stateLabels = { brilliant:'✨ Semana brillante', tired:'😔 Semana difícil', dark:'🌑 Semana oscura', normal:'' };
+    narrEl.textContent  = stateLabels[_vnWS] || '';
+    narrEl.className    = 'vn-narrator-state ' + _vnWS;
+  }
 
   var labEl = document.getElementById('vnChLabel');
   if (labEl) labEl.textContent = 'Capítulo ' + ch.num + ' · ' + ch.name;
