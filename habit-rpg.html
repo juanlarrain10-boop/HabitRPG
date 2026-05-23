@@ -1708,14 +1708,16 @@ h2, h3 { font-family: var(--pxfont); }
   display: inline-block; font-size: .56rem; font-weight: 900; text-transform: uppercase;
   letter-spacing: .07em; padding: 2px 7px; border-radius: 5px; margin-bottom: 3px;
 }
-.rarity-comun      { background: rgba(156,163,175,.15); color: #9ca3af; border: 1px solid rgba(156,163,175,.3); }
-.rarity-raro       { background: rgba(59,130,246,.12);  color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
-.rarity-epico      { background: rgba(139,92,246,.15);  color: #c084fc; border: 1px solid rgba(139,92,246,.3); }
-.rarity-legendario { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.4);
+.rarity-comun       { background: rgba(156,163,175,.15); color: #9ca3af; border: 1px solid rgba(156,163,175,.3); }
+.rarity-poco_comun  { background: rgba(34,197,94,.1);   color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+.rarity-raro        { background: rgba(59,130,246,.12);  color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+.rarity-epico       { background: rgba(139,92,246,.15);  color: #c084fc; border: 1px solid rgba(139,92,246,.3); }
+.rarity-legendario  { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.4);
   animation: legendaryPulse 3s ease-in-out infinite; }
-.item-card.rarity-border-raro       { border-color: rgba(59,130,246,.45); }
-.item-card.rarity-border-epico      { border-color: rgba(139,92,246,.55); }
-.item-card.rarity-border-legendario { border-color: rgba(245,158,11,.7); box-shadow: 0 0 12px rgba(245,158,11,.25); animation: legendaryPulse 3s ease-in-out infinite; }
+.item-card.rarity-border-poco_comun  { border-color: rgba(34,197,94,.4); }
+.item-card.rarity-border-raro        { border-color: rgba(59,130,246,.45); }
+.item-card.rarity-border-epico       { border-color: rgba(139,92,246,.55); }
+.item-card.rarity-border-legendario  { border-color: rgba(245,158,11,.7); box-shadow: 0 0 12px rgba(245,158,11,.25); animation: legendaryPulse 3s ease-in-out infinite; }
 /* ── Combat stats panel in shop ────────── */
 .ic-combat-stats {
   display: flex; flex-wrap: wrap; gap: 4px; padding: 5px 0 2px;
@@ -1857,10 +1859,12 @@ h2, h3 { font-family: var(--pxfont); }
 
 /* ── RARITY BORDERS ─────────────────────── */
 .rarity-comun      { border-color:#6b7280!important; }
+.rarity-poco_comun { border-color:#4ade80!important; }
 .rarity-raro       { border-color:#22c55e!important; }
 .rarity-epico      { border-color:#8b5cf6!important; }
 .rarity-legendario { border-color:#f59e0b!important; box-shadow:0 0 10px rgba(245,158,11,.35)!important; }
 .rarity-text-comun      { color:#9ca3af; }
+.rarity-text-poco_comun { color:#4ade80; }
 .rarity-text-raro       { color:#4ade80; }
 .rarity-text-epico      { color:#a78bfa; }
 .rarity-text-legendario { color:#fbbf24; }
@@ -4659,6 +4663,35 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .rarity-evento { background:rgba(255,180,30,.15);color:#fde68a;border:1px solid rgba(255,180,30,.5); }
 .rarity-border-evento { border-color:rgba(255,180,30,.7)!important;box-shadow:0 0 14px rgba(255,180,30,.3)!important;animation:legendaryPulse 3s ease-in-out infinite!important; }
 .rarity-text-evento { color:#fde68a; }
+/* ── DIÁLOGO PRE-JEFE ───────────────────── */
+.boss-dlg { display:flex;flex-direction:column;background:var(--s1);border-radius:14px;overflow:hidden;position:relative; }
+.boss-dlg-scene { display:flex;align-items:flex-end;height:190px;background:linear-gradient(180deg,#07020f 0%,#10061e 60%,#1a0830 100%);position:relative;overflow:hidden; }
+.boss-dlg-scene::before { content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 80%,rgba(139,92,246,.22) 0%,transparent 65%);pointer-events:none; }
+.boss-dlg-hero-col,.boss-dlg-boss-col { flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:14px;position:relative;z-index:1; }
+.boss-dlg-hero-icon { font-size:4rem;filter:drop-shadow(0 0 14px rgba(100,180,255,.5));animation:cineHeroEnter .5s cubic-bezier(.34,1.56,.64,1) both; }
+.boss-dlg-boss-icon { font-size:5.2rem;filter:drop-shadow(0 0 22px rgba(255,80,30,.65));animation:cineBossEntry .6s cubic-bezier(.34,1.56,.64,1) both,cineBossPulse 1.4s ease-in-out .7s infinite alternate; }
+.boss-dlg-char-name,.boss-dlg-boss-name { font-size:.58rem;color:rgba(255,255,255,.45);margin-top:4px;font-weight:700;letter-spacing:.05em; }
+.boss-dlg-vs-col { display:flex;align-items:center;justify-content:center;padding-bottom:28px;position:relative;z-index:1; }
+.boss-dlg-vs-txt { font-size:1.3rem;font-weight:900;color:rgba(255,255,255,.12); }
+.boss-dlg-bubble { margin:14px 14px 0;background:var(--s2);border:1.5px solid var(--bd2);border-radius:12px;padding:12px 14px;position:relative; }
+.boss-dlg-bubble::before { content:'';position:absolute;top:-8px;left:24px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid var(--bd2); }
+.boss-dlg-bubble.hero::before { left:auto;right:24px; }
+.boss-dlg-speaker { font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px; }
+.boss-dlg-speaker.enemy { color:#fca5a5; }
+.boss-dlg-speaker.hero  { color:#93c5fd; }
+.boss-dlg-text { font-size:.82rem;line-height:1.55;color:#e2e8f0;min-height:40px; }
+.boss-dlg-choices { display:flex;flex-direction:column;gap:7px;padding:12px 14px 6px; }
+.boss-dlg-choice { background:var(--s2);border:1.5px solid var(--bd2);border-radius:10px;padding:10px 13px;font-size:.78rem;color:#cbd5e1;text-align:left;cursor:pointer;transition:border-color .15s,background .15s;line-height:1.4; }
+.boss-dlg-choice:hover { border-color:#7c3aed;background:rgba(124,58,237,.12);color:#e2e8f0; }
+.boss-dlg-reaction { margin:0 14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px 13px;font-size:.78rem;color:#fca5a5;line-height:1.5; }
+.boss-dlg-effect-tag { display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:700;margin-top:6px; }
+.boss-dlg-effect-tag.danger  { background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5; }
+.boss-dlg-effect-tag.safe    { background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac; }
+.boss-dlg-effect-tag.special { background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fbbf24; }
+.boss-dlg-fight-btn { display:none;margin:12px 14px 14px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;border:none;border-radius:10px;padding:13px;font-size:.92rem;font-weight:800;cursor:pointer;letter-spacing:.03em;transition:opacity .15s; }
+.boss-dlg-fight-btn.show { display:block; }
+.boss-dlg-fight-btn:hover { opacity:.88; }
+.boss-dlg-personality-tag { position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:.58rem;font-weight:700;padding:2px 10px;border-radius:10px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);z-index:2;white-space:nowrap; }
 
 .cnc-seal {
   position: absolute; top: 7px; right: 8px;
@@ -8440,6 +8473,259 @@ const SHOP_ITEMS = [
   { id:'aqnac2',cat:'accesorio',slot:'accessory',name:'Anillo de Puntería',     icon:'🎯', rarity:'raro',       desc:'Calibra la mano del arquero para el disparo perfecto.',       cost:195, minLevel:15, bonus:{mente:10,disciplina:8},                      combatStats:{atk:8,critChance:15},                classes:['arquero'] },
   { id:'aqnac3',cat:'accesorio',slot:'accessory',name:'Amuleto del Centinela',  icon:'✨', rarity:'epico',      desc:'El centinela nunca pierde el blanco con este amuleto.',       cost:540, minLevel:35, bonus:{mente:18,disciplina:12,fuerza:6},             combatStats:{atk:14,critChance:21},               classes:['arquero'] },
 
+  // ── GUERRERO: 5 por slot (comun/poco_comun/raro/epico/legendario) ──────────────────────
+  { id:'xgw1', cat:'arma',     slot:'weapon',    name:'Espada de Hierro',           icon:'⚔️', rarity:'comun',      desc:'Hoja básica forjada para el campo de batalla.',                cost:90,  minLevel:1,  bonus:{fuerza:5},                               combatStats:{atk:4},                              classes:['guerrero'] },
+  { id:'xgw2', cat:'arma',     slot:'weapon',    name:'Mandoble de Bronce',         icon:'⚔️', rarity:'poco_comun', desc:'Entre espada y mandoble — golpes que dejan marca.',             cost:165, minLevel:8,  bonus:{fuerza:10,vitalidad:6},                  combatStats:{atk:10,def:4},                       classes:['guerrero'] },
+  { id:'xgw3', cat:'arma',     slot:'weapon',    name:'Espada Templada',            icon:'⚔️', rarity:'raro',       desc:'Templada en fuego y agua hasta alcanzar su límite.',           cost:280, minLevel:18, bonus:{fuerza:16,vitalidad:9},                  combatStats:{atk:18,def:8},                       classes:['guerrero'] },
+  { id:'xgw4', cat:'arma',     slot:'weapon',    name:'Espada del Bastión',         icon:'⚔️', rarity:'epico',      desc:'Solo los paladines del bastión pueden cargar su peso.',        cost:530, minLevel:32, bonus:{fuerza:24,vitalidad:14,disciplina:8},     combatStats:{atk:30,def:12},                      classes:['guerrero'] },
+  { id:'xgw5', cat:'arma',     slot:'weapon',    name:'Hoja del Rey Eterno',        icon:'👑', rarity:'legendario', desc:'La espada del rey eterno reescribe el destino de su portador.',cost:1700,minLevel:55, bonus:{fuerza:38,vitalidad:22,disciplina:14},    combatStats:{atk:48,def:18,critChance:12},        classes:['guerrero'] },
+  { id:'xgh1', cat:'cabeza',   slot:'head',      name:'Yelmo de Cuero Grueso',      icon:'⛑️', rarity:'comun',      desc:'Cuero endurecido al fuego que protege la cabeza.',             cost:85,  minLevel:1,  bonus:{vitalidad:5},                            combatStats:{def:4},                              classes:['guerrero'] },
+  { id:'xgh2', cat:'cabeza',   slot:'head',      name:'Yelmo de Bronce',            icon:'⛑️', rarity:'poco_comun', desc:'El bronce aguanta más golpes de los que parece.',              cost:158, minLevel:8,  bonus:{vitalidad:10,fuerza:4},                  combatStats:{def:10},                             classes:['guerrero'] },
+  { id:'xgh3', cat:'cabeza',   slot:'head',      name:'Yelmo de Campaña',           icon:'⛑️', rarity:'raro',       desc:'Probado en cien batallas. La cabeza no tiembla dentro.',       cost:272, minLevel:18, bonus:{vitalidad:14,fuerza:8},                  combatStats:{def:18},                             classes:['guerrero'] },
+  { id:'xgh4', cat:'cabeza',   slot:'head',      name:'Yelmo del Bastión',          icon:'⛑️', rarity:'epico',      desc:'El bastión no cae, y quien lo porta tampoco.',                 cost:515, minLevel:32, bonus:{vitalidad:22,fuerza:12,disciplina:8},     combatStats:{def:28},                             classes:['guerrero'] },
+  { id:'xgh5', cat:'cabeza',   slot:'head',      name:'Corona del Rey Guerrero',    icon:'👑', rarity:'legendario', desc:'Solo los que ganaron cien guerras pueden portar esta corona.', cost:1800,minLevel:55, bonus:{vitalidad:35,fuerza:20,disciplina:15},    combatStats:{def:44,critChance:8},                classes:['guerrero'] },
+  { id:'xga1', cat:'armadura', slot:'armor',     name:'Cota de Malla Básica',       icon:'🔗', rarity:'comun',      desc:'Anillos de hierro que detienen los cortes directos.',          cost:90,  minLevel:1,  bonus:{vitalidad:5,disciplina:3},               combatStats:{def:5},                              classes:['guerrero'] },
+  { id:'xga2', cat:'armadura', slot:'armor',     name:'Peto de Bronce',             icon:'🛡️', rarity:'poco_comun', desc:'Placa de bronce que absorbe impactos frontales.',              cost:165, minLevel:8,  bonus:{vitalidad:10,fuerza:5},                  combatStats:{def:11},                             classes:['guerrero'] },
+  { id:'xga3', cat:'armadura', slot:'armor',     name:'Armadura de Acero',          icon:'🛡️', rarity:'raro',       desc:'Acero macizo — cada placa un pedazo de defensa pura.',         cost:290, minLevel:18, bonus:{vitalidad:16,fuerza:9},                  combatStats:{def:19},                             classes:['guerrero'] },
+  { id:'xga4', cat:'armadura', slot:'armor',     name:'Coraza del Campeón',         icon:'💠', rarity:'epico',      desc:'La coraza del campeón no tiene punto débil.',                  cost:545, minLevel:32, bonus:{vitalidad:24,fuerza:14,disciplina:10},    combatStats:{def:31},                             classes:['guerrero'] },
+  { id:'xga5', cat:'armadura', slot:'armor',     name:'Armadura Sagrada del Rey',   icon:'⚡', rarity:'legendario', desc:'Bendecida por los dioses para el rey que protege a su pueblo.',cost:1750,minLevel:55, bonus:{vitalidad:38,fuerza:22,disciplina:16},    combatStats:{def:48,atk:8},                       classes:['guerrero'] },
+  { id:'xgl1', cat:'piernas',  slot:'legs',      name:'Calzas de Hierro',           icon:'⚙️', rarity:'comun',      desc:'Placas ligeras sobre muslos para aguantar el impacto.',        cost:80,  minLevel:1,  bonus:{vitalidad:4,disciplina:3},               combatStats:{def:3,evasion:2},                    classes:['guerrero'] },
+  { id:'xgl2', cat:'piernas',  slot:'legs',      name:'Grebas de Bronce',           icon:'⚙️', rarity:'poco_comun', desc:'Protegen rodillas y muslos sin perder movilidad.',             cost:155, minLevel:8,  bonus:{vitalidad:8,fuerza:5},                   combatStats:{def:9,evasion:4},                    classes:['guerrero'] },
+  { id:'xgl3', cat:'piernas',  slot:'legs',      name:'Grebas de Acero',            icon:'⚙️', rarity:'raro',       desc:'Acero sobre piernas — ningún golpe bajo las derriba.',         cost:265, minLevel:18, bonus:{vitalidad:14,fuerza:8,disciplina:5},      combatStats:{def:16,evasion:6},                   classes:['guerrero'] },
+  { id:'xgl4', cat:'piernas',  slot:'legs',      name:'Grebas del Bastión',         icon:'⚙️', rarity:'epico',      desc:'Las piernas del bastión no ceden ante nada conocido.',         cost:510, minLevel:32, bonus:{vitalidad:22,fuerza:12,disciplina:9},     combatStats:{def:26,evasion:8},                   classes:['guerrero'] },
+  { id:'xgl5', cat:'piernas',  slot:'legs',      name:'Piernas del Conquistador',   icon:'🔱', rarity:'legendario', desc:'Caminaron mil batallas y llegaron a todas.',                   cost:1650,minLevel:55, bonus:{vitalidad:35,fuerza:20,disciplina:14},    combatStats:{def:40,evasion:12},                  classes:['guerrero'] },
+  { id:'xgf1', cat:'pies',     slot:'feet',      name:'Botas de Hierro',            icon:'🥾', rarity:'comun',      desc:'Sólidas y resistentes para el campo de batalla.',              cost:80,  minLevel:1,  bonus:{vitalidad:3,fuerza:2},                   combatStats:{def:3,evasion:3},                    classes:['guerrero'] },
+  { id:'xgf2', cat:'pies',     slot:'feet',      name:'Botas de Bronce',            icon:'🥾', rarity:'poco_comun', desc:'El bronce en las suelas aplasta lo que pisa.',                 cost:150, minLevel:8,  bonus:{vitalidad:7,fuerza:4},                   combatStats:{def:8,evasion:5},                    classes:['guerrero'] },
+  { id:'xgf3', cat:'pies',     slot:'feet',      name:'Botas de Campaña',           icon:'🥾', rarity:'raro',       desc:'Mil kilómetros de campaña no las desgastan.',                  cost:265, minLevel:18, bonus:{vitalidad:12,fuerza:8,disciplina:5},      combatStats:{def:14,evasion:8},                   classes:['guerrero'] },
+  { id:'xgf4', cat:'pies',     slot:'feet',      name:'Botas del Bastión',          icon:'🥾', rarity:'epico',      desc:'Cada paso resuena con la fuerza de un campeón.',               cost:510, minLevel:32, bonus:{vitalidad:20,fuerza:12,disciplina:8},     combatStats:{def:22,evasion:12},                  classes:['guerrero'] },
+  { id:'xgf5', cat:'pies',     slot:'feet',      name:'Botas del Rey Eterno',       icon:'👑', rarity:'legendario', desc:'El rey nunca retrocede — sus botas lo atestiguan.',            cost:1700,minLevel:55, bonus:{vitalidad:34,fuerza:18,disciplina:14},    combatStats:{def:36,evasion:18},                  classes:['guerrero'] },
+  { id:'xgc1', cat:'capa',     slot:'cape',      name:'Manto de Combate',           icon:'🧥', rarity:'comun',      desc:'El rojo infunde respeto antes de que llegue el golpe.',        cost:80,  minLevel:1,  bonus:{fuerza:4,vitalidad:2},                   combatStats:{def:2,atk:2},                        classes:['guerrero'] },
+  { id:'xgc2', cat:'capa',     slot:'cape',      name:'Capa del Soldado',           icon:'🧥', rarity:'poco_comun', desc:'Escarlatina manchada de gloria en mil escaramuzas.',           cost:155, minLevel:8,  bonus:{fuerza:9,vitalidad:5},                   combatStats:{def:6,atk:4},                        classes:['guerrero'] },
+  { id:'xgc3', cat:'capa',     slot:'cape',      name:'Manto Elite',                icon:'🧥', rarity:'raro',       desc:'Solo los guerreros elite la llevan en la línea de frente.',   cost:275, minLevel:18, bonus:{fuerza:14,vitalidad:9,disciplina:5},      combatStats:{def:10,atk:8},                       classes:['guerrero'] },
+  { id:'xgc4', cat:'capa',     slot:'cape',      name:'Capa del Campeón',           icon:'🌟', rarity:'epico',      desc:'Ondea con el viento de la victoria sobre el campo.',           cost:520, minLevel:32, bonus:{fuerza:22,vitalidad:14,disciplina:9},     combatStats:{def:16,atk:12},                      classes:['guerrero'] },
+  { id:'xgc5', cat:'capa',     slot:'cape',      name:'Manto del Rey Eterno',       icon:'⚡', rarity:'legendario', desc:'El rey eterno la vistió en cada guerra que ganó.',             cost:1750,minLevel:55, bonus:{fuerza:35,vitalidad:20,disciplina:15},    combatStats:{def:26,atk:20,critChance:8},         classes:['guerrero'] },
+  { id:'xgx1', cat:'accesorio',slot:'accessory', name:'Anillo de Hierro',           icon:'💪', rarity:'comun',      desc:'El hierro potencia la fuerza del portador.',                   cost:85,  minLevel:1,  bonus:{fuerza:5},                               combatStats:{atk:4},                              classes:['guerrero'] },
+  { id:'xgx2', cat:'accesorio',slot:'accessory', name:'Amuleto del Soldado',        icon:'⚔️', rarity:'poco_comun', desc:'El soldado que lo lleva nunca da el primer paso atrás.',       cost:160, minLevel:8,  bonus:{fuerza:9,vitalidad:5},                   combatStats:{atk:9,def:4},                        classes:['guerrero'] },
+  { id:'xgx3', cat:'accesorio',slot:'accessory', name:'Medallón de Batalla',        icon:'🏅', rarity:'raro',       desc:'Cada batalla grabada en el medallón como una cicatriz.',       cost:275, minLevel:18, bonus:{fuerza:14,vitalidad:9,disciplina:5},      combatStats:{atk:16,def:8},                       classes:['guerrero'] },
+  { id:'xgx4', cat:'accesorio',slot:'accessory', name:'Sello del Campeón',          icon:'🔴', rarity:'epico',      desc:'El sello que solo el campeón puede llevar sin quemar.',        cost:525, minLevel:32, bonus:{fuerza:22,vitalidad:14,disciplina:9},     combatStats:{atk:26,def:12,critChance:8},         classes:['guerrero'] },
+  { id:'xgx5', cat:'accesorio',slot:'accessory', name:'Corazón del Rey Eterno',     icon:'💎', rarity:'legendario', desc:'Palpita con el poder de todos los reyes que existieron.',      cost:1800,minLevel:55, bonus:{fuerza:36,vitalidad:22,disciplina:14},    combatStats:{atk:42,def:20,critChance:14},        classes:['guerrero'] },
+  // ── MAGO: 5 por slot ──────────────────────────────────────────────────────────────────────
+  { id:'xmw1', cat:'arma',     slot:'weapon',    name:'Varita de Madera',           icon:'🪄', rarity:'comun',      desc:'La primera varita de todo mago aprendiz. Simple pero eficaz.',cost:85,  minLevel:1,  bonus:{mente:5},                                combatStats:{atk:3,hpRegen:3},                    classes:['mago'] },
+  { id:'xmw2', cat:'arma',     slot:'weapon',    name:'Báculo de Maná',             icon:'🔮', rarity:'poco_comun', desc:'Canales de maná tallados en el núcleo del báculo.',            cost:162, minLevel:8,  bonus:{mente:10,bienestar:5},                   combatStats:{atk:9,critChance:6},                 classes:['mago'] },
+  { id:'xmw3', cat:'arma',     slot:'weapon',    name:'Báculo Místico',             icon:'💎', rarity:'raro',       desc:'El cristal almacena maná entre los conjuros lanzados.',        cost:282, minLevel:18, bonus:{mente:16,bienestar:8,disciplina:5},       combatStats:{atk:16,critChance:10,hpRegen:6},     classes:['mago'] },
+  { id:'xmw4', cat:'arma',     slot:'weapon',    name:'Cetro del Archimago',        icon:'✨', rarity:'epico',      desc:'Los archimage lo forjaron en el plano astral superior.',       cost:540, minLevel:32, bonus:{mente:24,bienestar:12,disciplina:9},      combatStats:{atk:28,critChance:16,hpRegen:8},     classes:['mago'] },
+  { id:'xmw5', cat:'arma',     slot:'weapon',    name:'Vara del Cosmos',            icon:'🌌', rarity:'legendario', desc:'Toca el cosmos con cada conjuro — no hay límite conocido.',   cost:1750,minLevel:55, bonus:{mente:38,bienestar:20,disciplina:14},     combatStats:{atk:44,critChance:24,hpRegen:12},    classes:['mago'] },
+  { id:'xmh1', cat:'cabeza',   slot:'head',      name:'Capucha Arcana',             icon:'🎩', rarity:'comun',      desc:'Dirige los pensamientos mágicos hacia el foco correcto.',      cost:80,  minLevel:1,  bonus:{mente:4,bienestar:3},                    combatStats:{def:2,hpRegen:3},                    classes:['mago'] },
+  { id:'xmh2', cat:'cabeza',   slot:'head',      name:'Tiara de Cristal',           icon:'👑', rarity:'poco_comun', desc:'El cristal amplifica la concentración del hechicero.',         cost:150, minLevel:8,  bonus:{mente:9,bienestar:5},                    combatStats:{def:6,hpRegen:6},                    classes:['mago'] },
+  { id:'xmh3', cat:'cabeza',   slot:'head',      name:'Sombrero del Hechicero',     icon:'🎓', rarity:'raro',       desc:'Solo los hechiceros reales pueden portar su símbolo.',         cost:265, minLevel:18, bonus:{mente:14,bienestar:9,disciplina:4},       combatStats:{def:10,hpRegen:10},                  classes:['mago'] },
+  { id:'xmh4', cat:'cabeza',   slot:'head',      name:'Corona Arcana',              icon:'👑', rarity:'epico',      desc:'Quién la porta accede a planos de conocimiento prohibido.',   cost:510, minLevel:32, bonus:{mente:22,bienestar:13,disciplina:8},      combatStats:{def:16,hpRegen:15,critChance:8},     classes:['mago'] },
+  { id:'xmh5', cat:'cabeza',   slot:'head',      name:'Tiara del Archimago Supremo',icon:'🌌', rarity:'legendario', desc:'La mente del archimago supremo abraza el infinito.',           cost:1800,minLevel:55, bonus:{mente:36,bienestar:21,disciplina:13},     combatStats:{def:26,hpRegen:24,critChance:14},    classes:['mago'] },
+  { id:'xma1', cat:'armadura', slot:'armor',     name:'Túnica de Aprendiz',         icon:'👘', rarity:'comun',      desc:'Liviana y cómoda para largas horas de estudio.',               cost:85,  minLevel:1,  bonus:{mente:4,bienestar:4},                    combatStats:{def:3,hpRegen:3},                    classes:['mago'] },
+  { id:'xma2', cat:'armadura', slot:'armor',     name:'Ropa del Hechicero',         icon:'🔵', rarity:'poco_comun', desc:'Tejida con hilos de maná que repelen los ataques menores.',    cost:160, minLevel:8,  bonus:{mente:9,bienestar:6},                    combatStats:{def:8,hpRegen:7},                    classes:['mago'] },
+  { id:'xma3', cat:'armadura', slot:'armor',     name:'Vestidura Arcana',           icon:'💜', rarity:'raro',       desc:'Cada costura un escudo — tejida con hechizos de protección.',  cost:280, minLevel:18, bonus:{mente:14,bienestar:10,disciplina:5},      combatStats:{def:14,hpRegen:12},                  classes:['mago'] },
+  { id:'xma4', cat:'armadura', slot:'armor',     name:'Manto del Archimago',        icon:'✨', rarity:'epico',      desc:'La vestidura del archimago brilla con poder contenido.',       cost:535, minLevel:32, bonus:{mente:22,bienestar:14,disciplina:8},      combatStats:{def:22,hpRegen:18},                  classes:['mago'] },
+  { id:'xma5', cat:'armadura', slot:'armor',     name:'Vestidura del Cosmos',       icon:'🌌', rarity:'legendario', desc:'Tejida con la esencia del cosmos — protege cuerpo y alma.',   cost:1750,minLevel:55, bonus:{mente:36,bienestar:22,disciplina:13},     combatStats:{def:34,hpRegen:28,atk:6},            classes:['mago'] },
+  { id:'xml1', cat:'piernas',  slot:'legs',      name:'Calzas de Tela',             icon:'👗', rarity:'comun',      desc:'Ligeras como el aire, perfectas para moverse entre hechizos.',cost:75,  minLevel:1,  bonus:{mente:4,bienestar:2},                    combatStats:{def:2,hpRegen:3},                    classes:['mago'] },
+  { id:'xml2', cat:'piernas',  slot:'legs',      name:'Túnica Inferior Arcana',     icon:'🌀', rarity:'poco_comun', desc:'Los hilos de maná fluyen por las costuras hacia arriba.',      cost:150, minLevel:8,  bonus:{mente:8,bienestar:5},                    combatStats:{def:7,hpRegen:6},                    classes:['mago'] },
+  { id:'xml3', cat:'piernas',  slot:'legs',      name:'Calzas del Hechicero',       icon:'💜', rarity:'raro',       desc:'Permiten moverse sin romper la concentración del conjuro.',    cost:265, minLevel:18, bonus:{mente:13,bienestar:8,disciplina:4},       combatStats:{def:12,hpRegen:10},                  classes:['mago'] },
+  { id:'xml4', cat:'piernas',  slot:'legs',      name:'Piernas del Archimago',      icon:'🔮', rarity:'epico',      desc:'La energía arcana fluye por sus costuras sin cesar.',          cost:510, minLevel:32, bonus:{mente:21,bienestar:13,disciplina:7},      combatStats:{def:19,hpRegen:15},                  classes:['mago'] },
+  { id:'xml5', cat:'piernas',  slot:'legs',      name:'Calzas del Cosmos',          icon:'🌌', rarity:'legendario', desc:'La luz cósmica envuelve las piernas del maestro supremo.',     cost:1700,minLevel:55, bonus:{mente:34,bienestar:21,disciplina:12},     combatStats:{def:30,hpRegen:23,critChance:8},     classes:['mago'] },
+  { id:'xmf1', cat:'pies',     slot:'feet',      name:'Sandalias del Mago',         icon:'👡', rarity:'comun',      desc:'Ligeras para moverse entre conjuros sin tropezar.',            cost:75,  minLevel:1,  bonus:{mente:3,bienestar:3},                    combatStats:{def:2,hpRegen:3,evasion:2},          classes:['mago'] },
+  { id:'xmf2', cat:'pies',     slot:'feet',      name:'Botas Arcanas',              icon:'🥾', rarity:'poco_comun', desc:'Flotan un centímetro del suelo por la magia que las carga.',   cost:150, minLevel:8,  bonus:{mente:8,bienestar:5},                    combatStats:{def:6,hpRegen:6,evasion:4},          classes:['mago'] },
+  { id:'xmf3', cat:'pies',     slot:'feet',      name:'Botas del Hechicero',        icon:'🥾', rarity:'raro',       desc:'Dejan huellas de maná — el rastro del hechicero.',             cost:265, minLevel:18, bonus:{mente:13,bienestar:8,disciplina:4},       combatStats:{def:11,hpRegen:10,evasion:6},        classes:['mago'] },
+  { id:'xmf4', cat:'pies',     slot:'feet',      name:'Botas del Archimago',        icon:'🌀', rarity:'epico',      desc:'El archimago las creó para moverse entre planos de existencia.',cost:510,minLevel:32, bonus:{mente:21,bienestar:13,disciplina:7},      combatStats:{def:18,hpRegen:15,evasion:8},        classes:['mago'] },
+  { id:'xmf5', cat:'pies',     slot:'feet',      name:'Botas del Cosmos',           icon:'🌌', rarity:'legendario', desc:'Cada paso resuena en todo el cosmos al mismo tiempo.',         cost:1700,minLevel:55, bonus:{mente:33,bienestar:21,disciplina:12},     combatStats:{def:28,hpRegen:22,evasion:12},       classes:['mago'] },
+  { id:'xmc1', cat:'capa',     slot:'cape',      name:'Capa Azul',                  icon:'🧥', rarity:'comun',      desc:'Azul como el cielo — el mago la porta en sus primeros pasos.',cost:80,  minLevel:1,  bonus:{mente:4,bienestar:2},                    combatStats:{def:2,hpRegen:3},                    classes:['mago'] },
+  { id:'xmc2', cat:'capa',     slot:'cape',      name:'Manto del Hechicero',        icon:'📜', rarity:'poco_comun', desc:'Runas bordadas que añaden una capa de protección mágica.',     cost:155, minLevel:8,  bonus:{mente:9,bienestar:5},                    combatStats:{def:5,hpRegen:6,atk:3},              classes:['mago'] },
+  { id:'xmc3', cat:'capa',     slot:'cape',      name:'Capa Arcana',                icon:'💜', rarity:'raro',       desc:'Tejida con hechizos de protección de la era antigua.',         cost:270, minLevel:18, bonus:{mente:14,bienestar:8,disciplina:4},       combatStats:{def:9,hpRegen:10,atk:5},             classes:['mago'] },
+  { id:'xmc4', cat:'capa',     slot:'cape',      name:'Manto del Archimago',        icon:'✨', rarity:'epico',      desc:'El archimago la teje con la luz de las constelaciones.',       cost:520, minLevel:32, bonus:{mente:22,bienestar:13,disciplina:8},      combatStats:{def:14,hpRegen:15,atk:8},            classes:['mago'] },
+  { id:'xmc5', cat:'capa',     slot:'cape',      name:'Capa del Cosmos',            icon:'🌌', rarity:'legendario', desc:'La galaxia entera tejida en una sola capa — insondable.',     cost:1750,minLevel:55, bonus:{mente:35,bienestar:21,disciplina:13},     combatStats:{def:22,hpRegen:24,atk:12,critChance:10},classes:['mago'] },
+  { id:'xmx1', cat:'accesorio',slot:'accessory', name:'Anillo de Magia',            icon:'💍', rarity:'comun',      desc:'Un anillo que amplifica el maná del portador.',                cost:85,  minLevel:1,  bonus:{mente:5},                                combatStats:{atk:3,hpRegen:3},                    classes:['mago'] },
+  { id:'xmx2', cat:'accesorio',slot:'accessory', name:'Orbe Menor',                 icon:'🔮', rarity:'poco_comun', desc:'Condensa el maná en una esfera que nunca se enfría.',          cost:160, minLevel:8,  bonus:{mente:10,bienestar:5},                   combatStats:{atk:8,critChance:6,hpRegen:4},       classes:['mago'] },
+  { id:'xmx3', cat:'accesorio',slot:'accessory', name:'Amuleto del Hechicero',      icon:'⚜️', rarity:'raro',       desc:'El amuleto de los hechiceros reales del antiguo reino.',       cost:280, minLevel:18, bonus:{mente:15,bienestar:9,disciplina:5},       combatStats:{atk:15,critChance:12,hpRegen:6},     classes:['mago'] },
+  { id:'xmx4', cat:'accesorio',slot:'accessory', name:'Orbe del Archimago',         icon:'✨', rarity:'epico',      desc:'Concentra el poder arcano hasta el límite de la magia.',      cost:540, minLevel:32, bonus:{mente:24,bienestar:13,disciplina:9},      combatStats:{atk:25,critChance:18,hpRegen:8},     classes:['mago'] },
+  { id:'xmx5', cat:'accesorio',slot:'accessory', name:'Orbe del Cosmos',            icon:'🌌', rarity:'legendario', desc:'Contiene la esencia de todo lo que existe en el universo.',   cost:1800,minLevel:55, bonus:{mente:38,bienestar:22,disciplina:14},     combatStats:{atk:40,critChance:26,hpRegen:14},    classes:['mago'] },
+  // ── MONJE: 5 por slot ─────────────────────────────────────────────────────────────────────
+  { id:'xnw1', cat:'arma',     slot:'weapon',    name:'Bastón Recto',               icon:'🎋', rarity:'comun',      desc:'Flexible y resistente, como el espíritu del monje.',          cost:85,  minLevel:1,  bonus:{bienestar:4,vitalidad:4},                combatStats:{atk:3,hpRegen:4},                    classes:['monje'] },
+  { id:'xnw2', cat:'arma',     slot:'weapon',    name:'Bastón de Jade',             icon:'💚', rarity:'poco_comun', desc:'El jade amplifica el chi — cada golpe sana un poco.',          cost:162, minLevel:8,  bonus:{bienestar:9,vitalidad:6,mente:4},         combatStats:{atk:8,hpRegen:8},                    classes:['monje'] },
+  { id:'xnw3', cat:'arma',     slot:'weapon',    name:'Bastón Sagrado',             icon:'🌿', rarity:'raro',       desc:'Bendecido en el templo de la cima con energía ancestral.',     cost:278, minLevel:18, bonus:{bienestar:14,vitalidad:10,mente:6},       combatStats:{atk:14,hpRegen:12},                  classes:['monje'] },
+  { id:'xnw4', cat:'arma',     slot:'weapon',    name:'Báculo del Maestro',         icon:'🌟', rarity:'epico',      desc:'El maestro que lo forjó tardó cuarenta años en acabarlo.',    cost:532, minLevel:32, bonus:{bienestar:22,vitalidad:14,mente:10},      combatStats:{atk:24,hpRegen:18,critChance:6},     classes:['monje'] },
+  { id:'xnw5', cat:'arma',     slot:'weapon',    name:'Bastón del Universo',        icon:'☯️', rarity:'legendario', desc:'El universo fluye a través del bastón — y de tu mano.',       cost:1750,minLevel:55, bonus:{bienestar:36,vitalidad:22,mente:16},      combatStats:{atk:38,hpRegen:28,critChance:10},    classes:['monje'] },
+  { id:'xnh1', cat:'cabeza',   slot:'head',      name:'Venda del Monje',            icon:'🎽', rarity:'comun',      desc:'Una venda blanca que mantiene la mente fría en combate.',      cost:80,  minLevel:1,  bonus:{bienestar:4,mente:2},                    combatStats:{def:2,hpRegen:3},                    classes:['monje'] },
+  { id:'xnh2', cat:'cabeza',   slot:'head',      name:'Banda de Seda',              icon:'🌸', rarity:'poco_comun', desc:'La seda del templo calma la mente y aguza los sentidos.',      cost:150, minLevel:8,  bonus:{bienestar:9,mente:5},                    combatStats:{def:6,hpRegen:7},                    classes:['monje'] },
+  { id:'xnh3', cat:'cabeza',   slot:'head',      name:'Capucha del Monje',          icon:'🏯', rarity:'raro',       desc:'Tejida en el templo más alto durante la luna llena.',          cost:265, minLevel:18, bonus:{bienestar:14,mente:8,vitalidad:5},        combatStats:{def:11,hpRegen:11},                  classes:['monje'] },
+  { id:'xnh4', cat:'cabeza',   slot:'head',      name:'Máscara del Gran Maestro',   icon:'👁️', rarity:'epico',      desc:'Quien la porta percibe el mundo con claridad absoluta.',       cost:510, minLevel:32, bonus:{bienestar:22,mente:12,vitalidad:9},       combatStats:{def:18,hpRegen:16},                  classes:['monje'] },
+  { id:'xnh5', cat:'cabeza',   slot:'head',      name:'Corona del Universo',        icon:'☯️', rarity:'legendario', desc:'El equilibrio del universo reside en quien la porta.',         cost:1800,minLevel:55, bonus:{bienestar:36,mente:20,vitalidad:15},      combatStats:{def:28,hpRegen:26,critChance:8},     classes:['monje'] },
+  { id:'xna1', cat:'armadura', slot:'armor',     name:'Ropa de Entrenamiento',      icon:'🥋', rarity:'comun',      desc:'Ligera y resistente para el entrenamiento diario.',            cost:85,  minLevel:1,  bonus:{bienestar:4,vitalidad:4},                combatStats:{def:4,hpRegen:4},                    classes:['monje'] },
+  { id:'xna2', cat:'armadura', slot:'armor',     name:'Túnica de Seda',             icon:'🌿', rarity:'poco_comun', desc:'La seda sagrada del templo absorbe el daño sin quebrarse.',    cost:162, minLevel:8,  bonus:{bienestar:9,vitalidad:7},                combatStats:{def:9,hpRegen:8},                    classes:['monje'] },
+  { id:'xna3', cat:'armadura', slot:'armor',     name:'Hábito del Templo',          icon:'⛩️', rarity:'raro',       desc:'El hábito sagrado de los monjes del templo milenario.',        cost:282, minLevel:18, bonus:{bienestar:14,vitalidad:10,mente:5},       combatStats:{def:15,hpRegen:13},                  classes:['monje'] },
+  { id:'xna4', cat:'armadura', slot:'armor',     name:'Túnica del Maestro',         icon:'🌟', rarity:'epico',      desc:'Solo el maestro puede portar su peso sin titubear.',           cost:542, minLevel:32, bonus:{bienestar:22,vitalidad:15,mente:9},       combatStats:{def:23,hpRegen:19},                  classes:['monje'] },
+  { id:'xna5', cat:'armadura', slot:'armor',     name:'Vestidura del Cosmos',       icon:'☯️', rarity:'legendario', desc:'El cosmos mismo tejió esta ropa para su guardián eterno.',    cost:1750,minLevel:55, bonus:{bienestar:36,vitalidad:23,mente:15},      combatStats:{def:36,hpRegen:30},                  classes:['monje'] },
+  { id:'xnl1', cat:'piernas',  slot:'legs',      name:'Calzas de Entrenamiento',    icon:'🥋', rarity:'comun',      desc:'Cómodas para horas de práctica de artes marciales.',           cost:78,  minLevel:1,  bonus:{bienestar:3,vitalidad:4},                combatStats:{def:2,evasion:4},                    classes:['monje'] },
+  { id:'xnl2', cat:'piernas',  slot:'legs',      name:'Pantalón de Seda',           icon:'🌿', rarity:'poco_comun', desc:'Permite moverse con fluidez, esquivando como el agua.',        cost:150, minLevel:8,  bonus:{bienestar:8,vitalidad:6},                combatStats:{def:7,evasion:7,hpRegen:4},          classes:['monje'] },
+  { id:'xnl3', cat:'piernas',  slot:'legs',      name:'Calzas del Templo',          icon:'🏯', rarity:'raro',       desc:'Los mantras del templo bordados en cada costura.',             cost:265, minLevel:18, bonus:{bienestar:13,vitalidad:9,mente:4},        combatStats:{def:12,evasion:10,hpRegen:6},        classes:['monje'] },
+  { id:'xnl4', cat:'piernas',  slot:'legs',      name:'Pantalón del Gran Maestro',  icon:'🌸', rarity:'epico',      desc:'El gran maestro que los creó nunca fue golpeado dos veces.',  cost:510, minLevel:32, bonus:{bienestar:21,vitalidad:14,mente:8},       combatStats:{def:19,evasion:14,hpRegen:8},        classes:['monje'] },
+  { id:'xnl5', cat:'piernas',  slot:'legs',      name:'Calzas del Universo',        icon:'☯️', rarity:'legendario', desc:'La energía del universo circula por el portador.',             cost:1700,minLevel:55, bonus:{bienestar:34,vitalidad:22,mente:13},      combatStats:{def:30,evasion:20,hpRegen:12},       classes:['monje'] },
+  { id:'xnf1', cat:'pies',     slot:'feet',      name:'Sandalias de Chi',           icon:'🥿', rarity:'comun',      desc:'Cada paso canaliza el chi hacia arriba.',                      cost:75,  minLevel:1,  bonus:{bienestar:4,vitalidad:2},                combatStats:{evasion:5,def:2},                    classes:['monje'] },
+  { id:'xnf2', cat:'pies',     slot:'feet',      name:'Pies del Guardián',          icon:'🌿', rarity:'poco_comun', desc:'El chi fluye con cada zancada hacia los puños.',              cost:148, minLevel:8,  bonus:{bienestar:8,vitalidad:5},                combatStats:{evasion:8,def:5,hpRegen:5},          classes:['monje'] },
+  { id:'xnf3', cat:'pies',     slot:'feet',      name:'Botas del Templo',           icon:'🥾', rarity:'raro',       desc:'El suelo del templo aún resuena en sus suelas.',               cost:262, minLevel:18, bonus:{bienestar:13,vitalidad:8,mente:4},        combatStats:{evasion:12,def:9,hpRegen:7},         classes:['monje'] },
+  { id:'xnf4', cat:'pies',     slot:'feet',      name:'Zapatos del Gran Maestro',   icon:'👟', rarity:'epico',      desc:'El maestro que los usó nunca fue golpeado en pie firme.',      cost:508, minLevel:32, bonus:{bienestar:21,vitalidad:13,mente:7},       combatStats:{evasion:16,def:14,hpRegen:10},       classes:['monje'] },
+  { id:'xnf5', cat:'pies',     slot:'feet',      name:'Sandalias del Universo',     icon:'☯️', rarity:'legendario', desc:'Caminar con ellas es caminar entre las estrellas.',            cost:1700,minLevel:55, bonus:{bienestar:34,vitalidad:21,mente:13},      combatStats:{evasion:22,def:22,hpRegen:16},       classes:['monje'] },
+  { id:'xnc1', cat:'capa',     slot:'cape',      name:'Capa de Meditación',         icon:'🤍', rarity:'comun',      desc:'La calma que irradia es su mayor defensa.',                    cost:78,  minLevel:1,  bonus:{bienestar:4,disciplina:2},               combatStats:{def:2,hpRegen:3},                    classes:['monje'] },
+  { id:'xnc2', cat:'capa',     slot:'cape',      name:'Manto del Templo',           icon:'🧘', rarity:'poco_comun', desc:'La serenidad del templo envuelve al portador.',               cost:150, minLevel:8,  bonus:{bienestar:9,vitalidad:5},                combatStats:{def:6,hpRegen:6},                    classes:['monje'] },
+  { id:'xnc3', cat:'capa',     slot:'cape',      name:'Capa de Iluminación',        icon:'🕊️', rarity:'raro',       desc:'La luz que emana confunde al rival antes del golpe.',         cost:268, minLevel:18, bonus:{bienestar:14,vitalidad:8,mente:5},        combatStats:{def:11,hpRegen:10},                  classes:['monje'] },
+  { id:'xnc4', cat:'capa',     slot:'cape',      name:'Manto del Gran Maestro',     icon:'🌸', rarity:'epico',      desc:'El gran maestro lo tejió en 40 años de práctica.',             cost:515, minLevel:32, bonus:{bienestar:22,vitalidad:12,mente:9},       combatStats:{def:17,hpRegen:15},                  classes:['monje'] },
+  { id:'xnc5', cat:'capa',     slot:'cape',      name:'Capa del Universo',          icon:'☯️', rarity:'legendario', desc:'El universo entero la tejió para proteger a su guardián.',    cost:1750,minLevel:55, bonus:{bienestar:36,vitalidad:21,mente:14},      combatStats:{def:26,hpRegen:24,atk:8},            classes:['monje'] },
+  { id:'xnx1', cat:'accesorio',slot:'accessory', name:'Pulsera de Chi',             icon:'💚', rarity:'comun',      desc:'Los brazaletes amplifican el flujo del chi interior.',         cost:82,  minLevel:1,  bonus:{bienestar:4,vitalidad:3},                combatStats:{atk:3,hpRegen:5},                    classes:['monje'] },
+  { id:'xnx2', cat:'accesorio',slot:'accessory', name:'Amuleto de Jade',            icon:'📿', rarity:'poco_comun', desc:'El jade canaliza el chi hacia donde más se necesita.',         cost:158, minLevel:8,  bonus:{bienestar:9,vitalidad:5,mente:4},         combatStats:{atk:7,hpRegen:8},                    classes:['monje'] },
+  { id:'xnx3', cat:'accesorio',slot:'accessory', name:'Collar Sagrado',             icon:'✨', rarity:'raro',       desc:'El collar sagrado del templo de la cima — solo los maestros.',cost:272, minLevel:18, bonus:{bienestar:14,vitalidad:8,mente:6},        combatStats:{atk:12,hpRegen:12,critChance:5},     classes:['monje'] },
+  { id:'xnx4', cat:'accesorio',slot:'accessory', name:'Orbe del Gran Maestro',      icon:'🌟', rarity:'epico',      desc:'La energía del gran maestro condensada en una esfera.',        cost:522, minLevel:32, bonus:{bienestar:22,vitalidad:13,mente:9},       combatStats:{atk:20,hpRegen:18,critChance:8},     classes:['monje'] },
+  { id:'xnx5', cat:'accesorio',slot:'accessory', name:'Esencia del Universo',       icon:'☯️', rarity:'legendario', desc:'Contiene la esencia de todo el universo en un cristal.',      cost:1800,minLevel:55, bonus:{bienestar:36,vitalidad:22,mente:15},      combatStats:{atk:32,hpRegen:28,critChance:12},    classes:['monje'] },
+  // ── ASESINO: 5 por slot ────────────────────────────────────────────────────────────────────
+  { id:'xaw1', cat:'arma',     slot:'weapon',    name:'Cuchillo de Caza',           icon:'🔪', rarity:'comun',      desc:'Pequeño y preciso para cortes rápidos en la oscuridad.',      cost:85,  minLevel:1,  bonus:{disciplina:4,fuerza:3},                  combatStats:{atk:4,critChance:5},                 classes:['asesino'] },
+  { id:'xaw2', cat:'arma',     slot:'weapon',    name:'Daga Fina',                  icon:'🗡️', rarity:'poco_comun', desc:'La hoja más fina jamás forjada — entra antes de que duela.',   cost:162, minLevel:8,  bonus:{disciplina:9,fuerza:5},                  combatStats:{atk:10,critChance:10},               classes:['asesino'] },
+  { id:'xaw3', cat:'arma',     slot:'weapon',    name:'Garra de Sombra',            icon:'🖐️', rarity:'raro',       desc:'Cuchillas entre dedos que atacan desde el silencio.',         cost:282, minLevel:18, bonus:{disciplina:15,fuerza:8},                 combatStats:{atk:18,critChance:16},               classes:['asesino'] },
+  { id:'xaw4', cat:'arma',     slot:'weapon',    name:'Dagas del Segador',          icon:'💀', rarity:'epico',      desc:'Cada hoja cosecha vida antes de que el rival reaccione.',     cost:542, minLevel:32, bonus:{disciplina:23,fuerza:12},                combatStats:{atk:28,critChance:22},               classes:['asesino'] },
+  { id:'xaw5', cat:'arma',     slot:'weapon',    name:'Colmillos del Vacío',        icon:'🌑', rarity:'legendario', desc:'Cortan la realidad antes de que el aire pueda resistirlos.',  cost:1750,minLevel:55, bonus:{disciplina:37,fuerza:19},                combatStats:{atk:44,critChance:30,evasion:8},     classes:['asesino'] },
+  { id:'xah1', cat:'cabeza',   slot:'head',      name:'Capucha Sencilla',           icon:'🎭', rarity:'comun',      desc:'Sin identidad no hay miedo. Sin miedo no hay error.',          cost:80,  minLevel:1,  bonus:{disciplina:4},                           combatStats:{def:2,evasion:5},                    classes:['asesino'] },
+  { id:'xah2', cat:'cabeza',   slot:'head',      name:'Máscara de Cuero',           icon:'🎭', rarity:'poco_comun', desc:'Oculta el rostro y amplifica el terror del portador.',         cost:150, minLevel:8,  bonus:{disciplina:9,mente:4},                   combatStats:{def:5,evasion:9},                    classes:['asesino'] },
+  { id:'xah3', cat:'cabeza',   slot:'head',      name:'Capucha del Asesino',        icon:'🌑', rarity:'raro',       desc:'La oscuridad que rodea al asesino nace de esta capucha.',     cost:265, minLevel:18, bonus:{disciplina:14,mente:7},                  combatStats:{def:9,evasion:14,critChance:5},      classes:['asesino'] },
+  { id:'xah4', cat:'cabeza',   slot:'head',      name:'Máscara del Segador',        icon:'💀', rarity:'epico',      desc:'Ver esta máscara es lo último que los rivales recuerdan.',    cost:510, minLevel:32, bonus:{disciplina:22,fuerza:9},                 combatStats:{def:14,evasion:19,critChance:8},     classes:['asesino'] },
+  { id:'xah5', cat:'cabeza',   slot:'head',      name:'Capucha del Vacío',          icon:'🌑', rarity:'legendario', desc:'Quien la porta desaparece — ni los dioses lo ven.',           cost:1800,minLevel:55, bonus:{disciplina:36,fuerza:15},                combatStats:{def:22,evasion:26,critChance:14},    classes:['asesino'] },
+  { id:'xaa1', cat:'armadura', slot:'armor',     name:'Chaleco de Piel',            icon:'🥋', rarity:'comun',      desc:'Cuero fino que no limita la velocidad del asesino.',           cost:82,  minLevel:1,  bonus:{disciplina:4,vitalidad:3},               combatStats:{def:4,evasion:3},                    classes:['asesino'] },
+  { id:'xaa2', cat:'armadura', slot:'armor',     name:'Armadura de Cuero Fino',     icon:'🌘', rarity:'poco_comun', desc:'Ligera como el aire, oscura como la noche más fría.',          cost:158, minLevel:8,  bonus:{disciplina:9,vitalidad:5},               combatStats:{def:9,evasion:6},                    classes:['asesino'] },
+  { id:'xaa3', cat:'armadura', slot:'armor',     name:'Ropa del Asesino',           icon:'🌑', rarity:'raro',       desc:'Cada pieza diseñada para moverse sin el menor ruido.',         cost:278, minLevel:18, bonus:{disciplina:14,vitalidad:8,fuerza:5},      combatStats:{def:14,evasion:10},                  classes:['asesino'] },
+  { id:'xaa4', cat:'armadura', slot:'armor',     name:'Traje Espectral',            icon:'👻', rarity:'epico',      desc:'El traje espectral absorbe la luz — el asesino desaparece.',  cost:528, minLevel:32, bonus:{disciplina:22,vitalidad:12,fuerza:9},     combatStats:{def:21,evasion:14},                  classes:['asesino'] },
+  { id:'xaa5', cat:'armadura', slot:'armor',     name:'Envoltorio del Vacío',       icon:'🌑', rarity:'legendario', desc:'El vacío mismo se convierte en armadura del asesino.',        cost:1750,minLevel:55, bonus:{disciplina:36,vitalidad:20,fuerza:14},    combatStats:{def:33,evasion:20,critChance:10},    classes:['asesino'] },
+  { id:'xal1', cat:'piernas',  slot:'legs',      name:'Calzas Sigilosas',           icon:'👖', rarity:'comun',      desc:'Sin ruido en los pasos — el primer requisito del asesino.',   cost:78,  minLevel:1,  bonus:{disciplina:4},                           combatStats:{def:2,evasion:5},                    classes:['asesino'] },
+  { id:'xal2', cat:'piernas',  slot:'legs',      name:'Pantalón de Sombra',         icon:'🌑', rarity:'poco_comun', desc:'Las sombras se aferran al pantalón y cubren al portador.',    cost:150, minLevel:8,  bonus:{disciplina:9,fuerza:4},                  combatStats:{def:5,evasion:9},                    classes:['asesino'] },
+  { id:'xal3', cat:'piernas',  slot:'legs',      name:'Calzas del Asesino',         icon:'🌘', rarity:'raro',       desc:'Permite moverse entre enemigos sin rozar ni uno.',             cost:265, minLevel:18, bonus:{disciplina:14,fuerza:7},                 combatStats:{def:8,evasion:14},                   classes:['asesino'] },
+  { id:'xal4', cat:'piernas',  slot:'legs',      name:'Piernas del Segador',        icon:'💀', rarity:'epico',      desc:'El segador se mueve más rápido que cualquier ojo humano.',    cost:510, minLevel:32, bonus:{disciplina:22,fuerza:11},                combatStats:{def:12,evasion:19},                  classes:['asesino'] },
+  { id:'xal5', cat:'piernas',  slot:'legs',      name:'Calzas del Vacío',           icon:'🌑', rarity:'legendario', desc:'El vacío cubre las piernas — el asesino es invisible.',        cost:1700,minLevel:55, bonus:{disciplina:36,fuerza:17},                combatStats:{def:20,evasion:26,critChance:8},     classes:['asesino'] },
+  { id:'xaf1', cat:'pies',     slot:'feet',      name:'Botas de Cuero Fino',        icon:'🥾', rarity:'comun',      desc:'El primer sigilo empieza por los pies — sin ruido.',          cost:78,  minLevel:1,  bonus:{disciplina:4},                           combatStats:{def:2,evasion:5},                    classes:['asesino'] },
+  { id:'xaf2', cat:'pies',     slot:'feet',      name:'Botas de Sigilo',            icon:'🥾', rarity:'poco_comun', desc:'Pisadas tan silenciosas que el viento las envidia.',           cost:148, minLevel:8,  bonus:{disciplina:9,fuerza:4},                  combatStats:{def:5,evasion:9},                    classes:['asesino'] },
+  { id:'xaf3', cat:'pies',     slot:'feet',      name:'Botas del Asesino',          icon:'🥾', rarity:'raro',       desc:'El asesino que las porta puede escalar paredes en silencio.', cost:262, minLevel:18, bonus:{disciplina:14,fuerza:7},                 combatStats:{def:8,evasion:14},                   classes:['asesino'] },
+  { id:'xaf4', cat:'pies',     slot:'feet',      name:'Botas del Segador',          icon:'💀', rarity:'epico',      desc:'El segador no necesita tocar el suelo para avanzar.',         cost:508, minLevel:32, bonus:{disciplina:22,fuerza:10},                combatStats:{def:12,evasion:19},                  classes:['asesino'] },
+  { id:'xaf5', cat:'pies',     slot:'feet',      name:'Botas del Vacío',            icon:'🌑', rarity:'legendario', desc:'Flotan sobre el vacío — el asesino no deja rastro.',          cost:1700,minLevel:55, bonus:{disciplina:36,fuerza:16},                combatStats:{def:18,evasion:26,critChance:8},     classes:['asesino'] },
+  { id:'xac1', cat:'capa',     slot:'cape',      name:'Capa de las Sombras',        icon:'🌑', rarity:'comun',      desc:'Se funde con la oscuridad nocturna como si fuera parte de ella.',cost:78,minLevel:1,  bonus:{disciplina:4},                           combatStats:{def:2,evasion:5},                    classes:['asesino'] },
+  { id:'xac2', cat:'capa',     slot:'cape',      name:'Capa de Sigilo',             icon:'👻', rarity:'poco_comun', desc:'Absorbe la luz y el sonido a su alrededor.',                   cost:150, minLevel:8,  bonus:{disciplina:9,fuerza:4},                  combatStats:{def:4,evasion:9},                    classes:['asesino'] },
+  { id:'xac3', cat:'capa',     slot:'cape',      name:'Manto del Asesino',          icon:'🌘', rarity:'raro',       desc:'Permite mezclarse con las sombras del entorno al instante.',  cost:268, minLevel:18, bonus:{disciplina:14,fuerza:7,vitalidad:4},      combatStats:{def:7,evasion:14},                   classes:['asesino'] },
+  { id:'xac4', cat:'capa',     slot:'cape',      name:'Capa del Segador',           icon:'💀', rarity:'epico',      desc:'El segador la usa para aparecer detrás sin ser percibido.',   cost:515, minLevel:32, bonus:{disciplina:22,fuerza:11},                combatStats:{def:10,evasion:19,critChance:5},     classes:['asesino'] },
+  { id:'xac5', cat:'capa',     slot:'cape',      name:'Manto del Vacío',            icon:'🌑', rarity:'legendario', desc:'El asesino y el vacío son uno — nadie puede verlo venir.',    cost:1750,minLevel:55, bonus:{disciplina:36,fuerza:17},                combatStats:{def:16,evasion:26,critChance:10},    classes:['asesino'] },
+  { id:'xax1', cat:'accesorio',slot:'accessory', name:'Veneno Básico',              icon:'💚', rarity:'comun',      desc:'El veneno amplifica cada golpe certero del asesino.',          cost:82,  minLevel:1,  bonus:{disciplina:4,fuerza:3},                  combatStats:{atk:4,critChance:5},                 classes:['asesino'] },
+  { id:'xax2', cat:'accesorio',slot:'accessory', name:'Anillo Envenenado',          icon:'🌑', rarity:'poco_comun', desc:'El veneno del anillo actúa antes de que duela el golpe.',      cost:158, minLevel:8,  bonus:{disciplina:9,fuerza:5},                  combatStats:{atk:9,critChance:10},                classes:['asesino'] },
+  { id:'xax3', cat:'accesorio',slot:'accessory', name:'Amuleto del Asesino',        icon:'💀', rarity:'raro',       desc:'El amuleto de los maestros del gremio de sombras.',            cost:275, minLevel:18, bonus:{disciplina:15,fuerza:8},                 combatStats:{atk:15,critChance:16,evasion:5},     classes:['asesino'] },
+  { id:'xax4', cat:'accesorio',slot:'accessory', name:'Medallón del Segador',       icon:'🌑', rarity:'epico',      desc:'Marca cada objetivo como condenado antes del golpe.',          cost:525, minLevel:32, bonus:{disciplina:24,fuerza:12},                combatStats:{atk:24,critChance:22,evasion:8},     classes:['asesino'] },
+  { id:'xax5', cat:'accesorio',slot:'accessory', name:'Esencia del Vacío',          icon:'🌑', rarity:'legendario', desc:'Ningún escudo conocido resiste al que porta esta esencia.',    cost:1800,minLevel:55, bonus:{disciplina:38,fuerza:19},                combatStats:{atk:38,critChance:30,evasion:14},    classes:['asesino'] },
+  // ── DRUIDA: 5 por slot ─────────────────────────────────────────────────────────────────────
+  { id:'xdw1', cat:'arma',     slot:'weapon',    name:'Palo del Bosque',            icon:'🌿', rarity:'comun',      desc:'Una rama de roble con energía natural pura todavía viva.',    cost:82,  minLevel:1,  bonus:{bienestar:4,vitalidad:4},                combatStats:{atk:3,hpRegen:5},                    classes:['druida'] },
+  { id:'xdw2', cat:'arma',     slot:'weapon',    name:'Rama Sagrada',               icon:'🌸', rarity:'poco_comun', desc:'El bosque cedió esta rama al druida que la merece.',           cost:158, minLevel:8,  bonus:{bienestar:9,vitalidad:6,mente:3},         combatStats:{atk:8,hpRegen:9},                    classes:['druida'] },
+  { id:'xdw3', cat:'arma',     slot:'weapon',    name:'Báculo del Guardián',        icon:'🌳', rarity:'raro',       desc:'El guardián del bosque lo porta cuando la tierra llama.',      cost:278, minLevel:18, bonus:{bienestar:14,vitalidad:10,mente:5},       combatStats:{atk:14,hpRegen:13},                  classes:['druida'] },
+  { id:'xdw4', cat:'arma',     slot:'weapon',    name:'Báculo del Avatar Natural',  icon:'🌍', rarity:'epico',      desc:'El árbol más anciano cedió una rama solo a su druida.',       cost:532, minLevel:32, bonus:{bienestar:22,vitalidad:14,mente:9},       combatStats:{atk:24,hpRegen:19},                  classes:['druida'] },
+  { id:'xdw5', cat:'arma',     slot:'weapon',    name:'Bastón de la Creación',      icon:'🌿', rarity:'legendario', desc:'Con él en mano el druida habla con toda la naturaleza.',      cost:1750,minLevel:55, bonus:{bienestar:36,vitalidad:22,mente:14},      combatStats:{atk:36,hpRegen:30,def:8},            classes:['druida'] },
+  { id:'xdh1', cat:'cabeza',   slot:'head',      name:'Ramaje Natural',             icon:'🍃', rarity:'comun',      desc:'Las flores frescas agudizan los sentidos del druida.',         cost:78,  minLevel:1,  bonus:{bienestar:4,vitalidad:2},                combatStats:{def:2,hpRegen:4},                    classes:['druida'] },
+  { id:'xdh2', cat:'cabeza',   slot:'head',      name:'Corona de Hojas',            icon:'🌿', rarity:'poco_comun', desc:'El bosque te corona cuando te conviertes en su voz.',          cost:148, minLevel:8,  bonus:{bienestar:9,vitalidad:5},                combatStats:{def:7,hpRegen:8},                    classes:['druida'] },
+  { id:'xdh3', cat:'cabeza',   slot:'head',      name:'Capucha del Guardián',       icon:'🌲', rarity:'raro',       desc:'El guardián del bosque lleva el bosque en su cabeza.',         cost:262, minLevel:18, bonus:{bienestar:14,vitalidad:8,mente:5},        combatStats:{def:12,hpRegen:12},                  classes:['druida'] },
+  { id:'xdh4', cat:'cabeza',   slot:'head',      name:'Corona del Avatar',          icon:'🌺', rarity:'epico',      desc:'La corona del avatar irradia vida propia cada amanecer.',     cost:508, minLevel:32, bonus:{bienestar:22,vitalidad:13,mente:8},       combatStats:{def:19,hpRegen:17},                  classes:['druida'] },
+  { id:'xdh5', cat:'cabeza',   slot:'head',      name:'Corona de la Creación',      icon:'🌍', rarity:'legendario', desc:'La creación misma tejió esta corona para su druida.',         cost:1800,minLevel:55, bonus:{bienestar:36,vitalidad:22,mente:14},      combatStats:{def:30,hpRegen:26,atk:6},            classes:['druida'] },
+  { id:'xda1', cat:'armadura', slot:'armor',     name:'Túnica de Hojas',            icon:'🍃', rarity:'comun',      desc:'Tejida con hojas de los árboles más sabios del bosque.',      cost:82,  minLevel:1,  bonus:{bienestar:4,vitalidad:4},                combatStats:{def:4,hpRegen:4},                    classes:['druida'] },
+  { id:'xda2', cat:'armadura', slot:'armor',     name:'Túnica del Guardián',        icon:'🌿', rarity:'poco_comun', desc:'El bosque mismo tejió esta túnica para proteger a su guardián.',cost:158,minLevel:8,  bonus:{bienestar:9,vitalidad:7},                combatStats:{def:9,hpRegen:8},                    classes:['druida'] },
+  { id:'xda3', cat:'armadura', slot:'armor',     name:'Vestidura del Bosque',       icon:'🌲', rarity:'raro',       desc:'La naturaleza viva rodea y protege al portador en combate.',  cost:278, minLevel:18, bonus:{bienestar:14,vitalidad:10,mente:5},       combatStats:{def:15,hpRegen:13},                  classes:['druida'] },
+  { id:'xda4', cat:'armadura', slot:'armor',     name:'Armadura del Avatar',        icon:'🌍', rarity:'epico',      desc:'La tierra, el agua y el viento se unen para protegerte.',     cost:535, minLevel:32, bonus:{bienestar:22,vitalidad:15,mente:9},       combatStats:{def:23,hpRegen:19},                  classes:['druida'] },
+  { id:'xda5', cat:'armadura', slot:'armor',     name:'Ropa de la Creación',        icon:'🌿', rarity:'legendario', desc:'La creación entera te protege cuando la portas.',             cost:1750,minLevel:55, bonus:{bienestar:36,vitalidad:23,mente:15},      combatStats:{def:36,hpRegen:30},                  classes:['druida'] },
+  { id:'xdl1', cat:'piernas',  slot:'legs',      name:'Falda de Follaje',           icon:'🍀', rarity:'comun',      desc:'Las hojas vivas del follaje protegen sin pesar nada.',         cost:75,  minLevel:1,  bonus:{bienestar:4,vitalidad:3},                combatStats:{def:3,hpRegen:3},                    classes:['druida'] },
+  { id:'xdl2', cat:'piernas',  slot:'legs',      name:'Calzas del Guardián',        icon:'🌱', rarity:'poco_comun', desc:'Las raíces del bosque siguen al druida donde va.',             cost:148, minLevel:8,  bonus:{bienestar:8,vitalidad:6},                combatStats:{def:8,hpRegen:7},                    classes:['druida'] },
+  { id:'xdl3', cat:'piernas',  slot:'legs',      name:'Piernas del Bosque',         icon:'🌲', rarity:'raro',       desc:'El bosque crece con cada paso del druida que las porta.',     cost:262, minLevel:18, bonus:{bienestar:13,vitalidad:9,mente:4},        combatStats:{def:13,hpRegen:11},                  classes:['druida'] },
+  { id:'xdl4', cat:'piernas',  slot:'legs',      name:'Calzas del Avatar',          icon:'🌿', rarity:'epico',      desc:'El avatar lleva el bosque entero tejido en sus piernas.',     cost:508, minLevel:32, bonus:{bienestar:21,vitalidad:14,mente:8},       combatStats:{def:21,hpRegen:16},                  classes:['druida'] },
+  { id:'xdl5', cat:'piernas',  slot:'legs',      name:'Piernas de la Creación',     icon:'🌍', rarity:'legendario', desc:'La tierra fluye desde la tierra hacia el cielo por ellas.',  cost:1700,minLevel:55, bonus:{bienestar:34,vitalidad:22,mente:13},      combatStats:{def:32,hpRegen:24},                  classes:['druida'] },
+  { id:'xdf1', cat:'pies',     slot:'feet',      name:'Sandalias de Tierra',        icon:'🥿', rarity:'comun',      desc:'La tierra te habla a través de cada paso que das.',            cost:72,  minLevel:1,  bonus:{bienestar:4,vitalidad:2},                combatStats:{def:2,hpRegen:4,evasion:2},          classes:['druida'] },
+  { id:'xdf2', cat:'pies',     slot:'feet',      name:'Pies del Guardián',          icon:'🌿', rarity:'poco_comun', desc:'El bosque guía los pasos del druida que las porta.',           cost:145, minLevel:8,  bonus:{bienestar:8,vitalidad:5},                combatStats:{def:6,hpRegen:7,evasion:4},          classes:['druida'] },
+  { id:'xdf3', cat:'pies',     slot:'feet',      name:'Botas del Bosque',           icon:'🥾', rarity:'raro',       desc:'La madera viva de la suela crece con cada camino andado.',    cost:260, minLevel:18, bonus:{bienestar:13,vitalidad:8,mente:4},        combatStats:{def:11,hpRegen:11,evasion:5},        classes:['druida'] },
+  { id:'xdf4', cat:'pies',     slot:'feet',      name:'Botas del Avatar',           icon:'🌿', rarity:'epico',      desc:'El avatar camina sobre la naturaleza — ella lo sostiene.',    cost:505, minLevel:32, bonus:{bienestar:21,vitalidad:13,mente:7},       combatStats:{def:18,hpRegen:16,evasion:7},        classes:['druida'] },
+  { id:'xdf5', cat:'pies',     slot:'feet',      name:'Pisadas de la Creación',     icon:'🌍', rarity:'legendario', desc:'Donde pisa el druida florece la vida misma.',                  cost:1700,minLevel:55, bonus:{bienestar:34,vitalidad:21,mente:12},      combatStats:{def:28,hpRegen:24,evasion:10},       classes:['druida'] },
+  { id:'xdc1', cat:'capa',     slot:'cape',      name:'Capa Verde',                 icon:'🍂', rarity:'comun',      desc:'Verde como el bosque que el druida protege cada día.',         cost:76,  minLevel:1,  bonus:{bienestar:4,vitalidad:2},                combatStats:{def:2,hpRegen:4},                    classes:['druida'] },
+  { id:'xdc2', cat:'capa',     slot:'cape',      name:'Manto del Guardián',         icon:'🌿', rarity:'poco_comun', desc:'El bosque te reconoce y te abre el camino cuando la llevas.', cost:150, minLevel:8,  bonus:{bienestar:9,vitalidad:5},                combatStats:{def:6,hpRegen:7},                    classes:['druida'] },
+  { id:'xdc3', cat:'capa',     slot:'cape',      name:'Capa del Bosque',            icon:'🌲', rarity:'raro',       desc:'El bosque vive en sus hilos — protegiéndote desde adentro.',  cost:265, minLevel:18, bonus:{bienestar:14,vitalidad:8,mente:5},        combatStats:{def:10,hpRegen:12},                  classes:['druida'] },
+  { id:'xdc4', cat:'capa',     slot:'cape',      name:'Manto del Avatar',           icon:'🌍', rarity:'epico',      desc:'La naturaleza misma se convierte en tu escudo al portarla.',  cost:510, minLevel:32, bonus:{bienestar:22,vitalidad:13,mente:8},       combatStats:{def:16,hpRegen:17},                  classes:['druida'] },
+  { id:'xdc5', cat:'capa',     slot:'cape',      name:'Capa de la Creación',        icon:'🌿', rarity:'legendario', desc:'La creación te protege — la vida fluye a través de ella.',    cost:1750,minLevel:55, bonus:{bienestar:36,vitalidad:22,mente:13},      combatStats:{def:24,hpRegen:26,atk:6},            classes:['druida'] },
+  { id:'xdx1', cat:'accesorio',slot:'accessory', name:'Raíz Mágica',               icon:'🌱', rarity:'comun',      desc:'La raíz pulsa con la energía de la tierra viva.',              cost:80,  minLevel:1,  bonus:{bienestar:4,vitalidad:3},                combatStats:{hpRegen:6,def:2},                    classes:['druida'] },
+  { id:'xdx2', cat:'accesorio',slot:'accessory', name:'Amuleto del Guardián',       icon:'🍃', rarity:'poco_comun', desc:'El bosque te protege a través de este amuleto ancestral.',     cost:155, minLevel:8,  bonus:{bienestar:9,vitalidad:5,mente:3},         combatStats:{hpRegen:10,def:5},                   classes:['druida'] },
+  { id:'xdx3', cat:'accesorio',slot:'accessory', name:'Cristal del Bosque',         icon:'🌿', rarity:'raro',       desc:'Un cristal formado en el corazón del árbol más antiguo.',     cost:270, minLevel:18, bonus:{bienestar:14,vitalidad:8,mente:6},        combatStats:{hpRegen:15,def:8,atk:4},             classes:['druida'] },
+  { id:'xdx4', cat:'accesorio',slot:'accessory', name:'Esfera del Avatar',          icon:'🌍', rarity:'epico',      desc:'La naturaleza condensada en una esfera que nunca se apaga.', cost:520, minLevel:32, bonus:{bienestar:22,vitalidad:13,mente:9},       combatStats:{hpRegen:22,def:12,atk:7},            classes:['druida'] },
+  { id:'xdx5', cat:'accesorio',slot:'accessory', name:'Corazón de la Creación',     icon:'🌿', rarity:'legendario', desc:'El corazón de la creación late al ritmo del druida.',          cost:1800,minLevel:55, bonus:{bienestar:36,vitalidad:22,mente:14},      combatStats:{hpRegen:34,def:18,atk:12},           classes:['druida'] },
+  // ── BÁRBARO: 5 por slot ────────────────────────────────────────────────────────────────────
+  { id:'xbw1', cat:'arma',     slot:'weapon',    name:'Porra de Madera',            icon:'🪵', rarity:'comun',      desc:'Un madero que aplasta todo sin ninguna piedad.',               cost:85,  minLevel:1,  bonus:{fuerza:5,vitalidad:3},                   combatStats:{atk:5},                              classes:['barbaro'] },
+  { id:'xbw2', cat:'arma',     slot:'weapon',    name:'Hacha Corta',                icon:'🪓', rarity:'poco_comun', desc:'La hacha del bárbaro que empieza a aprender la furia.',        cost:162, minLevel:8,  bonus:{fuerza:10,vitalidad:6},                  combatStats:{atk:11,critChance:4},                classes:['barbaro'] },
+  { id:'xbw3', cat:'arma',     slot:'weapon',    name:'Hacha de Dos Hojas',         icon:'🪓', rarity:'raro',       desc:'Cada hoja crea destrozos distintos — el rival no sabe cuál.',cost:285, minLevel:18, bonus:{fuerza:16,vitalidad:9,disciplina:4},      combatStats:{atk:20,critChance:7},                classes:['barbaro'] },
+  { id:'xbw4', cat:'arma',     slot:'weapon',    name:'Gran Hacha Ancestral',       icon:'⚡', rarity:'epico',      desc:'Los espíritus de guerreros pasados guían cada golpe.',         cost:542, minLevel:32, bonus:{fuerza:24,vitalidad:14,disciplina:7},     combatStats:{atk:32,critChance:10},               classes:['barbaro'] },
+  { id:'xbw5', cat:'arma',     slot:'weapon',    name:'Martillo del Titán',         icon:'🔱', rarity:'legendario', desc:'El titán que lo forjó destruyó tres montañas para crearlo.',  cost:1750,minLevel:55, bonus:{fuerza:38,vitalidad:22,disciplina:12},    combatStats:{atk:50,def:8,critChance:12},         classes:['barbaro'] },
+  { id:'xbh1', cat:'cabeza',   slot:'head',      name:'Banda de Guerrero',          icon:'🏋️', rarity:'comun',      desc:'La primera banda del bárbaro que aprendió a luchar.',         cost:80,  minLevel:1,  bonus:{fuerza:4,vitalidad:3},                   combatStats:{def:3,atk:2},                        classes:['barbaro'] },
+  { id:'xbh2', cat:'cabeza',   slot:'head',      name:'Casco de Batalla',           icon:'⛑️', rarity:'poco_comun', desc:'Los cuernos del casco aterran al rival antes del golpe.',     cost:155, minLevel:8,  bonus:{fuerza:9,vitalidad:6},                   combatStats:{def:8,atk:4},                        classes:['barbaro'] },
+  { id:'xbh3', cat:'cabeza',   slot:'head',      name:'Yelmo del Bárbaro',          icon:'🐂', rarity:'raro',       desc:'El rugido del bárbaro resuena diferente cuando lo lleva.',    cost:268, minLevel:18, bonus:{fuerza:14,vitalidad:9,disciplina:5},      combatStats:{def:14,atk:6},                       classes:['barbaro'] },
+  { id:'xbh4', cat:'cabeza',   slot:'head',      name:'Máscara del Titán',          icon:'🔱', rarity:'epico',      desc:'Los rivales tiemblan cuando ven la máscara del titán.',       cost:510, minLevel:32, bonus:{fuerza:22,vitalidad:13,disciplina:8},     combatStats:{def:22,atk:8},                       classes:['barbaro'] },
+  { id:'xbh5', cat:'cabeza',   slot:'head',      name:'Corona del Dios de Guerra',  icon:'⚡', rarity:'legendario', desc:'Solo el dios de la guerra puede portar su corona sagrada.',   cost:1800,minLevel:55, bonus:{fuerza:36,vitalidad:21,disciplina:13},    combatStats:{def:34,atk:14,critChance:10},        classes:['barbaro'] },
+  { id:'xba1', cat:'armadura', slot:'armor',     name:'Pieles de Caza',             icon:'🦁', rarity:'comun',      desc:'Las primeras pieles que el bárbaro cazó con sus manos.',       cost:85,  minLevel:1,  bonus:{fuerza:4,vitalidad:5},                   combatStats:{def:5},                              classes:['barbaro'] },
+  { id:'xba2', cat:'armadura', slot:'armor',     name:'Armadura de Pieles',         icon:'🪨', rarity:'poco_comun', desc:'Pieles curtidas de bestias que no cedieron sin luchar.',       cost:162, minLevel:8,  bonus:{fuerza:9,vitalidad:9},                   combatStats:{def:11},                             classes:['barbaro'] },
+  { id:'xba3', cat:'armadura', slot:'armor',     name:'Peto del Bárbaro',           icon:'🪓', rarity:'raro',       desc:'Placas de hierro sobre cuero — brutalmente efectivo.',         cost:282, minLevel:18, bonus:{fuerza:14,vitalidad:14,disciplina:5},     combatStats:{def:19},                             classes:['barbaro'] },
+  { id:'xba4', cat:'armadura', slot:'armor',     name:'Coraza del Titán',           icon:'🔱', rarity:'epico',      desc:'El titán necesitó décadas para encontrar el hierro adecuado.',cost:542,minLevel:32, bonus:{fuerza:22,vitalidad:20,disciplina:8},     combatStats:{def:29},                             classes:['barbaro'] },
+  { id:'xba5', cat:'armadura', slot:'armor',     name:'Armadura del Dios de Guerra',icon:'⚡', rarity:'legendario', desc:'Ningún veneno ni maldición puede atravesarla — jamás.',       cost:1750,minLevel:55, bonus:{fuerza:36,vitalidad:30,disciplina:12},    combatStats:{def:44,atk:8},                       classes:['barbaro'] },
+  { id:'xbl1', cat:'piernas',  slot:'legs',      name:'Falda de Pieles',            icon:'🦁', rarity:'comun',      desc:'Pieles curtidas que protegen sin limitar el movimiento.',      cost:78,  minLevel:1,  bonus:{fuerza:4,vitalidad:3},                   combatStats:{def:3,evasion:2},                    classes:['barbaro'] },
+  { id:'xbl2', cat:'piernas',  slot:'legs',      name:'Calzas de Batalla',          icon:'⚔️', rarity:'poco_comun', desc:'Reforzadas con hierro para el choque frontal en primera fila.',cost:150,minLevel:8,  bonus:{fuerza:9,vitalidad:6},                   combatStats:{def:9,evasion:3},                    classes:['barbaro'] },
+  { id:'xbl3', cat:'piernas',  slot:'legs',      name:'Piernas del Bárbaro',        icon:'🪓', rarity:'raro',       desc:'Las piernas del bárbaro no retroceden en ninguna batalla.',   cost:265, minLevel:18, bonus:{fuerza:14,vitalidad:9,disciplina:4},      combatStats:{def:15,evasion:4},                   classes:['barbaro'] },
+  { id:'xbl4', cat:'piernas',  slot:'legs',      name:'Grebas del Titán',           icon:'🔱', rarity:'epico',      desc:'Placas del titán que no ceden aunque la tierra tiemble.',     cost:508, minLevel:32, bonus:{fuerza:22,vitalidad:14,disciplina:7},     combatStats:{def:24,evasion:5},                   classes:['barbaro'] },
+  { id:'xbl5', cat:'piernas',  slot:'legs',      name:'Pantalón del Dios de Guerra',icon:'⚡', rarity:'legendario', desc:'El dios de la guerra avanza — ningún rival puede frenarle.',  cost:1700,minLevel:55, bonus:{fuerza:36,vitalidad:22,disciplina:12},    combatStats:{def:38,evasion:8,atk:6},             classes:['barbaro'] },
+  { id:'xbf1', cat:'pies',     slot:'feet',      name:'Pies de Cuero',              icon:'🥾', rarity:'comun',      desc:'El bárbaro necesita suelas que aguanten el camino.',           cost:76,  minLevel:1,  bonus:{fuerza:3,vitalidad:3},                   combatStats:{def:3,evasion:3},                    classes:['barbaro'] },
+  { id:'xbf2', cat:'pies',     slot:'feet',      name:'Botas del Bárbaro',          icon:'🥾', rarity:'poco_comun', desc:'Pisadas que hacen temblar el suelo al caminar.',               cost:148, minLevel:8,  bonus:{fuerza:8,vitalidad:5},                   combatStats:{def:7,evasion:5},                    classes:['barbaro'] },
+  { id:'xbf3', cat:'pies',     slot:'feet',      name:'Botas de Guerra',            icon:'🥾', rarity:'raro',       desc:'Mil kilómetros de guerra y siguen pisando con fuerza.',        cost:262, minLevel:18, bonus:{fuerza:13,vitalidad:8,disciplina:4},      combatStats:{def:12,evasion:7},                   classes:['barbaro'] },
+  { id:'xbf4', cat:'pies',     slot:'feet',      name:'Botas del Titán',            icon:'🔱', rarity:'epico',      desc:'El titán aplasta lo que pisa — sus botas lo confirman.',      cost:506, minLevel:32, bonus:{fuerza:21,vitalidad:13,disciplina:6},     combatStats:{def:19,evasion:9},                   classes:['barbaro'] },
+  { id:'xbf5', cat:'pies',     slot:'feet',      name:'Botas del Dios de Guerra',   icon:'⚡', rarity:'legendario', desc:'El dios de la guerra nunca necesitó correr — pero puede.',   cost:1700,minLevel:55, bonus:{fuerza:34,vitalidad:21,disciplina:12},    combatStats:{def:30,evasion:13,atk:6},            classes:['barbaro'] },
+  { id:'xbc1', cat:'capa',     slot:'cape',      name:'Capa de Piel',               icon:'🦁', rarity:'comun',      desc:'La primera piel de bestia — símbolo de la primera victoria.', cost:78,  minLevel:1,  bonus:{fuerza:4,vitalidad:2},                   combatStats:{def:3,atk:2},                        classes:['barbaro'] },
+  { id:'xbc2', cat:'capa',     slot:'cape',      name:'Manto del Bárbaro',          icon:'🪶', rarity:'poco_comun', desc:'Plumas y pieles de los tótems tribales del clan sagrado.',    cost:150, minLevel:8,  bonus:{fuerza:9,vitalidad:5},                   combatStats:{def:7,atk:4},                        classes:['barbaro'] },
+  { id:'xbc3', cat:'capa',     slot:'cape',      name:'Capa de la Tribu',           icon:'🦁', rarity:'raro',       desc:'Quien la lleva carga con la fuerza de toda la tribu.',        cost:265, minLevel:18, bonus:{fuerza:14,vitalidad:8,disciplina:4},      combatStats:{def:12,atk:7},                       classes:['barbaro'] },
+  { id:'xbc4', cat:'capa',     slot:'cape',      name:'Manto del Titán',            icon:'🔱', rarity:'epico',      desc:'El titán la teje para que su clan lo reconozca en la batalla.',cost:510,minLevel:32, bonus:{fuerza:22,vitalidad:12,disciplina:7},     combatStats:{def:18,atk:10},                      classes:['barbaro'] },
+  { id:'xbc5', cat:'capa',     slot:'cape',      name:'Capa del Dios de Guerra',    icon:'⚡', rarity:'legendario', desc:'El dios de la guerra envía a su campeón con esta capa.',      cost:1750,minLevel:55, bonus:{fuerza:36,vitalidad:20,disciplina:12},    combatStats:{def:28,atk:16,critChance:8},         classes:['barbaro'] },
+  { id:'xbx1', cat:'accesorio',slot:'accessory', name:'Garras de Bestia',           icon:'🦷', rarity:'comun',      desc:'Garras de las primeras bestias vencidas por el bárbaro.',     cost:82,  minLevel:1,  bonus:{fuerza:5,vitalidad:3},                   combatStats:{atk:4,def:2},                        classes:['barbaro'] },
+  { id:'xbx2', cat:'accesorio',slot:'accessory', name:'Collar de Batalla',          icon:'🔶', rarity:'poco_comun', desc:'Cada eslabón forjado en furia pura del clan guerrero.',        cost:158, minLevel:8,  bonus:{fuerza:10,vitalidad:6},                  combatStats:{atk:10,def:4},                       classes:['barbaro'] },
+  { id:'xbx3', cat:'accesorio',slot:'accessory', name:'Brazal del Bárbaro',         icon:'🔱', rarity:'raro',       desc:'El brazal que marca al bárbaro como guerrero real.',           cost:272, minLevel:18, bonus:{fuerza:15,vitalidad:9,disciplina:5},      combatStats:{atk:17,def:7,critChance:5},          classes:['barbaro'] },
+  { id:'xbx4', cat:'accesorio',slot:'accessory', name:'Amuleto del Titán',          icon:'⚡', rarity:'epico',      desc:'La fuerza del titán fluye a través del amuleto sagrado.',     cost:520, minLevel:32, bonus:{fuerza:23,vitalidad:14,disciplina:8},     combatStats:{atk:26,def:10,critChance:8},         classes:['barbaro'] },
+  { id:'xbx5', cat:'accesorio',slot:'accessory', name:'Reliquia del Dios de Guerra',icon:'🔱', rarity:'legendario', desc:'La reliquia del dios de la guerra — poder puro encarnado.',   cost:1800,minLevel:55, bonus:{fuerza:38,vitalidad:22,disciplina:13},    combatStats:{atk:42,def:16,critChance:14},        classes:['barbaro'] },
+  // ── ARQUERO: 5 por slot ────────────────────────────────────────────────────────────────────
+  { id:'xrw1', cat:'arma',     slot:'weapon',    name:'Arco de Pesca',              icon:'🏹', rarity:'comun',      desc:'El primer arco — modesto pero preciso en manos ciertas.',     cost:82,  minLevel:1,  bonus:{mente:4,disciplina:4},                   combatStats:{atk:4,critChance:5},                 classes:['arquero'] },
+  { id:'xrw2', cat:'arma',     slot:'weapon',    name:'Arco de Caza',               icon:'🏹', rarity:'poco_comun', desc:'Perfectamente equilibrado para cazar en cualquier terreno.',  cost:158, minLevel:8,  bonus:{mente:9,disciplina:7},                   combatStats:{atk:10,critChance:10},               classes:['arquero'] },
+  { id:'xrw3', cat:'arma',     slot:'weapon',    name:'Arco del Explorador',        icon:'🌲', rarity:'raro',       desc:'El explorador conoce el punto débil de todo objetivo.',       cost:278, minLevel:18, bonus:{mente:15,disciplina:10,fuerza:4},         combatStats:{atk:18,critChance:16},               classes:['arquero'] },
+  { id:'xrw4', cat:'arma',     slot:'weapon',    name:'Arco del Centinela',         icon:'⛑️', rarity:'epico',      desc:'El centinela nunca falla — el arco tampoco.',                  cost:535, minLevel:32, bonus:{mente:23,disciplina:14,fuerza:7},         combatStats:{atk:29,critChance:22},               classes:['arquero'] },
+  { id:'xrw5', cat:'arma',     slot:'weapon',    name:'Arco de las Estrellas',      icon:'🌠', rarity:'legendario', desc:'Las flechas viajan a la velocidad de la luz estelar.',        cost:1750,minLevel:55, bonus:{mente:37,disciplina:21,fuerza:12},         combatStats:{atk:45,critChance:30,evasion:6},     classes:['arquero'] },
+  { id:'xrh1', cat:'cabeza',   slot:'head',      name:'Gorro de Cuero',             icon:'🎩', rarity:'comun',      desc:'Ligero y cómodo, el arquero apunta sin estorbo.',              cost:78,  minLevel:1,  bonus:{disciplina:4,mente:3},                   combatStats:{def:2,evasion:4},                    classes:['arquero'] },
+  { id:'xrh2', cat:'cabeza',   slot:'head',      name:'Visera del Explorador',      icon:'🌲', rarity:'poco_comun', desc:'El explorador camufla su rostro con la visera del bosque.',   cost:150, minLevel:8,  bonus:{disciplina:9,mente:6},                   combatStats:{def:6,evasion:8},                    classes:['arquero'] },
+  { id:'xrh3', cat:'cabeza',   slot:'head',      name:'Casco del Rastreador',       icon:'⛑️', rarity:'raro',       desc:'El rastreador nunca es sorprendido — ve antes de ser visto.',cost:264, minLevel:18, bonus:{disciplina:14,mente:9,fuerza:4},          combatStats:{def:11,evasion:12,critChance:5},     classes:['arquero'] },
+  { id:'xrh4', cat:'cabeza',   slot:'head',      name:'Corona del Centinela',       icon:'🌌', rarity:'epico',      desc:'El centinela vigila el horizonte desde esta corona.',         cost:508, minLevel:32, bonus:{disciplina:22,mente:13,fuerza:7},         combatStats:{def:17,evasion:17,critChance:8},     classes:['arquero'] },
+  { id:'xrh5', cat:'cabeza',   slot:'head',      name:'Tiara Estelar',              icon:'⭐', rarity:'legendario', desc:'Quien la porta ve tan lejos como las estrellas viajan.',      cost:1800,minLevel:55, bonus:{disciplina:36,mente:21,fuerza:12},         combatStats:{def:26,evasion:24,critChance:14},    classes:['arquero'] },
+  { id:'xra1', cat:'armadura', slot:'armor',     name:'Chaleco de Caza',            icon:'🧥', rarity:'comun',      desc:'Protección ligera que no resta velocidad al arquero.',        cost:80,  minLevel:1,  bonus:{disciplina:4,mente:3},                   combatStats:{def:3,evasion:3},                    classes:['arquero'] },
+  { id:'xra2', cat:'armadura', slot:'armor',     name:'Armadura del Explorador',    icon:'🌲', rarity:'poco_comun', desc:'Diseñada para moverse rápido y atacar desde cualquier ángulo.',cost:155,minLevel:8,  bonus:{disciplina:9,mente:6},                   combatStats:{def:8,evasion:6},                    classes:['arquero'] },
+  { id:'xra3', cat:'armadura', slot:'armor',     name:'Peto del Rastreador',        icon:'🐾', rarity:'raro',       desc:'El rastreador usa solo lo que no lo delata al moverse.',      cost:272, minLevel:18, bonus:{disciplina:14,mente:9,fuerza:4},          combatStats:{def:13,evasion:9},                   classes:['arquero'] },
+  { id:'xra4', cat:'armadura', slot:'armor',     name:'Coraza del Centinela',       icon:'⛑️', rarity:'epico',      desc:'El centinela protege su terreno y se protege a sí mismo.',    cost:520, minLevel:32, bonus:{disciplina:22,mente:13,fuerza:8},         combatStats:{def:20,evasion:12},                  classes:['arquero'] },
+  { id:'xra5', cat:'armadura', slot:'armor',     name:'Armadura Estelar',           icon:'🌠', rarity:'legendario', desc:'Tejida con la luz de las estrellas que guían al arquero.',    cost:1750,minLevel:55, bonus:{disciplina:36,mente:21,fuerza:12},         combatStats:{def:32,evasion:18,critChance:8},     classes:['arquero'] },
+  { id:'xrl1', cat:'piernas',  slot:'legs',      name:'Calzas de Explorador',       icon:'🌿', rarity:'comun',      desc:'Ligeras para moverse rápido en cualquier tipo de terreno.',   cost:76,  minLevel:1,  bonus:{disciplina:4,mente:2},                   combatStats:{def:2,evasion:5},                    classes:['arquero'] },
+  { id:'xrl2', cat:'piernas',  slot:'legs',      name:'Pantalón del Rastreador',    icon:'🐾', rarity:'poco_comun', desc:'El rastreador deja la menor huella posible en el terreno.',   cost:148, minLevel:8,  bonus:{disciplina:9,mente:5},                   combatStats:{def:6,evasion:9},                    classes:['arquero'] },
+  { id:'xrl3', cat:'piernas',  slot:'legs',      name:'Calzas del Centinela',       icon:'⛑️', rarity:'raro',       desc:'El centinela se mueve en silencio — nadie lo escucha pasar.',cost:262, minLevel:18, bonus:{disciplina:14,mente:8,fuerza:4},          combatStats:{def:11,evasion:13},                  classes:['arquero'] },
+  { id:'xrl4', cat:'piernas',  slot:'legs',      name:'Piernas del Arquero Elite',  icon:'🌌', rarity:'epico',      desc:'El arquero elite nunca se cansa de moverse entre flechas.',   cost:507, minLevel:32, bonus:{disciplina:22,mente:12,fuerza:7},         combatStats:{def:17,evasion:18,critChance:5},     classes:['arquero'] },
+  { id:'xrl5', cat:'piernas',  slot:'legs',      name:'Calzas Estelares',           icon:'🌠', rarity:'legendario', desc:'Las estrellas guían cada movimiento del arquero legendario.', cost:1700,minLevel:55, bonus:{disciplina:36,mente:20,fuerza:12},         combatStats:{def:26,evasion:25,critChance:8},     classes:['arquero'] },
+  { id:'xrf1', cat:'pies',     slot:'feet',      name:'Botas Ligeras',              icon:'🥾', rarity:'comun',      desc:'El arquero necesita suelas que no hagan ruido al moverse.',   cost:74,  minLevel:1,  bonus:{disciplina:4,mente:2},                   combatStats:{def:2,evasion:5},                    classes:['arquero'] },
+  { id:'xrf2', cat:'pies',     slot:'feet',      name:'Botas del Explorador',       icon:'🥾', rarity:'poco_comun', desc:'El explorador camina kilómetros sin que se note el esfuerzo.',cost:146,minLevel:8,  bonus:{disciplina:9,mente:4},                   combatStats:{def:5,evasion:9},                    classes:['arquero'] },
+  { id:'xrf3', cat:'pies',     slot:'feet',      name:'Botas del Rastreador',       icon:'🥾', rarity:'raro',       desc:'El rastreador no deja rastro — sus botas tampoco.',            cost:260, minLevel:18, bonus:{disciplina:14,mente:7,fuerza:4},          combatStats:{def:9,evasion:13},                   classes:['arquero'] },
+  { id:'xrf4', cat:'pies',     slot:'feet',      name:'Botas del Centinela',        icon:'🏹', rarity:'epico',      desc:'El centinela está siempre listo — sus botas no fallan.',      cost:504, minLevel:32, bonus:{disciplina:22,mente:11,fuerza:6},         combatStats:{def:14,evasion:18},                  classes:['arquero'] },
+  { id:'xrf5', cat:'pies',     slot:'feet',      name:'Botas Estelares',            icon:'🌠', rarity:'legendario', desc:'Las estrellas guían cada paso del arquero hacia la victoria.',cost:1700,minLevel:55, bonus:{disciplina:36,mente:19,fuerza:10},         combatStats:{def:22,evasion:25,critChance:8},     classes:['arquero'] },
+  { id:'xrc1', cat:'capa',     slot:'cape',      name:'Capa del Bosque',            icon:'🌿', rarity:'comun',      desc:'Verde como el bosque donde el arquero se camufla.',           cost:74,  minLevel:1,  bonus:{disciplina:4,mente:2},                   combatStats:{def:2,evasion:4},                    classes:['arquero'] },
+  { id:'xrc2', cat:'capa',     slot:'cape',      name:'Manto del Explorador',       icon:'🐾', rarity:'poco_comun', desc:'Permite al explorador fundirse con la naturaleza al instante.',cost:148,minLevel:8,  bonus:{disciplina:9,mente:5},                   combatStats:{def:5,evasion:8},                    classes:['arquero'] },
+  { id:'xrc3', cat:'capa',     slot:'cape',      name:'Capa del Rastreador',        icon:'🌲', rarity:'raro',       desc:'El rastreador desaparece en el entorno cuando la lleva.',     cost:262, minLevel:18, bonus:{disciplina:14,mente:8,fuerza:4},          combatStats:{def:8,evasion:12,critChance:4},      classes:['arquero'] },
+  { id:'xrc4', cat:'capa',     slot:'cape',      name:'Manto del Centinela',        icon:'🌌', rarity:'epico',      desc:'El centinela vigila sin ser visto gracias a este manto.',     cost:507, minLevel:32, bonus:{disciplina:22,mente:12,fuerza:7},         combatStats:{def:12,evasion:17,critChance:6},     classes:['arquero'] },
+  { id:'xrc5', cat:'capa',     slot:'cape',      name:'Capa Estelar',               icon:'🌠', rarity:'legendario', desc:'La galaxia entera envuelve al arquero cuando la lleva.',     cost:1750,minLevel:55, bonus:{disciplina:36,mente:20,fuerza:12},         combatStats:{def:18,evasion:24,critChance:10},    classes:['arquero'] },
+  { id:'xrx1', cat:'accesorio',slot:'accessory', name:'Carcaj Simple',              icon:'🏹', rarity:'comun',      desc:'Un carcaj que mantiene las flechas siempre listas al instante.',cost:80,minLevel:1,  bonus:{disciplina:4,mente:3},                   combatStats:{atk:4,critChance:5},                 classes:['arquero'] },
+  { id:'xrx2', cat:'accesorio',slot:'accessory', name:'Anillo del Arquero',         icon:'🎯', rarity:'poco_comun', desc:'El anillo calibra la mano para el disparo perfecto.',          cost:155, minLevel:8,  bonus:{disciplina:9,mente:6},                   combatStats:{atk:9,critChance:10},                classes:['arquero'] },
+  { id:'xrx3', cat:'accesorio',slot:'accessory', name:'Amuleto del Rastreador',     icon:'🌲', rarity:'raro',       desc:'El rastreador nunca pierde el objetivo con este amuleto.',    cost:270, minLevel:18, bonus:{disciplina:14,mente:9,fuerza:5},          combatStats:{atk:15,critChance:16,evasion:4},     classes:['arquero'] },
+  { id:'xrx4', cat:'accesorio',slot:'accessory', name:'Emblema del Centinela',      icon:'⭐', rarity:'epico',      desc:'El emblema que distingue al centinela de todos los demás.',   cost:518, minLevel:32, bonus:{disciplina:22,mente:13,fuerza:8},         combatStats:{atk:24,critChance:22,evasion:6},     classes:['arquero'] },
+  { id:'xrx5', cat:'accesorio',slot:'accessory', name:'Estrella del Cosmos',        icon:'🌠', rarity:'legendario', desc:'El cosmos mismo le entregó esta estrella al arquero elegido.',cost:1800,minLevel:55, bonus:{disciplina:36,mente:21,fuerza:13},         combatStats:{atk:38,critChance:30,evasion:10},    classes:['arquero'] },
+
   // ── Items Exclusivos de Evento Mensual (solo se obtienen derrotando al jefe del evento) ──
   { id:'ev_manto_glacial',    cat:'capa',     slot:'cape',      name:'Manto Glacial',              icon:'❄️',  rarity:'evento', exclusive:true, desc:'El frío eterno tejido en cada hilo, impenetrable al daño.',  cost:0, minLevel:5, bonus:{vitalidad:12,mente:6},           combatStats:{def:18,hpRegen:8},             classes:[] },
   { id:'ev_amuleto_corazon',  cat:'accesorio',slot:'accessory', name:'Amuleto del Corazón',        icon:'💕',  rarity:'evento', exclusive:true, desc:'Palpita con la energía del amor eterno, restaura la vida.',  cost:0, minLevel:5, bonus:{bienestar:14,vitalidad:8},        combatStats:{def:10,hpRegen:14},            classes:[] },
@@ -9154,6 +9440,188 @@ const ENEMY_META = {
   el_vacio:     {desc:'EL VACÍO PRIMORDIAL — La nada absoluta que existe antes y después de todo. El desafío máximo.',weakness:'La voluntad inquebrantable',
     skills:[{name:'Aniquilación',icon:'🌌',every:2,mult:3.5,msg:'usa Aniquilación'},{name:'Devorar Realidad',icon:'🌑',every:3,mult:4.0,msg:'devora la realidad misma'},{name:'Restauración Vacía',icon:'🌀',every:4,type:'heal_self',amount:0.25,msg:'usa la Restauración del Vacío'},{name:'Colapso Universal',icon:'💀',every:5,mult:5.5,msg:'provoca un Colapso Universal'},{name:'Extinción Total',icon:'🌌',every:7,mult:8.0,effect:'ignoredef',msg:'usa la EXTINCIÓN TOTAL'}],
     phase2:{icon:'🌌💀',name:'El Vacío Primordial Desatado',atkMult:2.8,msg:'¡EL VACÍO PRIMORDIAL SE DESATA — La realidad colapsa a tu alrededor!'}},
+};
+
+// ── Boss Dialogues ──────────────────────────────────────────────────────────
+// Each entry: { personality, intro, exchanges:[{boss, choices:[{text,reaction,effectDesc,effect}]}] }
+// effect: { atkMult, defMult, hpMult, firstStrike, atkDebuff }
+const BOSS_DIALOGUES = {
+  alfa_bosque: {
+    personality:'arrogante',
+    personalityLabel:'😤 Arrogante',
+    intro:'El Alfa del Bosque te bloquea el paso. Su mirada es pura amenaza animal.',
+    bossIcon:'🐺',
+    exchanges:[
+      {
+        boss:'...Otro humano que se pierde en MI bosque. Qué delicia.',
+        choices:[
+          { text:'Este bosque no te pertenece. Voy a pasarte por encima.', reaction:'¡Eso es exactamente lo que esperaba! ¡Demuéstralo si puedes, rata de ciudad!', effectDesc:'El Alfa se enoja: +30% ATK pero −25% DEF', effect:{ atkMult:1.3, defMult:0.75 } },
+          { text:'Solo vengo a acabar con la amenaza del bosque. Nada personal.', reaction:'¿Sin emociones? Eso me aburre. Prefiero cazas con miedo y adrenalina.', effectDesc:'El Alfa se frustra: sin cambios especiales', effect:{} },
+          { text:'[Silencio. Adoptas posición de combate.]', reaction:'Mmm. Un oponente tranquilo. Interesante... pero igual morirás.', effectDesc:'Ataque sorpresa: ganas el primer turno', effect:{ firstStrike:true } }
+        ]
+      }
+    ]
+  },
+  rey_esq: {
+    personality:'calculador',
+    personalityLabel:'🧠 Calculador',
+    intro:'El Rey Esqueleto levanta la mano desde su trono de huesos. Frío, metódico, sin alma.',
+    bossIcon:'👑',
+    exchanges:[
+      {
+        boss:'Has llegado bastante lejos para ser mortal. Dime... ¿qué te impulsó hasta aquí?',
+        choices:[
+          { text:'Vine a destruirte, eso es todo lo que necesitas saber.', reaction:'Directo. Aprecio la honestidad. Aun así, tus huesos decorarán mi trono.', effectDesc:'El Rey se prepara metódicamente: +20% ATK y DEF', effect:{ atkMult:1.2, defMult:1.2 } },
+          { text:'Vine por el tesoro que guardas. Sin rodeos.', reaction:'Avaricia. Un motivo vulgar pero predecible. Eso me da ventaja.', effectDesc:'El Rey te subestima: −15% DEF tuya (−15% HP inicial)', effect:{ hpMult:0.85 } },
+          { text:'Vine porque nadie más pudo. Y yo no fallo.', reaction:'Orgullo. Hmm. Eso podría ser un problema para mí... o no.', effectDesc:'El Rey te toma en serio: combate equilibrado', effect:{} }
+        ]
+      }
+    ]
+  },
+  senor_caos: {
+    personality:'desesperado',
+    personalityLabel:'🌀 Desesperado',
+    intro:'El Señor del Caos ríe sin control. Hay algo roto en su mirada — como si ya supiera que va a perder.',
+    bossIcon:'🌪️',
+    exchanges:[
+      {
+        boss:'¡JA JA JA! ¡Otro héroe! ¡Cuántos he visto caer! ¡Y tú también caerás! ¡TODOS CAEN!',
+        choices:[
+          { text:'Te veo asustado detrás de esa risa. El caos no dura para siempre.', reaction:'¡NO TENGO MIEDO! ¡SOY EL CAOS! ¡SOY ETERNO! ¡TE ANIQUILARÉ!', effectDesc:'El Señor del Caos entra en pánico: +40% ATK pero −40% DEF', effect:{ atkMult:1.4, defMult:0.6 } },
+          { text:'[Te mantienes en calma, sin responder al caos.]', reaction:'...¿Por qué no reaccionas? Eso me desestabiliza más que cualquier insulto.', effectDesc:'Tu calma lo desorienta: −20% ATK del enemigo', effect:{ atkDebuff:0.8 } },
+          { text:'Tantos caídos... ¿no te pesa eso? ¿No estás cansado de todo esto?', reaction:'Yo... yo... ¡CÁLLATE! ¡No me hagas pensar! ¡ATACO AHORA!', effectDesc:'Lo presionas: pierde el primer turno de confusión', effect:{ firstStrike:true } }
+        ]
+      }
+    ]
+  },
+  behemoth: {
+    personality:'honorable',
+    personalityLabel:'⚖️ Honorable',
+    intro:'El Behemoth te mira desde su enorme altura. No ataca de inmediato. Parece estar evaluando si mereces enfrentarlo.',
+    bossIcon:'🦣',
+    exchanges:[
+      {
+        boss:'... Eres más pequeño de lo que esperaba. Pero llegas hasta aquí. Eso merece respeto.',
+        choices:[
+          { text:'Respeto mutuo entonces. Pelearemos con honor.', reaction:'Bien dicho. Un combate limpio. Que gane el más fuerte.', effectDesc:'Combate honorable: ambos +10% ATK y DEF', effect:{ atkMult:1.1, defMult:1.1 } },
+          { text:'No vine a hablar. Vine a destruirte.', reaction:'Agresivo. Bien. Me ahorra el discurso. Pero la falta de honor... te costará.', effectDesc:'El Behemoth endurece su postura: +25% DEF', effect:{ defMult:1.25 } },
+          { text:'He visto cómo tratas a los que pasan por aquí. No mereces respeto.', reaction:'...Esas palabras duelen. Pero no me detendrán. Demuestra que tienes razón.', effectDesc:'Lo desestabilizas emocionalmente: −20% DEF', effect:{ defMult:0.8 } }
+        ]
+      }
+    ]
+  },
+  dios_abismo: {
+    personality:'calculador',
+    personalityLabel:'🌑 Omnisciente',
+    intro:'El Dios del Abismo no se mueve. Su presencia aplasta el aire. Cuando habla, cada palabra resuena en tu mente directamente.',
+    bossIcon:'👁️',
+    exchanges:[
+      {
+        boss:'Ya conozco cada movimiento que harás. Ya vi este combate. Ya sé cómo termina.',
+        choices:[
+          { text:'Entonces sabes que perderás.', reaction:'...Interesante. Eso no lo había calculado. Puede que sí exista algo que no controlo.', effectDesc:'Lo desconciertas: −15% ATK y DEF del jefe', effect:{ atkMult:0.85, defMult:0.85 } },
+          { text:'Si ya sabes todo, ¿por qué hablas? Atacas tú primero.', reaction:'Sabiduría. Reconoces que el tiempo que pierdo en palabras es tuyo. Admirable.', effectDesc:'Ganas el primer turno', effect:{ firstStrike:true } },
+          { text:'El futuro se puede cambiar. Yo lo cambiaré ahora.', reaction:'Palabras de un mortal desesperado. Pero hay... una pequeña probabilidad de que tengas razón.', effectDesc:'El Dios recalcula: +30% ATK, −10% DEF', effect:{ atkMult:1.3, defMult:0.9 } }
+        ]
+      }
+    ]
+  },
+  faraon_mald: {
+    personality:'arrogante',
+    personalityLabel:'😤 Imperial',
+    intro:'El Faraón Maldito se yergue en su trono dorado. Habla como si tú fueras polvo ante su eternidad.',
+    bossIcon:'🪄',
+    exchanges:[
+      {
+        boss:'¿Quién osa profanar mi tumba? ¿Un aventurero sin linaje, sin nombre, sin valor?',
+        choices:[
+          { text:'Soy quien acaba con tu maldición hoy.', reaction:'¡Insolente! ¡Nadie ha podido con mi magia en tres mil años! ¡MUERE!', effectDesc:'El Faraón se enoja: +35% ATK pero −20% DEF', effect:{ atkMult:1.35, defMult:0.8 } },
+          { text:'[Te inclinas levemente — falso respeto para bajar su guardia.]', reaction:'Bien. Al menos sabes respetar a un dios. Eso te da una muerte rápida.', effectDesc:'Bajas su guardia: ganas primer turno', effect:{ firstStrike:true } },
+          { text:'Soy el último en pie. Eso me da suficiente valor.', reaction:'...Hmm. Persistencia. Una cualidad que yo mismo admiraba. Pero no te salvará.', effectDesc:'El Faraón te respeta moderadamente: sin cambios', effect:{} }
+        ]
+      }
+    ]
+  },
+  dios_prohib: {
+    personality:'calculador',
+    personalityLabel:'☀️ Divino',
+    intro:'El Dios Prohibido flota sobre el altar. Su voz es como trueno, pero sus palabras son casi... curiosas.',
+    bossIcon:'☀️',
+    exchanges:[
+      {
+        boss:'Llegas más lejos de lo esperado para ser criatura de carne. Dime... ¿de qué estás hecho?',
+        choices:[
+          { text:'De determinación. De todo lo que dijiste que era imposible.', reaction:'Interesante respuesta. Eso complica mis cálculos. Tendré que usar más poder.', effectDesc:'El Dios se toma en serio: +25% ATK y DEF', effect:{ atkMult:1.25, defMult:1.25 } },
+          { text:'Soy mortal. Y eso me hace libre de tus reglas divinas.', reaction:'La libertad mortal... siempre me fascinó. Combatamos para ver quién tiene razón.', effectDesc:'Combate filosófico: ambos sin ventajas', effect:{} },
+          { text:'Soy tu error. El que olvidaste considerar.', reaction:'...Un error. No. No. ESO no puede ser posible. Recalculando...', effectDesc:'Lo desestabilizas: −20% ATK del jefe', effect:{ atkDebuff:0.8 } }
+        ]
+      }
+    ]
+  },
+  rey_sombras: {
+    personality:'arrogante',
+    personalityLabel:'🌑 Soberano',
+    intro:'El Rey de las Sombras observa desde las tinieblas. Cuando habla, la luz en la sala parece menguar.',
+    bossIcon:'👁️',
+    exchanges:[
+      {
+        boss:'Llegas a mi reino con esa pequeña llama de vida. ¿Sabes cuánto tiempo sobrevivirá en la oscuridad?',
+        choices:[
+          { text:'Suficiente para apagar tu reinado para siempre.', reaction:'¡ARROGANCIA! ¡Te devoraré entero! ¡La oscuridad te consumirá!', effectDesc:'El Rey se enfurece: +35% ATK pero −30% DEF', effect:{ atkMult:1.35, defMult:0.7 } },
+          { text:'[Sin palabras. Enciendes tu arma con determinación.]', reaction:'...Silencio. No esperaba eso. Bien. Combatamos en la oscuridad.', effectDesc:'Actitud fría: ganas el primer turno', effect:{ firstStrike:true } },
+          { text:'Las sombras son solo ausencia de luz. No me asustan.', reaction:'Las palabras de alguien que nunca vivió en verdadera oscuridad. Te lo enseñaré.', effectDesc:'El Rey se prepara con cuidado: +20% DEF', effect:{ defMult:1.2 } }
+        ]
+      }
+    ]
+  },
+  senor_abism: {
+    personality:'desesperado',
+    personalityLabel:'🌀 Antiguo',
+    intro:'El Señor del Abismo lleva milenios encadenado. Su voz resuena con el peso de eras de soledad y furia.',
+    bossIcon:'🌀',
+    exchanges:[
+      {
+        boss:'Siglos... siglos esperando que alguien llegara hasta aquí. ¿Vienes a liberarme o a sellarme de nuevo?',
+        choices:[
+          { text:'Vengo a ponerte fin de una vez por todas.', reaction:'FIN. Sí. ESO desearía. Pero no puedo morir. Y tú... tampoco podrás escapar de aquí.', effectDesc:'El Señor se desesera: +40% ATK, −35% DEF', effect:{ atkMult:1.4, defMult:0.65 } },
+          { text:'Eso depende de ti. Si te entregas, acabará rápido.', reaction:'¿Rendirme? Pasé mil años sin rendirme. No empezaré ahora. Pero... admiro el intento.', effectDesc:'Lo confundes emocionalmente: −25% ATK', effect:{ atkDebuff:0.75 } },
+          { text:'[Sin respuesta. Atacas de inmediato.]', reaction:'¡ACCIÓN! ¡AL MENOS ALGUIEN QUE ACT— espera, no estaba listo—!', effectDesc:'Ataque sorpresa: primer turno garantizado', effect:{ firstStrike:true } }
+        ]
+      }
+    ]
+  },
+  senor_fin: {
+    personality:'calculador',
+    personalityLabel:'⚖️ Inevitabilidad',
+    intro:'El Señor del Fin no parece amenazante. Es peor: parece absolutamente seguro de sí mismo.',
+    bossIcon:'⚡',
+    exchanges:[
+      {
+        boss:'Todo termina. Las civilizaciones, las estrellas, los dioses... y tú. Simplemente... ¿cuándo?',
+        choices:[
+          { text:'No hoy. No por ti.', reaction:'Esa certeza... es nueva. No la había visto antes. Interesante variable.', effectDesc:'Lo sorprendes: −20% ATK y DEF del jefe', effect:{ atkMult:0.8, defMult:0.8 } },
+          { text:'Si todo termina, entonces tú también terminarás.', reaction:'Lógica impecable. Sí. Algún día yo también. Pero ese día... no es hoy.', effectDesc:'El Señor se prepara al máximo: +30% ATK y DEF', effect:{ atkMult:1.3, defMult:1.3 } },
+          { text:'[Atacas sin filosofías. El fin puede esperar.]', reaction:'...Pragmatismo. Nunca nadie me respondió así. Empecemos, entonces.', effectDesc:'Inicio rápido: ganas el primer turno', effect:{ firstStrike:true } }
+        ]
+      }
+    ]
+  },
+  el_vacio: {
+    personality:'calculador',
+    personalityLabel:'🌌 Absoluto',
+    intro:'El Vacío Primordial no tiene forma. Su presencia es la ausencia de todo. Y sin embargo... algo habla.',
+    bossIcon:'🌌',
+    exchanges:[
+      {
+        boss:'... ... ... (sientes un pensamiento que no es tuyo) ... ¿por qué... existes?',
+        choices:[
+          { text:'Para demostrarte que existir vale la pena.', reaction:'(algo en el vacío se tensiona) ... eso... no es una respuesta que esperaba.', effectDesc:'El Vacío se desestabiliza: −25% ATK y DEF', effect:{ atkMult:0.75, defMult:0.75 } },
+          { text:'Existo para poner fin a tu existencia.', reaction:'(el vacío acepta esto fríamente) ... coherente. La nada devora todo. Incluyendo la nada misma.', effectDesc:'El Vacío se expande: +40% ATK y DEF', effect:{ atkMult:1.4, defMult:1.4 } },
+          { text:'[No respondes. Tu silencio es tu respuesta.]', reaction:'... (el vacío titubea ante otro silencio igual al suyo)', effectDesc:'Equilibrio de silencios: ganas primer turno', effect:{ firstStrike:true } }
+        ]
+      }
+    ]
+  },
 };
 
 // ── CLASS SPECIAL MISSIONS ───────────────
@@ -13964,6 +14432,9 @@ let adv = {
   won: false,
   ultimateCharge: 0,
   ultimateReady:  false,
+  dialogueEffects:    { atkMult:1, defMult:1, hpMult:1, firstStrike:false, atkDebuff:1 },
+  bossDialogueShown:  false,
+  bossDialogueKey:    null,
 };
 
 // ── Helpers ──
@@ -14238,11 +14709,12 @@ function closeAdventure() {
 function renderAdv() {
   const el = document.getElementById('advContent');
   if (!el) return;
-  if      (adv.view === 'map')    renderAdvMap(el);
-  else if (adv.view === 'zone')   renderAdvZone(el);
-  else if (adv.view === 'intro')  renderCombatIntro(el);
-  else if (adv.view === 'combat') renderCombat(el);
-  else if (adv.view === 'result') renderCombatResult(el);
+  if      (adv.view === 'map')           renderAdvMap(el);
+  else if (adv.view === 'zone')          renderAdvZone(el);
+  else if (adv.view === 'intro')         renderCombatIntro(el);
+  else if (adv.view === 'boss_dialogue') renderBossDialogue(el);
+  else if (adv.view === 'combat')        renderCombat(el);
+  else if (adv.view === 'result')        renderCombatResult(el);
 }
 
 // ── Zone Map ──
@@ -14586,9 +15058,22 @@ function enterDungeon(dgId) {
   adv.won             = false;
   adv.ultimateCharge  = 0;
   adv.ultimateReady   = false;
-  adv.enemyTurn       = 0;
-  adv.phase2Triggered = false;
+  adv.enemyTurn           = 0;
+  adv.phase2Triggered     = false;
+  adv.bossDialogueShown   = false;
+  adv.bossDialogueKey     = null;
+  adv._dlgState           = null;
+  adv.dialogueEffects     = { atkMult:1, defMult:1, hpMult:1, firstStrike:false, atkDebuff:1 };
   loadNextEnemy();
+
+  // If the very first enemy has a boss dialogue, show it after intro — set view='intro' as normal
+  // (dialogue triggers in afterPlayerAction when that enemy is reached, or immediately here if seq[0] is boss)
+  const firstKey = adv.seq[0];
+  if (BOSS_DIALOGUES[firstKey]) {
+    adv.view = 'boss_dialogue';
+    adv.bossDialogueKey = firstKey;
+  }
+
   renderAdv();
 }
 
@@ -14681,6 +15166,141 @@ function getZoneBg(zoneId) {
   if (zoneId.startsWith('z8'))  return 'bs-z8';
   if (zoneId.startsWith('z9'))  return 'bs-z9';
   return 'bs-z1';
+}
+
+// ── Boss Dialogue (Visual Novel style) ──────────────────────────────────────
+function renderBossDialogue(el) {
+  const dlg  = BOSS_DIALOGUES[adv.bossDialogueKey];
+  if (!dlg) { adv.view = 'combat'; renderAdv(); return; }
+
+  const heroIcon = (() => {
+    const heroSprite = (typeof char !== 'undefined' && char.class) ? char.class : 'guerrero';
+    const icons = { guerrero:'⚔️', mago:'🧙', monje:'🥋', asesino:'🗡️', druida:'🌿', barbaro:'🪓', arquero:'🏹' };
+    return icons[heroSprite] || '🧑';
+  })();
+
+  const state   = adv._dlgState = adv._dlgState || { exchIdx:0, phase:'boss', choiceMade:false, choiceIdx:-1 };
+  const exch    = dlg.exchanges[state.exchIdx];
+  const chosen  = state.choiceMade ? exch.choices[state.choiceIdx] : null;
+
+  const choiceHtml = !state.choiceMade ? exch.choices.map((c, i) =>
+    `<button class="boss-dlg-choice" onclick="bossDialogueChoose(${i})">${c.text}</button>`
+  ).join('') : '';
+
+  const reactionHtml = chosen ? `
+    <div class="boss-dlg-reaction">
+      <strong>${dlg.bossIcon} ${adv.enemy?.name||'Jefe'}:</strong> "${chosen.reaction}"
+    </div>
+    ${chosen.effectDesc ? `<div style="margin:0 14px 0;display:flex;gap:6px;flex-wrap:wrap">
+      <span class="boss-dlg-effect-tag ${_dlgEffectClass(chosen.effect)}">${chosen.effectDesc}</span>
+    </div>` : ''}
+  ` : '';
+
+  const fightBtnHtml = chosen ? `<button class="boss-dlg-fight-btn show" onclick="bossDialogueStart()">⚔️ ¡Iniciar Combate!</button>` : '';
+
+  el.innerHTML = `
+    <div class="boss-dlg">
+      <div class="boss-dlg-scene">
+        <span class="boss-dlg-personality-tag">${dlg.personalityLabel}</span>
+        <div style="flex:1;display:flex;justify-content:flex-start;align-items:flex-end;padding:0 24px 18px">
+          <span class="boss-dlg-hero-icon">${heroIcon}</span>
+        </div>
+        <div style="flex:1;display:flex;justify-content:flex-end;align-items:flex-end;padding:0 24px 10px">
+          <span class="boss-dlg-boss-icon">${dlg.bossIcon}</span>
+        </div>
+      </div>
+      <div class="boss-dlg-bubble" id="bdBubble">
+        <div style="font-size:.65rem;font-weight:700;color:#94a3b8;margin-bottom:4px">${adv.enemy?.name || 'Jefe'}</div>
+        <div id="bdText" style="font-size:.82rem;color:#e2e8f0;line-height:1.55;min-height:36px">${exch.boss}</div>
+      </div>
+      <div style="padding:10px 14px 4px;display:flex;flex-direction:column;gap:7px" id="bdChoices">
+        ${choiceHtml}
+      </div>
+      ${reactionHtml}
+      ${fightBtnHtml}
+    </div>`;
+
+  // Typewriter effect for boss line
+  if (!state.choiceMade) {
+    const target = el.querySelector('#bdText');
+    const full   = exch.boss;
+    target.textContent = '';
+    let i = 0;
+    const iv = setInterval(() => {
+      if (i < full.length) { target.textContent += full[i++]; }
+      else clearInterval(iv);
+    }, 22);
+  }
+}
+
+function _dlgEffectClass(eff) {
+  if (!eff) return 'safe';
+  if (eff.firstStrike) return 'special';
+  if (eff.atkMult > 1 && (!eff.defMult || eff.defMult >= 1)) return 'danger';
+  if (eff.atkMult < 1 || eff.defMult < 1 || eff.atkDebuff < 1) return 'safe';
+  if (eff.hpMult && eff.hpMult < 1) return 'danger';
+  return 'safe';
+}
+
+function bossDialogueChoose(idx) {
+  const state = adv._dlgState;
+  if (!state || state.choiceMade) return;
+  state.choiceMade = true;
+  state.choiceIdx  = idx;
+
+  const dlg    = BOSS_DIALOGUES[adv.bossDialogueKey];
+  const exch   = dlg.exchanges[state.exchIdx];
+  const chosen = exch.choices[idx];
+
+  // Store effects — merge into adv.dialogueEffects
+  const eff = chosen.effect || {};
+  adv.dialogueEffects.atkMult    *= (eff.atkMult  ?? 1);
+  adv.dialogueEffects.defMult    *= (eff.defMult  ?? 1);
+  adv.dialogueEffects.hpMult     *= (eff.hpMult   ?? 1);
+  adv.dialogueEffects.atkDebuff  *= (eff.atkDebuff ?? 1);
+  if (eff.firstStrike) adv.dialogueEffects.firstStrike = true;
+
+  renderAdv();
+}
+
+function bossDialogueStart() {
+  // Apply dialogue effects to the live enemy
+  const e   = adv.enemy;
+  const eff = adv.dialogueEffects;
+  if (eff.atkMult    !== 1) { e.atk = Math.round(e.atk * eff.atkMult); }
+  if (eff.defMult    !== 1) { e.def = Math.round(e.def * eff.defMult); e.def = Math.max(0, e.def); }
+  if (eff.atkDebuff  !== 1) { e.atk = Math.round(e.atk * eff.atkDebuff); }
+  if (eff.hpMult     !== 1) {
+    adv.playerHP     = Math.round(adv.playerHP    * eff.hpMult);
+    adv.playerMaxHP  = Math.round(adv.playerMaxHP * eff.hpMult);
+  }
+
+  adv._dlgState        = null;
+  adv.bossDialogueShown = true;
+  adv.view              = 'combat';
+
+  combatLog(`⚔️ ¡${e.name} aparece! ${eff.firstStrike ? '¡Primer golpe tuyo!' : 'Prepárate para la batalla.'}`, 's');
+  if (eff.atkMult > 1)   combatLog(`😡 ${e.name} entra en combate con ${Math.round((eff.atkMult-1)*100)}% más de ATK.`, 'e');
+  if (eff.defMult > 1)   combatLog(`🛡️ ${e.name} se fortifica con ${Math.round((eff.defMult-1)*100)}% más de DEF.`, 'e');
+  if (eff.atkMult < 1)   combatLog(`😵 ${e.name} entra debilitado — −${Math.round((1-eff.atkMult)*100)}% ATK.`, 's');
+  if (eff.atkDebuff < 1) combatLog(`😵 ${e.name} está desestabilizado — −${Math.round((1-eff.atkDebuff)*100)}% ATK.`, 's');
+  if (eff.firstStrike)   { adv.turn = 'player'; combatLog(`⚡ ¡Ataque sorpresa! Tienes el primer turno.`, 's'); }
+
+  renderAdv();
+  setTimeout(() => {
+    try { _expShowEnemyDialogue(); } catch(ex) {}
+    const arena = document.getElementById('combatArena');
+    if (arena) showCombatCinematic(e.icon||'⚔️', null);
+  }, 100);
+}
+
+function _triggerBossDialogue(key) {
+  adv.bossDialogueKey      = key;
+  adv.bossDialogueShown    = false;
+  adv._dlgState            = null;
+  adv.dialogueEffects      = { atkMult:1, defMult:1, hpMult:1, firstStrike:false, atkDebuff:1 };
+  adv.view                 = 'boss_dialogue';
+  renderAdv();
 }
 
 function renderCombat(el) {
@@ -15886,10 +16506,16 @@ function afterPlayerAction() {
     } else {
       loadNextEnemy();
       adv.phase2Triggered = false;
-      setTimeout(() => {
-        combatLog(`⚔️ ¡Aparece ${adv.enemy.name}!`, 's');
-        renderAdv();
-      }, getDelay(320));
+      const nextKey = adv.seq[adv.seqIdx];
+      const hasDlg = BOSS_DIALOGUES[nextKey] && !adv.bossDialogueShown;
+      if (hasDlg) {
+        setTimeout(() => { _triggerBossDialogue(nextKey); }, getDelay(480));
+      } else {
+        setTimeout(() => {
+          combatLog(`⚔️ ¡Aparece ${adv.enemy.name}!`, 's');
+          renderAdv();
+        }, getDelay(320));
+      }
     }
     return;
   }
