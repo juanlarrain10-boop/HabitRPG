@@ -4712,10 +4712,70 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .boss-dlg-speaker.enemy { color:#fca5a5; }
 .boss-dlg-speaker.hero  { color:#93c5fd; }
 .boss-dlg-text { font-size:.82rem;line-height:1.55;color:#e2e8f0;min-height:40px; }
-.boss-dlg-choices { display:flex;flex-direction:column;gap:7px;padding:12px 14px 6px; }
-.boss-dlg-choice { background:var(--s2);border:1.5px solid var(--bd2);border-radius:10px;padding:10px 13px;font-size:.78rem;color:#cbd5e1;text-align:left;cursor:pointer;transition:border-color .15s,background .15s;line-height:1.4; }
-.boss-dlg-choice:hover { border-color:#7c3aed;background:rgba(124,58,237,.12);color:#e2e8f0; }
+.boss-dlg-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px 6px}
+@keyframes dlgChoiceIn{from{opacity:0;transform:scale(.85) translateY(8px)}to{opacity:1;transform:none}}
+.boss-dlg-choice-card{display:flex;flex-direction:column;justify-content:space-between;min-height:80px;background:var(--s2);border:1.5px solid var(--bd2);border-radius:10px;padding:10px 11px;text-align:left;cursor:pointer;transition:border-color .15s,background .15s,transform .1s,opacity .15s;line-height:1.35;opacity:0;animation:dlgChoiceIn .3s cubic-bezier(.34,1.56,.64,1) forwards}
+.boss-dlg-choice-card:nth-child(1){animation-delay:0s}.boss-dlg-choice-card:nth-child(2){animation-delay:.1s}.boss-dlg-choice-card:nth-child(3){animation-delay:.2s}.boss-dlg-choice-card:nth-child(4){animation-delay:.3s}
+.boss-dlg-choice-card.aggressive{border-color:rgba(239,68,68,.28)}.boss-dlg-choice-card.aggressive:hover,.boss-dlg-choice-card.aggressive.selected{border-color:#ef4444;background:rgba(239,68,68,.13)}
+.boss-dlg-choice-card.defensive{border-color:rgba(59,130,246,.28)}.boss-dlg-choice-card.defensive:hover,.boss-dlg-choice-card.defensive.selected{border-color:#3b82f6;background:rgba(59,130,246,.13)}
+.boss-dlg-choice-card.strategic{border-color:rgba(251,191,36,.28)}.boss-dlg-choice-card.strategic:hover,.boss-dlg-choice-card.strategic.selected{border-color:#fbbf24;background:rgba(251,191,36,.11)}
+.boss-dlg-choice-card.neutral{border-color:rgba(100,116,139,.28)}.boss-dlg-choice-card.neutral:hover,.boss-dlg-choice-card.neutral.selected{border-color:#64748b;background:rgba(100,116,139,.11)}
+.boss-dlg-choice-text{font-size:.74rem;color:#cbd5e1;line-height:1.4;flex:1}
+.boss-dlg-choice-card.aggressive:hover .boss-dlg-choice-text,.boss-dlg-choice-card.aggressive.selected .boss-dlg-choice-text{color:#fca5a5}
+.boss-dlg-choice-card.defensive:hover .boss-dlg-choice-text,.boss-dlg-choice-card.defensive.selected .boss-dlg-choice-text{color:#93c5fd}
+.boss-dlg-choice-card.strategic:hover .boss-dlg-choice-text,.boss-dlg-choice-card.strategic.selected .boss-dlg-choice-text{color:#fde68a}
+.boss-dlg-choice-card.neutral:hover .boss-dlg-choice-text,.boss-dlg-choice-card.neutral.selected .boss-dlg-choice-text{color:#e2e8f0}
+.boss-dlg-choice-effect{font-size:.58rem;font-weight:700;margin-top:6px;opacity:.75;line-height:1.3}
+.boss-dlg-choice-card.aggressive .boss-dlg-choice-effect{color:#fca5a5}.boss-dlg-choice-card.defensive .boss-dlg-choice-effect{color:#93c5fd}.boss-dlg-choice-card.strategic .boss-dlg-choice-effect{color:#fde68a}.boss-dlg-choice-card.neutral .boss-dlg-choice-effect{color:#94a3b8}
 .boss-dlg-reaction { margin:0 14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px 13px;font-size:.78rem;color:#fca5a5;line-height:1.5; }
+/* ── EXPEDITION VARIETY: TYPE BADGES, OBJECTIVE, CHALLENGE, EXPLORE ── */
+.exp-type-badge{display:inline-flex;align-items:center;gap:4px;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.03em;border:1px solid;margin-bottom:4px}
+.exp-badge-normal{color:var(--dim);border-color:var(--bd2);background:rgba(46,50,82,.5)}
+.exp-badge-objective{color:#fbbf24;border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.1)}
+.exp-badge-explore{color:#22d3ee;border-color:rgba(34,211,238,.35);background:rgba(34,211,238,.08)}
+.exp-badge-challenge{color:#ef4444;border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.1)}
+.obj-card{background:rgba(251,191,36,.07);border:1.5px solid rgba(251,191,36,.32);border-radius:12px;padding:11px 13px;margin:10px 0 0}
+.obj-card-title{font-size:.58rem;font-weight:900;color:#fbbf24;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.obj-card-desc{font-size:.8rem;color:#fde68a;font-weight:700;margin-bottom:2px}
+.obj-card-detail{font-size:.7rem;color:rgba(253,230,138,.7);line-height:1.5}
+.obj-card-bonus{font-size:.68rem;color:#86efac;font-weight:700;margin-top:5px}
+.obj-status{display:flex;align-items:center;gap:7px;font-size:.68rem;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.22);border-radius:8px;padding:5px 10px;margin:4px 0}
+.obj-status.obj-met{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3)}
+.obj-status-icon{font-size:.95rem}
+.obj-status-txt{flex:1;color:#fde68a}
+.obj-status.obj-met .obj-status-txt{color:#6ee7b7}
+.obj-result-banner{display:flex;align-items:center;gap:8px;font-size:.75rem;background:rgba(52,211,153,.1);border:1.5px solid rgba(52,211,153,.3);border-radius:10px;padding:8px 12px;margin:0 0 8px;color:#6ee7b7}
+.obj-result-banner.obj-missed{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.22);color:#fca5a5}
+.obj-result-banner.obj-chal{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.3);color:#fde68a}
+.obj-result-icon{font-size:1.4rem}
+.chal-card{border:1.5px solid;border-radius:12px;padding:12px 14px;margin:10px 0 0}
+.chal-card-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.chal-card-icon{font-size:1.8rem}
+.chal-card-title{font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;opacity:.7}
+.chal-card-label{font-size:.85rem;font-weight:900}
+.chal-card-detail{font-size:.76rem;opacity:.85;line-height:1.55}
+.chal-card-reward{font-size:.68rem;color:#86efac;font-weight:700;margin-top:5px}
+.chal-confirm-btn{width:100%;padding:11px;border-radius:10px;font-size:.82rem;font-weight:800;border:none;cursor:pointer;margin-top:10px}
+/* Explore screen */
+.explore-screen{padding:16px;display:flex;flex-direction:column;gap:10px}
+.explore-header{text-align:center}
+.explore-icon{font-size:3rem;margin-bottom:4px}
+.explore-title{font-size:.85rem;font-weight:900;color:var(--txt);margin-bottom:2px}
+.explore-type-label{font-size:.58rem;color:#22d3ee;text-transform:uppercase;letter-spacing:.1em}
+.explore-intro{font-size:.8rem;color:var(--dim);line-height:1.65;background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--bd)}
+.explore-log{display:flex;flex-direction:column;gap:5px}
+.explore-log-entry{font-size:.74rem;color:#a3e635;background:rgba(163,230,53,.06);border-left:3px solid rgba(163,230,53,.35);padding:6px 10px;border-radius:0 8px 8px 0;line-height:1.5}
+.explore-step-card{background:var(--s2);border:1.5px solid var(--bd2);border-radius:12px;padding:14px}
+.explore-question{font-size:.82rem;font-weight:700;color:var(--txt);margin-bottom:10px;line-height:1.5}
+.explore-choices{display:flex;flex-direction:column;gap:7px}
+.explore-choice{background:var(--s1);border:1.5px solid var(--bd2);border-radius:10px;padding:10px 12px;font-size:.78rem;color:#cbd5e1;text-align:left;cursor:pointer;transition:border-color .15s,background .15s;line-height:1.4}
+.explore-choice:hover{border-color:#22d3ee;background:rgba(34,211,238,.08);color:#e2e8f0}
+.explore-rewards-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+.explore-reward-chip{background:var(--s2);border:1px solid var(--bd2);border-radius:20px;padding:3px 12px;font-size:.72rem;color:var(--gold);font-weight:700}
+.explore-done{text-align:center;padding:12px 0 6px}
+.explore-done-title{font-size:.9rem;font-weight:900;color:#22d3ee;margin-bottom:6px}
+.explore-done-total{font-size:.78rem;color:var(--dim);margin-bottom:14px}
+.explore-done-btn{padding:12px 28px;border-radius:12px;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;font-size:.82rem;font-weight:800;border:none;cursor:pointer}
 .boss-dlg-effect-tag { display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:700;margin-top:6px; }
 .boss-dlg-effect-tag.danger  { background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5; }
 .boss-dlg-effect-tag.safe    { background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac; }
@@ -9788,6 +9848,165 @@ const CLASS_MISSIONS = {
   ],
 };
 
+// ── EXPEDITION VARIETY DATA ─────────────────────────────────
+const SPECIAL_OBJECTIVES = [
+  { id:'no_potion',    desc:'Derrota sin usar pociones',              detail:'No uses ninguna poción durante el combate.',  xpBonus:.60, icon:'⚗️' },
+  { id:'fast_win',     desc:'Gana en 5 turnos o menos',               detail:'Completa el combate en máximo 5 acciones.',   xpBonus:.50, icon:'⚡' },
+  { id:'low_dmg',      desc:'No recibas más del 30% de daño total',   detail:'Termina con HP por encima del 70%.',          xpBonus:.40, icon:'🛡️' },
+  { id:'use_ultimate', desc:'Usa tu habilidad última',                 detail:'Activa tu Ultimate antes de terminar.',       xpBonus:.35, icon:'💫' },
+  { id:'crit_final',   desc:'Derrota al último enemigo con crítico',  detail:'El golpe de gracia debe ser un crítico.',     xpBonus:.45, icon:'🎯' },
+  { id:'full_hp',      desc:'Termina con vida al máximo',              detail:'No recibas ningún punto de daño.',            xpBonus:.55, icon:'❤️' },
+  { id:'no_defend',    desc:'Gana sin Defender ni pociones',           detail:'Solo ataques y habilidades activas.',         xpBonus:.40, icon:'⚔️' },
+  { id:'one_hit',      desc:'Derrota al primer enemigo en 1 turno',    detail:'El primer ataque debe eliminarlo.',           xpBonus:.50, icon:'💥' },
+];
+
+const EXPLORE_SCENARIOS = [
+  { id:'abandoned_village', title:'La Aldea Silenciosa', icon:'🏚️',
+    intro:'Mientras avanzas, descubres una aldea completamente abandonada. Las puertas están abiertas, los hogares — vacíos. Un extraño silencio lo envuelve todo.',
+    steps:[
+      { question:'¿Qué haces primero?', choices:[
+        { text:'🏚️ Explorar las ruinas', result:'Entre los escombros encuentras monedas antiguas y un frasco olvidado.', reward:{gold:25} },
+        { text:'👴 Buscar supervivientes', result:'Un anciano escondido te da información valiosa sobre tesoros ocultos.', reward:{xp:45} },
+        { text:'🚶 Continuar el camino', result:'Tu instinto te hace avanzar rápido. Llegas con energía renovada.', reward:{xp:15,gold:10} },
+      ]},
+      { question:'En el centro hay una fuente cubierta de musgo...', choices:[
+        { text:'💧 Bebes del agua', result:'El agua tiene propiedades mágicas. Tu cuerpo se revitaliza.', reward:{xp:30} },
+        { text:'🔍 Examinas el fondo', result:'Debajo encuentras una piedra que brilla tenuemente.', reward:{gold:30} },
+        { text:'⚠️ Ignoras la fuente', result:'Prudente. Guardas tu energía para lo que viene.', reward:{xp:20,gold:5} },
+      ]},
+      { question:'Al salir, ves marcas recientes en el suelo...', choices:[
+        { text:'🗺️ Sigues las huellas', result:'Llevan a una cabaña oculta con provisiones.', reward:{gold:35,xp:20} },
+        { text:'🏃 Avanzas sin detenerte', result:'Sin riesgos innecesarios. Llegas a tu destino a tiempo.', reward:{xp:25} },
+      ]},
+    ],
+  },
+  { id:'mystic_crossroads', title:'La Encrucijada Mística', icon:'🌫️',
+    intro:'La niebla se espesa de repente. Ante ti hay una encrucijada con tres caminos y un espejo antiguo en el centro que refleja algo que no debería estar ahí.',
+    steps:[
+      { question:'¿Qué haces con el espejo?', choices:[
+        { text:'🪞 Lo tocas', result:'Una voz te susurra secretos ancestrales que agudizan tu mente.', reward:{xp:50} },
+        { text:'🔨 Lo rompes', result:'Siete fragmentos de cristal mágico — cada uno tiene valor.', reward:{gold:40} },
+        { text:'👁️ Te miras fijamente', result:'Ves tu versión más poderosa. Ganas claridad y enfoque.', reward:{xp:35,gold:10} },
+      ]},
+      { question:'Un viajero misterioso te ofrece un trato...', choices:[
+        { text:'🤝 Aceptas el trato', result:'Intercambias información — recibes un mapa de tesoros.', reward:{gold:50} },
+        { text:'❌ Rechazas educadamente', result:'Tu cautela te protege de una trampa. Encuentras otra ruta.', reward:{xp:30,gold:15} },
+        { text:'🗡️ Le desafías a duelo', result:'Huye asustado, dejando caer su bolsa de monedas.', reward:{gold:30,xp:25} },
+      ]},
+      { question:'Elige tu camino hacia adelante...', choices:[
+        { text:'⬅️ Camino izquierdo', result:'Un claro con flores mágicas — sientes tu vitalidad aumentar.', reward:{xp:40} },
+        { text:'⬆️ Camino central', result:'Recto y seguro. Monedas dispersas en el suelo.', reward:{gold:25,xp:20} },
+        { text:'➡️ Camino derecho', result:'Peligroso pero corto. Llegas antes y con una historia increíble.', reward:{xp:55} },
+      ]},
+    ],
+  },
+  { id:'ancient_temple', title:'El Templo Olvidado', icon:'🏛️',
+    intro:'Una estructura imponente emerge entre la maleza — un templo que no aparece en ningún mapa. Sus columnas brillan con inscripciones de luz propia.',
+    steps:[
+      { question:'La puerta tiene tres mecanismos de cierre...', choices:[
+        { text:'📖 Descifras las inscripciones', result:'Lees el código correcto. La puerta abre un tesoro.', reward:{gold:45,xp:25} },
+        { text:'💪 La fuerzas', result:'La puerta cede pero activa una trampa. Sales con rasguños y sabiduría.', reward:{xp:35} },
+        { text:'🔍 Buscas otra entrada', result:'Encuentras una entrada secreta con menos trampas.', reward:{gold:30,xp:30} },
+      ]},
+      { question:'En el interior hay un altar con tres ofrendas...', choices:[
+        { text:'🕯️ Enciendes la vela', result:'Una luz sagrada fortalece tu espíritu.', reward:{xp:50} },
+        { text:'💎 Tomas el cristal', result:'Un cristal mágico de alto valor en el mercado.', reward:{gold:55} },
+        { text:'📜 Lees el pergamino', result:'Contiene técnicas de combate ancestrales.', reward:{xp:40,gold:10} },
+      ]},
+    ],
+  },
+  { id:'river_spirit', title:'El Espíritu del Río', icon:'🌊',
+    intro:'Un río cristalino bloquea tu camino. Al acercarte, el agua brilla y una figura translúcida emerge de las profundidades mirándote fijamente.',
+    steps:[
+      { question:'¿Cómo te aproximas al espíritu del agua?', choices:[
+        { text:'🙏 Con respeto y humildad', result:'El espíritu sonríe y te otorga su bendición sagrada.', reward:{xp:45,gold:20} },
+        { text:'⚔️ Preparado para combatir', result:'El espíritu aprecia tu valentía y te recompensa.', reward:{xp:55} },
+        { text:'🎵 Cantando una melodía', result:'El espíritu se alegra — raramente alguien canta para él.', reward:{gold:40,xp:30} },
+      ]},
+      { question:'El espíritu pregunta: ¿Qué buscas en tu viaje?', choices:[
+        { text:'⚡ Poder para proteger', result:'Tu respuesta lo conmueve. Te otorga fuerza espiritual.', reward:{xp:45} },
+        { text:'🌟 Conocimiento y sabiduría', result:'Una respuesta honesta. Te revela secretos del mundo.', reward:{xp:35,gold:20} },
+        { text:'🏆 Riqueza y aventura', result:'El espíritu ríe. Aprecia tu honestidad.', reward:{gold:50} },
+      ]},
+      { question:'El espíritu abre un paso seguro por el río...', choices:[
+        { text:'🌉 Cruzas por el paso', result:'Llegas al otro lado con energía renovada.', reward:{xp:30,gold:15} },
+        { text:'🏊 Nadas por tu cuenta', result:'La corriente te lleva rápido. Encuentras algo brillante.', reward:{gold:35,xp:20} },
+      ]},
+    ],
+  },
+];
+
+const CHALLENGE_RULES = [
+  { id:'no_armor',  label:'Sin Armadura',  detail:'Tu defensa es 0, pero el XP se triplica.',    icon:'💀', color:'#ef4444', defMult:0,   xpMult:3,   goldMult:1,   hpMult:1 },
+  { id:'cursed',    label:'Maldición',     detail:'Cooldowns dobles, pero el oro se triplica.',   icon:'🔮', color:'#a855f7', defMult:1,   xpMult:1,   goldMult:3,   hpMult:1,  cdMult:2 },
+  { id:'speed_run', label:'Contrarreloj',  detail:'Solo 5 turnos para ganar. Recompensas ×2.',   icon:'⏱️', color:'#f59e0b', defMult:1,   xpMult:2,   goldMult:2,   hpMult:1,  maxTurns:5 },
+  { id:'fragile',   label:'Héroe Frágil',  detail:'HP a la mitad, pero recompensas dobles.',     icon:'🫀', color:'#ec4899', defMult:1,   xpMult:2,   goldMult:2,   hpMult:0.5 },
+  { id:'mirror',    label:'Espejo',        detail:'El enemigo tiene tus mismos stats. XP ×2.',   icon:'🪞', color:'#06b6d4', defMult:1,   xpMult:2,   goldMult:1.5, hpMult:1,  mirrorStats:true },
+];
+
+function _simpleHash(s) {
+  var h = 0;
+  for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) & 0x7fffffff;
+  return h;
+}
+
+function _getDungeonExpType(dgId) {
+  if (!day.dungeonTypes) day.dungeonTypes = {};
+  if (day.dungeonTypeDate !== cur) { day.dungeonTypes = {}; day.dungeonTypeDate = cur; }
+  if (day.dungeonTypes[dgId]) return day.dungeonTypes[dgId];
+  var seed = _simpleHash(cur + ':' + dgId) % 100;
+  var types = Object.values(day.dungeonTypes);
+  var hadExplore   = types.indexOf('explore')   >= 0;
+  var hadChallenge = types.indexOf('challenge') >= 0;
+  var type = 'normal';
+  if (!hadChallenge && seed < 5)        type = 'challenge';
+  else if (!hadExplore && seed < 15)    type = 'explore';
+  else if (seed < 40)                   type = 'objective';
+  day.dungeonTypes[dgId] = type;
+  return type;
+}
+
+function _assignExpModifier(type, dgId) {
+  adv.expType         = type || 'normal';
+  adv.expObjective    = null;
+  adv.expChallenge    = null;
+  adv.expExplore      = null;
+  adv.expTurnCount    = 0;
+  adv.expPotionUsed   = false;
+  adv.expDefendUsed   = false;
+  adv.expUltUsed      = false;
+  adv.expCritFinal    = false;
+  adv.expDamageTaken  = 0;
+  adv.expObjectiveMet = false;
+  adv._firstEnemyKillTurn = 0;
+  if (type === 'objective') {
+    var seed = _simpleHash(cur + ':' + dgId + ':obj') % SPECIAL_OBJECTIVES.length;
+    adv.expObjective = Object.assign({}, SPECIAL_OBJECTIVES[seed]);
+  } else if (type === 'challenge') {
+    var seed2 = _simpleHash(cur + ':' + dgId + ':chal') % CHALLENGE_RULES.length;
+    adv.expChallenge = Object.assign({}, CHALLENGE_RULES[seed2]);
+  } else if (type === 'explore') {
+    var seed3 = _simpleHash(cur + ':' + dgId + ':exp') % EXPLORE_SCENARIOS.length;
+    adv.expExplore = { scenario: EXPLORE_SCENARIOS[seed3], stepIdx: 0, rewards: { xp: 0, gold: 0 }, log: [] };
+  }
+}
+
+function _checkExpObjective() {
+  var obj = adv.expObjective;
+  if (!obj) return false;
+  switch (obj.id) {
+    case 'no_potion':    return !adv.expPotionUsed;
+    case 'fast_win':     return adv.expTurnCount <= 5;
+    case 'low_dmg':      return adv.playerHP >= Math.round(adv.playerMaxHP * 0.70);
+    case 'use_ultimate': return adv.expUltUsed;
+    case 'crit_final':   return !!adv.expCritFinal;
+    case 'full_hp':      return adv.expDamageTaken === 0;
+    case 'no_defend':    return !adv.expDefendUsed && !adv.expPotionUsed;
+    case 'one_hit':      return adv._firstEnemyKillTurn === 1;
+    default: return false;
+  }
+}
+
 // ── COMBAT HELPERS ──────────────────────────────────────────
 let combatAnimSpeed = localStorage.getItem('hrpg_anim_speed') || 'normal';
 function getDelay(base) { return combatAnimSpeed === 'fast' ? Math.max(40, Math.round(base * 0.28)) : base; }
@@ -14641,7 +14860,7 @@ function vibrate(pattern) { try { if (navigator.vibrate) navigator.vibrate(patte
 
 // ── State ──
 let adv = {
-  view: 'map',   // 'map' | 'zone' | 'combat' | 'result'
+  view: 'map',   // 'map' | 'zone' | 'explore' | 'combat' | 'result'
   zoneId: null,
   dungeon: null,
   // combat
@@ -14663,6 +14882,19 @@ let adv = {
   dialogueEffects:    { atkMult:1, defMult:1, hpMult:1, firstStrike:false, atkDebuff:1 },
   bossDialogueShown:  false,
   bossDialogueKey:    null,
+  // expedition variety
+  expType:         'normal',
+  expObjective:    null,
+  expChallenge:    null,
+  expExplore:      null,
+  expTurnCount:    0,
+  expPotionUsed:   false,
+  expDefendUsed:   false,
+  expUltUsed:      false,
+  expCritFinal:    false,
+  expDamageTaken:  0,
+  expObjectiveMet: false,
+  _firstEnemyKillTurn: 0,
 };
 
 // ── Helpers ──
@@ -14741,10 +14973,11 @@ function getCombatStats() {
   const lb = getLifeBonuses();
   const asp = 1 + lb.allStatsPct;
   const baseHP = Math.round(50 + vt * 3.5);
+  const _noArmor = adv.expChallenge && adv.expChallenge.id === 'no_armor';
   return {
     maxHP:      Math.round(baseHP * (1 + lb.hpPct) * asp),
     atk:        Math.round((Math.round(5  + fz * 0.85) + eAtk) * (1 + lb.atkPct) * asp),
-    def:        Math.round((Math.round(2  + dp * 0.45) + eDef) * (1 + lb.defPct) * asp),
+    def:        _noArmor ? 0 : Math.round((Math.round(2  + dp * 0.45) + eDef) * (1 + lb.defPct) * asp),
     mag:        Math.round(Math.round(5  + mn * 0.85) * (1 + lb.magPct) * asp),
     heal:       Math.round(Math.round(10 + bw * 0.55 + vt * 0.3) * asp),
     critChance: eCrit + Math.round(dp * 0.45 * asp),
@@ -14908,6 +15141,7 @@ function _expCloseSkillMenu() {
 
 function doDefend() {
   if (adv.turn !== 'player') return;
+  adv.expDefendUsed  = true;
   adv.buffs.fortress = (adv.buffs.fortress || 0) + 1;
   adv.buffs.shield = true;
   try { flashCombat('rgba(59,130,246,0.15)'); } catch(ex) {}
@@ -14939,6 +15173,7 @@ function renderAdv() {
   if (!el) return;
   if      (adv.view === 'map')           renderAdvMap(el);
   else if (adv.view === 'zone')          renderAdvZone(el);
+  else if (adv.view === 'explore')       renderExplore(el);
   else if (adv.view === 'intro')         renderCombatIntro(el);
   else if (adv.view === 'boss_dialogue') renderBossDialogue(el);
   else if (adv.view === 'combat')        renderCombat(el);
@@ -15129,10 +15364,19 @@ function renderAdvZone(el) {
     }
 
     const cardState = locked ? 'dg-locked-card' : done ? 'dg-done-card' : 'dg-avail';
+    // Expedition type badge (only for non-boss, non-locked dungeons)
+    const _expTypeLabels = { normal:{icon:'⚔️',label:'Combate'}, objective:{icon:'🎯',label:'Objetivo especial'}, explore:{icon:'🗺️',label:'Exploración'}, challenge:{icon:'⚡',label:'Desafío'} };
+    let expBadgeHtml = '';
+    if (!boss && !locked) {
+      const _et = _getDungeonExpType(dg.id);
+      const _em = _expTypeLabels[_et] || _expTypeLabels.normal;
+      expBadgeHtml = `<div class="exp-type-badge exp-badge-${_et}">${_em.icon} ${_em.label}</div>`;
+    }
     // Bug-fix 3: mission-state class on non-locked cards changes card color + button style
     html += `<div class="dg-card ${cardState} ${boss?'dg-boss-card':''} ${locked?'':missionCls}">
       <div class="dg-ico">${dg.icon}</div>
       <div class="dg-info">
+        ${expBadgeHtml}
         <div class="dg-name">${boss?'👑 ':''} ${dg.name}</div>
         <div class="dg-sub">${enemyNames}${bossName?' · <b style="color:var(--gold)">Jefe:</b> '+bossName:''}</div>
       </div>
@@ -15388,6 +15632,24 @@ function enterDungeon(dgId) {
   adv.bossDialogueKey     = null;
   adv._dlgState           = null;
   adv.dialogueEffects     = { atkMult:1, defMult:1, hpMult:1, firstStrike:false, atkDebuff:1 };
+
+  // Assign expedition type modifier
+  _assignExpModifier(_getDungeonExpType(dgId), dgId);
+
+  // Explore type: skip combat entirely — go to narrative screen
+  if (adv.expType === 'explore') {
+    day.dungeonsPlayed = (day.dungeonsPlayed || 0) + 1;
+    adv.view = 'explore';
+    renderAdv();
+    return;
+  }
+
+  // Challenge: apply HP modifier now (before loadNextEnemy which reads maxHP for mirror)
+  if (adv.expChallenge && adv.expChallenge.hpMult && adv.expChallenge.hpMult !== 1) {
+    adv.playerMaxHP = Math.round(adv.playerMaxHP * adv.expChallenge.hpMult);
+    adv.playerHP    = adv.playerMaxHP;
+  }
+
   loadNextEnemy();
 
   // If the very first enemy has a boss dialogue, show it after intro — set view='intro' as normal
@@ -15406,6 +15668,14 @@ function loadNextEnemy() {
   const tmpl = ENEMIES[key];
   if (!tmpl) return;
   adv.enemy = { ...tmpl, hp: tmpl.hp, hp_max: tmpl.hp, key };
+  // Mirror challenge: enemy adopts player's combat stats
+  if (adv.expChallenge && adv.expChallenge.mirrorStats) {
+    const cs = getCombatStats();
+    adv.enemy.atk    = cs.atk;
+    adv.enemy.def    = cs.def;
+    adv.enemy.hp     = adv.playerMaxHP;
+    adv.enemy.hp_max = adv.playerMaxHP;
+  }
   adv.enemyBuffs = { stun:0, poison:0, burn:0, bleed:0, def_down:0, curse:0, marked:false };
   adv.enemyTurn  = 0;
   adv.rewards.xp   += tmpl.xp;
@@ -15446,6 +15716,23 @@ function renderCombatIntro(el) {
         ${dg.seq.length > 1 ? `<span class="ci-stat" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);color:#c4b5fd">⚔️ ${dg.seq.length} encuentros</span>` : ''}
       </div>
       ${meta.weakness ? `<div class="ci-weakness ci-stats-entrance">⚡ Debilidad: ${meta.weakness}</div>` : ''}
+      ${adv.expObjective ? `<div class="obj-card ci-stats-entrance">
+        <div class="obj-card-title">🎯 Objetivo especial</div>
+        <div class="obj-card-desc">${adv.expObjective.icon} ${adv.expObjective.desc}</div>
+        <div class="obj-card-detail">${adv.expObjective.detail}</div>
+        <div class="obj-card-bonus">✨ Bonus: +${Math.round((adv.expObjective.xpBonus||0)*100)}% XP al completarlo</div>
+      </div>` : ''}
+      ${adv.expChallenge ? `<div class="chal-card ci-stats-entrance" style="border-color:${adv.expChallenge.color}44;background:${adv.expChallenge.color}0d">
+        <div class="chal-card-header">
+          <div class="chal-card-icon">${adv.expChallenge.icon}</div>
+          <div>
+            <div class="chal-card-title" style="color:${adv.expChallenge.color}">⚡ Desafío activo</div>
+            <div class="chal-card-label" style="color:${adv.expChallenge.color}">${adv.expChallenge.label}</div>
+          </div>
+        </div>
+        <div class="chal-card-detail">${adv.expChallenge.detail}</div>
+        <div class="chal-card-reward">🏆 Recompensas modificadas activadas</div>
+      </div>` : ''}
       <div style="text-align:center;margin-top:10px">
         <button class="ci-start" id="ciStartBtn" style="${isDailyDg && tierColor ? `background:linear-gradient(135deg,${tierColor},${tierColor}cc)` : ''}">⚔️ ¡Combatir!</button>
       </div>
@@ -15492,6 +15779,86 @@ function getZoneBg(zoneId) {
   return 'bs-z1';
 }
 
+// ── Exploration Screen (Narrative Adventure) ────────────────────────────────
+function renderExplore(el) {
+  var exp = adv.expExplore;
+  if (!exp || !exp.scenario) { adv.view = 'zone'; renderAdv(); return; }
+  var sc   = exp.scenario;
+  var done = exp.stepIdx >= sc.steps.length;
+
+  var logHtml = exp.log.map(function(l) {
+    return '<div class="explore-log-entry">▸ ' + l + '</div>';
+  }).join('');
+
+  if (done) {
+    var totXP   = exp.rewards.xp;
+    var totGold = exp.rewards.gold;
+    el.innerHTML = '<div class="explore-screen">'
+      + '<div class="explore-header">'
+      + '<div class="explore-icon">' + sc.icon + '</div>'
+      + '<div class="explore-title">' + sc.title + '</div>'
+      + '<div class="explore-type-label">🗺️ Exploración completada</div>'
+      + '</div>'
+      + (logHtml ? '<div class="explore-log">' + logHtml + '</div>' : '')
+      + '<div class="explore-done">'
+      + '<div class="explore-done-title">✨ Exploración completada</div>'
+      + '<div class="explore-done-total">Recompensas obtenidas: '
+      + (totXP > 0 ? '<b style="color:var(--purp2)">+' + totXP + ' XP</b> ' : '')
+      + (totGold > 0 ? '<b style="color:var(--gold)">+' + totGold + ' 🪙</b>' : '')
+      + '</div>'
+      + '<button class="explore-done-btn" id="exploreDoneBtn">✔ Volver al mapa</button>'
+      + '</div>'
+      + '</div>';
+    el.querySelector('#exploreDoneBtn').addEventListener('click', function() {
+      if (totXP > 0)   addXP(totXP, 'disciplina', '🗺️ ' + sc.title);
+      if (totGold > 0) addGold(totGold);
+      saveChar(); saveDay(); renderChar();
+      adv.view = 'zone';
+      renderAdv();
+    });
+    return;
+  }
+
+  var step = sc.steps[exp.stepIdx];
+  var choicesHtml = step.choices.map(function(c, i) {
+    return '<button class="explore-choice" data-ci="' + i + '">' + c.text + '</button>';
+  }).join('');
+
+  el.innerHTML = '<div class="explore-screen">'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">'
+    + '<button class="adv-back-btn" id="exploreBack">← Salir</button>'
+    + '<span style="font-size:.58rem;color:#22d3ee;font-weight:700;text-transform:uppercase;letter-spacing:.08em">🗺️ Exploración</span>'
+    + '</div>'
+    + '<div class="explore-header">'
+    + '<div class="explore-icon">' + sc.icon + '</div>'
+    + '<div class="explore-title">' + sc.title + '</div>'
+    + '</div>'
+    + (exp.stepIdx === 0 ? '<div class="explore-intro">' + sc.intro + '</div>' : '')
+    + (logHtml ? '<div class="explore-log">' + logHtml + '</div>' : '')
+    + '<div class="explore-step-card">'
+    + '<div class="explore-question">' + step.question + '</div>'
+    + '<div class="explore-choices">' + choicesHtml + '</div>'
+    + '</div>'
+    + '</div>';
+
+  el.querySelector('#exploreBack').addEventListener('click', function() {
+    adv.view = 'zone'; renderAdv();
+  });
+  el.querySelectorAll('.explore-choice').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var ci = parseInt(btn.dataset.ci, 10);
+      var choice = step.choices[ci];
+      exp.log.push(choice.text.replace(/^[^\s]+\s/, '') + ' — ' + choice.result);
+      if (choice.reward) {
+        exp.rewards.xp   = (exp.rewards.xp   || 0) + (choice.reward.xp   || 0);
+        exp.rewards.gold = (exp.rewards.gold  || 0) + (choice.reward.gold || 0);
+      }
+      exp.stepIdx++;
+      renderAdv();
+    });
+  });
+}
+
 // ── Boss Dialogue (Visual Novel style) ──────────────────────────────────────
 function renderBossDialogue(el) {
   const dlg  = BOSS_DIALOGUES[adv.bossDialogueKey];
@@ -15510,9 +15877,12 @@ function renderBossDialogue(el) {
   const exch    = dlg.exchanges[state.exchIdx];
   const chosen  = state.choiceMade ? exch.choices[state.choiceIdx] : null;
 
-  const choiceHtml = !state.choiceMade ? exch.choices.map((c, i) =>
-    `<button class="boss-dlg-choice" onclick="bossDialogueChoose(${i})">${c.text}</button>`
-  ).join('') : '';
+  const choiceHtml = !state.choiceMade
+    ? `<div class="boss-dlg-choice-grid">${exch.choices.map((c, i) => {
+        const cat = _dlgChoiceCategory(c.effect);
+        return `<button class="boss-dlg-choice-card ${cat}" onclick="bossDialogueChoose(${i})"><span class="boss-dlg-choice-text">${c.text}</span>${c.effectDesc ? `<span class="boss-dlg-choice-effect">${c.effectDesc}</span>` : ''}</button>`;
+      }).join('')}</div>`
+    : '';
 
   const reactionHtml = chosen ? `
     <div class="boss-dlg-reaction">
@@ -15543,9 +15913,7 @@ function renderBossDialogue(el) {
         <div style="font-size:.65rem;font-weight:700;color:#94a3b8;margin-bottom:4px">${adv.enemy?.name || 'Jefe'}</div>
         <div id="bdText" style="font-size:.82rem;color:#e2e8f0;line-height:1.55;min-height:36px">${exch.boss}</div>
       </div>
-      <div style="padding:10px 14px 4px;display:flex;flex-direction:column;gap:7px" id="bdChoices">
-        ${choiceHtml}
-      </div>
+      <div id="bdChoices">${choiceHtml}</div>
       ${reactionHtml}
       ${fightBtnHtml}
     </div>`;
@@ -15583,9 +15951,27 @@ function _dlgEffectClass(eff) {
   return 'safe';
 }
 
+function _dlgChoiceCategory(eff) {
+  if (!eff || Object.keys(eff).length === 0) return 'neutral';
+  if (eff.firstStrike) return 'strategic';
+  if (eff.atkDebuff && eff.atkDebuff < 1) return 'defensive';
+  if (eff.atkMult && eff.atkMult < 1) return 'defensive';
+  if (eff.defMult && eff.defMult < 1 && (!eff.atkMult || eff.atkMult <= 1)) return 'strategic';
+  if (eff.hpMult && eff.hpMult < 1) return 'strategic';
+  return 'aggressive';
+}
+
 function bossDialogueChoose(idx) {
   const state = adv._dlgState;
   if (!state || state.choiceMade) return;
+
+  // Flash selected card and dim others before re-render
+  const cards = document.querySelectorAll('.boss-dlg-choice-card');
+  cards.forEach(function(c, i) {
+    if (i === idx) { c.classList.add('selected'); c.style.pointerEvents = 'none'; }
+    else { c.style.opacity = '.35'; c.style.pointerEvents = 'none'; }
+  });
+
   state.choiceMade = true;
   state.choiceIdx  = idx;
 
@@ -15601,7 +15987,7 @@ function bossDialogueChoose(idx) {
   adv.dialogueEffects.atkDebuff  *= (eff.atkDebuff ?? 1);
   if (eff.firstStrike) adv.dialogueEffects.firstStrike = true;
 
-  renderAdv();
+  setTimeout(renderAdv, 290);
 }
 
 function bossDialogueStart() {
@@ -15784,6 +16170,18 @@ function renderCombat(el) {
       </div>
       <span class="ult-pct" id="ultPct">${adv.ultimateCharge||0}%</span>
     </div>
+
+    <!-- Objective / Challenge status bar -->
+    ${adv.expObjective ? `<div class="obj-status${adv.expObjectiveMet?' obj-met':''}" id="objStatusBar">
+      <span class="obj-status-icon">${adv.expObjective.icon}</span>
+      <span class="obj-status-txt">${adv.expObjective.desc}</span>
+      ${adv.expObjectiveMet ? '<span style="color:#86efac;font-weight:900">✓</span>' : `<span style="color:#fbbf24;font-size:.65rem">+${Math.round((adv.expObjective.xpBonus||0)*100)}% XP</span>`}
+    </div>` : ''}
+    ${adv.expChallenge && !adv.expObjective ? `<div class="obj-status" style="background:${adv.expChallenge.color}0d;border-color:${adv.expChallenge.color}33">
+      <span class="obj-status-icon">${adv.expChallenge.icon}</span>
+      <span class="obj-status-txt" style="color:${adv.expChallenge.color}">${adv.expChallenge.label}</span>
+      ${adv.expChallenge.id==='speed_run'?`<span style="font-size:.65rem;color:${adv.expChallenge.color}">${adv.expTurnCount||0}/${adv.expChallenge.maxTurns} turnos</span>`:''}
+    </div>` : ''}
 
     <!-- Narration zone -->
     <div class="exp-narration">
@@ -16445,7 +16843,8 @@ function doAttack() {
     spawnCanvasParticles(pType, 'e');
     if (isCrit) shakeCamera(true, true); else shakeCamera(false);
     const killed = (adv.enemy.hp - dmg) <= 0;
-    if (killed) slowMoFlash();
+    if (killed) { slowMoFlash(); adv.expCritFinal = isCrit; }
+    if (killed && adv.seqIdx === 0 && adv.expTurnCount === 0) adv._firstEnemyKillTurn = 1;
     dealToEnemy(dmg, isCrit ? 'dmg-crit' : 'dmg-red', `⚔️ <b>${char.name||'Héroe'}</b> ataca${isCrit?' 💥 ¡CRÍTICO!':''} — <b>${dmg}</b> de daño`);
     checkLowHpVisual();
     tickBuffs();
@@ -16457,7 +16856,7 @@ function doSkill(idx) {
   const allSkills = getAllCombatSkills();
   const sk = allSkills[idx];
   if (!sk || (adv.skillCDs[sk.id] || 0) > 0 || !isSkillUnlocked(sk)) return;
-  if (sk.cd > 0) adv.skillCDs[sk.id] = sk.cd;
+  if (sk.cd > 0) adv.skillCDs[sk.id] = Math.round(sk.cd * (adv.expChallenge && adv.expChallenge.cdMult ? adv.expChallenge.cdMult : 1));
   const cs  = getCombatStats();
   const pName = char.name || 'Héroe';
 
@@ -16631,7 +17030,8 @@ function doSkill(idx) {
 function doPotion() {
   if ((adv.potions ?? 0) <= 0) return;
   adv.potions--;
-  adv.healUsed = true;
+  adv.healUsed     = true;
+  adv.expPotionUsed = true;
   const cs  = getCombatStats();
   const amt = Math.round(adv.playerMaxHP * 0.4 + cs.heal);
   adv.playerHP = Math.min(adv.playerMaxHP, adv.playerHP + amt);
@@ -16646,6 +17046,7 @@ function doUltimate() {
   if (!adv.ultimateReady) return;
   adv.ultimateCharge = 0;
   adv.ultimateReady  = false;
+  adv.expUltUsed     = true;
   const cs    = getCombatStats();
   const pName = char.name || 'Héroe';
   const c     = char.class;
@@ -16849,8 +17250,11 @@ function checkPhase2() {
 }
 
 function afterPlayerAction() {
+  adv.expTurnCount = (adv.expTurnCount || 0) + 1;
   checkPhase2();
   if (adv.enemy.hp <= 0) {
+    // Track first-enemy single-turn kill for one_hit objective
+    if (adv.seqIdx === 0 && adv.expTurnCount === 1) adv._firstEnemyKillTurn = 1;
     combatLog(`💀 ¡${adv.enemy.name} derrotado!`, 's');
     adv.seqIdx++;
     if (adv.seqIdx >= adv.seq.length) {
@@ -16870,6 +17274,14 @@ function afterPlayerAction() {
         }, getDelay(320));
       }
     }
+    return;
+  }
+  // Speed-run challenge: auto-defeat if player actions exceed limit
+  if (adv.expChallenge && adv.expChallenge.id === 'speed_run' && adv.expTurnCount >= (adv.expChallenge.maxTurns || 5)) {
+    setTimeout(function() {
+      combatLog(`⏱️ ¡Tiempo agotado! Solo tenías ${adv.expChallenge.maxTurns} turnos.`, 'e');
+      endCombat(false);
+    }, 600);
     return;
   }
   adv.turn = 'enemy';
@@ -16993,6 +17405,7 @@ function applyDamageToPlayer(dmg, logMsg) {
   try { expNarrate(_expGetNarr('eAtk')); } catch(ex) {}
   vibrate(_heavyHit ? [20, 15, 40] : 22);
   adv.playerHP -= dmg;
+  adv.expDamageTaken = (adv.expDamageTaken || 0) + dmg;
   adv.ultimateCharge = Math.min(100, (adv.ultimateCharge||0) + Math.round(dmg / adv.playerMaxHP * 16));
   if (adv.ultimateCharge >= 100) adv.ultimateReady = true;
   if (adv.buffs.power_gain > 0) adv.buffs.power_gain++;
@@ -17062,6 +17475,19 @@ function endCombat(won) {
       const bossCount = Object.values(char.dungeonsCompleted || {}).filter(v => v).length;
       if (bossCount === 1) addMilestone('first_boss', `Primer jefe derrotado: ${adv.dungeon.name}`, '👑');
       else addMilestone('boss_kill', `Jefe derrotado: ${adv.dungeon.name}`, '⚔️');
+    }
+    // Challenge reward multipliers
+    if (adv.expChallenge) {
+      adv.rewards.xp   = Math.round(adv.rewards.xp   * (adv.expChallenge.xpMult   || 1));
+      adv.rewards.gold = Math.round(adv.rewards.gold  * (adv.expChallenge.goldMult || 1));
+    }
+    // Special objective bonus
+    if (adv.expObjective) {
+      adv.expObjectiveMet = _checkExpObjective();
+      if (adv.expObjectiveMet) {
+        adv.rewards.xp = Math.round(adv.rewards.xp * (1 + (adv.expObjective.xpBonus || 0)));
+        try { _heroSpawnParticles('campHeroAnimWrap', true); } catch(e) {}
+      }
     }
     addXP(adv.rewards.xp, 'disciplina', `⚔️ ${adv.dungeon.name}`);
     addGold(adv.rewards.gold);
@@ -17206,9 +17632,19 @@ function renderCombatResult(el) {
   const unlockHtml = newSkills.length
     ? `<div style="margin-top:6px">${newSkills.map(sk => `<span class="cr-skill-unlock">✨ ${sk.icon} ${sk.name} desbloqueada</span>`).join('')}</div>`
     : '';
+  const _objBonus = adv.expObjectiveMet ? Math.round((adv.expObjective?.xpBonus||0)*100) : 0;
+  const objResultHtml = adv.expObjective
+    ? (adv.expObjectiveMet
+        ? `<div class="obj-result-banner"><span class="obj-result-icon">${adv.expObjective.icon}</span><span>¡Objetivo completado! <b>+${_objBonus}% XP</b> incluido</span></div>`
+        : `<div class="obj-result-banner obj-missed"><span class="obj-result-icon">${adv.expObjective.icon}</span><span>Objetivo no alcanzado: ${adv.expObjective.desc}</span></div>`)
+    : '';
+  const chalResultHtml = adv.expChallenge
+    ? `<div class="obj-result-banner obj-chal"><span class="obj-result-icon">${adv.expChallenge.icon}</span><span>¡Desafío <b>${adv.expChallenge.label}</b> superado!</span></div>`
+    : '';
   el.innerHTML = `<div class="combat-screen"><div class="gacha-screen">
     <div class="gacha-title">¡Victoria!</div>
     <div class="gacha-sub">Completaste <b>${adv.dungeon.name}</b></div>
+    ${objResultHtml}${chalResultHtml}
     <div class="gacha-items">
       <div class="gacha-item">
         <div class="gacha-item-icon">🏆</div>
