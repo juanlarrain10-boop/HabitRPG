@@ -3829,6 +3829,19 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .ob-class-phrase { font-size:.67rem; color:var(--dim); line-height:1.35; }
 .ob-class-card.sel .ob-class-phrase { opacity:.85; }
 
+/* Gender row — screen 1 */
+.ob-gender-row { display:flex; gap:10px; margin-bottom:18px; }
+.ob-gend-btn {
+  flex:1; padding:12px 10px; border-radius:12px;
+  border:2px solid var(--bd2); background:var(--s2);
+  color:var(--dim); font-size:.9rem; font-weight:700;
+  cursor:pointer; transition:all .15s; font-family:inherit;
+}
+.ob-gend-btn.on {
+  border-color:var(--purp2); background:rgba(139,92,246,.14); color:#fff;
+  box-shadow:0 0 12px rgba(139,92,246,.22);
+}
+
 /* Screen 3 — hero ready */
 .ob-ready { display:flex; flex-direction:column; align-items:center; gap:15px; padding:4px 0 2px; text-align:center; }
 .ob-ready-ttl { font-size:1.2rem; font-weight:900; color:var(--txt); line-height:1.25; }
@@ -19623,12 +19636,12 @@ const OB_SCREENS = [
 
 let obCurrent   = 1;
 let obPrefsMode = false;
-let obAnswers   = { class:'', goal:'', name:'' };
+let obAnswers   = { class:'', goal:'', name:'', gender:'male' };
 
 function showOnboarding() {
   obPrefsMode = false;
   obCurrent   = 1;
-  obAnswers   = { class: char.class || '', goal: char.onboarding?.goal || '', name: char.name || 'Aventurero' };
+  obAnswers   = { class: char.class || '', goal: char.onboarding?.goal || '', name: char.name || 'Aventurero', gender: char.avatar?.gender || 'male' };
   document.getElementById('obOverlay').classList.remove('hide');
   obGoTo(1);
 }
@@ -19662,6 +19675,10 @@ function obGoTo(n) {
       <div class="ob-welcome-hd">
         <div class="ob-welcome-title">⚔️ Bienvenido a HabitRPG</div>
         <div class="ob-welcome-sub">Tu vida real. Tu aventura épica.</div>
+      </div>
+      <div class="ob-gender-row">
+        <button class="ob-gend-btn${obAnswers.gender==='male'?' on':''}" id="obGendM" onclick="obSelectGender('male')">👨 Masculino</button>
+        <button class="ob-gend-btn${obAnswers.gender==='female'?' on':''}" id="obGendF" onclick="obSelectGender('female')">👩 Femenino</button>
       </div>
       <div class="ob-class-q">¿Con qué héroe te identificas?</div>
       <div class="ob-class-grid" id="obClassGrid">
@@ -19699,7 +19716,7 @@ function obGoTo(n) {
   } else if (sc.type === 'ready') {
     // ── Pantalla 3: Héroe listo ──
     const cls = CLASSES[obAnswers.class] || CLASSES.guerrero;
-    const avCv = buildPixelAvatar(char.avatar || {}, obAnswers.class || 'guerrero', null, 120);
+    const avCv = buildPixelAvatar({ ...(char.avatar || {}), gender: obAnswers.gender }, obAnswers.class || 'guerrero', null, 120);
     const div = document.createElement('div');
     div.className = 'ob-ready';
     div.innerHTML = `
@@ -19782,6 +19799,12 @@ function obSelectOpt(optId) {
   obUpdateNextBtn();
 }
 
+function obSelectGender(g) {
+  obAnswers.gender = g;
+  document.getElementById('obGendM')?.classList.toggle('on', g === 'male');
+  document.getElementById('obGendF')?.classList.toggle('on', g === 'female');
+}
+
 function obNext() {
   if (obPrefsMode) { obFinishPrefs(); return; }
   if (obCurrent < OB_SCREENS.length) { obGoTo(obCurrent + 1); } else { obFinish(); }
@@ -19797,6 +19820,8 @@ function obFinish() {
   char.class    = clsId; char.classSet = true; char.lastClassChangeLevel = char.level;
   const nm = (document.getElementById('obNameInp')?.value.trim()) || obAnswers.name || 'Aventurero';
   char.name    = nm || 'Aventurero'; char.nameSet = true; char.lastNameChangeLevel = char.level;
+  if (!char.avatar) char.avatar = {};
+  char.avatar.gender = obAnswers.gender || 'male';
   if (!char.onboarding) char.onboarding = {};
   char.onboarding.goal  = obAnswers.goal || '';
   char.onboarding.areas = [];
