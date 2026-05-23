@@ -1819,6 +1819,42 @@ h2, h3 { font-family: var(--pxfont); }
 }
 .gold-shop-btn:hover { background: var(--s3); color: var(--gold); border-color: rgba(245,158,11,.35); }
 
+/* ── SHOP CLASS FILTERS ──────────────────── */
+.shop-filter-row { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.shop-filter-btn {
+  padding:5px 13px; border-radius:16px; border:1.5px solid var(--bd2);
+  background:var(--s2); color:var(--dim); font-size:.72rem; font-weight:700;
+  cursor:pointer; font-family:inherit; transition:all .14s;
+}
+.shop-filter-btn:hover { background:var(--s3); color:var(--txt); }
+.shop-filter-btn.on { border-color:var(--purp2); background:var(--purpg); color:var(--purp2); }
+/* Section dividers inside shop grid */
+.shop-section-hdr {
+  grid-column:1/-1; font-size:.62rem; font-weight:800; color:var(--dim);
+  text-transform:uppercase; letter-spacing:.09em;
+  padding:10px 2px 6px; border-top:1px solid var(--bd); margin-top:4px;
+}
+.shop-section-hdr.first { border-top:none; margin-top:0; padding-top:2px; }
+/* Slot pill on item cards */
+.ic-slot-pill {
+  display:inline-flex; align-items:center; gap:2px;
+  padding:2px 7px; border-radius:8px;
+  font-size:.52rem; font-weight:700; letter-spacing:.04em;
+  background:var(--s3); border:1px solid var(--bd2); color:var(--dim);
+}
+/* Subclass badge */
+.subclass-badge {
+  display:inline-flex; align-items:center; gap:3px;
+  padding:2px 8px; border-radius:10px;
+  font-size:.55rem; font-weight:800; letter-spacing:.04em;
+  background:rgba(251,191,36,.14); border:1px solid rgba(251,191,36,.4); color:#fbbf24;
+}
+.ic-subclass-lock {
+  font-size:.7rem; color:#94a3b8;
+  background:rgba(148,163,184,.1); border:1px solid rgba(148,163,184,.25);
+  border-radius:8px; padding:5px 8px; margin-top:6px; text-align:center;
+}
+
 /* ── RARITY BORDERS ─────────────────────── */
 .rarity-comun      { border-color:#6b7280!important; }
 .rarity-raro       { border-color:#22c55e!important; }
@@ -7082,6 +7118,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       <button class="shop-close" id="shopCloseBtn" onclick="closeShop()">✕</button>
     </div>
     <div class="shop-tabs" id="shopTabs"></div>
+    <div class="shop-filter-row" id="shopFilterRow"></div>
     <div class="shop-grid" id="shopGrid"></div>
   </div>
 </div>
@@ -8416,6 +8453,71 @@ const SHOP_ITEMS = [
   { id:'ev_corona_nomuerto',  cat:'cabeza',   slot:'head',      name:'Corona del Rey No Muerto',   icon:'💀',  rarity:'evento', exclusive:true, desc:'La corona de un rey que nunca descansa ni se rinde.',       cost:0, minLevel:5, bonus:{vitalidad:16,disciplina:8},        combatStats:{def:20,hpRegen:8},             classes:[] },
   { id:'ev_esencia_espectral',cat:'accesorio',slot:'accessory', name:'Esencia Espectral',          icon:'👻',  rarity:'evento', exclusive:true, desc:'Esencia pura de un espectro primordial — atraviesa la realidad.',cost:0, minLevel:5, bonus:{mente:16,disciplina:8},      combatStats:{atk:12,critChance:18,hpRegen:8},classes:[] },
   { id:'ev_espada_guerra',    cat:'arma',     slot:'weapon',    name:'Espada de la Guerra Eterna', icon:'🗡️',  rarity:'evento', exclusive:true, desc:'Creada para la batalla que nunca terminó. Corta el tiempo.', cost:0, minLevel:5, bonus:{fuerza:18,disciplina:10},        combatStats:{atk:30,critChance:12},          classes:[] },
+
+  // ── ITEMS DE SUBCLASE ──────────────────────────────────────────────────────
+  // Guerrero: Paladín
+  { id:'sub_pal1', cat:'arma',     slot:'weapon',    name:'Espada Santa',              icon:'✝️',  rarity:'raro',  desc:'Bendecida por luz divina. Quema a los que no creen.',           cost:250, minLevel:15, bonus:{fuerza:10,bienestar:8},            combatStats:{atk:18,hpRegen:8},              classes:['guerrero'], subclass:'paladin'           },
+  { id:'sub_pal2', cat:'accesorio',slot:'accessory', name:'Escudo de la Fe',           icon:'🛡️',  rarity:'epico', desc:'La fe es el escudo que ninguna espada puede romper.',           cost:700, minLevel:35, bonus:{fuerza:18,bienestar:15},           combatStats:{def:25,hpRegen:12},             classes:['guerrero'], subclass:'paladin'           },
+  // Guerrero: Berserker
+  { id:'sub_bers1',cat:'arma',     slot:'weapon',    name:'Hacha de Furia',            icon:'🪓',  rarity:'raro',  desc:'Cada golpe alimenta la rabia. La rabia alimenta la fuerza.',   cost:280, minLevel:15, bonus:{fuerza:14,vitalidad:4},            combatStats:{atk:22,critChance:12},          classes:['guerrero'], subclass:'berserker'         },
+  { id:'sub_bers2',cat:'accesorio',slot:'accessory', name:'Sangre del Berserker',      icon:'🔴',  rarity:'epico', desc:'El colgante palpita con energía salvaje en pleno combate.',     cost:720, minLevel:35, bonus:{fuerza:20,disciplina:8},           combatStats:{atk:16,critChance:18},          classes:['guerrero'], subclass:'berserker'         },
+  // Guerrero: Tanque
+  { id:'sub_tnk1', cat:'armadura', slot:'armor',     name:'Placa de Resistencia',      icon:'🔗',  rarity:'raro',  desc:'Diseñada para absorber castigos sin ceder ni un paso.',         cost:260, minLevel:15, bonus:{vitalidad:12,disciplina:8},         combatStats:{def:22},                        classes:['guerrero'], subclass:'tanque'             },
+  { id:'sub_tnk2', cat:'accesorio',slot:'accessory', name:'Cinturón de Hierro',        icon:'⚙️',  rarity:'epico', desc:'Forjado con el mismo acero que los muros del castillo.',        cost:680, minLevel:35, bonus:{vitalidad:22,fuerza:10},           combatStats:{def:18,hpRegen:8},              classes:['guerrero'], subclass:'tanque'             },
+  // Mago: Mago de Hielo
+  { id:'sub_mh1',  cat:'arma',     slot:'weapon',    name:'Varita de Escarcha',        icon:'❄️',  rarity:'raro',  desc:'Congela el tiempo para pensar con más claridad.',               cost:250, minLevel:15, bonus:{mente:12,disciplina:8},            combatStats:{atk:18,critChance:10},          classes:['mago'],     subclass:'mago_hielo'        },
+  { id:'sub_mh2',  cat:'accesorio',slot:'accessory', name:'Collar de Hielo',           icon:'💎',  rarity:'epico', desc:'Te mantiene frío bajo cualquier presión o amenaza.',            cost:700, minLevel:35, bonus:{mente:20,bienestar:12},            combatStats:{atk:14,critChance:20,hpRegen:8},classes:['mago'],    subclass:'mago_hielo'        },
+  // Mago: Mago de Fuego
+  { id:'sub_mf1',  cat:'arma',     slot:'weapon',    name:'Orbe de Magma',             icon:'🌋',  rarity:'raro',  desc:'Arde con la fuerza de un volcán contenido en tu mano.',         cost:280, minLevel:15, bonus:{mente:14,disciplina:6},            combatStats:{atk:24,critChance:8},           classes:['mago'],     subclass:'mago_fuego'        },
+  { id:'sub_mf2',  cat:'accesorio',slot:'accessory', name:'Anillo Volcánico',          icon:'🔴',  rarity:'epico', desc:'Cada hechizo libera una explosión de energía elemental.',       cost:720, minLevel:35, bonus:{mente:22,fuerza:8},                combatStats:{atk:20,critChance:15},          classes:['mago'],     subclass:'mago_fuego'        },
+  // Mago: Brujo
+  { id:'sub_bruj1',cat:'arma',     slot:'weapon',    name:'Grimorio del Pacto',        icon:'🌑',  rarity:'raro',  desc:'El pacto oscuro que te da poder a cambio de constancia.',       cost:270, minLevel:15, bonus:{mente:12,bienestar:6},             combatStats:{atk:20,critChance:12},          classes:['mago'],     subclass:'brujo'             },
+  { id:'sub_bruj2',cat:'accesorio',slot:'accessory', name:'Amuleto del Abismo',        icon:'⚫',  rarity:'epico', desc:'Canaliza la energía del vacío para amplificar tu poder.',       cost:710, minLevel:35, bonus:{mente:20,disciplina:12},           combatStats:{atk:16,critChance:22},          classes:['mago'],     subclass:'brujo'             },
+  // Monje: Zen
+  { id:'sub_mzen1',cat:'arma',     slot:'weapon',    name:'Bastón de Serenidad',       icon:'🕯️',  rarity:'raro',  desc:'Transmite paz con cada golpe. El poder nace del silencio.',    cost:240, minLevel:15, bonus:{bienestar:12,mente:8},             combatStats:{atk:14,hpRegen:12},             classes:['monje'],    subclass:'monje_zen'         },
+  { id:'sub_mzen2',cat:'accesorio',slot:'accessory', name:'Cuentas de Meditación',     icon:'📿',  rarity:'epico', desc:'Cada cuenta es un día de práctica y serenidad ganados.',        cost:680, minLevel:35, bonus:{bienestar:22,mente:15},            combatStats:{def:10,hpRegen:20},             classes:['monje'],    subclass:'monje_zen'         },
+  // Monje: Combate
+  { id:'sub_mcmb1',cat:'arma',     slot:'weapon',    name:'Nudillos de Trueno',        icon:'⚡',  rarity:'raro',  desc:'Cada impacto resuena como un trueno en el pecho del rival.',   cost:270, minLevel:15, bonus:{fuerza:12,vitalidad:8},            combatStats:{atk:22,critChance:10},          classes:['monje'],    subclass:'monje_combate'     },
+  { id:'sub_mcmb2',cat:'accesorio',slot:'accessory', name:'Faja del Combate',          icon:'🟤',  rarity:'epico', desc:'Concentra toda la energía del cuerpo en un punto de poder.',   cost:720, minLevel:35, bonus:{fuerza:18,vitalidad:14},           combatStats:{atk:18,def:10,critChance:8},    classes:['monje'],    subclass:'monje_combate'     },
+  // Monje: Sanador
+  { id:'sub_msan1',cat:'armadura', slot:'armor',     name:'Manos Curativas',           icon:'💚',  rarity:'raro',  desc:'El calor que emana sana heridas antes del golpe final.',        cost:250, minLevel:15, bonus:{bienestar:12,vitalidad:10},         combatStats:{def:14,hpRegen:14},             classes:['monje'],    subclass:'monje_sanador'     },
+  { id:'sub_msan2',cat:'accesorio',slot:'accessory', name:'Amuleto de Vida',           icon:'🌿',  rarity:'epico', desc:'La vida fluye a través de él hacia todo ser cercano.',          cost:700, minLevel:35, bonus:{bienestar:20,vitalidad:18},         combatStats:{def:12,hpRegen:22},             classes:['monje'],    subclass:'monje_sanador'     },
+  // Asesino: Sombra
+  { id:'sub_som1', cat:'arma',     slot:'weapon',    name:'Cuchillo Lunar',            icon:'🌙',  rarity:'raro',  desc:'Forjado bajo luna llena. Solo se ve cuando ya es tarde.',       cost:260, minLevel:15, bonus:{disciplina:12,fuerza:8},           combatStats:{atk:18,critChance:14,evasion:8},classes:['asesino'],  subclass:'sombra'            },
+  { id:'sub_som2', cat:'capa',     slot:'cape',      name:'Capa Nocturna',             icon:'🌑',  rarity:'epico', desc:'La oscuridad como escudo. Los ojos enemigos te ignoran.',       cost:720, minLevel:35, bonus:{disciplina:22,vitalidad:10},        combatStats:{evasion:22,def:14},             classes:['asesino'],  subclass:'sombra'            },
+  // Asesino: A Distancia
+  { id:'sub_adis1',cat:'arma',     slot:'weapon',    name:'Arco de Precisión',         icon:'🎯',  rarity:'raro',  desc:'Cada flecha llega exactamente donde la mente la envía.',        cost:270, minLevel:15, bonus:{mente:10,disciplina:12},           combatStats:{atk:20,critChance:16},          classes:['asesino'],  subclass:'a_distancia'       },
+  { id:'sub_adis2',cat:'accesorio',slot:'accessory', name:'Guante de Puntería',        icon:'🧤',  rarity:'epico', desc:'La mano que apunta nunca tiembla ni por un segundo.',           cost:710, minLevel:35, bonus:{mente:16,disciplina:20},           combatStats:{critChance:25,atk:12},          classes:['asesino'],  subclass:'a_distancia'       },
+  // Asesino: Cuerpo a Cuerpo
+  { id:'sub_cac1', cat:'arma',     slot:'weapon',    name:'Puños de Acero',            icon:'⚔️',  rarity:'raro',  desc:'Sin armas hay más peligro. Con estos, tú eres el arma.',        cost:280, minLevel:15, bonus:{fuerza:14,disciplina:8},           combatStats:{atk:24,critChance:10},          classes:['asesino'],  subclass:'cuerpo_cuerpo'     },
+  { id:'sub_cac2', cat:'accesorio',slot:'accessory', name:'Vendas de Combate',         icon:'🩹',  rarity:'epico', desc:'Absorben el impacto y amplifican el siguiente golpe.',           cost:700, minLevel:35, bonus:{fuerza:20,vitalidad:12},           combatStats:{atk:16,critChance:14,def:8},    classes:['asesino'],  subclass:'cuerpo_cuerpo'     },
+  // Druida: Naturaleza
+  { id:'sub_dnat1',cat:'arma',     slot:'weapon',    name:'Báculo de Raíces',          icon:'🌿',  rarity:'raro',  desc:'Las raíces crecen alrededor de todo lo que toca.',              cost:240, minLevel:15, bonus:{bienestar:10,vitalidad:12},         combatStats:{atk:14,hpRegen:14},             classes:['druida'],   subclass:'druida_nat'        },
+  { id:'sub_dnat2',cat:'accesorio',slot:'accessory', name:'Semilla Elemental',         icon:'🌱',  rarity:'epico', desc:'Una semilla que florece con cada hábito cumplido.',             cost:680, minLevel:35, bonus:{bienestar:18,vitalidad:20},         combatStats:{hpRegen:22,def:12},             classes:['druida'],   subclass:'druida_nat'        },
+  // Druida: Chamán
+  { id:'sub_cham1',cat:'arma',     slot:'weapon',    name:'Cetro Espiritual',          icon:'🌀',  rarity:'raro',  desc:'Conecta los planos visibles con los invisibles.',               cost:260, minLevel:15, bonus:{bienestar:12,mente:8},             combatStats:{atk:16,hpRegen:10,critChance:8},classes:['druida'],   subclass:'chaman'            },
+  { id:'sub_cham2',cat:'accesorio',slot:'accessory', name:'Tótem del Chamán',          icon:'🔮',  rarity:'epico', desc:'El espíritu del tótem guía tus manos en la oscuridad.',         cost:700, minLevel:35, bonus:{bienestar:20,mente:16},            combatStats:{atk:14,hpRegen:18,critChance:12},classes:['druida'],  subclass:'chaman'            },
+  // Druida: Guardián
+  { id:'sub_guar1',cat:'armadura', slot:'armor',     name:'Coraza de Piedra',          icon:'🏔️',  rarity:'raro',  desc:'La montaña no cede y tú tampoco. Resistencia absoluta.',        cost:260, minLevel:15, bonus:{vitalidad:14,bienestar:8},          combatStats:{def:20,hpRegen:8},              classes:['druida'],   subclass:'guardian_druida'   },
+  { id:'sub_guar2',cat:'accesorio',slot:'accessory', name:'Amuleto Guardián',          icon:'🪨',  rarity:'epico', desc:'Quien lo porta es el pilar inamovible de cualquier equipo.',    cost:690, minLevel:35, bonus:{vitalidad:22,bienestar:14},         combatStats:{def:18,hpRegen:14},             classes:['druida'],   subclass:'guardian_druida'   },
+  // Bárbaro: Salvaje
+  { id:'sub_bsal1',cat:'arma',     slot:'weapon',    name:'Hacha Caótica',             icon:'💥',  rarity:'raro',  desc:'El caos en forma de hacha. Imparable e impredecible.',          cost:280, minLevel:15, bonus:{fuerza:15,vitalidad:8},            combatStats:{atk:25,critChance:12},          classes:['barbaro'],  subclass:'barbaro_salvaje'   },
+  { id:'sub_bsal2',cat:'accesorio',slot:'accessory', name:'Collar de Bestia',          icon:'🦷',  rarity:'epico', desc:'Llevas dentro la bestia y este collar la desata.',               cost:730, minLevel:35, bonus:{fuerza:24,disciplina:8},           combatStats:{atk:20,critChance:18},          classes:['barbaro'],  subclass:'barbaro_salvaje'   },
+  // Bárbaro: Jefe de Tribu
+  { id:'sub_jefe1',cat:'arma',     slot:'weapon',    name:'Maza del Jefe',             icon:'👑',  rarity:'raro',  desc:'Símbolo de autoridad. Un solo golpe silencia a cualquiera.',    cost:270, minLevel:15, bonus:{fuerza:12,vitalidad:10},           combatStats:{atk:22,def:8},                  classes:['barbaro'],  subclass:'jefe_tribu'        },
+  { id:'sub_jefe2',cat:'cabeza',   slot:'head',      name:'Corona Tribal',             icon:'🪶',  rarity:'epico', desc:'El que la porta no necesita alzar la voz para ser obedecido.',  cost:700, minLevel:35, bonus:{fuerza:18,vitalidad:15,disciplina:8},combatStats:{def:20,atk:10},                classes:['barbaro'],  subclass:'jefe_tribu'        },
+  // Bárbaro: Berserker Ancestral
+  { id:'sub_banc1',cat:'arma',     slot:'weapon',    name:'Espada Ancestral',          icon:'🌋',  rarity:'raro',  desc:'Forjada por guerreros que ya no están, su fuego aún arde.',     cost:290, minLevel:15, bonus:{fuerza:16,disciplina:6},           combatStats:{atk:26,critChance:10},          classes:['barbaro'],  subclass:'berserker_ancestral'},
+  { id:'sub_banc2',cat:'accesorio',slot:'accessory', name:'Tótem de Furia',            icon:'🔥',  rarity:'epico', desc:'Canaliza la rabia ancestral en cada movimiento del cuerpo.',    cost:740, minLevel:35, bonus:{fuerza:26,vitalidad:10},           combatStats:{atk:22,critChance:20},          classes:['barbaro'],  subclass:'berserker_ancestral'},
+  // Arquero: Cazador
+  { id:'sub_caz1', cat:'arma',     slot:'weapon',    name:'Arco del Cazador',          icon:'🦅',  rarity:'raro',  desc:'Para quien espera el momento exacto y nunca lo pierde.',        cost:260, minLevel:15, bonus:{mente:12,disciplina:10},           combatStats:{atk:20,critChance:14},          classes:['arquero'],  subclass:'cazador'           },
+  { id:'sub_caz2', cat:'accesorio',slot:'accessory', name:'Trampa Cazadora',           icon:'🪤',  rarity:'epico', desc:'Posiciona la trampa y espera. La presa nunca escapa.',           cost:700, minLevel:35, bonus:{mente:18,disciplina:16},           combatStats:{critChance:22,atk:14},          classes:['arquero'],  subclass:'cazador'           },
+  // Arquero: Explorador
+  { id:'sub_expl1',cat:'capa',     slot:'cape',      name:'Capa del Explorador',       icon:'🧭',  rarity:'raro',  desc:'Perfecta para moverse sin ser visto en bosques y montañas.',   cost:240, minLevel:15, bonus:{vitalidad:12,disciplina:8},         combatStats:{evasion:14,def:8},              classes:['arquero'],  subclass:'explorador'        },
+  { id:'sub_expl2',cat:'accesorio',slot:'accessory', name:'Brújula Mágica',            icon:'🧭',  rarity:'epico', desc:'Te guía siempre al camino correcto, en toda situación.',         cost:680, minLevel:35, bonus:{vitalidad:18,mente:14},            combatStats:{evasion:20,atk:10},             classes:['arquero'],  subclass:'explorador'        },
+  // Arquero: Francotirador
+  { id:'sub_fran1',cat:'arma',     slot:'weapon',    name:'Arco Élfico de Precisión',  icon:'🎯',  rarity:'raro',  desc:'Un disparo. Una oportunidad. Nunca se desperdicia.',             cost:280, minLevel:15, bonus:{mente:14,disciplina:10},           combatStats:{atk:22,critChance:18},          classes:['arquero'],  subclass:'francotirador'     },
+  { id:'sub_fran2',cat:'accesorio',slot:'accessory', name:'Lente de Enfoque',          icon:'🔭',  rarity:'epico', desc:'El objetivo siempre claro, sin distracciones ni dudas.',         cost:720, minLevel:35, bonus:{mente:20,disciplina:18},           combatStats:{critChance:28,atk:10},          classes:['arquero'],  subclass:'francotirador'     },
 ];
 const SHOP_CATS = [
   { id:'all',        label:'Todo',        icon:'🏪' },
@@ -16158,10 +16260,13 @@ document.getElementById('btnAdv').addEventListener('click', openAdventure);
 // ═══════════════════════════════════════════
 
 let shopCat = 'all';
+let shopClassFilter = 'todo'; // 'todo' | 'clase' | 'universal'
 
 function openShop() {
   shopCat = 'all';
+  shopClassFilter = 'todo';
   try { renderShopTabs(); } catch(e) { console.error('[shop] renderShopTabs:', e); }
+  try { renderShopFilterRow(); } catch(e) {}
   try { renderShopGrid(); } catch(e) { console.error('[shop] renderShopGrid:', e); }
   document.getElementById('shopOverlay').classList.remove('hide');
   history.pushState({hrpgOverlay: 'shop'}, '');
@@ -16178,9 +16283,24 @@ function renderShopTabs() {
     const btn = document.createElement('button');
     btn.className = 'shop-tab' + (shopCat === c.id ? ' on' : '');
     btn.textContent = `${c.icon} ${c.label}`;
-    btn.addEventListener('click', () => { shopCat = c.id; renderShopTabs(); renderShopGrid(); });
+    btn.addEventListener('click', () => { shopCat = c.id; renderShopTabs(); renderShopFilterRow(); renderShopGrid(); });
     tabsEl.appendChild(btn);
   });
+}
+
+function renderShopFilterRow() {
+  const row = document.getElementById('shopFilterRow');
+  if (!row) return;
+  if (['inventario','forja','pocion'].includes(shopCat)) { row.innerHTML = ''; return; }
+  const cls = char.class ? CLASSES[char.class] : null;
+  const filters = [
+    { id:'todo',      label:'🏪 Todo' },
+    { id:'clase',     label: cls ? `${cls.icon} Tu Clase` : '⭐ Tu Clase' },
+    { id:'universal', label:'🌐 Universal' },
+  ];
+  row.innerHTML = filters.map(f =>
+    `<button class="shop-filter-btn${shopClassFilter===f.id?' on':''}" onclick="shopClassFilter='${f.id}';renderShopFilterRow();renderShopGrid()">${f.label}</button>`
+  ).join('');
 }
 
 let invCat = 'all';
@@ -16355,6 +16475,130 @@ function craftItem(recId) {
   setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
+function _buildShopCard(item) {
+  const owned      = (char.inventory || []).includes(item.id);
+  const isEquipped = char.equipped && Object.values(char.equipped).includes(item.id);
+  const locked     = char.level < item.minLevel;
+  const canAfford  = (char.gold || 0) >= item.cost;
+  const rarity     = item.rarity || 'comun';
+
+  const classLocked = item.slot !== 'consumable' && item.classes && item.classes.length > 0 && !!char.class && !item.classes.includes(char.class);
+  const allowedClsNames = classLocked ? item.classes.map(c => CLASSES[c]?.name || c).join('/') : '';
+
+  const mySubclasses = char.subclasses || [];
+  const subclassDef  = item.subclass ? SUBCLASSES.find(s => s.id === item.subclass) : null;
+  const subclassLocked = !!(item.subclass && !mySubclasses.includes(item.subclass));
+  const equippedSubclassCount = Object.values(char.equipped || {}).filter(id => {
+    const it = SHOP_ITEMS.find(i => i.id === id);
+    return it && it.subclass;
+  }).length;
+  const subclassSlotFull = !!(item.subclass && !isEquipped && equippedSubclassCount >= 2);
+
+  const card = document.createElement('div');
+  let cardClass = 'item-card';
+  if      (locked || classLocked || subclassLocked) cardClass += ' locked';
+  else if (isEquipped)                               cardClass += ' item-equipped';
+  else if (owned && item.slot !== 'consumable')      cardClass += ' item-owned';
+  if (!locked && !classLocked && !subclassLocked && !isEquipped && rarity !== 'comun')
+    cardClass += ` rarity-border-${rarity}`;
+  card.className = cardClass;
+
+  let bonusText = '';
+  if (item.bonus && Object.keys(item.bonus).length > 0) {
+    bonusText = Object.entries(item.bonus).map(([k,v]) => `+${v} ${k.charAt(0).toUpperCase()+k.slice(1)}`).join(' · ');
+  } else if (item.effect) {
+    const eff = { energy:'Restaura energía', xp50:'+50 XP', bienestar20:'+20 XP Bienestar', xp150:'+150 XP todas las stats' };
+    bonusText = eff[item.effect] || '';
+  }
+
+  let combatChips = '';
+  if (item.combatStats) {
+    const cs = item.combatStats;
+    if (cs.atk)        combatChips += `<span class="ic-stat-chip atk">⚔️ +${cs.atk} ATK</span>`;
+    if (cs.def)        combatChips += `<span class="ic-stat-chip def">🛡️ +${cs.def} DEF</span>`;
+    if (cs.critChance) combatChips += `<span class="ic-stat-chip crit">💥 ${cs.critChance}% CRIT</span>`;
+    if (cs.hpRegen)    combatChips += `<span class="ic-stat-chip regen">💚 +${cs.hpRegen} REGEN</span>`;
+    if (cs.evasion)    combatChips += `<span class="ic-stat-chip evasion">💨 ${cs.evasion}% ESQU</span>`;
+  }
+
+  let compareHtml = '';
+  if (item.slot !== 'consumable' && !isEquipped && item.combatStats && char.equipped) {
+    const eqId   = char.equipped[item.slot];
+    const eqItem = eqId ? SHOP_ITEMS.find(i => i.id === eqId) : null;
+    const sumCS  = cs => cs ? (cs.atk||0)+(cs.def||0)+(cs.critChance||0)*.5+(cs.hpRegen||0)*.8+(cs.evasion||0)*.6 : 0;
+    if (eqItem) {
+      const diff = sumCS(item.combatStats) - sumCS(eqItem.combatStats);
+      if      (diff > 1)  compareHtml = `<div class="ic-compare better">▲ Mejor que equipado</div>`;
+      else if (diff < -1) compareHtml = `<div class="ic-compare worse">▼ Peor que equipado</div>`;
+      else                compareHtml = `<div class="ic-compare equal">= Similar al equipado</div>`;
+    }
+  }
+
+  const slotDef = EQUIP_SLOT_DEFS.find(d => d.slot === item.slot);
+  const slotTag = slotDef ? `<span class="ic-slot-pill">${slotDef.icon} ${slotDef.label}</span>` : '';
+  const subBadge = subclassDef ? `<span class="subclass-badge">${subclassDef.icon} ${subclassDef.name}</span>` : '';
+  const rarityLabels = { comun:'Común', raro:'Raro', epico:'Épico', legendario:'Legendario', evento:'Exclusivo' };
+
+  let classNote = '';
+  if (!classLocked && !subclassLocked && item.classes && item.classes.length > 0 && char.class && item.classes.includes(char.class) && !item.subclass)
+    classNote = '⭐ Recomendado para tu clase';
+
+  let bottomNote = '';
+  if (classLocked)         bottomNote = `<div class="ic-class-lock">🔒 Solo ${allowedClsNames}</div>`;
+  else if (subclassLocked) bottomNote = `<div class="ic-subclass-lock">🔒 Requiere subclase <b>${subclassDef?.name||''}</b></div>`;
+  else if (subclassSlotFull) bottomNote = `<div class="ic-subclass-lock">🔒 Slots de subclase llenos (máx. 2)</div>`;
+  else if (classNote)      bottomNote = `<div class="ic-bonus ic-class-note">${classNote}</div>`;
+
+  let btnClass, btnText;
+  if (locked)                  { btnClass = 'btn-locked';  btnText = `🔒 Requiere nivel ${item.minLevel}`; }
+  else if (classLocked)        { btnClass = 'btn-locked';  btnText = `🔒 Solo ${allowedClsNames}`; }
+  else if (subclassLocked)     { btnClass = 'btn-locked';  btnText = `🔒 Requiere ${subclassDef?.name||'subclase'}`; }
+  else if (subclassSlotFull)   { btnClass = 'btn-locked';  btnText = `🔒 Límite 2 subclase`; }
+  else if (item.slot==='consumable') { btnClass='btn-use'; btnText=`⚗️ Usar · ${item.cost} 🪙`; }
+  else if (isEquipped)         { btnClass = 'btn-unequip'; btnText = '✓ Equipado — Retirar'; }
+  else if (owned)              { btnClass = 'btn-equip';   btnText = '⚔️ Equipar'; }
+  else                         { btnClass = 'btn-buy';     btnText = `Comprar · ${item.cost} 🪙`; }
+
+  card.innerHTML = `
+    <div class="ic-top">
+      <div class="ic-ico">${item.icon}</div>
+      <div class="ic-info">
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+          <span class="rarity-badge rarity-${rarity}">${rarityLabels[rarity]}</span>${slotTag}${subBadge}
+        </div>
+        <div class="ic-name">${item.name}</div>
+        <div class="ic-desc">${item.desc}</div>
+      </div>
+    </div>
+    ${combatChips ? `<div class="ic-combat-stats">${combatChips}</div>` : ''}
+    ${compareHtml}
+    ${bonusText  ? `<div class="ic-bonus">${bonusText}</div>` : ''}
+    ${bottomNote}
+    <div class="ic-foot">
+      <div class="ic-cost">🪙 ${item.cost}</div>
+      <div class="ic-level">${locked ? `🔒 Nv.${item.minLevel}` : `Nv.${item.minLevel}+`}</div>
+    </div>
+    <button class="ic-btn ${btnClass}" data-id="${item.id}">${btnText}</button>
+  `;
+
+  const btn = card.querySelector('.ic-btn');
+  if (locked || classLocked || subclassLocked || subclassSlotFull) {
+    btn.disabled = true;
+  } else if (item.slot === 'consumable') {
+    btn.disabled = !canAfford;
+    btn.addEventListener('click', () => shopUsePotion(item.id));
+  } else if (isEquipped) {
+    btn.addEventListener('click', () => shopUnequip(item.slot));
+  } else if (owned) {
+    btn.addEventListener('click', () => shopEquip(item.id));
+  } else {
+    btn.disabled = !canAfford;
+    btn.addEventListener('click', () => shopBuy(item.id));
+  }
+
+  return card;
+}
+
 function renderShopGrid() {
   document.getElementById('shopGoldBadge').textContent = `🪙 ${(char.gold || 0).toLocaleString()}`;
   const grid = document.getElementById('shopGrid');
@@ -16363,132 +16607,63 @@ function renderShopGrid() {
   if (shopCat === 'forja')      { renderForgeTab(grid); return; }
 
   grid.innerHTML = '';
-  const items = (shopCat === 'all' ? SHOP_ITEMS : SHOP_ITEMS.filter(i => i.cat === shopCat)).filter(i => !i.exclusive);
+  const allItems = (shopCat === 'all' ? SHOP_ITEMS : SHOP_ITEMS.filter(i => i.cat === shopCat)).filter(i => !i.exclusive);
 
-  items.forEach(item => {
-    const owned      = (char.inventory || []).includes(item.id);
-    const isEquipped = char.equipped && Object.values(char.equipped).includes(item.id);
-    const locked     = char.level < item.minLevel;
-    const canAfford  = (char.gold || 0) >= item.cost;
-    const rarity     = item.rarity || 'comun';
-    const classLocked = item.slot !== 'consumable' && item.classes && item.classes.length > 0 && !!char.class && !item.classes.includes(char.class);
-    const allowedClsNames = classLocked ? item.classes.map(c => CLASSES[c]?.name || c).join('/') : '';
+  const myClass  = char.class;
+  const byLevel  = (a,b) => a.minLevel - b.minLevel;
 
-    const card = document.createElement('div');
-    let cardClass = 'item-card';
-    if (locked)                                    cardClass += ' locked';
-    else if (classLocked)                          cardClass += ' class-locked';
-    else if (isEquipped)                           cardClass += ' item-equipped';
-    else if (owned && item.slot !== 'consumable')  cardClass += ' item-owned';
-    if (!locked && !classLocked && !isEquipped && rarity !== 'comun') cardClass += ` rarity-border-${rarity}`;
-    card.className = cardClass;
+  const myClassItems   = allItems.filter(i => !i.subclass && i.classes && i.classes.length > 0 && myClass && i.classes.includes(myClass)).sort(byLevel);
+  const universalItems = allItems.filter(i => !i.subclass && (!i.classes || i.classes.length === 0)).sort(byLevel);
+  const subclassItems  = allItems.filter(i => i.subclass).sort(byLevel);
+  const otherItems     = allItems.filter(i => !i.subclass && i.classes && i.classes.length > 0 && !(myClass && i.classes.includes(myClass))).sort(byLevel);
 
-    // Bonus text (stat XP bonuses)
-    let bonusText = '';
-    if (item.bonus && Object.keys(item.bonus).length > 0) {
-      bonusText = Object.entries(item.bonus)
-        .map(([k,v]) => `+${v} ${k.charAt(0).toUpperCase()+k.slice(1)}`)
-        .join(' · ');
-    } else if (item.effect) {
-      const eff = { energy:'Restaura energía', xp50:'+50 XP', bienestar20:'+20 XP Bienestar', xp150:'+150 XP todas las stats' };
-      bonusText = eff[item.effect] || '';
-    }
+  let sections = [];
+  if (shopClassFilter === 'todo') {
+    if (myClassItems.length)   sections.push({ label: myClass ? `${CLASSES[myClass]?.icon||'⭐'} Tu Clase — ${CLASSES[myClass]?.name||''}` : '⭐ Tu Clase', items: myClassItems });
+    if (universalItems.length) sections.push({ label: '🌐 Universal', items: universalItems });
+    if (subclassItems.length)  sections.push({ label: '🔮 Subclase', items: subclassItems });
+    if (otherItems.length)     sections.push({ label: '🔒 Otras Clases', items: otherItems });
+  } else if (shopClassFilter === 'clase') {
+    const shown = myClassItems.length ? myClassItems : universalItems;
+    if (shown.length) sections.push({ label: myClass ? `${CLASSES[myClass]?.icon||'⭐'} Tu Clase — ${CLASSES[myClass]?.name||''}` : '🌐 Universal', items: shown });
+    if (subclassItems.length) sections.push({ label: '🔮 Subclase', items: subclassItems });
+  } else {
+    if (universalItems.length) sections.push({ label: '🌐 Universal', items: universalItems });
+  }
 
-    // Combat stats chips
-    let combatChips = '';
-    if (item.combatStats) {
-      const cs = item.combatStats;
-      if (cs.atk)        combatChips += `<span class="ic-stat-chip atk">⚔️ +${cs.atk} ATK</span>`;
-      if (cs.def)        combatChips += `<span class="ic-stat-chip def">🛡️ +${cs.def} DEF</span>`;
-      if (cs.critChance) combatChips += `<span class="ic-stat-chip crit">💥 ${cs.critChance}% CRIT</span>`;
-      if (cs.hpRegen)    combatChips += `<span class="ic-stat-chip regen">💚 +${cs.hpRegen} REGEN</span>`;
-      if (cs.evasion)    combatChips += `<span class="ic-stat-chip evasion">💨 ${cs.evasion}% ESQU</span>`;
-    }
-
-    // Comparison with equipped item in same slot
-    let compareHtml = '';
-    if (item.slot !== 'consumable' && !isEquipped && item.combatStats && char.equipped) {
-      const eqId = char.equipped[item.slot];
-      const eqItem = eqId ? SHOP_ITEMS.find(i => i.id === eqId) : null;
-      const sumCS = cs => (cs ? (cs.atk||0) + (cs.def||0) + (cs.critChance||0)*0.5 + (cs.hpRegen||0)*0.8 + (cs.evasion||0)*0.6 : 0);
-      const thisScore = sumCS(item.combatStats);
-      const eqScore   = sumCS(eqItem?.combatStats);
-      if (eqItem) {
-        const diff = thisScore - eqScore;
-        if (diff > 1)       compareHtml = `<div class="ic-compare better">▲ Mejor que equipado</div>`;
-        else if (diff < -1) compareHtml = `<div class="ic-compare worse">▼ Peor que equipado</div>`;
-        else                compareHtml = `<div class="ic-compare equal">= Similar al equipado</div>`;
-      }
-    }
-
-    // Class note
-    let classNote = '';
-    if (classLocked) {
-      classNote = `Solo ${allowedClsNames} puede usar esto`;
-    } else if (item.classes && item.classes.length > 0 && char.class && item.classes.includes(char.class)) {
-      classNote = '⭐ Recomendado para tu clase';
-    }
-
-    // Rarity label
-    const rarityLabels = { comun:'Común', raro:'Raro', epico:'Épico', legendario:'Legendario', evento:'Exclusivo' };
-
-    // Button
-    let btnClass, btnText;
-    if (locked) {
-      btnClass = 'btn-locked'; btnText = `🔒 Requiere nivel ${item.minLevel}`;
-    } else if (classLocked) {
-      btnClass = 'btn-locked'; btnText = `🔒 Solo ${allowedClsNames}`;
-    } else if (item.slot === 'consumable') {
-      btnClass = 'btn-use'; btnText = `⚗️ Usar · ${item.cost} 🪙`;
-    } else if (isEquipped) {
-      btnClass = 'btn-unequip'; btnText = '✓ Equipado — Retirar';
-    } else if (owned) {
-      btnClass = 'btn-equip'; btnText = '⚔️ Equipar';
-    } else {
-      btnClass = 'btn-buy'; btnText = `Comprar · ${item.cost} 🪙`;
-    }
-
-    const slotLabel = EQUIP_SLOT_DEFS.find(d => d.slot === item.slot)?.label || '';
-    const slotTag   = slotLabel ? `<span style="font-size:.53rem;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-left:4px">${slotLabel}</span>` : '';
-    card.innerHTML = `
-      <div class="ic-top">
-        <div class="ic-ico">${item.icon}</div>
-        <div class="ic-info">
-          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
-            <span class="rarity-badge rarity-${rarity}">${rarityLabels[rarity]}</span>${slotTag}
-          </div>
-          <div class="ic-name">${item.name}</div>
-          <div class="ic-desc">${item.desc}</div>
-        </div>
-      </div>
-      ${combatChips ? `<div class="ic-combat-stats">${combatChips}</div>` : ''}
-      ${compareHtml}
-      ${bonusText  ? `<div class="ic-bonus">${bonusText}</div>` : ''}
-      ${classLocked ? `<div class="ic-class-lock">🔒 Solo ${allowedClsNames}</div>` : (classNote ? `<div class="ic-bonus ic-class-note">${classNote}</div>` : '')}
-      <div class="ic-foot">
-        <div class="ic-cost">🪙 ${item.cost}</div>
-        <div class="ic-level">${locked ? `🔒 Nv.${item.minLevel}` : `Nv.${item.minLevel}+`}</div>
-      </div>
-      <button class="ic-btn ${btnClass}" data-id="${item.id}">${btnText}</button>
-    `;
-
-    const btn = card.querySelector('.ic-btn');
-    if (locked || classLocked) {
-      btn.disabled = true;
-    } else if (item.slot === 'consumable') {
-      btn.disabled = !canAfford;
-      btn.addEventListener('click', () => shopUsePotion(item.id));
-    } else if (isEquipped) {
-      btn.addEventListener('click', () => shopUnequip(item.slot));
-    } else if (owned) {
-      btn.addEventListener('click', () => shopEquip(item.id));
-    } else {
-      btn.disabled = !canAfford;
-      btn.addEventListener('click', () => shopBuy(item.id));
-    }
-
-    grid.appendChild(card);
+  sections.forEach((sec, si) => {
+    const hdr = document.createElement('div');
+    hdr.className = 'shop-section-hdr' + (si === 0 ? ' first' : '');
+    hdr.textContent = sec.label;
+    grid.appendChild(hdr);
+    sec.items.forEach(item => grid.appendChild(_buildShopCard(item)));
   });
+
+  if (!grid.children.length) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'grid-column:1/-1;color:var(--dim);padding:24px 0;text-align:center;font-size:.8rem';
+    empty.textContent = 'No hay items en esta categoría';
+    grid.appendChild(empty);
+  }
+}
+
+function _subclassEquipCheck(item) {
+  if (!item.subclass) return true;
+  const sc = SUBCLASSES.find(s => s.id === item.subclass);
+  if (!(char.subclasses || []).includes(item.subclass)) {
+    quickToast('🔒', 'Subclase no desbloqueada', `Requiere ${sc?.name || item.subclass}`);
+    return false;
+  }
+  const isEquipped = char.equipped && Object.values(char.equipped).includes(item.id);
+  const count = Object.values(char.equipped || {}).filter(id => {
+    const it = SHOP_ITEMS.find(i => i.id === id);
+    return it && it.subclass;
+  }).length;
+  if (!isEquipped && count >= 2) {
+    quickToast('🔒', 'Límite de subclase', 'Solo puedes equipar 2 items de subclase a la vez');
+    return false;
+  }
+  return true;
 }
 
 function shopBuy(id) {
@@ -16501,12 +16676,17 @@ function shopBuy(id) {
     quickToast('🔒', 'Clase incorrecta', `Solo ${n} puede usar este item`);
     return;
   }
+  if (!_subclassEquipCheck(item)) return;
   char.gold -= item.cost;
   if (!char.inventory) char.inventory = [];
   char.inventory.push(id);
-  // Auto-equip if slot is empty
+  // Auto-equip if slot is empty and passes subclass limit
   if (item.slot !== 'consumable' && char.equipped && !char.equipped[item.slot]) {
-    char.equipped[item.slot] = id;
+    const subCount = Object.values(char.equipped).filter(eid => {
+      const it = SHOP_ITEMS.find(i => i.id === eid);
+      return it && it.subclass;
+    }).length;
+    if (!item.subclass || subCount < 2) char.equipped[item.slot] = id;
   }
   saveChar(); renderChar(); renderShopGrid();
 }
@@ -16520,8 +16700,8 @@ function shopEquip(id) {
     quickToast('🔒', 'Clase incorrecta', `Solo ${n} puede equipar esto`);
     return;
   }
+  if (!_subclassEquipCheck(item)) return;
   if (!char.equipped) char.equipped = { weapon:null, armor:null, accessory:null, head:null, legs:null, feet:null, leftHand:null, cape:null };
-  // Ensure new slots exist on old saves
   ['head','legs','feet','leftHand','cape'].forEach(s => { if (!(s in char.equipped)) char.equipped[s] = null; });
   char.equipped[item.slot] = id;
   _triggerEquipFlash();
