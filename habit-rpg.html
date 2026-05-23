@@ -433,6 +433,90 @@ h2, h3 { font-family: var(--pxfont); }
   100% { background: transparent; }
 }
 .habit-row.flashing { animation: habitFlash .55s ease-out; }
+
+/* ── CHECK EXPLOSION ── */
+@keyframes checkExplode {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.75); box-shadow: 0 0 0 10px var(--flash-bg,rgba(250,200,50,.2)); }
+  65%  { transform: scale(0.83); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+.hchk.exploding { animation: checkExplode .4s cubic-bezier(.36,.07,.19,.97); }
+
+/* ── ROW GLOW PULSE ── */
+@keyframes rowGlowPulse {
+  0%   { box-shadow: none; }
+  35%  { box-shadow: 0 0 22px 5px var(--flash-bg,rgba(250,200,50,.2)); }
+  100% { box-shadow: none; }
+}
+.habit-row.row-glow { animation: rowGlowPulse .58s ease-out; }
+
+/* ── COMBO OVERLAY ── */
+.combo-overlay {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(0);
+  z-index: 2500; pointer-events: none; text-align: center;
+  font-family: var(--pxfont); font-weight: 900; line-height: 1.25;
+  text-shadow: 0 0 32px currentColor, 0 0 64px currentColor, 0 2px 14px rgba(0,0,0,.92);
+  animation: comboAppear .38s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes comboAppear {
+  0%   { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+  65%  { transform: translate(-50%,-50%) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+}
+.combo-overlay.combo-fade {
+  animation: comboFade .45s ease forwards;
+}
+@keyframes comboFade {
+  0%   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-62%) scale(1.14); }
+}
+
+/* ── BIG XP FLOAT ── */
+.xp-float-big {
+  font-size: 1.65rem !important; font-weight: 900 !important;
+  text-shadow: 0 0 26px currentColor, 0 2px 10px rgba(0,0,0,.82) !important;
+  animation: floatUpBig 1.55s ease-out forwards !important;
+}
+@keyframes floatUpBig {
+  0%   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  18%  { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1.28); }
+  80%  { opacity: .65; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-78px) scale(0.82); }
+}
+
+/* ── MINI HERO REACTIONS (cs-avatar-wrap) ── */
+.cs-avatar-wrap.react-ready .cs-avatar {
+  animation: csReactReady .62s ease-out !important;
+}
+@keyframes csReactReady {
+  0%   { transform: translateY(0); }
+  35%  { transform: translateY(-7px); }
+  65%  { transform: translateY(0); }
+  83%  { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+.cs-avatar-wrap.react-pumped .cs-avatar {
+  animation: csReactPumped .55s cubic-bezier(.34,1.56,.64,1) !important;
+}
+@keyframes csReactPumped {
+  0%   { transform: scale(1) translateY(0); }
+  35%  { transform: scale(1.2) translateY(-11px); }
+  70%  { transform: scale(0.90) translateY(3px); }
+  100% { transform: scale(1) translateY(0); }
+}
+.cs-avatar-wrap.react-epic .cs-avatar {
+  box-shadow: 0 0 0 3px #fbbf24, 0 0 26px #f59e0b, 0 0 52px #f59e0b !important;
+  animation: csReactEpic .85s cubic-bezier(.34,1.56,.64,1) !important;
+}
+@keyframes csReactEpic {
+  0%   { transform: scale(1) translateY(0); }
+  22%  { transform: scale(1.38) translateY(-15px); }
+  55%  { transform: scale(0.87) translateY(4px); }
+  78%  { transform: scale(1.12) translateY(-3px); }
+  100% { transform: scale(1) translateY(0); }
+}
 /* Category borders */
 #sectMorning  { border-left: 3px solid #f59e0b !important; border-radius: 12px; }
 #sectMiss     { border-left: 3px solid #60a5fa !important; border-radius: 12px; }
@@ -11589,16 +11673,16 @@ document.getElementById('btnDismiss').addEventListener('click', () => {
 // FLOATING XP
 // ═══════════════════════════════════════════
 
-function floatXP(amount, cat, el) {
+function floatXP(amount, cat, el, big) {
   if (!el) return;
   const rect = el.getBoundingClientRect();
   const div  = document.createElement('div');
-  div.className = `xp-float xf-${cat}`;
+  div.className = `xp-float xf-${cat}${big ? ' xp-float-big' : ''}`;
   div.textContent = `+${amount} XP`;
   div.style.left = (rect.left + rect.width/2) + 'px';
   div.style.top  = (rect.top + window.scrollY - 4) + 'px';
   document.body.appendChild(div);
-  setTimeout(() => div.remove(), 1400);
+  setTimeout(() => div.remove(), big ? 1650 : 1400);
 }
 
 var _dsLastPct = -1;
@@ -12693,11 +12777,97 @@ var _CAT_FLASH = {
 };
 function _habitFlash(rowEl, cat) {
   if (!rowEl) return;
-  rowEl.style.setProperty('--flash-bg', _CAT_FLASH[cat] || 'rgba(250,200,50,.2)');
-  rowEl.classList.remove('flashing');
-  void rowEl.offsetWidth; // reflow to restart animation
-  rowEl.classList.add('flashing');
-  setTimeout(function(){ rowEl.classList.remove('flashing'); }, 560);
+  var flashCol = _CAT_FLASH[cat] || 'rgba(250,200,50,.2)';
+  rowEl.style.setProperty('--flash-bg', flashCol);
+  rowEl.classList.remove('flashing', 'row-glow');
+  void rowEl.offsetWidth;
+  rowEl.classList.add('flashing', 'row-glow');
+  var chk = rowEl.querySelector('.hchk');
+  if (chk) {
+    chk.style.setProperty('--flash-bg', flashCol);
+    chk.classList.remove('exploding');
+    void chk.offsetWidth;
+    chk.classList.add('exploding');
+    setTimeout(function(){ chk.classList.remove('exploding'); }, 460);
+  }
+  setTimeout(function(){ rowEl.classList.remove('flashing', 'row-glow'); }, 640);
+}
+
+// ═══════════════════════════════════════════
+// COMBO SYSTEM
+// ═══════════════════════════════════════════
+var _combo = { count: 0, lastT: 0, timeoutId: null };
+var _COMBO_BONUS = { 3:10, 4:20, 5:30 };
+
+function _comboHit(cat, rowEl) {
+  var now = Date.now();
+  if (now - _combo.lastT > 30000) _combo.count = 0;
+  _combo.lastT = now;
+  _combo.count++;
+  clearTimeout(_combo.timeoutId);
+  if (_combo.count >= 3) {
+    var bonus = _combo.count >= 6 ? 50 : (_COMBO_BONUS[_combo.count] || 30);
+    _showComboOverlay(_combo.count, cat, rowEl, bonus);
+    addXP(bonus, 'disciplina', '⚡ COMBO x' + _combo.count);
+    floatXP(bonus, 'disciplina', rowEl, true);
+  }
+  _combo.timeoutId = setTimeout(function() { _combo.count = 0; }, 30000);
+}
+
+function _showComboOverlay(count, cat, rowEl, bonus) {
+  document.querySelectorAll('.combo-overlay').forEach(function(el){ el.remove(); });
+  var el = document.createElement('div');
+  el.className = 'combo-overlay';
+  var colors = { fuerza:'#fca5a5', mente:'#93c5fd', vitalidad:'#6ee7b7', disciplina:'#fde68a', bienestar:'#67e8f9' };
+  var col = colors[cat] || '#fde68a';
+  el.style.color = col;
+  el.style.fontSize = Math.min(5.5, 3 + count * 0.2) + 'rem';
+  el.innerHTML = '⚡ COMBO x' + count + '<br><span style="font-size:.44em;opacity:.88">+' + bonus + ' XP BONUS</span>';
+  document.body.appendChild(el);
+  if (rowEl) spawnConfetti(rowEl);
+  try { SFX.critSound(); } catch(e) {}
+  setTimeout(function() {
+    el.classList.add('combo-fade');
+    setTimeout(function(){ el.remove(); }, 500);
+  }, 1800);
+}
+
+// ═══════════════════════════════════════════
+// MINI HERO REACTIONS
+// ═══════════════════════════════════════════
+function _getMissHeroLevel() {
+  var mornDone  = (day.morning  || []).filter(function(m){ return m.done; }).length;
+  var missDone  = (day.missions || []).filter(function(m){ return m.done; }).length;
+  var classDone = (day.classMission && day.classMission.done) ? 1 : 0;
+  var mornTotal = typeof MORNING_ITEMS !== 'undefined' ? MORNING_ITEMS.length : 4;
+  var total     = (day.missions||[]).length + mornTotal + (char.classSet ? 1 : 0);
+  var done      = mornDone + missDone + classDone;
+  if (total > 0 && done >= total) return 3;
+  if (done >= 7) return 3;
+  if (done >= 4) return 2;
+  if (done >= 1) return 1;
+  return 0;
+}
+
+function _missHeroReact(level) {
+  var wrap = document.getElementById('csAvatarWrap');
+  if (!wrap) return;
+  wrap.classList.remove('react-ready', 'react-pumped', 'react-epic');
+  void wrap.offsetWidth;
+  if (level === 1) {
+    wrap.classList.add('react-ready');
+    setTimeout(function(){ wrap.classList.remove('react-ready'); }, 720);
+  } else if (level === 2) {
+    wrap.classList.add('react-pumped');
+    spawnConfetti(document.getElementById('csAvatarRing'));
+    setTimeout(function(){ wrap.classList.remove('react-pumped'); }, 680);
+  } else if (level === 3) {
+    wrap.classList.add('react-epic');
+    var ring = document.getElementById('csAvatarRing');
+    spawnConfetti(ring);
+    setTimeout(function(){ spawnConfetti(ring); }, 200);
+    setTimeout(function(){ wrap.classList.remove('react-epic'); }, 1000);
+  }
 }
 
 function toggleMorning(i, rowEl) {
@@ -12711,10 +12881,12 @@ function toggleMorning(i, rowEl) {
       mState.xpAwarded = true;
       mState.xpAmount  = xpAmt;
       addXP(xpAmt, item.cat, item.label);
-      floatXP(xpAmt, item.cat, rowEl);
+      floatXP(xpAmt, item.cat, rowEl, true);
       _habitFlash(rowEl, item.cat);
-      SFX.habitDone();
+      try { SFX.habitCat(item.cat); } catch(e) { SFX.habitDone(); }
       spawnConfetti(rowEl);
+      _comboHit(item.cat, rowEl);
+      var _hl = _getMissHeroLevel(); if (_hl > 0) _missHeroReact(_hl);
       updateMorningStreak();
       try { _onbFirstMissionCelebration(); } catch(e) {}
       // Monje: meditation gives extra bienestar
@@ -12899,11 +13071,13 @@ function toggleMission(i, rowEl) {
       m.xpAwarded = true;
       m.xpAmount  = xpAmt;
       addXP(xpAmt, m.cat, m.label);
-      floatXP(xpAmt, m.cat, rowEl);
+      floatXP(xpAmt, m.cat, rowEl, true);
       _habitFlash(rowEl, m.cat);
       checkDruidaBonus();
-      SFX.habitDone();
+      try { SFX.habitCat(m.cat); } catch(e) { SFX.habitDone(); }
       spawnConfetti(rowEl);
+      _comboHit(m.cat, rowEl);
+      var _ml = _getMissHeroLevel(); if (_ml > 0) _missHeroReact(_ml);
       updateHabitStreak();
       try { _onbFirstMissionCelebration(); } catch(e) {}
       if (m.isTutorial) { try { _onbTutorialComplete(rowEl); } catch(e) {} }
@@ -17362,6 +17536,24 @@ const SFX = (() => {
     },
 
     habitDone()   { if(!sfxOn)return; tone(523,.12); tone(659,.15,'sine',.2,.1); tone(784,.22,'sine',.22,.21); },
+    habitCat(cat) {
+      if (!sfxOn) return;
+      if (cat === 'bienestar') {
+        // Zen bell: tres campanas ascendentes
+        [1046,1318,1568].forEach((f,i) => tone(f,.52,'sine',.14,i*.13));
+      } else if (cat === 'vitalidad') {
+        // Gota de agua: pluck brillante y agudo
+        tone(1760,.07,'sine',.24); tone(2093,.11,'sine',.15,.05); noise(.04,.13,2.8);
+      } else if (cat === 'fuerza') {
+        // Impacto pesado: ruido + golpe bajo
+        noise(.09,.62,0.85); tone(80,.18,'sawtooth',.23); tone(160,.12,'square',.13,.05);
+      } else if (cat === 'mente') {
+        // Página de libro: ruido suave + tonos medios
+        noise(.07,.2,1.5); tone(440,.2,'sine',.12,.03); tone(660,.17,'sine',.09,.1);
+      } else {
+        tone(523,.12); tone(659,.15,'sine',.2,.1); tone(784,.22,'sine',.22,.21);
+      }
+    },
     levelUp()     { if(!sfxOn)return; sndLevelUp(); },
     attack()      { if(!sfxOn)return; sndPhys(); },
     physAttack()  { if(!sfxOn)return; sndPhys(); },
