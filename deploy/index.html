@@ -4785,6 +4785,46 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .boss-dlg-fight-btn:hover { opacity:.88; }
 .boss-dlg-personality-tag { position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:.58rem;font-weight:700;padding:2px 10px;border-radius:10px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);z-index:2;white-space:nowrap; }
 
+/* ── EL GUÍA — Chat de IA ── */
+.guia-overlay{position:fixed;inset:0;z-index:9200;background:#030208;display:flex;flex-direction:column;transition:opacity .28s,visibility .28s}
+.guia-overlay.hide{opacity:0;pointer-events:none;visibility:hidden}
+.guia-overlay::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 12% 7%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1px 1px at 73% 13%,rgba(255,255,255,.4) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 37% 21%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 88% 6%,rgba(255,255,255,.35) 0%,transparent 100%),radial-gradient(1px 1px at 54% 32%,rgba(255,255,255,.3) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 7% 44%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1px 1px at 92% 39%,rgba(255,255,255,.35) 0%,transparent 100%),radial-gradient(2px 2px at 44% 57%,rgba(251,191,36,.35) 0%,transparent 100%),radial-gradient(1px 1px at 19% 66%,rgba(255,255,255,.3) 0%,transparent 100%),radial-gradient(1px 1px at 79% 74%,rgba(255,255,255,.25) 0%,transparent 100%),radial-gradient(1px 1px at 31% 85%,rgba(255,255,255,.2) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 62% 91%,rgba(251,191,36,.2) 0%,transparent 100%)}
+.guia-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;position:relative;z-index:1;border-bottom:1px solid rgba(251,191,36,.12);flex-shrink:0}
+.guia-back-btn{background:none;border:none;color:rgba(255,255,255,.55);font-size:.82rem;cursor:pointer;padding:6px 2px}
+.guia-title{font-size:.9rem;font-weight:900;color:#fbbf24;text-shadow:0 0 14px rgba(251,191,36,.5);letter-spacing:.05em}
+@keyframes guiaOwlGlow{from{filter:drop-shadow(0 0 4px rgba(251,191,36,.4))}to{filter:drop-shadow(0 0 14px rgba(251,191,36,.85))}}
+.guia-title-icon{display:inline-block;animation:guiaOwlGlow 2.5s ease-in-out infinite alternate}
+.guia-messages{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+.guia-msg-wrap{display:flex;align-items:flex-end;gap:8px}
+.guia-msg-wrap.user{flex-direction:row-reverse}
+.guia-avatar-guide{width:36px;height:36px;border-radius:50%;background:rgba(251,191,36,.1);border:1.5px solid rgba(251,191,36,.35);display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+.guia-avatar-user{width:36px;height:36px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(139,92,246,.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(139,92,246,.1);font-size:1rem;image-rendering:pixelated;image-rendering:crisp-edges}
+.guia-avatar-user canvas{width:36px!important;height:36px!important}
+.guia-bubble{max-width:76%;padding:9px 12px;border-radius:14px;font-size:.79rem;line-height:1.52;color:#e2e8f0;word-break:break-word}
+.guia-bubble.guide{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.18);border-bottom-left-radius:4px}
+.guia-bubble.user{background:rgba(139,92,246,.13);border:1px solid rgba(139,92,246,.22);border-bottom-right-radius:4px}
+.guia-typing{display:flex;align-items:center;gap:5px;padding:10px 14px;min-width:54px}
+.guia-typing span{width:6px;height:6px;border-radius:50%;background:#fbbf24;opacity:.5;animation:guiaDot .9s ease-in-out infinite}
+.guia-typing span:nth-child(2){animation-delay:.18s}.guia-typing span:nth-child(3){animation-delay:.36s}
+@keyframes guiaDot{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-5px);opacity:1}}
+.guia-input-row{display:flex;gap:8px;padding:10px 14px 18px;border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.32);flex-shrink:0;position:relative;z-index:1;padding-bottom:max(18px,env(safe-area-inset-bottom,0px))}
+.guia-input{flex:1;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:22px;padding:10px 15px;color:#e2e8f0;font-size:.82rem;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.guia-input:focus{border-color:rgba(251,191,36,.4)}
+.guia-input::placeholder{color:rgba(255,255,255,.28)}
+.guia-send-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#d97706,#92400e);border:none;color:#fef3c7;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;align-self:flex-end}
+.guia-send-btn:disabled,.guia-send-btn[disabled]{opacity:.38;cursor:not-allowed}
+/* Camp floating button */
+.camp-guia-fab{position:absolute;bottom:72px;right:14px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#d97706,#78350f);border:2px solid rgba(251,191,36,.45);box-shadow:0 0 18px rgba(251,191,36,.35),0 4px 12px rgba(0,0,0,.45);color:#fff;font-size:1.4rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;animation:guiaFabPulse 3s ease-in-out infinite}
+@keyframes guiaFabPulse{0%,100%{box-shadow:0 0 18px rgba(251,191,36,.35),0 4px 12px rgba(0,0,0,.45)}50%{box-shadow:0 0 30px rgba(251,191,36,.62),0 4px 12px rgba(0,0,0,.45)}}
+/* Throne Guía entry */
+.throne-guia-row{display:flex;padding:10px 16px 4px;position:relative;z-index:5}
+.throne-guia-btn{display:flex;align-items:center;gap:9px;flex:1;background:rgba(251,191,36,.07);border:1.5px solid rgba(251,191,36,.22);border-radius:12px;padding:11px 14px;color:#fde68a;font-size:.8rem;cursor:pointer;transition:background .15s,border-color .15s;text-align:left}
+.throne-guia-btn:hover{background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.45)}
+.throne-guia-btn-icon{font-size:1.4rem;animation:guiaOwlGlow 2.5s ease-in-out infinite alternate}
+.throne-guia-btn-text{display:flex;flex-direction:column;gap:2px}
+.throne-guia-btn-label{font-weight:900;font-size:.82rem;color:#fde68a}
+.throne-guia-btn-sub{font-size:.65rem;color:rgba(253,230,138,.6)}
+
 .cnc-seal {
   position: absolute; top: 7px; right: 8px;
   width: 20px; height: 20px; border-radius: 50%;
@@ -6940,6 +6980,8 @@ button:active:not(:disabled), .btn:active:not(:disabled),
           <span class="cnb-sub" id="cnbProfileSub">Nv.1</span>
         </button>
       </div>
+      <!-- El Guía floating button -->
+      <button class="camp-guia-fab" onclick="openGuia()" title="Hablar con El Guía">🦉</button>
       <!-- Onboarding elements (fixed-position, visible on camp screen) -->
       <div id="onbTooltip" class="onb-tooltip hide">Bienvenido a tu campamento —<br><b>aquí comienza tu aventura</b></div>
       <div id="onbArrow" class="onb-arrow hide">
@@ -7511,6 +7553,31 @@ button:active:not(:disabled), .btn:active:not(:disabled),
   <div class="throne-zones" id="throneZones"></div>
   <!-- Long-press tooltip -->
   <div class="throne-tip hide" id="throneTip"></div>
+  <!-- Guía entry button -->
+  <div class="throne-guia-row">
+    <button class="throne-guia-btn" onclick="openGuia()">
+      <span class="throne-guia-btn-icon">🦉</span>
+      <span class="throne-guia-btn-text">
+        <span class="throne-guia-btn-label">Consultar al Guía</span>
+        <span class="throne-guia-btn-sub">Asistente de IA · estrategia, hábitos y apoyo</span>
+      </span>
+    </button>
+  </div>
+</div>
+
+<!-- ══ EL GUÍA — Chat overlay ══ -->
+<div class="guia-overlay hide" id="guiaOverlay">
+  <div class="guia-header">
+    <button class="guia-back-btn" onclick="closeGuia()">← Volver</button>
+    <div class="guia-title"><span class="guia-title-icon">🦉</span> El Guía</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="guia-messages" id="guiaMessages"></div>
+  <div class="guia-input-row">
+    <input class="guia-input" id="guiaInput" type="text" placeholder="Escríbele al Guía…" maxlength="300"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();guiaSend();}" />
+    <button class="guia-send-btn" id="guiaSendBtn" onclick="guiaSend()">➤</button>
+  </div>
 </div>
 
 <button class="gm-fab" id="gmFab" title="Panel GM" style="display:none">GM</button>
@@ -23028,6 +23095,8 @@ function navShop() {
     var authOl = document.getElementById('authOverlay');
     if (authOl && !authOl.classList.contains('hide')) return;
 
+    var guiaOl = document.getElementById('guiaOverlay');
+    if (guiaOl && !guiaOl.classList.contains('hide')) { guiaOl.classList.add('hide'); return; }
     var throneOl = document.getElementById('throneOverlay');
     if (throneOl && !throneOl.classList.contains('hide')) { closeThrone(true); return; }
     var moreDrawer = document.getElementById('moreDrawer');
@@ -23535,6 +23604,151 @@ var _mentorLetterAiText = null;
 // ── AI MENTOR LETTER ─────────────────────────────────────────────────────────
 function _getGeminiKey() {
   return localStorage.getItem('hrpg_gemini_key') || '';
+}
+
+// ── EL GUÍA — Chat de IA ─────────────────────────────────────────────────────
+var _guia = { history: [], waiting: false };
+
+function openGuia() {
+  var ov = document.getElementById('guiaOverlay');
+  if (!ov) return;
+  ov.classList.remove('hide');
+  history.pushState({ hrpgOverlay: 'guia' }, '');
+  if (_guia.history.length === 0) {
+    var name = (typeof char !== 'undefined' && char && char.name) || 'Aventurero';
+    _guia.history.push({ role: 'guide', text: 'Saludos, ' + name + '. Soy El Guía — estoy aquí para ayudarte con el juego, tus hábitos, o simplemente escucharte. ¿En qué puedo ayudarte hoy?' });
+  }
+  _guiaRender();
+  setTimeout(function() { var inp = document.getElementById('guiaInput'); if (inp) inp.focus(); }, 320);
+}
+
+function closeGuia() {
+  var ov = document.getElementById('guiaOverlay');
+  if (ov) ov.classList.add('hide');
+  try { history.back(); } catch(e) {}
+}
+
+function _guiaEscape(s) {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>');
+}
+
+function _guiaRender() {
+  var el = document.getElementById('guiaMessages');
+  if (!el) return;
+  var html = _guia.history.map(function(m) {
+    if (m.role === 'guide') {
+      return '<div class="guia-msg-wrap guide">'
+        + '<div class="guia-avatar-guide">🦉</div>'
+        + '<div class="guia-bubble guide">' + _guiaEscape(m.text) + '</div>'
+        + '</div>';
+    }
+    return '<div class="guia-msg-wrap user">'
+      + '<div class="guia-bubble user">' + _guiaEscape(m.text) + '</div>'
+      + '<div class="guia-avatar-user" id="guiaAvatarU' + Math.random().toString(36).slice(2,6) + '"></div>'
+      + '</div>';
+  }).join('');
+  if (_guia.waiting) {
+    html += '<div class="guia-msg-wrap guide">'
+      + '<div class="guia-avatar-guide">🦉</div>'
+      + '<div class="guia-bubble guide guia-typing"><span></span><span></span><span></span></div>'
+      + '</div>';
+  }
+  el.innerHTML = html;
+  // Inject pixel hero sprite into every user avatar
+  el.querySelectorAll('.guia-avatar-user').forEach(function(aEl) {
+    if (typeof buildPixelAvatar === 'function' && typeof char !== 'undefined' && char && char.avatar) {
+      aEl.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 72));
+    } else {
+      var icons = { guerrero:'⚔️', mago:'🧙', monje:'🥋', asesino:'🗡️', druida:'🌿', barbaro:'🪓', arquero:'🏹' };
+      aEl.textContent = icons[(typeof char !== 'undefined' && char && char.class) || ''] || '🧑';
+    }
+  });
+  el.scrollTop = el.scrollHeight;
+  // Toggle send button disabled state
+  var btn = document.getElementById('guiaSendBtn');
+  if (btn) btn.disabled = _guia.waiting;
+}
+
+function _guiaBuildContext() {
+  var lines = [];
+  try {
+    if (typeof char !== 'undefined' && char) {
+      var lvl = char.level || 1;
+      lines.push('Héroe: ' + (char.name || 'Aventurero') + ', clase ' + (char.class || '?') + ', nivel ' + lvl);
+      var state = (typeof getCharacterState === 'function') ? getCharacterState() : 'normal';
+      var stateLabels = { brillante:'brillante (muy bien)', normal:'normal', cansado:'cansado', critico:'estado crítico' };
+      lines.push('Estado emocional: ' + (stateLabels[state] || state));
+      if (typeof day !== 'undefined' && day && day.morning) {
+        var done   = day.morning.filter(function(h){ return h.done; });
+        var missed = day.morning.filter(function(h){ return !h.done; });
+        if (done.length)   lines.push('Hábitos completados hoy: ' + done.map(function(h){ return h.label; }).join(', '));
+        if (missed.length) lines.push('Hábitos pendientes: ' + missed.map(function(h){ return h.label; }).join(', '));
+      }
+    }
+  } catch(e) {}
+  return lines.join('\n');
+}
+
+function guiaSend() {
+  if (_guia.waiting) return;
+  var inp = document.getElementById('guiaInput');
+  if (!inp) return;
+  var text = (inp.value || '').trim();
+  if (!text) return;
+  inp.value = '';
+  _guia.history.push({ role: 'user', text: text });
+  if (_guia.history.length > 20) _guia.history = _guia.history.slice(-20);
+  _guia.waiting = true;
+  _guiaRender();
+  _guiaChatWithGemini(text).then(function(reply) {
+    _guia.waiting = false;
+    _guia.history.push({ role: 'guide', text: reply });
+    if (_guia.history.length > 20) _guia.history = _guia.history.slice(-20);
+    _guiaRender();
+  }).catch(function() {
+    _guia.waiting = false;
+    _guia.history.push({ role: 'guide', text: '⚠️ No pude conectar con el oráculo. Revisa tu conexión e intenta de nuevo.' });
+    _guiaRender();
+  });
+}
+
+function _guiaChatWithGemini(userMsg) {
+  var apiKey = _getGeminiKey();
+  if (!apiKey) {
+    return Promise.resolve('Para activar mi magia necesitas configurar la API key de Gemini en Perfil → IA. Es gratuita y solo toma un minuto. 🔑');
+  }
+  var systemPrompt = 'Eres El Guía, mentor sabio dentro de HabitRPG. Puedes ayudar con: estrategias del juego, organización de hábitos y apoyo emocional básico. Si el usuario menciona que necesita apoyo psicológico profesional, que está pasando por un momento muy difícil, o que necesita hablar con alguien, responde con calidez y ofrece estas opciones: 1) Líneas gratuitas Chile: 4141 Prevención Suicidio y 600 360 7777 opción 2 Salud Responde 2) La sección Apoyo dentro de la app tiene más recursos y contactos de psicólogos. Nunca diagnostiques ni des consejos médicos. Máximo 150 palabras por respuesta. Tono cálido y directo.';
+  var ctx = _guiaBuildContext();
+  var contents = [];
+  if (ctx) {
+    contents.push({ role: 'user',  parts: [{ text: 'Contexto del héroe:\n' + ctx }] });
+    contents.push({ role: 'model', parts: [{ text: 'Entendido. Estoy aquí para ayudar.' }] });
+  }
+  // Add prior conversation (skip greeting, alternate roles correctly)
+  var hist = _guia.history.slice(0, -1); // exclude last user msg (sent separately)
+  hist.forEach(function(m) {
+    contents.push({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] });
+  });
+  contents.push({ role: 'user', parts: [{ text: userMsg }] });
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' + apiKey, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: systemPrompt }] },
+      contents: contents,
+      generationConfig: { maxOutputTokens: 260, temperature: 0.85 },
+    }),
+  }).then(function(resp) {
+    if (!resp.ok) return resp.text().then(function(b) { throw new Error('HTTP ' + resp.status + ': ' + b.slice(0,80)); });
+    return resp.json();
+  }).then(function(json) {
+    var text = json.candidates && json.candidates[0] && json.candidates[0].content
+      && json.candidates[0].content.parts && json.candidates[0].content.parts[0]
+      && json.candidates[0].content.parts[0].text;
+    return text || '...';
+  });
 }
 
 function saveGeminiKey() {
