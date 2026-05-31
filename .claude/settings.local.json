@@ -46,7 +46,12 @@
       "PowerShell(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\")",
       "Bash(grep -o 'onclick=\"[^\"]*\"' habit-rpg.html | sed 's/onclick=\"//' | sed 's/\".*//' | sort -u > /tmp/onclick_funcs.txt && head -50 /tmp/onclick_funcs.txt)",
       "Read(//tmp/**)",
-      "PowerShell(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\" -Force; $src = \\(Get-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\"\\).Length; $dst = \\(Get-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\"\\).Length; \"src=$src dst=$dst match=$\\($src -eq $dst\\)\")"
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\" \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\" -Force; $src = \\(Get-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\habit-rpg.html\"\\).Length; $dst = \\(Get-Item \"c:\\\\Users\\\\juanl\\\\OneDrive\\\\Escritorio\\\\Proyectos\\\\deploy\\\\index.html\"\\).Length; \"src=$src dst=$dst match=$\\($src -eq $dst\\)\")",
+      "Bash(awk 'NR>=13250 && NR<=13400 {print NR\": \"$0}' \"c:/Users/juanl/OneDrive/Escritorio/Proyectos/habit-rpg.html\")",
+      "Bash(awk 'NR>=17700 && NR<=17760 {print NR\": \"$0}' \"c:/Users/juanl/OneDrive/Escritorio/Proyectos/habit-rpg.html\")",
+      "Bash(awk 'NR>=19530 && NR<=19650 {print NR\": \"$0}' \"c:/Users/juanl/OneDrive/Escritorio/Proyectos/habit-rpg.html\")",
+      "Bash(awk 'NR>=24960 && NR<=25010 {print NR\": \"$0}' \"c:/Users/juanl/OneDrive/Escritorio/Proyectos/habit-rpg.html\")",
+      "Bash(awk -F: '{if \\($1>23000 && $1<25400\\) print}')"
     ]
   }
 }
