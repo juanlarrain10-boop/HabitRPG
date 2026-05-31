@@ -1,0 +1,20 @@
+{
+  "name": "agente-verduras",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.54.0",
+    "@upstash/redis": "^1.38.0",
+    "axios": "^1.7.9",
+    "express": "^4.21.0",
+    "googleapis": "^144.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
