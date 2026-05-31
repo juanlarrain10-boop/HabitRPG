@@ -6967,10 +6967,10 @@ button:active:not(:disabled), .btn:active:not(:disabled),
           <span class="cnb-label">Misiones</span>
           <span class="cnb-sub" id="cnbMisionsSub">0/0</span>
         </button>
-        <button class="camp-nav-btn" onclick="openThrone()">
-          <span class="cnb-icon">🏰</span>
-          <span class="cnb-label">Zonas</span>
-          <span class="cnb-sub">Explorar</span>
+        <button class="camp-nav-btn" onclick="openAdventure()">
+          <span class="cnb-icon">⚔️</span>
+          <span class="cnb-label">Aventura</span>
+          <span class="cnb-sub">Combatir</span>
         </button>
         <button class="camp-nav-btn" onclick="openProfile()">
           <span class="cnb-icon">👤</span>
@@ -20411,6 +20411,10 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 ══════════════════════════════════════════════════════════ -->
 <style>
 #combatOverlay{position:fixed;inset:0;z-index:9500;background:#000;overflow:hidden;}
+#combatOverlay.hide{display:none !important;}
+#ceZoneMap.hide,#ceGameContainer.hide,#ceHud.hide,
+#ceJoystickZone.hide,#ceBtnsArea.hide,
+#ceResultScreen.hide,#cePauseMenu.hide{display:none !important;}
 /* Zone map */
 #ceZoneMap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px 20px;background:linear-gradient(135deg,#0f0f1a,#1a1a2e);overflow-y:auto;}
 .cezm-header{text-align:center;margin-bottom:4px;}
