@@ -13653,6 +13653,7 @@ function drawDoor(){
 // ── Upgrade screen ────────────────────────────────────────────
 function showUpgradeScreen(){
   running=false;
+  if(rafId){cancelAnimationFrame(rafId);rafId=null;}
   const pool=[...BUFFS].sort(()=>Math.random()-.5).slice(0,3);
   const us=$$('ceUpgradeScreen');us.classList.remove('hide');
   const opts=$$('ceUpgradeOptions');opts.innerHTML='';
@@ -13674,11 +13675,13 @@ function startNextRoom(){
   door=null; enemies=[]; projs=[]; coins=[]; parts=[]; dnums=[];
   victoryPending=false;
   P.x=roomX+roomW/2; P.y=roomY+roomH*.75; P.trail=[];
-  // Hide boss bar
+  P.attacking=false; P.atkTime=0; P.invul=0; P.hitTime=0;
   const bb=$$('ceBossBar');if(bb)bb.classList.add('hide');
   spawnRoomEnemies(currentRoom);
   hudUpdate();
   running=true; lastTs=performance.now();
+  if(rafId)cancelAnimationFrame(rafId);
+  rafId=requestAnimationFrame(loop);
 }
 
 // ── Victory / Death ──────────────────────────────────────────
