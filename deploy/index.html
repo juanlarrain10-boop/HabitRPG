@@ -11347,15 +11347,16 @@ function setActiveHero(idx) {
     char.activeHeroIdx = idx;
   }
   saveChar();
+  try { _campRenderChar(); } catch(e) {}
   try { renderCampParty(); } catch(e) {}
   try { renderPartyStrip(); } catch(e) {}
 }
 
-function _partyClassSprite(cls) {
-  // Returns img element for class sprite
+function _partyClassSprite(cls, sex) {
   var img = document.createElement('img');
   img.style.cssText = 'width:100%;height:100%;object-fit:cover;image-rendering:pixelated;';
-  var cached = (typeof _spriteCache !== 'undefined') ? _spriteCache.get('class_' + cls) : null;
+  var key = (sex === 'F') ? 'class_' + cls + '_f' : 'class_' + cls;
+  var cached = (typeof _spriteCache !== 'undefined') ? (_spriteCache.get(key) || _spriteCache.get('class_' + cls)) : null;
   if (cached && cached.src) {
     img.src = cached.src;
   } else {
@@ -11367,23 +11368,45 @@ function _partyClassSprite(cls) {
 
 function renderCampParty() {
   var active = char.activeHeroIdx || 0;
-  [1, 2].forEach(function(slot) {
-    var el = document.getElementById('campComp' + slot);
+  // Assign which hero index shows in each side slot based on who is active in center
+  var sideLeft, sideRight;
+  if (active === 0) { sideLeft = 1; sideRight = 2; }
+  else if (active === 1) { sideLeft = 0; sideRight = 2; }
+  else { sideLeft = 0; sideRight = 1; }
+
+  [['campComp1', sideLeft], ['campComp2', sideRight]].forEach(function(pair) {
+    var elId = pair[0], heroIdx = pair[1];
+    var el = document.getElementById(elId);
     if (!el) return;
     el.innerHTML = '';
-    el.onclick = function(){ openHeroOptions(slot); };
-    var comp = char.companions && char.companions[slot - 1];
-    var reqLv = slot === 1 ? 10 : 20;
-    var isLocked = !comp;
+    el.onclick = (function(hi){ return function(){ openHeroOptions(hi); }; })(heroIdx);
+
+    var isMain = (heroIdx === 0);
+    var comp = isMain ? null : (char.companions && char.companions[heroIdx - 1]);
+    var isLocked = !isMain && !comp;
+    var reqLv = heroIdx === 2 ? 20 : 10;
+
     var imgDiv = document.createElement('div');
-    imgDiv.className = 'camp-comp-img' + (isLocked ? ' cp-locked' : '') + (active === slot ? ' cp-active' : '');
+    imgDiv.className = 'camp-comp-img' + (isLocked ? ' cp-locked' : '');
+
     if (!isLocked) {
-      var img = _partyClassSprite(comp.class);
-      var rf = rarityToFilter(getHighestRarity(comp.equipped));
-      if (rf) img.style.filter = rf;
+      var cls     = isMain ? char.class : comp.class;
+      var sex     = isMain ? (char.avatar && char.avatar.gender === 'female' ? 'F' : 'M') : (comp.sex || 'M');
+      var equip   = isMain ? char.equipped : comp.equipped;
+      var htIdx   = isMain ? 0 : (comp.hairTint || 0);
+      var auraKey = isMain ? (char.avatar && char.avatar.customAura || '') : (comp.aura || '');
+
+      var img = _partyClassSprite(cls, sex);
+      var rf  = rarityToFilter(getHighestRarity(equip));
+      var htDeg = (htIdx && typeof HAIR_TINTS !== 'undefined' && HAIR_TINTS[htIdx]) ? HAIR_TINTS[htIdx].deg : 0;
+      var htStr = htDeg ? 'hue-rotate(' + htDeg + 'deg)' : '';
+      var combinedFilter = [htStr, rf].filter(Boolean).join(' ');
+      if (combinedFilter) img.style.filter = combinedFilter;
+      if (auraKey) imgDiv.classList.add(auraKey);
       imgDiv.appendChild(img);
     }
     el.appendChild(imgDiv);
+
     if (isLocked) {
       var lockIcon = document.createElement('div');
       lockIcon.className = 'camp-comp-lock-icon';
@@ -11396,21 +11419,32 @@ function renderCampParty() {
     } else {
       var nameEl = document.createElement('div');
       nameEl.className = 'camp-comp-name';
-      nameEl.textContent = (comp.name || '') + ' · ' + (comp.class || '');
+      nameEl.textContent = (isMain ? (char.name||'') : (comp.name||'')) + ' · ' + (isMain ? char.class : comp.class);
       el.appendChild(nameEl);
     }
   });
-  // Main hero ring: active border + rarity tint
+
+  // Center hero ring outline + rarity filter
   var ring = document.getElementById('campCharRing');
-  if (ring) ring.style.outline = active===0 ? '3px solid #ffd700' : '';
+  if (ring) ring.style.outline = active === 0 ? '3px solid #ffd700' : '';
   var svgWrap = document.getElementById('campCharSvg');
-  if (svgWrap) svgWrap.style.filter = getMainHeroRarityFilter();
-  // Make main hero tappable too
+  if (svgWrap) {
+    if (active === 0) {
+      svgWrap.style.filter = getMainHeroRarityFilter();
+    } else {
+      var ac = char.companions && char.companions[active - 1];
+      svgWrap.style.filter = ac ? rarityToFilter(getHighestRarity(ac.equipped)) : '';
+    }
+  }
+  // Center hero tap: use data-attr so it updates on each render
   var charWrap = ring && ring.parentElement;
-  if (charWrap && !charWrap._hopBound) {
-    charWrap._hopBound = true;
-    charWrap.style.cursor = 'pointer';
-    charWrap.addEventListener('click', function(){ openHeroOptions(0); });
+  if (charWrap) {
+    charWrap.setAttribute('data-hop-idx', String(active));
+    if (!charWrap._hopBound) {
+      charWrap._hopBound = true;
+      charWrap.style.cursor = 'pointer';
+      charWrap.addEventListener('click', function(){ openHeroOptions(parseInt(this.getAttribute('data-hop-idx') || '0')); });
+    }
   }
 }
 
@@ -12024,6 +12058,28 @@ function _campRenderChar() {
   var nameEl  = document.getElementById('campCharName');
   var stateEl = document.getElementById('campCharStateLabel');
   if (!ring || !svgWrap) return;
+  // If a companion is active, show their sprite in the center
+  var activeIdx = char ? (char.activeHeroIdx || 0) : 0;
+  if (activeIdx > 0) {
+    var ac = char.companions && char.companions[activeIdx - 1];
+    if (ac) {
+      svgWrap.innerHTML = '';
+      if (typeof buildPixelAvatar === 'function') {
+        var htDeg = (typeof HAIR_TINTS !== 'undefined' && HAIR_TINTS[ac.hairTint || 0]) ? HAIR_TINTS[ac.hairTint || 0].deg : 0;
+        var synAv = { gender: ac.sex === 'F' ? 'female' : 'male', hairTint: htDeg, skin:0, hairColor:0, hairStyle:0, eyeColor:0 };
+        var animWrap = document.createElement('div');
+        animWrap.className = 'hero-anim-wrap';
+        animWrap.id = 'campHeroAnimWrap';
+        if (ac.aura) animWrap.classList.add(ac.aura);
+        animWrap.appendChild(buildPixelAvatar(synAv, ac.class, ac.equipped, 132));
+        svgWrap.appendChild(animWrap);
+      }
+      if (nameEl) nameEl.textContent = ac.name || ac.class;
+      ring.className = 'camp-char-avatar-ring state-normal';
+      if (stateEl) { stateEl.textContent = '👥 Héroe activo'; stateEl.className = 'camp-char-state-label state-normal'; }
+      return;
+    }
+  }
   svgWrap.innerHTML = '';
   if (typeof buildPixelAvatar === 'function' && char && char.avatar) {
     var animWrap = document.createElement('div');
@@ -21962,6 +22018,13 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 .camp-comp-img{width:76px;height:76px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.15);image-rendering:pixelated;image-rendering:crisp-edges;}
 .camp-comp-img.cp-active{border-color:#ffd700;box-shadow:0 0 12px #ffd70055;}
 .camp-comp-img.cp-locked{filter:brightness(.12) saturate(0);border-color:rgba(255,255,255,.05);}
+.camp-comp-img.aura-fire{box-shadow:0 0 14px rgba(255,80,20,.8),0 0 6px rgba(255,80,20,.4);}
+.camp-comp-img.aura-ice{box-shadow:0 0 14px rgba(80,200,255,.8),0 0 6px rgba(40,140,255,.4);}
+.camp-comp-img.aura-gold{box-shadow:0 0 14px rgba(255,190,20,.8),0 0 6px rgba(255,150,0,.4);}
+.camp-comp-img.aura-shadow{box-shadow:0 0 14px rgba(130,100,200,.8),0 0 6px rgba(80,50,160,.5);}
+.camp-comp-img.aura-green{box-shadow:0 0 14px rgba(50,210,100,.8),0 0 6px rgba(20,160,60,.4);}
+.camp-comp-img.aura-lightning{box-shadow:0 0 14px rgba(190,230,255,.9),0 0 6px rgba(130,190,255,.5);}
+.camp-comp-img.aura-void{box-shadow:0 0 14px rgba(180,80,255,.8),0 0 6px rgba(120,40,220,.5);}
 .camp-comp-img img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated;}
 .camp-comp-name{font-size:.58rem;color:#94a3b8;max-width:80px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .camp-comp-lock-icon{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:1.3rem;pointer-events:none;}
