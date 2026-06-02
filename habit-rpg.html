@@ -6900,19 +6900,26 @@ button:active:not(:disabled), .btn:active:not(:disabled),
           <div class="camp-rpg-day" id="campRpgDay">Lunes</div>
           <div class="camp-rpg-line" id="campRpgLine">Una nueva semana comienza. El destino te llama.</div>
         </div>
-        <div class="camp-char-wrap">
-          <div class="camp-char-avatar-ring state-normal" id="campCharRing">
-            <div id="campCharSvg" style="width:132px;height:132px;display:flex;align-items:center;justify-content:center;overflow:hidden;image-rendering:pixelated;image-rendering:crisp-edges"></div>
+        <div class="camp-party-scene" id="campPartyScene">
+          <!-- Companion slot 1 (izquierda) — populated by renderCampParty() -->
+          <div class="camp-comp-slot" id="campComp1" onclick="setActiveHero(1)" title="Héroe 2"></div>
+          <!-- Héroe principal (centro) -->
+          <div class="camp-char-wrap">
+            <div class="camp-char-avatar-ring state-normal" id="campCharRing">
+              <div id="campCharSvg" style="width:132px;height:132px;display:flex;align-items:center;justify-content:center;overflow:hidden;image-rendering:pixelated;image-rendering:crisp-edges"></div>
+            </div>
+            <div class="camp-char-name" id="campCharName">Aventurero</div>
+            <div class="camp-char-state-label state-normal" id="campCharStateLabel">⚡ En forma</div>
+            <!-- Campfire — always below name+state, in normal flow -->
+            <div class="camp-fire-scene">
+              <canvas class="camp-fire-spark-canvas" id="campFireCanvas"></canvas>
+              <div class="camp-fire-glow-base"></div>
+              <div class="camp-fire-body"></div>
+              <div class="camp-fire-logs"></div>
+            </div>
           </div>
-          <div class="camp-char-name" id="campCharName">Aventurero</div>
-          <div class="camp-char-state-label state-normal" id="campCharStateLabel">⚡ En forma</div>
-          <!-- Campfire — always below name+state, in normal flow -->
-          <div class="camp-fire-scene">
-            <canvas class="camp-fire-spark-canvas" id="campFireCanvas"></canvas>
-            <div class="camp-fire-glow-base"></div>
-            <div class="camp-fire-body"></div>
-            <div class="camp-fire-logs"></div>
-          </div>
+          <!-- Companion slot 2 (derecha) — populated by renderCampParty() -->
+          <div class="camp-comp-slot" id="campComp2" onclick="setActiveHero(2)" title="Héroe 3"></div>
         </div>
         <!-- Castle door to Sala del Trono -->
         <div class="camp-throne-door" id="campThroneDoor" onclick="openThroneFromDoor()">
@@ -6995,26 +7002,9 @@ button:active:not(:disabled), .btn:active:not(:disabled),
         <span class="mis-back-title">Misiones del Día</span>
       </div>
 
-    <!-- Compact character strip -->
-    <div class="char-strip" onclick="openProfile()" role="button" aria-label="Ver perfil">
-      <div class="cs-avatar-wrap" id="csAvatarWrap">
-        <div class="cs-avatar" id="csAvatarRing">
-          <div class="cs-avatar-inner" id="csAvatarInner"></div>
-        </div>
-        <div class="cs-state-badge" id="csStateBadge" onclick="event.stopPropagation();showCharStateMsg()" title="Estado del personaje">⚡</div>
-      </div>
-      <div class="cs-info">
-        <div class="cs-name-row">
-          <span class="cs-name" id="csName">Aventurero</span>
-          <span class="cs-level" id="csLevel">Nv.1</span>
-        </div>
-        <div class="cs-xp-wrap"><div class="cs-xp-fill" id="csXpFill" style="width:0%"></div></div>
-        <div class="cs-xp-text" id="csXpText">0/200 XP</div>
-      </div>
-      <div class="cs-right">
-        <div class="cs-gold" id="csGold">🪙 0</div>
-        <div class="cs-tap-hint">Ver perfil ›</div>
-      </div>
+    <!-- Party strip — 3 heroes -->
+    <div class="party-strip" id="partyStrip">
+      <!-- populated by renderPartyStrip() -->
     </div>
 
     <!-- Quick-nav shortcuts -->
@@ -10579,6 +10569,8 @@ function defChar() {
     masteryPoints: 0,
     skillTree: {},
     guildId: null,
+    companions: [null, null],
+    activeHeroIdx: 0,
   };
 }
 
@@ -10750,6 +10742,8 @@ function loadChar() {
     if (!Array.isArray(c.skillTree.life))   c.skillTree.life   = [];
     if (!Array.isArray(c.skillTree.fusion)) c.skillTree.fusion = [];
     if (!('guildId' in c)) c.guildId = null;
+    if (!Array.isArray(c.companions) || c.companions.length < 2) c.companions = [c.companions&&c.companions[0]||null, c.companions&&c.companions[1]||null];
+    if (typeof c.activeHeroIdx !== 'number') c.activeHeroIdx = 0;
     return c;
   } catch { return defChar(); }
 }
@@ -10798,6 +10792,14 @@ function addXP(amount, cat, label) {
   addGold(Math.max(1, Math.round(finalAmt / 8)));
   day.xpToday = (day.xpToday || 0) + finalAmt;
   checkLevelUp();
+  // Companions earn 50% XP
+  if (Array.isArray(char.companions)) {
+    char.companions.forEach(function(c) {
+      if (!c) return;
+      c.xp = (c.xp || 0) + Math.floor(finalAmt * 0.5);
+      while (c.level < 99 && c.xp >= xpToNext(c.level)) { c.xp -= xpToNext(c.level); c.level++; }
+    });
+  }
   saveChar();
 }
 
@@ -10836,6 +10838,13 @@ function checkLevelUp() {
       addMilestone('level_milestone', `Nivel ${char.level} alcanzado`, char.level === 99 ? '🌟' : '🏆');
   }
   if (char.level >= 99) { char.level = 99; char.xp = 0; }
+  // Companion unlock triggers
+  if (char.level >= 10 && Array.isArray(char.companions) && !char.companions[0]) {
+    setTimeout(function(){ try { showCompanionUnlock(0); } catch(e){} }, 1200);
+  }
+  if (char.level >= 20 && Array.isArray(char.companions) && !char.companions[1]) {
+    setTimeout(function(){ try { showCompanionUnlock(1); } catch(e){} }, 1200);
+  }
 }
 
 
@@ -11284,6 +11293,237 @@ function _showMisCampSummary() {
 }
 
 var _misLastOpened = 0;
+// ═══════════════════════════════════════════
+// PARTY SYSTEM
+// ═══════════════════════════════════════════
+
+var _cuSlotIdx = 0, _cuSelectedCls = '';
+
+var PARTY_CLASSES = [
+  { id:'guerrero', icon:'⚔️',  label:'Guerrero' },
+  { id:'mago',     icon:'🔮',  label:'Mago'     },
+  { id:'monje',    icon:'🥊',  label:'Monje'    },
+  { id:'asesino',  icon:'🗡️',  label:'Asesino'  },
+  { id:'druida',   icon:'🌿',  label:'Druida'   },
+  { id:'barbaro',  icon:'🪓',  label:'Bárbaro'  },
+  { id:'arquero',  icon:'🏹',  label:'Arquero'  },
+];
+
+var PARTY_COMP_NAMES = ['Lyra','Theron','Zara','Dario','Sela','Breck','Nyx','Oryn','Vex','Cael'];
+
+function defCompanion(cls, name, sex) {
+  return {
+    class: cls,
+    name: name || PARTY_COMP_NAMES[Math.floor(Math.random()*PARTY_COMP_NAMES.length)],
+    sex: sex || 'M',
+    level: 1,
+    xp: 0,
+    inventory: [],
+    equipped: { weapon:null, armor:null, accessory:null, head:null, legs:null, feet:null, leftHand:null, cape:null },
+  };
+}
+
+function getActivePartyMember() {
+  var idx = char.activeHeroIdx || 0;
+  if (idx === 0) return { class: char.class, name: char.name, level: char.level, xp: char.xp, isMain: true };
+  var comp = char.companions && char.companions[idx - 1];
+  return comp ? Object.assign({}, comp, { isMain: false }) : null;
+}
+
+function setActiveHero(idx) {
+  if (idx === 0) {
+    char.activeHeroIdx = 0;
+  } else {
+    var comp = char.companions && char.companions[idx - 1];
+    if (!comp) return;
+    char.activeHeroIdx = idx;
+  }
+  saveChar();
+  try { renderCampParty(); } catch(e) {}
+  try { renderPartyStrip(); } catch(e) {}
+}
+
+function _partyClassSprite(cls) {
+  // Returns img element for class sprite
+  var img = document.createElement('img');
+  img.style.cssText = 'width:100%;height:100%;object-fit:cover;image-rendering:pixelated;';
+  var cached = (typeof _spriteCache !== 'undefined') ? _spriteCache.get('class_' + cls) : null;
+  if (cached && cached.src) {
+    img.src = cached.src;
+  } else {
+    img.src = 'deploy/personajes/' + cls + '.png';
+  }
+  img.onerror = function() { this.style.display='none'; };
+  return img;
+}
+
+function renderCampParty() {
+  var active = char.activeHeroIdx || 0;
+  [1, 2].forEach(function(slot) {
+    var el = document.getElementById('campComp' + slot);
+    if (!el) return;
+    el.innerHTML = '';
+    var comp = char.companions && char.companions[slot - 1];
+    var reqLv = slot === 1 ? 10 : 20;
+    var isLocked = !comp;
+    var imgDiv = document.createElement('div');
+    imgDiv.className = 'camp-comp-img' + (isLocked ? ' cp-locked' : '') + (active === slot ? ' cp-active' : '');
+    if (!isLocked) imgDiv.appendChild(_partyClassSprite(comp.class));
+    el.appendChild(imgDiv);
+    if (isLocked) {
+      var lockIcon = document.createElement('div');
+      lockIcon.className = 'camp-comp-lock-icon';
+      lockIcon.textContent = '🔒';
+      el.appendChild(lockIcon);
+      var lockLbl = document.createElement('div');
+      lockLbl.className = 'camp-comp-lock-lbl';
+      lockLbl.textContent = 'Nv.' + reqLv;
+      el.appendChild(lockLbl);
+    } else {
+      var nameEl = document.createElement('div');
+      nameEl.className = 'camp-comp-name';
+      nameEl.textContent = (comp.name || '') + ' · ' + (comp.class || '');
+      el.appendChild(nameEl);
+    }
+  });
+  // Update main hero ring active state
+  var ring = document.getElementById('campCharRing');
+  if (ring) {
+    if (active === 0) ring.style.outline = '3px solid #ffd700';
+    else ring.style.outline = '';
+  }
+}
+
+function renderPartyStrip() {
+  var strip = document.getElementById('partyStrip');
+  if (!strip) return;
+  strip.innerHTML = '';
+  var active = char.activeHeroIdx || 0;
+  // Slot 0: main hero
+  strip.appendChild(_makePartyCard(0, {
+    class: char.class, name: char.name || 'Aventurero',
+    level: char.level, xp: char.xp, isMain: true
+  }, active === 0));
+  // Slots 1-2: companions
+  [0, 1].forEach(function(ci) {
+    var slot = ci + 1;
+    var comp = char.companions && char.companions[ci];
+    var reqLv = slot === 1 ? 10 : 20;
+    strip.appendChild(_makePartyCard(slot, comp, active === slot, !comp, reqLv));
+  });
+}
+
+function _makePartyCard(idx, hero, isActive, isLocked, reqLv) {
+  var div = document.createElement('div');
+  var cls = 'ps-hero' + (idx === 0 ? ' ps-hero-main' : '') + (isActive ? ' ps-active' : '') + (isLocked ? ' ps-locked' : '');
+  div.className = cls;
+  if (!isLocked) div.onclick = function() { setActiveHero(idx); };
+  if (isLocked) {
+    // Show lock placeholder
+    var av = document.createElement('div');
+    av.className = 'ps-avatar';
+    av.style.cssText = 'filter:brightness(.1);font-size:1.2rem;color:#555;display:flex;align-items:center;justify-content:center;';
+    av.textContent = '🔒';
+    div.appendChild(av);
+    var info = document.createElement('div');
+    info.className = 'ps-info';
+    info.innerHTML = '<div class="ps-name" style="color:#555">Bloqueado</div><div class="ps-cls" style="color:#444">Desbloquea en Nv.'+reqLv+'</div>';
+    div.appendChild(info);
+    return div;
+  }
+  var av = document.createElement('div');
+  av.className = 'ps-avatar';
+  av.appendChild(_partyClassSprite(hero.class || 'guerrero'));
+  div.appendChild(av);
+  var xpPct = Math.min(100, Math.round(((hero.xp || 0) / xpToNext(hero.level || 1)) * 100));
+  var info = document.createElement('div');
+  info.className = 'ps-info';
+  info.innerHTML = '<div class="ps-name">' + (hero.name || 'Aventurero') + '</div>'
+    + '<div class="ps-cls">' + (hero.class || 'Sin clase') + ' · Nv.' + (hero.level || 1) + '</div>'
+    + '<div class="ps-xpbar"><div class="ps-xpfill" style="width:' + xpPct + '%"></div></div>';
+  div.appendChild(info);
+  var side = document.createElement('div');
+  side.className = 'ps-side';
+  var invBtn = document.createElement('button');
+  invBtn.className = 'ps-inv-btn';
+  invBtn.textContent = '🎒';
+  invBtn.title = 'Perfil de ' + (hero.name || 'héroe');
+  (function(i){ invBtn.onclick = function(e){ e.stopPropagation(); openCompanionProfile(i); }; })(idx);
+  side.appendChild(invBtn);
+  div.appendChild(side);
+  return div;
+}
+
+function openCompanionProfile(idx) {
+  if (idx === 0) { openProfile(); return; }
+  var comp = char.companions && char.companions[idx - 1];
+  if (!comp) return;
+  // Show a simple modal with companion stats
+  var modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:18000;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = '<div style="background:#1a1a2e;border-radius:16px;padding:24px;max-width:320px;width:90%;text-align:center;">'
+    + '<div style="font-size:3rem;margin-bottom:8px">' + _partyClassEmoji(comp.class) + '</div>'
+    + '<div style="font-size:1.1rem;font-weight:700;color:#e2e8f0">' + (comp.name||'Sin nombre') + '</div>'
+    + '<div style="font-size:.8rem;color:#94a3b8;margin-bottom:16px">' + (comp.class||'') + ' · Nivel ' + (comp.level||1) + '</div>'
+    + '<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;font-size:.8rem;color:#cbd5e1;text-align:left;margin-bottom:16px">'
+    + '🗡️ HP: ' + (80 + (comp.level||1) * 10) + '<br>'
+    + '⚡ XP: ' + (comp.xp||0) + ' / ' + xpToNext(comp.level||1) + '<br>'
+    + '🪙 Comparte el oro del grupo</div>'
+    + '<button onclick="this.closest(\'[style*=fixed]\').remove()" style="background:#334155;border:none;color:#e2e8f0;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.85rem">Cerrar</button>'
+    + '</div>';
+  document.body.appendChild(modal);
+  modal.onclick = function(e){ if(e.target===modal) modal.remove(); };
+}
+
+function _partyClassEmoji(cls) {
+  var m = { guerrero:'⚔️', mago:'🔮', monje:'🥊', asesino:'🗡️', druida:'🌿', barbaro:'🪓', arquero:'🏹' };
+  return m[cls] || '👤';
+}
+
+function showCompanionUnlock(slotIdx) {
+  _cuSlotIdx = slotIdx;
+  _cuSelectedCls = '';
+  var overlay = document.getElementById('compUnlockOverlay');
+  var title   = document.getElementById('cuTitle');
+  var sub     = document.getElementById('cuSub');
+  var classes = document.getElementById('cuClasses');
+  var confirm = document.getElementById('cuConfirmBtn');
+  var nameIn  = document.getElementById('cuNameIn');
+  if (!overlay) return;
+  if (title) title.textContent = slotIdx === 0 ? '¡Héroe 2 desbloqueado!' : '¡Héroe 3 desbloqueado!';
+  if (sub) sub.textContent = 'Llegaste a nivel ' + (slotIdx === 0 ? '10' : '20') + ' — elige la clase de tu nuevo compañero';
+  if (nameIn) nameIn.value = '';
+  if (confirm) confirm.disabled = true;
+  if (classes) {
+    classes.innerHTML = '';
+    PARTY_CLASSES.forEach(function(pc) {
+      var btn = document.createElement('button');
+      btn.className = 'cu-cls';
+      btn.innerHTML = '<span class="cu-cls-icon">' + pc.icon + '</span>' + pc.label;
+      btn.onclick = function() {
+        _cuSelectedCls = pc.id;
+        classes.querySelectorAll('.cu-cls').forEach(function(b){ b.classList.remove('cu-sel'); });
+        btn.classList.add('cu-sel');
+        if (confirm) confirm.disabled = false;
+      };
+      classes.appendChild(btn);
+    });
+  }
+  overlay.classList.remove('hide');
+  try { if (navigator.vibrate) navigator.vibrate([80,40,80]); } catch(e) {}
+}
+
+function confirmCompanionUnlock() {
+  if (!_cuSelectedCls) return;
+  var nameIn = document.getElementById('cuNameIn');
+  var name = nameIn ? (nameIn.value.trim() || '') : '';
+  char.companions[_cuSlotIdx] = defCompanion(_cuSelectedCls, name);
+  saveChar();
+  document.getElementById('compUnlockOverlay').classList.add('hide');
+  try { renderCampParty(); } catch(e) {}
+  try { renderPartyStrip(); } catch(e) {}
+}
+
 function showMisionesScreen() {
   var camp = document.getElementById('campScreen');
   var mis  = document.getElementById('misionesScreen');
@@ -11295,6 +11535,7 @@ function showMisionesScreen() {
   _misLastOpened = Date.now();
   try { _injectTutorialMission(); } catch(e) {}
   try { renderDaySummary(); } catch(e) {}
+  try { renderPartyStrip(); } catch(e) {}
 }
 
 function renderCampScreen() {
@@ -11307,6 +11548,7 @@ function renderCampScreen() {
   try { _campRenderBottomNav(); } catch(e) {}
   try { _onbRenderBanner(); }   catch(e) {}
   try { _onbInit(); }           catch(e) {}
+  try { renderCampParty(); }    catch(e) {}
 }
 
 function _campRenderBg() {
@@ -13273,8 +13515,10 @@ function resizeCanvas() {
 }
 
 function initGame() {
-  const lv  = (typeof char !== 'undefined') ? char.level : 1;
-  const cls = ((typeof char !== 'undefined') ? char.class : 'guerrero').toLowerCase();
+  const activeIdx = (typeof char !== 'undefined') ? (char.activeHeroIdx || 0) : 0;
+  const activeComp = activeIdx > 0 && typeof char !== 'undefined' && char.companions && char.companions[activeIdx - 1];
+  const lv  = activeComp ? (activeComp.level || 1) : ((typeof char !== 'undefined') ? char.level : 1);
+  const cls = (activeComp ? activeComp.class : ((typeof char !== 'undefined') ? char.class : 'guerrero')).toLowerCase();
   const cd  = CLS[cls] || CLS.guerrero;
   const maxHp = 80 + lv * 10;
   P = { x:roomX+roomW/2, y:roomY+roomH*0.7, w:48, h:48,
@@ -14058,7 +14302,9 @@ function drawPlayer() {
   if(P.hitTime>0)ctx.filter='brightness(8)';
   ctx.translate(P.x,P.y); ctx.scale(P.fd,1);
   ctx.imageSmoothingEnabled=false;
-  const female=typeof char!=='undefined'&&char.sex==='F';
+  const activeIdx=(typeof char!=='undefined')?(char.activeHeroIdx||0):0;
+  const activeComp=activeIdx>0&&typeof char!=='undefined'&&char.companions&&char.companions[activeIdx-1];
+  const female=activeComp?(activeComp.sex==='F'):typeof char!=='undefined'&&char.avatar&&char.avatar.gender==='female';
   const sk=female?'class_'+P.cls+'_f':'class_'+P.cls;
   const img=typeof _spriteCache!=='undefined'?_spriteCache.get(sk):null;
   if(img&&img.complete&&img.naturalWidth>0){
@@ -21031,6 +21277,57 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 .ceup-name{font-weight:700;font-size:.95rem;color:#e2e8f0;}
 .ceup-desc{font-size:.75rem;color:#94a3b8;margin-top:2px;}
 .ce-result-buffs{font-size:.72rem;color:#94a3b8;margin-top:6px;line-height:1.6;}
+
+/* ═══ PARTY SYSTEM ═══════════════════════════════════════════ */
+/* Camp: 3 heroes around campfire */
+.camp-party-scene{display:flex;align-items:flex-end;justify-content:center;gap:8px;width:100%;}
+.camp-comp-slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;padding-bottom:10px;flex-shrink:0;width:84px;}
+.camp-comp-img{width:76px;height:76px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.15);image-rendering:pixelated;image-rendering:crisp-edges;}
+.camp-comp-img.cp-active{border-color:#ffd700;box-shadow:0 0 12px #ffd70055;}
+.camp-comp-img.cp-locked{filter:brightness(.12) saturate(0);border-color:rgba(255,255,255,.05);}
+.camp-comp-img img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated;}
+.camp-comp-name{font-size:.58rem;color:#94a3b8;max-width:80px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.camp-comp-lock-icon{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:1.3rem;pointer-events:none;}
+.camp-comp-lock-lbl{font-size:.52rem;color:#555;text-align:center;}
+@keyframes partyBreathe{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.camp-comp-img:not(.cp-locked){animation:partyBreathe 3.8s ease-in-out infinite;}
+.camp-comp-slot:nth-child(1) .camp-comp-img{animation-delay:.7s;}
+.camp-comp-slot:nth-child(3) .camp-comp-img{animation-delay:1.6s;}
+/* Missions: party strip */
+.party-strip{display:flex;gap:6px;padding:8px 10px;background:rgba(255,255,255,.025);border-bottom:1px solid rgba(255,255,255,.06);}
+.ps-hero{display:flex;align-items:center;gap:6px;flex:1;min-width:0;padding:6px 7px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:background .15s,border-color .15s;}
+.ps-hero:active{background:rgba(255,255,255,.05);}
+.ps-hero.ps-active{border-color:#ffd700;background:rgba(255,215,0,.06);}
+.ps-hero.ps-locked{opacity:.35;cursor:default;pointer-events:none;}
+.ps-avatar{flex-shrink:0;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.12);image-rendering:pixelated;image-rendering:crisp-edges;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;}
+.ps-hero.ps-active .ps-avatar{border-color:#ffd700;box-shadow:0 0 8px #ffd70044;}
+.ps-hero-main .ps-avatar{width:50px;height:50px;}
+.ps-avatar:not(.ps-hero-main .ps-avatar){width:40px;height:40px;}
+.ps-avatar img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated;}
+.ps-info{flex:1;min-width:0;}
+.ps-name{font-size:.7rem;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ps-cls{font-size:.57rem;color:#94a3b8;white-space:nowrap;}
+.ps-xpbar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:4px;overflow:hidden;}
+.ps-xpfill{height:100%;background:#818cf8;border-radius:2px;transition:width .4s;}
+.ps-side{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;}
+.ps-inv-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#94a3b8;font-size:.78rem;cursor:pointer;padding:4px 6px;border-radius:6px;line-height:1;transition:background .15s;}
+.ps-inv-btn:hover{background:rgba(255,255,255,.13);color:#e2e8f0;}
+.ps-lock-lbl{font-size:.52rem;color:#555;text-align:center;line-height:1.3;}
+@media(max-width:480px){.party-strip{gap:3px;padding:5px 7px;}.ps-hero{padding:5px 5px;gap:5px;}.ps-hero-main .ps-avatar{width:40px;height:40px;}.ps-avatar:not(.ps-hero-main .ps-avatar){width:34px;height:34px;}.ps-name{font-size:.62rem;}.ps-cls{font-size:.5rem;}}
+/* Companion unlock overlay */
+#compUnlockOverlay{position:fixed;inset:0;z-index:19000;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;}
+#compUnlockOverlay.hide{display:none !important;}
+.cu-glow{font-size:2.4rem;animation:partyBreathe 1.4s ease-in-out infinite;}
+.cu-title{font-size:1.6rem;font-weight:800;color:#ffd700;text-shadow:0 0 28px #ffd70099;text-align:center;line-height:1.2;}
+.cu-sub{font-size:.82rem;color:#94a3b8;text-align:center;}
+.cu-classes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:340px;}
+.cu-cls{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 11px;border-radius:10px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.1);color:#e2e8f0;cursor:pointer;font-size:.72rem;min-width:64px;transition:all .15s;}
+.cu-cls:hover,.cu-cls.cu-sel{border-color:#ffd700;background:rgba(255,215,0,.13);}
+.cu-cls-icon{font-size:1.2rem;}
+.cu-name-wrap{display:flex;gap:8px;align-items:center;}
+.cu-name-in{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:9px 13px;color:#fff;font-size:.9rem;width:170px;text-align:center;}
+.cu-confirm{background:linear-gradient(135deg,#ffd700,#e08000);color:#000;font-weight:800;padding:12px 28px;border-radius:10px;font-size:.9rem;cursor:pointer;border:none;transition:opacity .2s;}
+.cu-confirm:disabled{opacity:.35;cursor:default;}
 </style>
 
 <div id="combatOverlay" class="hide">
@@ -21101,6 +21398,18 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
     </div>
   </div>
 
+</div>
+
+<!-- Companion unlock overlay -->
+<div id="compUnlockOverlay" class="hide">
+  <div class="cu-glow">✨⚔️✨</div>
+  <div class="cu-title" id="cuTitle">¡Nuevo héroe se une al grupo!</div>
+  <div class="cu-sub" id="cuSub">Elige la clase de tu nuevo compañero</div>
+  <div class="cu-classes" id="cuClasses"></div>
+  <div class="cu-name-wrap">
+    <input class="cu-name-in" id="cuNameIn" type="text" placeholder="Nombre (opcional)" maxlength="14">
+  </div>
+  <button class="cu-confirm" id="cuConfirmBtn" onclick="confirmCompanionUnlock()" disabled>Confirmar</button>
 </div>
 
 </body>
