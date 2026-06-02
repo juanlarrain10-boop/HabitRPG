@@ -10744,6 +10744,12 @@ function loadChar() {
     if (!('guildId' in c)) c.guildId = null;
     if (!Array.isArray(c.companions) || c.companions.length < 2) c.companions = [c.companions&&c.companions[0]||null, c.companions&&c.companions[1]||null];
     if (typeof c.activeHeroIdx !== 'number') c.activeHeroIdx = 0;
+    c.companions.forEach(function(comp) {
+      if (!comp) return;
+      if (typeof comp.hairTint !== 'number') comp.hairTint = 0;
+      if (typeof comp.aura !== 'string') comp.aura = '';
+      if (!comp.sex) comp.sex = 'M';
+    });
     return c;
   } catch { return defChar(); }
 }
@@ -11318,6 +11324,8 @@ function defCompanion(cls, name, sex) {
     sex: sex || 'M',
     level: 1,
     xp: 0,
+    hairTint: 0,
+    aura: '',
     inventory: [],
     equipped: { weapon:null, armor:null, accessory:null, head:null, legs:null, feet:null, leftHand:null, cape:null },
   };
@@ -11519,13 +11527,18 @@ function closeHeroOptions() {
   document.getElementById('heroOptionsPanel').classList.add('hide');
 }
 function hopMakePrimary() {
-  setActiveHero(_hopIdx);
   closeHeroOptions();
+  setActiveHeroAnimated(_hopIdx);
 }
 function hopOpenInventory() {
   closeHeroOptions();
   if (_hopIdx === 0) { try{navShop();}catch(e){} return; }
   showCompanionInventory(_hopIdx);
+}
+function hopOpenAppearance() {
+  closeHeroOptions();
+  if (_hopIdx === 0) { try{openProfile();}catch(e){} return; }
+  showCompanionEditor(_hopIdx);
 }
 function hopOpenInfo() {
   closeHeroOptions();
@@ -11542,6 +11555,8 @@ function showCompanionInventory(idx) {
   if (!modal) return;
   if (title) title.textContent = (comp.name||'Compañero') + ' — Equipamiento';
   if (goldEl) goldEl.textContent = '🪙 ' + (char.gold||0) + ' oro disponible';
+  var shopBtn = document.getElementById('cimShopBtn');
+  if (shopBtn) { (function(i){ shopBtn.onclick = function(){ document.getElementById('compInvModal').classList.add('hide'); openShopForCompanion(i); }; })(idx); }
   var EQUIP_SLOTS = [
     {key:'weapon',label:'Arma'},{key:'armor',label:'Armadura'},{key:'head',label:'Cabeza'},
     {key:'accessory',label:'Accesorio'},{key:'legs',label:'Piernas'},{key:'feet',label:'Pies'},
@@ -11597,6 +11612,153 @@ function rarityToFilter(rarity) {
 
 function getMainHeroRarityFilter() {
   return rarityToFilter(getHighestRarity(typeof char!=='undefined'?char.equipped:null));
+}
+
+// ── Feature 1: Animated hero swap ─────────────────────────────
+function setActiveHeroAnimated(idx) {
+  var oldIdx = char.activeHeroIdx || 0;
+  if (idx === oldIdx) { closeHeroOptions(); return; }
+  // Animate old hero out
+  var getSlotImg = function(i) {
+    return i === 0
+      ? document.getElementById('campCharRing')
+      : document.querySelector('#campComp'+i+' .camp-comp-img');
+  };
+  var oldEl = getSlotImg(oldIdx);
+  var newEl = getSlotImg(idx);
+  if (oldEl) oldEl.classList.add('hero-swap-out');
+  if (newEl) newEl.classList.add('hero-swap-in');
+  setTimeout(function() {
+    if (oldEl) oldEl.classList.remove('hero-swap-out');
+    if (newEl) newEl.classList.remove('hero-swap-in');
+    setActiveHero(idx);
+  }, 500);
+}
+
+// ── Feature 2: Shop for companions ────────────────────────────
+var shopTargetHeroIdx = 0;
+
+function _shopTargetComp() {
+  if (!shopTargetHeroIdx) return null;
+  return char.companions && char.companions[shopTargetHeroIdx - 1];
+}
+function _shopActiveClass() {
+  var comp = _shopTargetComp();
+  return comp ? (comp.class||'guerrero') : (char.class||'guerrero');
+}
+function openShopForCompanion(heroIdx) {
+  shopTargetHeroIdx = heroIdx;
+  shopCat = 'all';
+  shopClassFilter = 'clase';
+  try { renderShopTabs(); } catch(e) {}
+  try { renderShopFilterRow(); } catch(e) {}
+  try { renderShopGrid(); } catch(e) {}
+  _renderShopCompanionBanner();
+  document.getElementById('shopOverlay').classList.remove('hide');
+  try { history.pushState({hrpgOverlay:'shop'},''); } catch(e) {}
+}
+function _renderShopCompanionBanner() {
+  var comp = _shopTargetComp();
+  var banner = document.getElementById('shopCompanionBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'shopCompanionBanner';
+    banner.className = 'hide';
+    var grid = document.getElementById('shopGrid');
+    if (grid && grid.parentNode) grid.parentNode.insertBefore(banner, grid);
+  }
+  if (!comp) { banner.classList.add('hide'); return; }
+  banner.classList.remove('hide');
+  banner.innerHTML = '<span>' + _partyClassEmoji(comp.class) + ' Comprando para: <strong>' + (comp.name||'Compañero') + '</strong> · ' + (comp.class||'') + '</span>'
+    + '<button onclick="shopTargetHeroIdx=0;try{renderShopFilterRow();}catch(e){}try{renderShopGrid();}catch(e){};document.getElementById(\'shopCompanionBanner\').classList.add(\'hide\')" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:.75rem;font-family:inherit">✕ Volver al principal</button>';
+}
+
+// ── Feature 3: Companion full editor ─────────────────────────
+var _cedState = { idx:0, sex:'M', name:'', hairTint:0, aura:'', cls:'', origCls:'' };
+
+function showCompanionEditor(idx) {
+  var comp = char.companions && char.companions[idx - 1];
+  if (!comp) return;
+  _cedState = { idx:idx, sex:comp.sex||'M', name:comp.name||'', hairTint:comp.hairTint||0, aura:comp.aura||'', cls:comp.class||'guerrero', origCls:comp.class||'guerrero' };
+  // Sex buttons
+  document.getElementById('cedSexM').classList.toggle('ced-sel', _cedState.sex==='M');
+  document.getElementById('cedSexF').classList.toggle('ced-sel', _cedState.sex==='F');
+  // Name
+  document.getElementById('cedNameIn').value = _cedState.name;
+  // Hair tints
+  var hs = document.getElementById('cedHairSwatches');
+  hs.innerHTML='';
+  (typeof HAIR_TINTS!=='undefined'?HAIR_TINTS:[]).forEach(function(t,i){
+    var sw=document.createElement('div');
+    sw.className='ced-swatch'+(i===_cedState.hairTint?' ced-sel':'');
+    sw.style.background=t.color;
+    if(t.deg)sw.style.filter='hue-rotate('+t.deg+'deg)';
+    sw.onclick=(function(ii){return function(){_cedState.hairTint=ii;hs.querySelectorAll('.ced-swatch').forEach(function(s){s.classList.toggle('ced-sel',s===this);}.bind(sw));};})(i);
+    hs.appendChild(sw);
+  });
+  // Aura swatches
+  var as = document.getElementById('cedAuraSwatches');
+  as.innerHTML='';
+  (typeof CUSTOM_AURAS!=='undefined'?CUSTOM_AURAS:[]).forEach(function(a){
+    var sw=document.createElement('div');
+    sw.className='ced-swatch'+(a.key===_cedState.aura?' ced-sel':'');
+    sw.style.background=a.color||'#666';
+    sw.title=a.key||'Sin aura';
+    sw.onclick=(function(ak){return function(){_cedState.aura=ak;as.querySelectorAll('.ced-swatch').forEach(function(s,si){s.classList.toggle('ced-sel',s===this);}.bind(sw));};})(a.key);
+    as.appendChild(sw);
+  });
+  // Class grid
+  var cg = document.getElementById('cedClsGrid');
+  cg.innerHTML='';
+  var PARTY_CLASSES_LOCAL = [
+    {id:'guerrero',icon:'⚔️',label:'Guerrero'},{id:'mago',icon:'🔮',label:'Mago'},
+    {id:'monje',icon:'🥊',label:'Monje'},{id:'asesino',icon:'🗡️',label:'Asesino'},
+    {id:'druida',icon:'🌿',label:'Druida'},{id:'barbaro',icon:'🪓',label:'Bárbaro'},
+    {id:'arquero',icon:'🏹',label:'Arquero'},
+  ];
+  PARTY_CLASSES_LOCAL.forEach(function(pc){
+    var btn=document.createElement('button');
+    btn.className='ced-cls-btn'+(pc.id===_cedState.cls?' ced-sel':'');
+    btn.innerHTML='<span class="ced-cls-icon">'+pc.icon+'</span>'+pc.label;
+    btn.onclick=function(){
+      _cedState.cls=pc.id;
+      cg.querySelectorAll('.ced-cls-btn').forEach(function(b){b.classList.toggle('ced-sel',b===btn);});
+      var warn=document.getElementById('cedClsWarn');
+      if(warn)warn.classList.toggle('hide',pc.id===_cedState.origCls);
+    };
+    cg.appendChild(btn);
+  });
+  document.getElementById('cedClsWarn').classList.add('hide');
+  document.getElementById('compEditModal').classList.remove('hide');
+}
+
+function cedSetSex(sex) {
+  _cedState.sex = sex;
+  document.getElementById('cedSexM').classList.toggle('ced-sel', sex==='M');
+  document.getElementById('cedSexF').classList.toggle('ced-sel', sex==='F');
+}
+
+function cedSave() {
+  var comp = char.companions && char.companions[_cedState.idx - 1];
+  if (!comp) return;
+  var nameVal = document.getElementById('cedNameIn').value.trim();
+  comp.name = nameVal || comp.name;
+  comp.sex = _cedState.sex;
+  comp.hairTint = _cedState.hairTint;
+  comp.aura = _cedState.aura;
+  if (_cedState.cls !== _cedState.origCls) {
+    // Class change: reset level
+    comp.class = _cedState.cls;
+    comp.level = 1;
+    comp.xp = 0;
+    comp.equipped = { weapon:null, armor:null, accessory:null, head:null, legs:null, feet:null, leftHand:null, cape:null };
+    comp.inventory = [];
+  }
+  saveChar();
+  document.getElementById('compEditModal').classList.add('hide');
+  try { renderCampParty(); } catch(e) {}
+  try { renderPartyStrip(); } catch(e) {}
+  if (typeof quickToast === 'function') quickToast('✓', 'Compañero actualizado', (comp.name||'Compañero') + ' editado');
 }
 
 function checkAndUnlockCompanions() {
@@ -14978,6 +15140,9 @@ function openShop() {
 
 function closeShop() {
   document.getElementById('shopOverlay').classList.add('hide');
+  if (typeof shopTargetHeroIdx !== 'undefined') shopTargetHeroIdx = 0;
+  const banner = document.getElementById('shopCompanionBanner');
+  if (banner) banner.classList.add('hide');
 }
 
 function renderShopTabs() {
@@ -14996,10 +15161,14 @@ function renderShopFilterRow() {
   const row = document.getElementById('shopFilterRow');
   if (!row) return;
   if (['inventario','forja','pocion'].includes(shopCat)) { row.innerHTML = ''; return; }
-  const cls = char.class ? CLASSES[char.class] : null;
+  // Use companion class if in companion mode
+  const activeClass = (typeof shopTargetHeroIdx !== 'undefined' && shopTargetHeroIdx > 0)
+    ? (char.companions && char.companions[shopTargetHeroIdx-1] && char.companions[shopTargetHeroIdx-1].class)
+    : char.class;
+  const cls = activeClass ? CLASSES[activeClass] : null;
   const filters = [
     { id:'todo',      label:'🏪 Todo' },
-    { id:'clase',     label: cls ? `${cls.icon} Tu Clase` : '⭐ Tu Clase' },
+    { id:'clase',     label: cls ? `${cls.icon} ${cls.name||'Tu Clase'}` : '⭐ Tu Clase' },
     { id:'universal', label:'🌐 Universal' },
   ];
   row.innerHTML = filters.map(f =>
@@ -15305,6 +15474,7 @@ function _buildShopCard(item) {
 
 function renderShopGrid() {
   document.getElementById('shopGoldBadge').textContent = `🪙 ${(char.gold || 0).toLocaleString()}`;
+  if (typeof _renderShopCompanionBanner === 'function') try { _renderShopCompanionBanner(); } catch(e) {}
   const grid = document.getElementById('shopGrid');
 
   if (shopCat === 'inventario') { renderInventoryTab(grid); return; }
@@ -15373,6 +15543,26 @@ function _subclassEquipCheck(item) {
 function shopBuy(id) {
   const item = SHOP_ITEMS.find(i => i.id === id);
   if (!item || (char.gold || 0) < item.cost) return;
+  // COMPANION MODE
+  const compTarget = typeof shopTargetHeroIdx !== 'undefined' ? (char.companions && char.companions[shopTargetHeroIdx - 1]) : null;
+  if (compTarget) {
+    if ((compTarget.inventory || []).includes(id)) return;
+    if ((compTarget.inventory || []).length >= 50) { quickToast('🎒', 'Inventario lleno', 'Vende o descarta items primero'); return; }
+    if (item.slot !== 'consumable' && item.classes && item.classes.length > 0 && !item.classes.includes(compTarget.class)) {
+      const n = item.classes.map(c => (typeof CLASSES!=='undefined'&&CLASSES[c])?CLASSES[c].name:c).join('/');
+      quickToast('🔒', 'Clase incorrecta', `Solo ${n} puede usar este item`); return;
+    }
+    char.gold -= item.cost;
+    if (!compTarget.inventory) compTarget.inventory = [];
+    compTarget.inventory.push(id);
+    if (item.slot !== 'consumable' && compTarget.equipped && !compTarget.equipped[item.slot]) {
+      compTarget.equipped[item.slot] = id;
+    }
+    saveChar(); renderShopGrid();
+    quickToast('🎒', 'Comprado para ' + (compTarget.name||'compañero'), item.name + (compTarget.equipped[item.slot]===id ? ' — equipado' : ' — en inventario'));
+    return;
+  }
+  // MAIN HERO MODE (original logic)
   if ((char.inventory || []).includes(id)) return;
   if ((char.inventory || []).length >= 50) { quickToast('🎒', 'Inventario lleno', 'Vende o descarta items primero'); return; }
   if (item.slot !== 'consumable' && item.classes && item.classes.length > 0 && char.class && !item.classes.includes(char.class)) {
@@ -15384,7 +15574,6 @@ function shopBuy(id) {
   char.gold -= item.cost;
   if (!char.inventory) char.inventory = [];
   char.inventory.push(id);
-  // Auto-equip if slot is empty and passes subclass limit
   if (item.slot !== 'consumable' && char.equipped && !char.equipped[item.slot]) {
     const subCount = Object.values(char.equipped).filter(eid => {
       const it = SHOP_ITEMS.find(i => i.id === eid);
@@ -21706,6 +21895,37 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 /* Buff indicator row in HUD */
 #ceBuffRow{position:absolute;left:8px;top:52px;display:flex;gap:4px;flex-wrap:wrap;max-width:200px;pointer-events:none;}
 .ce-buff-pip{font-size:.75rem;background:rgba(0,0,0,.65);border-radius:6px;padding:2px 5px;border:1px solid rgba(255,255,255,.15);white-space:nowrap;}
+/* Hero swap animation */
+@keyframes heroSwapIn{from{transform:scale(.5) translateX(70px);opacity:.1;}to{transform:scale(1) translateX(0);opacity:1;}}
+@keyframes heroSwapOut{from{transform:scale(1);opacity:1;}to{transform:scale(.55) translateX(-60px);opacity:.1;}}
+.hero-swap-in{animation:heroSwapIn .48s cubic-bezier(.22,1,.36,1) forwards;}
+.hero-swap-out{animation:heroSwapOut .48s ease-in forwards;}
+/* Companion editor modal */
+#compEditModal{position:fixed;inset:0;z-index:17500;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:12px;overflow-y:auto;}
+#compEditModal.hide{display:none !important;}
+.ced-box{background:#12101e;border-radius:16px;padding:20px;width:100%;max-width:400px;}
+.ced-title{font-size:1rem;font-weight:700;color:#ffd700;margin-bottom:16px;}
+.ced-section{margin-bottom:14px;}
+.ced-label{font-size:.65rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;}
+.ced-sex-row{display:flex;gap:8px;}
+.ced-sex-btn{flex:1;padding:9px;border-radius:8px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);color:#e2e8f0;cursor:pointer;font-size:.85rem;transition:all .15s;font-family:inherit;}
+.ced-sex-btn.ced-sel{border-color:#ffd700;background:rgba(255,215,0,.1);color:#ffd700;}
+.ced-name-in{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;width:100%;box-sizing:border-box;font-family:inherit;}
+.ced-swatches{display:flex;flex-wrap:wrap;gap:7px;}
+.ced-swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:transform .15s,border-color .15s;}
+.ced-swatch:hover{transform:scale(1.15);}
+.ced-swatch.ced-sel{border-color:#fff;transform:scale(1.2);}
+.ced-cls-grid{display:flex;flex-wrap:wrap;gap:7px;}
+.ced-cls-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);color:#e2e8f0;cursor:pointer;font-size:.66rem;min-width:56px;transition:all .15s;font-family:inherit;}
+.ced-cls-btn:hover,.ced-cls-btn.ced-sel{border-color:#ffd700;background:rgba(255,215,0,.1);}
+.ced-cls-icon{font-size:1.1rem;}
+.ced-warn{font-size:.65rem;color:#f87171;margin-top:6px;padding:6px 10px;background:rgba(239,68,68,.08);border-radius:6px;border:1px solid rgba(239,68,68,.2);}
+.ced-warn.hide{display:none;}
+.ced-save-btn{background:linear-gradient(135deg,#ffd700,#e08000);color:#000;font-weight:700;padding:12px;border-radius:10px;font-size:.9rem;cursor:pointer;border:none;width:100%;margin-top:6px;font-family:inherit;}
+.ced-cancel-btn{background:none;border:none;color:#64748b;font-size:.82rem;cursor:pointer;width:100%;padding:8px;text-align:center;font-family:inherit;}
+/* Shop companion banner */
+#shopCompanionBanner{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.82rem;color:#fbbf24;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+#shopCompanionBanner.hide{display:none !important;}
 /* ── Hero Options Panel ────────────────────────────────────── */
 #heroOptionsPanel{position:fixed;inset:0;z-index:16000;}
 #heroOptionsPanel.hide{display:none !important;}
@@ -21872,6 +22092,7 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
     <div class="hop-actions">
       <button class="hop-btn hop-btn-gold" id="hopPrimaryBtn" onclick="hopMakePrimary()">⭐ Hacer principal (ir al combate)</button>
       <button class="hop-btn" onclick="hopOpenInventory()">🎒 Inventario / Equipamiento</button>
+      <button class="hop-btn" onclick="hopOpenAppearance()">🎨 Apariencia y Clase</button>
       <button class="hop-btn" onclick="hopOpenInfo()">📊 Stats e Info</button>
     </div>
     <button class="hop-close-btn" onclick="closeHeroOptions()">Cerrar</button>
@@ -21883,7 +22104,40 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
     <div class="cim-title" id="cimTitle">Equipamiento</div>
     <div class="cim-gold" id="cimGold">🪙 0</div>
     <div class="cim-slots" id="cimSlots"></div>
+    <button class="cim-close" id="cimShopBtn" onclick="" style="background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.3);color:#ffd700;margin-bottom:6px">🏪 Ir a la Tienda para este héroe</button>
     <button class="cim-close" onclick="document.getElementById('compInvModal').classList.add('hide')">Cerrar</button>
+  </div>
+</div>
+<!-- Companion Editor Modal -->
+<div id="compEditModal" class="hide">
+  <div class="ced-box">
+    <div class="ced-title">🎨 Editar Compañero</div>
+    <div class="ced-section">
+      <div class="ced-label">Sexo</div>
+      <div class="ced-sex-row">
+        <button class="ced-sex-btn" id="cedSexM" onclick="cedSetSex('M')">♂ Masculino</button>
+        <button class="ced-sex-btn" id="cedSexF" onclick="cedSetSex('F')">♀ Femenino</button>
+      </div>
+    </div>
+    <div class="ced-section">
+      <div class="ced-label">Nombre</div>
+      <input class="ced-name-in" id="cedNameIn" type="text" maxlength="14" placeholder="Nombre del héroe">
+    </div>
+    <div class="ced-section">
+      <div class="ced-label">Tinte de color</div>
+      <div class="ced-swatches" id="cedHairSwatches"></div>
+    </div>
+    <div class="ced-section">
+      <div class="ced-label">Aura</div>
+      <div class="ced-swatches" id="cedAuraSwatches"></div>
+    </div>
+    <div class="ced-section">
+      <div class="ced-label">Clase</div>
+      <div class="ced-cls-grid" id="cedClsGrid"></div>
+      <div class="ced-warn hide" id="cedClsWarn">⚠️ Cambiar clase reiniciará el nivel del compañero a 1 y borrará su equipamiento.</div>
+    </div>
+    <button class="ced-save-btn" onclick="cedSave()">✓ Guardar cambios</button>
+    <button class="ced-cancel-btn" onclick="document.getElementById('compEditModal').classList.add('hide')">Cancelar</button>
   </div>
 </div>
 <!-- Companion unlock overlay -->
