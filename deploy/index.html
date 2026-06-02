@@ -13828,6 +13828,7 @@ let keys = {}, currentZone, victoryPending = false;
 let roomX, roomY, roomW, roomH;
 let joy = { active:false, tid:-1, bx:0, by:0, dx:0, dy:0 };
 let currentRoom = 1, runBuffs = [], door = null;
+let combatHeroes = [], activeCombatSlot = 0;
 
 function $$(id) { return document.getElementById(id); }
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
@@ -13835,22 +13836,74 @@ function normAngle(a){ while(a>Math.PI)a-=Math.PI*2; while(a<-Math.PI)a+=Math.PI
 function hex2rgb(h,d){ const n=parseInt(h.replace('#',''),16); return `rgb(${clamp(((n>>16)&0xff)+d,0,255)},${clamp(((n>>8)&0xff)+d,0,255)},${clamp((n&0xff)+d,0,255)})`; }
 
 // ── Zone map ─────────────────────────────────────────────────
+const ZONE_META = {
+  forest:{ emoji:'🌲', accent:'#4ade80', bg:'linear-gradient(160deg,#071a07 0%,#0e2e0e 60%,#041204 100%)', deco:'🌿🍃🌲', enemies:'Goblins · Lobos · Arqueros' },
+  cave:  { emoji:'🦇', accent:'#fb923c', bg:'linear-gradient(160deg,#130d07 0%,#1e1208 60%,#0e0905 100%)', deco:'💎🦇⛏️', enemies:'Esqueletos · Ogros · Tiradores' },
+  ruins: { emoji:'🏛️', accent:'#fbbf24', bg:'linear-gradient(160deg,#17140e 0%,#1e1a10 60%,#120f0a 100%)', deco:'🏺⚱️🏛️', enemies:'Espectros · Golems · Guardianes' },
+  castle:{ emoji:'🏰', accent:'#a78bfa', bg:'linear-gradient(160deg,#0a0a1f 0%,#131328 60%,#080815 100%)', deco:'⚔️🔮🏰', enemies:'Caballeros · Brujos · Lich' },
+  abyss: { emoji:'🌑', accent:'#f87171', bg:'linear-gradient(160deg,#1a0303 0%,#280505 60%,#110202 100%)', deco:'☄️👁️🌑', enemies:'Demonios · Sombras · Entidades' },
+};
+let _czDetailZone = null;
 function showZoneMap() {
   const lv = (typeof char !== 'undefined') ? char.level : 1;
   $$('combatOverlay').classList.remove('hide');
   $$('ceZoneMap').classList.remove('hide');
   $$('ceGameContainer').classList.add('hide');
   const list = $$('ceZoneList'); list.innerHTML = '';
-  ZONES.forEach(z => {
+  // Path connector + zone cards
+  ZONES.forEach(function(z, idx) {
     const locked = lv < z.req;
-    const d = document.createElement('div');
-    d.className = 'ce-zone-card' + (locked ? ' ce-zone-locked' : '');
-    d.innerHTML = `<div class="cezc-name">${z.name}</div>` +
-      `<div class="cezc-info">Nivel ${z.req}+ · ${z.cnt} enemigos · 🪙${z.gold}/enemigo</div>` +
-      (locked ? `<div class="cezc-lock">🔒 Nivel ${z.req} requerido</div>` : `<div class="cezc-go">⚔ Entrar — ${z.xp} XP</div>`);
-    if (!locked) d.onclick = () => enterZone(z);
-    list.appendChild(d);
+    const meta = ZONE_META[z.id] || { emoji:'⚔️', accent:'#94a3b8', bg:'linear-gradient(135deg,#111,#222)', deco:'', enemies:'' };
+    const isCurrent = !locked && (idx === 0 || lv >= ZONES[idx-1].req);
+    // Path connector before each zone except first
+    if (idx > 0) {
+      const path = document.createElement('div');
+      path.className = 'czm-path-seg' + (locked ? ' czm-path-locked' : '');
+      list.appendChild(path);
+    }
+    const card = document.createElement('div');
+    card.className = 'czm-zone-card' + (locked ? ' czm-zone-locked' : '') + (isCurrent ? ' czm-zone-current' : '');
+    card.style.cssText = `--zaccent:${meta.accent};background:${meta.bg};`;
+    card.innerHTML = `
+      <div class="czm-zc-icon">${meta.emoji}</div>
+      <div class="czm-zc-body">
+        <div class="czm-zc-name">${z.name}</div>
+        <div class="czm-zc-sub">Jefe: ${z.boss}</div>
+        <div class="czm-zc-deco">${meta.deco}</div>
+      </div>
+      <div class="czm-zc-right">
+        ${locked
+          ? `<div class="czm-zc-lock">🔒</div><div class="czm-zc-req">Nv.${z.req}</div>`
+          : `<div class="czm-zc-xp">⭐${z.xp} XP</div><div class="czm-zc-gold">🪙${z.gold}/kill</div>`}
+        ${isCurrent ? '<div class="czm-zc-marker">▶ Aquí</div>' : ''}
+      </div>
+      ${locked ? '<div class="czm-zc-overlay"></div>' : ''}
+    `;
+    if (!locked) {
+      card.addEventListener('click', function(){ openCombatZoneDetail(z, meta); });
+    }
+    list.appendChild(card);
   });
+}
+function openCombatZoneDetail(z, meta) {
+  _czDetailZone = z;
+  const overlay = $$('ceZoneDetail'); if (!overlay) return;
+  const lv = (typeof char !== 'undefined') ? char.level : 1;
+  overlay.classList.remove('hide');
+  const m = meta || ZONE_META[z.id] || {};
+  $$('czdIcon').textContent = m.emoji || '⚔️';
+  $$('czdIcon').style.color = m.accent || '#fff';
+  $$('czdName').textContent = z.name;
+  $$('czdBoss').textContent = '💀 Jefe: ' + z.boss;
+  $$('czdStats').innerHTML = `<span>🏰 ${ROOMS_PER_ZONE} salas</span><span>👾 ${m.enemies||''}</span><span>📊 Nv.${z.req}+</span>`;
+  $$('czdRewards').innerHTML = `<span>⭐ ${z.xp} XP</span><span>🪙 ${z.gold} oro/kill</span>`;
+  const eb = $$('czdEnterBtn');
+  if (eb) { eb.style.borderColor = m.accent||'#8b5cf6'; eb.onclick = function(){ closeCombatZoneDetail(); enterZone(z); }; }
+}
+function closeCombatZoneDetail(e) {
+  if (e && e.target !== $$('ceZoneDetail')) return;
+  const overlay = $$('ceZoneDetail'); if (overlay) overlay.classList.add('hide');
+  _czDetailZone = null;
 }
 
 // ── Enter zone ───────────────────────────────────────────────
@@ -13876,21 +13929,52 @@ function resizeCanvas() {
   roomH = canvas.height - WALL_T*2 - mh;
 }
 
+function _mkHero(cls, lv, x, y, isMain, charData) {
+  const cd = CLS[cls] || CLS.guerrero;
+  const maxHp = isMain ? (80 + lv * 10) : (70 + lv * 8);
+  const sz = isMain ? 48 : 36;
+  return { x, y, w:sz, h:sz, facing:0, fd:1, hp:maxHp, maxHp, spd:cd.spd*(isMain?1:0.85), cls, cd,
+    atkCd:0, attacking:false, atkTime:0, atkAng:0,
+    dashCd:0, dashing:false, dashTime:0, dvx:0, dvy:0, invul:0,
+    spCd:0, spActive:false, spEff:null, spTime:0, spMul:false,
+    hitTime:0, trail:[], goldEarned:0,
+    dmgMult:1, rangeMult:1, regenOnKill:0, doubleShot:false,
+    dashNoCd:false, dashNoCdRoom:0, _as:'i', _af:0, level:lv,
+    sex:charData.sex, name:charData.name, equipped:charData.equipped,
+    hairTint:charData.hairTint, aura:charData.aura, dead:false,
+    aiAtkCd:1.5, aiDashCd:3+Math.random()*4 };
+}
 function initGame() {
-  const activeIdx = (typeof char !== 'undefined') ? (char.activeHeroIdx || 0) : 0;
-  const activeComp = activeIdx > 0 && typeof char !== 'undefined' && char.companions && char.companions[activeIdx - 1];
-  const lv  = activeComp ? (activeComp.level || 1) : ((typeof char !== 'undefined') ? char.level : 1);
-  const cls = (activeComp ? activeComp.class : ((typeof char !== 'undefined') ? char.class : 'guerrero')).toLowerCase();
-  const cd  = CLS[cls] || CLS.guerrero;
-  const maxHp = 80 + lv * 10;
-  P = { x:roomX+roomW/2, y:roomY+roomH*0.7, w:48, h:48,
-        facing:0, fd:1, hp:maxHp, maxHp, spd:cd.spd, cls, cd,
-        atkCd:0, attacking:false, atkTime:0, atkAng:0,
-        dashCd:0, dashing:false, dashTime:0, dvx:0, dvy:0, invul:0,
-        spCd:0, spActive:false, spEff:null, spTime:0, spMul:false,
-        hitTime:0, trail:[], goldEarned:0,
-        dmgMult:1, rangeMult:1, regenOnKill:0, doubleShot:false,
-        dashNoCd:false, dashNoCdRoom:0 };
+  combatHeroes = [];
+  // Slot 0: main char
+  const mainCls = ((typeof char !== 'undefined') ? char.class : 'guerrero').toLowerCase();
+  const mainLv  = (typeof char !== 'undefined') ? char.level : 1;
+  combatHeroes.push(_mkHero(mainCls, mainLv, roomX+roomW/2, roomY+roomH*0.7, true, {
+    sex: (typeof char !== 'undefined' && char.avatar && char.avatar.gender === 'female') ? 'F' : 'M',
+    name: (typeof char !== 'undefined' && char.name) || '',
+    equipped: (typeof char !== 'undefined') ? char.equipped : null,
+    hairTint: (typeof char !== 'undefined' && char.avatar) ? (char.avatar.hairTint || 0) : 0,
+    aura: (typeof char !== 'undefined' && char.avatar) ? (char.avatar.customAura || '') : '',
+  }));
+  // Slots 1, 2: companions
+  if (typeof char !== 'undefined' && Array.isArray(char.companions)) {
+    char.companions.forEach(function(comp, ci) {
+      const ox = ci === 0 ? -65 : 65;
+      if (comp) {
+        combatHeroes.push(_mkHero((comp.class||'guerrero').toLowerCase(), comp.level||1,
+          roomX+roomW/2+ox, roomY+roomH*0.65, false, {
+          sex:comp.sex||'M', name:comp.name||'Compañero', equipped:comp.equipped,
+          hairTint:comp.hairTint||0, aura:comp.aura||'' }));
+      } else {
+        combatHeroes.push(null); // locked slot placeholder
+      }
+    });
+  }
+  activeCombatSlot = (typeof char !== 'undefined') ? (char.activeHeroIdx || 0) : 0;
+  if (!combatHeroes[activeCombatSlot]) activeCombatSlot = 0;
+  // Ensure the active hero is full-size
+  if (combatHeroes[activeCombatSlot]) { combatHeroes[activeCombatSlot].w = 48; combatHeroes[activeCombatSlot].h = 48; }
+  P = combatHeroes[activeCombatSlot];
   currentRoom=1; runBuffs=[]; door=null;
   enemies=[]; projs=[]; coins=[]; parts=[]; dnums=[]; ambParts=[]; ambTimer=0;
   victoryPending=false;
@@ -13943,9 +14027,96 @@ function loop(ts) {
 }
 
 function update(dt) {
-  updateP(dt); updateEnemies(dt); updateProjs(dt);
+  updateP(dt); updateCombatAI(dt); updateEnemies(dt); updateProjs(dt);
   updateCoins(dt); updateParts(dt); updateDnums(dt);
   updateDoor(dt); updateAmbient(dt); checkVictory();
+}
+function updateCombatAI(dt) {
+  for (let si = 0; si < combatHeroes.length; si++) {
+    if (si === activeCombatSlot) continue;
+    const c = combatHeroes[si];
+    if (!c) continue;
+    if (c.dead || c.hp <= 0) {
+      if (c.deathAlpha === undefined) c.deathAlpha = 1;
+      c.deathAlpha = Math.max(0, (c.deathAlpha||1) - dt * 1.5);
+      continue;
+    }
+    if (c.hitTime > 0) c.hitTime -= dt;
+    if (c.invul > 0) c.invul -= dt;
+    if (c.atkCd > 0) c.atkCd -= dt;
+    if (c.attacking) { c.atkTime -= dt; if (c.atkTime <= 0) c.attacking = false; }
+    // AI dash
+    c.aiDashCd -= dt;
+    if (c.aiDashCd <= 0 && !c.dashing) {
+      c.aiDashCd = 4 + Math.random() * 4;
+      const ang = Math.random() * Math.PI * 2;
+      c.dashing = true; c.dashTime = 0.18; c.invul = 0.18;
+      c.dvx = Math.cos(ang) * 380; c.dvy = Math.sin(ang) * 380;
+    }
+    if (c.dashing) {
+      c.dashTime -= dt; if (c.dashTime <= 0) { c.dashing = false; c.dvx = 0; c.dvy = 0; }
+      c.x += c.dvx * dt; c.y += c.dvy * dt;
+    } else {
+      // Follow active hero at offset distance
+      const target = P;
+      if (target && target.hp > 0) {
+        const dx = target.x - c.x, dy = target.y - c.y;
+        const dist = Math.hypot(dx, dy);
+        const desired = 55 + (si - 1) * 25;
+        if (dist > desired + 12) {
+          const spd = c.spd; c.x += (dx/dist)*spd*dt; c.y += (dy/dist)*spd*dt;
+          c.facing = Math.atan2(dy, dx); if (dx !== 0) c.fd = dx > 0 ? 1 : -1;
+        } else if (dist < desired - 12) {
+          c.x -= (dx/dist)*c.spd*0.5*dt; c.y -= (dy/dist)*c.spd*0.5*dt;
+        }
+      }
+      // AI attack
+      if (c.atkCd <= 0) {
+        const alive = enemies.filter(function(e){ return !e.dead; });
+        if (alive.length > 0) {
+          let nearest = null, nd = Infinity;
+          for (const e of alive) { const d = Math.hypot(e.x-c.x, e.y-c.y); if (d < nd) { nd = d; nearest = e; } }
+          if (nearest) {
+            c.atkCd = 1.5;
+            const ang = Math.atan2(nearest.y-c.y, nearest.x-c.x);
+            c.facing = ang; c.fd = nearest.x > c.x ? 1 : -1;
+            const lm = 1 + ((c.level||1)-1)*0.05;
+            const dmg = Math.floor((c.cd.atk.dmg||20) * lm * 0.65);
+            const atkT = c.cd.atk.t;
+            if (atkT === 'proj' || atkT === 'arrow') {
+              projs.push({x:c.x, y:c.y, vx:Math.cos(ang)*(c.cd.atk.pspd||420), vy:Math.sin(ang)*(c.cd.atk.pspd||420),
+                dmg, r:atkT==='arrow'?4:7, color:c.cd.atk.col||(CLS[c.cls]||CLS.guerrero).color, life:2.5, owner:'p'});
+            } else {
+              const range = (c.cd.atk.range||80)*1.15, arc = c.cd.atk.ang || Math.PI*0.85;
+              arcHit(c.x, c.y, ang, range, arc, dmg);
+              c.attacking = true; c.atkTime = 0.22; c.atkAng = ang;
+            }
+          }
+        }
+      }
+    }
+    // Clamp to room
+    c.x = clamp(c.x, roomX+c.w/2, roomX+roomW-c.w/2);
+    c.y = clamp(c.y, roomY+c.h/2, roomY+roomH-c.h/2);
+    // Enemies hit companion
+    if (c.invul <= 0 && c.hp > 0) {
+      for (const e of enemies) {
+        if (e.dead) continue;
+        if (Math.hypot(c.x-e.x, c.y-e.y) < e.w/2 + c.w/2) {
+          const dmg = Math.ceil((e.dmg||5) * 0.5);
+          c.hp -= dmg; c.hitTime = 0.2; c.invul = 0.8;
+          dnum(c.x, c.y-20, dmg, '#fca5a5');
+          if (c.hp <= 0) { c.hp = 0; c.dead = true; c.deathAlpha = 1; }
+          break;
+        }
+      }
+    }
+    // Trail
+    if (!c.trail) c.trail = [];
+    if (c.dashing) c.trail.push({x:c.x, y:c.y, a:0.5});
+    c.trail = c.trail.filter(function(t){ t.a -= dt*3; return t.a > 0; });
+    animTick(c, dt, !c.dashing && (Math.abs(c.dvx||0)+Math.abs(c.dvy||0)) < 10);
+  }
 }
 
 // ── Player ───────────────────────────────────────────────────
@@ -14211,8 +14382,23 @@ function updateProjs(dt) {
         dnum(P.x,P.y-40,p.dmg,'#f87171');
         projs.splice(i,1);
         try{if(navigator.vibrate)navigator.vibrate(30);}catch(v){}
-        if(P.hp<=0){P.hp=0;onDeath();} hudUpdate();
+        if(P.hp<=0){P.hp=0;onDeath();} hudUpdate(); continue;
       }
+      // Also hits AI companions
+      let compHit = false;
+      for (let ci = 0; ci < combatHeroes.length; ci++) {
+        if (ci === activeCombatSlot) continue;
+        const c = combatHeroes[ci];
+        if (!c || c.hp <= 0 || c.dead || c.invul > 0) continue;
+        if (Math.hypot(c.x-p.x, c.y-p.y) < p.r+14) {
+          const dmg = Math.ceil(p.dmg*0.5);
+          c.hp -= dmg; c.hitTime = 0.2; c.invul = 0.4;
+          dnum(c.x, c.y-20, dmg, '#fca5a5');
+          if (c.hp <= 0) { c.hp = 0; c.dead = true; c.deathAlpha = 1; }
+          projs.splice(i,1); compHit = true; break;
+        }
+      }
+      if (compHit) continue;
     }
   }
 }
@@ -14277,15 +14463,21 @@ function showUpgradeScreen(){
 }
 function startNextRoom(){
   currentRoom++;
-  // Expire dash buff if it was for the previous room
   if(P.dashNoCd&&P.dashNoCdRoom<=currentRoom)P.dashNoCd=false;
-  door=null; enemies=[]; projs=[]; coins=[]; parts=[]; dnums=[];
+  door=null; enemies=[]; projs=[]; coins=[]; parts=[]; dnums=[]; ambParts=[]; ambTimer=0;
   victoryPending=false;
   P.x=roomX+roomW/2; P.y=roomY+roomH*.75; P.trail=[];
   P.attacking=false; P.atkTime=0; P.invul=0; P.hitTime=0;
-  // Guard: ensure buff properties are still set (no accidental reset)
   if(!P.dmgMult||P.dmgMult<1)P.dmgMult=1;
   if(!P.rangeMult||P.rangeMult<1)P.rangeMult=1;
+  // Revive and reposition AI companions
+  combatHeroes.forEach(function(c, si) {
+    if (si === activeCombatSlot || !c) return;
+    c.dead = false; c.deathAlpha = 1; c.hp = Math.floor(c.maxHp * 0.6);
+    const ox = (si - activeCombatSlot) * 65;
+    c.x = roomX+roomW/2+ox; c.y = roomY+roomH*0.7;
+    c.trail=[]; c.attacking=false; c.atkTime=0; c.invul=0; c.hitTime=0;
+  });
   const bb=$$('ceBossBar');if(bb)bb.classList.add('hide');
   spawnRoomEnemies(currentRoom);
   hudUpdate();
@@ -14307,7 +14499,8 @@ function onDeath(){ setTimeout(()=>showResult(false),1200); }
 function showResult(won) {
   running=false; unbindInput();
   const rs=$$('ceResultScreen'); rs.classList.remove('hide');
-  const goldFinal=won?P.goldEarned:Math.floor(P.goldEarned*.5);
+  const totalGold=combatHeroes.reduce(function(s,h){return s+(h?h.goldEarned||0:0);},0);
+  const goldFinal=won?totalGold:Math.floor(totalGold*.5);
   const xpFinal=won?currentZone.xp:0;
   const buffHTML=runBuffs.length
     ?BUFFS.filter(b=>runBuffs.includes(b.id)).map(b=>`${b.icon} ${b.name}`).join(' · ')
@@ -14902,7 +15095,7 @@ function drawBgDefault(){
 // ── Render ───────────────────────────────────────────────────
 function render() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  drawBg(); drawAmbient(); drawDoor(); drawCoins(); drawParts(); drawEnemies(); drawProjs(); drawTrail(); drawPlayer(); drawDnums();
+  drawBg(); drawAmbient(); drawDoor(); drawCoins(); drawParts(); drawEnemies(); drawProjs(); drawCombatCompanions(); drawTrail(); drawPlayer(); drawDnums();
 }
 
 function drawBg() {
@@ -14935,14 +15128,10 @@ function drawPlayer() {
   if(P.spActive&&P.spEff==='invis')ctx.globalAlpha=.3;
   ctx.translate(P.x,P.y); ctx.scale(P.fd,1);
   ctx.imageSmoothingEnabled=false;
-  const activeIdx=(typeof char!=='undefined')?(char.activeHeroIdx||0):0;
-  const activeComp=activeIdx>0&&typeof char!=='undefined'&&char.companions&&char.companions[activeIdx-1];
-  const female=activeComp?(activeComp.sex==='F'):typeof char!=='undefined'&&char.avatar&&char.avatar.gender==='female';
+  const female = P.sex === 'F';
   const sk=female?'class_'+P.cls+'_f':'class_'+P.cls;
   const img=typeof _spriteCache!=='undefined'?_spriteCache.get(sk):null;
-  // Apply rarity tint filter
-  const equip=activeComp?activeComp.equipped:(typeof char!=='undefined'?char.equipped:null);
-  const rarFilt=typeof rarityToFilter!=='undefined'?rarityToFilter(typeof getHighestRarity!=='undefined'?getHighestRarity(equip):null):'';
+  const rarFilt=typeof rarityToFilter!=='undefined'?rarityToFilter(typeof getHighestRarity!=='undefined'?getHighestRarity(P.equipped):null):'';
   if(rarFilt) ctx.filter=(P.hitTime>0?'brightness(8) ':'')+rarFilt;
   else if(P.hitTime>0) ctx.filter='brightness(8)';
   if(img&&img.complete&&img.naturalWidth>0){
@@ -14963,6 +15152,66 @@ function drawPlayer() {
   }
   ctx.restore();
   if(P.attacking&&P.atkTime>0)drawAtkArc();
+}
+function drawCombatCompanions() {
+  for (let si = 0; si < combatHeroes.length; si++) {
+    if (si === activeCombatSlot) continue;
+    const c = combatHeroes[si];
+    if (!c) continue;
+    // Death fade
+    if (c.dead || c.hp <= 0) {
+      const da = c.deathAlpha || 0;
+      if (da > 0) {
+        ctx.save(); ctx.globalAlpha = da * 0.6;
+        ctx.translate(c.x, c.y);
+        ctx.fillStyle = (CLS[c.cls]||CLS.guerrero).color;
+        ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+      }
+      continue;
+    }
+    // Trail
+    if (c.trail) {
+      const col = (CLS[c.cls]||CLS.guerrero).trail;
+      c.trail.forEach(function(t){ ctx.save();ctx.globalAlpha=t.a*.45;ctx.fillStyle=col;ctx.beginPath();ctx.arc(t.x,t.y,10,0,Math.PI*2);ctx.fill();ctx.restore(); });
+    }
+    // Sprite
+    ctx.save();
+    ctx.translate(c.x, c.y); ctx.scale(c.fd, 1);
+    ctx.imageSmoothingEnabled = false;
+    if (c.hitTime > 0) ctx.filter = 'brightness(8)';
+    const sk = c.sex === 'F' ? 'class_'+c.cls+'_f' : 'class_'+c.cls;
+    const img = typeof _spriteCache !== 'undefined' ? _spriteCache.get(sk) : null;
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.drawImage(img, -c.w/2, -c.h/2, c.w, c.h);
+    } else {
+      const s=c.w/16, ox=-c.w/2, oy=-c.h/2, f=c._af||0, st=c._as||'i';
+      switch(c.cls){
+        case 'guerrero': sprGuerrero(ctx,ox,oy,s,f,st);break;
+        case 'mago':     sprMago(ctx,ox,oy,s,f,st);break;
+        case 'monje':    sprMonje(ctx,ox,oy,s,f,st);break;
+        case 'asesino':  sprAsesino(ctx,ox,oy,s,f,st);break;
+        case 'druida':   sprDruida(ctx,ox,oy,s,f,st);break;
+        case 'barbaro':  sprBarbaro(ctx,ox,oy,s,f,st);break;
+        case 'arquero':  sprArquero(ctx,ox,oy,s,f,st);break;
+        default:         sprGuerrero(ctx,ox,oy,s,f,st);
+      }
+    }
+    ctx.restore();
+    // Attack arc visual
+    if (c.attacking && c.atkTime > 0) {
+      const a = c.cd.atk, col=(CLS[c.cls]||CLS.guerrero).color, al=c.atkTime/0.22;
+      ctx.save(); ctx.globalAlpha=al*.3; ctx.fillStyle=col;
+      ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.arc(c.x,c.y,(a.range||80)*.85,c.atkAng-(a.ang||Math.PI*.8)/2,c.atkAng+(a.ang||Math.PI*.8)/2);ctx.closePath();ctx.fill();ctx.restore();
+    }
+    // HP bar
+    const bw=c.w+8, bx=c.x-bw/2, by=c.y-c.h/2-10, pct=Math.max(0,c.hp/c.maxHp);
+    ctx.fillStyle='#1e293b'; ctx.fillRect(bx,by,bw,4);
+    ctx.fillStyle=pct>.5?'#4ade80':pct>.25?'#facc15':'#f87171'; ctx.fillRect(bx,by,bw*pct,4);
+    // Name tag
+    ctx.save(); ctx.font='bold 9px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle='rgba(255,255,255,.75)'; ctx.fillText(c.name||c.cls, c.x, c.y-c.h/2-17); ctx.restore();
+  }
 }
 function drawAtkArc() {
   const a=P.cd.atk;
@@ -15039,19 +15288,54 @@ function drawDnums() {
   for(const n of dnums){ctx.save();ctx.globalAlpha=Math.min(1,n.life);ctx.strokeStyle='#000';ctx.lineWidth=3;ctx.strokeText(n.val,n.x,n.y);ctx.fillStyle=n.color;ctx.fillText(n.val,n.x,n.y);ctx.restore();}
 }
 
+// ── Hero switching ───────────────────────────────────────────
+function switchCombatHero(newSlot) {
+  if (newSlot === activeCombatSlot) return;
+  const target = combatHeroes[newSlot];
+  if (!target || target.dead || target.hp <= 0) return;
+  // Old hero becomes AI (shrink to companion size)
+  const old = combatHeroes[activeCombatSlot];
+  if (old) { old.w = 36; old.h = 36; }
+  // New hero becomes player (full size)
+  target.w = 48; target.h = 48;
+  activeCombatSlot = newSlot;
+  P = combatHeroes[newSlot];
+  hudUpdate();
+}
+
 // ── HUD helpers ──────────────────────────────────────────────
 function hudUpdate() {
   if(!P)return;
   const pct=Math.max(0,P.hp/P.maxHp);
   const hf=$$('ceHpFill'); if(hf){hf.style.width=(pct*100)+'%';hf.style.background=pct>.5?'linear-gradient(90deg,#ef4444,#f97316)':pct>.25?'#f97316':'#dc2626';}
-  const ht=$$('ceHpText'); if(ht)ht.textContent=P.hp+'/'+P.maxHp;
-  const gl=$$('ceHudGold'); if(gl)gl.textContent='🪙 '+((typeof char!=='undefined'?char.gold:0)+P.goldEarned);
+  const ht=$$('ceHpText'); if(ht)ht.textContent=Math.max(0,P.hp)+'/'+P.maxHp;
+  const gl=$$('ceHudGold'); if(gl){const totalG=combatHeroes.reduce(function(s,h){return s+(h?h.goldEarned||0:0);},0);gl.textContent='🪙 '+((typeof char!=='undefined'?char.gold:0)+totalG);}
   const ll=$$('ceHudLevel'); if(ll)ll.textContent=`Sala ${currentRoom}/${ROOMS_PER_ZONE} · Nv.${typeof char!=='undefined'?char.level:1}`;
   // Buff indicator row
   const br=$$('ceBuffRow');
   if(br&&runBuffs.length){
     br.innerHTML=BUFFS.filter(b=>runBuffs.includes(b.id)).map(b=>`<span class="ce-buff-pip">${b.icon}${b.id==='dash'&&P.dashNoCd?' ∞':''}</span>`).join('');
   } else if(br) br.innerHTML='';
+  // Party portrait HUD
+  const ph=$$('cePartyHud'); if(!ph)return;
+  if (combatHeroes.filter(function(h){return !!h;}).length <= 1) { ph.innerHTML=''; return; }
+  ph.innerHTML = combatHeroes.map(function(h, si) {
+    if (!h) return '';
+    const pct2 = Math.max(0, h.hp/h.maxHp);
+    const isActive = si === activeCombatSlot;
+    const isDead = h.dead || h.hp <= 0;
+    const hpCol = pct2>.5?'#4ade80':pct2>.25?'#facc15':'#f87171';
+    const sk = h.sex==='F' ? 'class_'+h.cls+'_f' : 'class_'+h.cls;
+    const imgEl = typeof _spriteCache !== 'undefined' ? _spriteCache.get(sk) : null;
+    const imgSrc = imgEl && imgEl.src ? imgEl.src : '';
+    return `<div class="ce-party-port${isActive?' cp-active-p':''}${isDead?' cp-dead-p':''}" onclick="if(running&&!paused)switchCombatHero(${si})" title="Héroe ${si+1} (tecla ${si+1})">
+      ${imgSrc?`<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated;">`:
+        `<div style="width:100%;height:100%;background:${(CLS[h.cls]||CLS.guerrero).color};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">${h.cls[0].toUpperCase()}</div>`}
+      <div class="cp-hp-bar"><div class="cp-hp-fill" style="width:${pct2*100}%;background:${hpCol};"></div></div>
+      ${isActive?'<div class="cp-active-dot"></div>':''}
+      ${isDead?'<div class="cp-dead-x">✕</div>':''}
+    </div>`;
+  }).join('');
 }
 function dashBtnUpd() {
   const btn=$$('ceDashBtn');if(!btn||!P)return;
@@ -15093,6 +15377,7 @@ function exit() {
     const el=$$( id);if(el)el.classList.add('hide');
   });
   keys={}; joy={active:false,tid:-1,bx:0,by:0,dx:0,dy:0};
+  combatHeroes=[]; activeCombatSlot=0;
   try{renderCampScreen();}catch(e){}
 }
 
@@ -15101,6 +15386,7 @@ function onKeyDown(e) {
   keys[e.key.toLowerCase()]=true;
   const k=e.key.toLowerCase();
   if(k==='j')doAttack(); if(k==='k'||e.key==='Shift')doDash(); if(k==='l')doSpecial();
+  if(k==='1')switchCombatHero(0); if(k==='2')switchCombatHero(1); if(k==='3')switchCombatHero(2);
   if(k==='escape'||k==='p')togglePause();
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();
 }
@@ -21869,23 +22155,68 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 #combatOverlay.hide{display:none !important;}
 #ceZoneMap.hide,#ceGameContainer.hide,#ceHud.hide,
 #ceJoystickZone.hide,#ceBtnsArea.hide,
-#ceResultScreen.hide,#cePauseMenu.hide,#ceUpgradeScreen.hide{display:none !important;}
-/* Zone map */
-#ceZoneMap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px 20px;background:linear-gradient(135deg,#0f0f1a,#1a1a2e);overflow-y:auto;}
-.cezm-header{text-align:center;margin-bottom:4px;}
-.cezm-title{font-size:1.5rem;font-weight:800;color:#c4b5fd;letter-spacing:2px;}
-.cezm-sub{color:#64748b;font-size:.8rem;margin-top:4px;}
-.ce-zone-list{display:flex;flex-direction:column;gap:10px;width:100%;max-width:420px;}
-.ce-zone-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:15px 18px;cursor:pointer;transition:background .15s,transform .1s;user-select:none;}
-.ce-zone-card:not(.ce-zone-locked):hover{background:rgba(139,92,246,.18);border-color:#8b5cf6;transform:translateX(4px);}
-.ce-zone-card:not(.ce-zone-locked):active{transform:scale(.97);}
-.ce-zone-locked{opacity:.45;cursor:default;}
-.cezc-name{font-weight:700;font-size:1.05rem;color:#e2e8f0;}
-.cezc-info{font-size:.78rem;color:#94a3b8;margin-top:3px;}
-.cezc-lock{font-size:.78rem;color:#f87171;margin-top:5px;}
-.cezc-go{font-size:.78rem;color:#4ade80;margin-top:5px;}
-.cezm-close{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#94a3b8;font-size:.9rem;padding:9px 24px;cursor:pointer;margin-top:4px;}
-.cezm-close:hover{background:rgba(255,255,255,.15);}
+#ceResultScreen.hide,#cePauseMenu.hide,#ceUpgradeScreen.hide,
+#ceZoneDetail.hide{display:none !important;}
+/* Zone map — fantasy illustrated */
+#ceZoneMap{position:absolute;inset:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#050810 0%,#0a0e1a 40%,#060912 100%);overflow:hidden;}
+#ceZoneMap .czm-header{text-align:center;padding:18px 20px 8px;flex-shrink:0;}
+.czm-title{font-size:1.45rem;font-weight:900;color:#c4b5fd;letter-spacing:3px;text-shadow:0 0 18px rgba(196,181,253,.5);}
+.czm-sub{color:#64748b;font-size:.78rem;margin-top:4px;}
+.czm-scroll{flex:1;overflow-y:auto;padding:10px 16px 8px;}
+#ceZoneList{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;max-width:480px;margin:0 auto;}
+/* Zone cards */
+.czm-zone-card{width:100%;border-radius:14px;border:1.5px solid rgba(255,255,255,.08);padding:14px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s;position:relative;overflow:hidden;user-select:none;}
+.czm-zone-card:not(.czm-zone-locked):hover{transform:scale(1.02);border-color:var(--zaccent,#8b5cf6);box-shadow:0 0 18px rgba(var(--zaccent,139,92,246),.3);}
+.czm-zone-card:not(.czm-zone-locked):active{transform:scale(.98);}
+.czm-zone-locked{cursor:default;}
+.czm-zone-current{border-color:var(--zaccent,#8b5cf6) !important;box-shadow:0 0 22px rgba(255,255,255,.12);}
+.czm-zc-icon{font-size:2rem;flex-shrink:0;width:44px;text-align:center;filter:drop-shadow(0 0 8px var(--zaccent,#fff));}
+.czm-zc-body{flex:1;min-width:0;}
+.czm-zc-name{font-size:.98rem;font-weight:800;color:#e2e8f0;}
+.czm-zc-sub{font-size:.68rem;color:#94a3b8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.czm-zc-deco{font-size:.75rem;margin-top:4px;opacity:.65;}
+.czm-zc-right{text-align:right;flex-shrink:0;}
+.czm-zc-lock{font-size:1.3rem;}
+.czm-zc-req{font-size:.68rem;color:#f87171;font-weight:700;margin-top:2px;}
+.czm-zc-xp{font-size:.7rem;color:#fbbf24;font-weight:700;}
+.czm-zc-gold{font-size:.68rem;color:#94a3b8;margin-top:2px;}
+.czm-zc-marker{font-size:.62rem;color:var(--zaccent,#4ade80);margin-top:4px;font-weight:700;animation:markerBlink 1.4s ease-in-out infinite;}
+.czm-zc-overlay{position:absolute;inset:0;background:rgba(0,0,0,.58);border-radius:14px;pointer-events:none;}
+@keyframes markerBlink{0%,100%{opacity:1;}50%{opacity:.4;}}
+/* Path segments */
+.czm-path-seg{width:3px;height:28px;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));border-radius:2px;margin:1px auto;position:relative;}
+.czm-path-locked{background:linear-gradient(180deg,rgba(255,255,255,.05),transparent);}
+.czm-path-seg::after{content:'·';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(255,255,255,.25);font-size:14px;}
+/* Zone detail popup */
+#ceZoneDetail{position:absolute;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:20;padding:20px;}
+#ceZoneDetail.hide{display:none !important;}
+.czd-box{background:linear-gradient(160deg,#0f1122,#1a1a2e);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:24px 20px;width:100%;max-width:360px;text-align:center;}
+.czd-box .czd-icon{font-size:3rem;margin-bottom:8px;display:block;filter:drop-shadow(0 0 12px currentColor);}
+.czd-box .czd-name{font-size:1.3rem;font-weight:900;color:#e2e8f0;margin-bottom:4px;}
+.czd-box .czd-boss-line{font-size:.78rem;color:#94a3b8;margin-bottom:12px;}
+.czd-stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
+.czd-stats span{background:rgba(255,255,255,.07);border-radius:20px;padding:4px 10px;font-size:.72rem;color:#c4b5fd;}
+.czd-rewards{display:flex;gap:10px;justify-content:center;margin-bottom:16px;}
+.czd-rewards span{font-size:.8rem;font-weight:700;color:#fbbf24;}
+.czd-actions{display:flex;gap:10px;justify-content:center;}
+.czd-close-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#94a3b8;padding:9px 18px;cursor:pointer;font-size:.85rem;}
+.czd-enter-btn{background:rgba(139,92,246,.25);border:2px solid #8b5cf6;border-radius:8px;color:#fff;padding:9px 22px;cursor:pointer;font-size:.9rem;font-weight:700;transition:background .15s;}
+.czd-enter-btn:hover{background:rgba(139,92,246,.45);}
+/* Zone map footer */
+.czm-footer{padding:10px 16px 14px;flex-shrink:0;text-align:center;}
+.cezm-close{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#64748b;font-size:.85rem;padding:9px 28px;cursor:pointer;}
+.cezm-close:hover{background:rgba(255,255,255,.12);color:#94a3b8;}
+/* Party portrait HUD */
+#cePartyHud{position:absolute;top:52px;left:10px;display:flex;flex-direction:column;gap:5px;z-index:12;pointer-events:all;}
+.ce-party-port{width:38px;height:38px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.2);position:relative;cursor:pointer;transition:transform .12s,border-color .12s;background:#111;}
+.ce-party-port:hover{transform:scale(1.12);border-color:rgba(255,255,255,.5);}
+.ce-party-port:active{transform:scale(.94);}
+.ce-party-port.cp-active-p{border-color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,.6);}
+.ce-party-port.cp-dead-p{opacity:.4;filter:grayscale(1);}
+.cp-hp-bar{position:absolute;bottom:0;left:0;right:0;height:4px;background:#1e293b;}
+.cp-hp-fill{height:100%;transition:width .15s;}
+.cp-active-dot{position:absolute;top:1px;right:1px;width:7px;height:7px;border-radius:50%;background:#ffd700;box-shadow:0 0 6px #ffd700;}
+.cp-dead-x{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#f87171;font-weight:900;}
 /* Game container */
 #ceGameContainer{position:absolute;inset:0;}
 #ceCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
@@ -22074,12 +22405,26 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 
   <!-- Zone selection screen -->
   <div id="ceZoneMap" class="hide">
-    <div class="cezm-header">
-      <div class="cezm-title">⚔ Elige tu Zona</div>
-      <div class="cezm-sub">Derrota a todos los enemigos para ganar oro y XP</div>
+    <div class="czm-header">
+      <div class="czm-title">⚔ Mapa de Aventura</div>
+      <div class="czm-sub">Derrota enemigos para ganar oro y XP</div>
     </div>
-    <div class="ce-zone-list" id="ceZoneList"></div>
-    <button class="cezm-close" onclick="CE.exit()">✕ Volver al campamento</button>
+    <div class="czm-scroll"><div id="ceZoneList"></div></div>
+    <div class="czm-footer"><button class="cezm-close" onclick="CE.exit()">✕ Volver al campamento</button></div>
+    <!-- Zone detail popup -->
+    <div id="ceZoneDetail" class="hide" onclick="closeCombatZoneDetail(event)">
+      <div class="czd-box">
+        <span class="czd-icon" id="czdIcon">⚔️</span>
+        <div class="czd-name" id="czdName"></div>
+        <div class="czd-boss-line" id="czdBoss"></div>
+        <div class="czd-stats" id="czdStats"></div>
+        <div class="czd-rewards" id="czdRewards"></div>
+        <div class="czd-actions">
+          <button class="czd-close-btn" onclick="closeCombatZoneDetail()">✕ Cerrar</button>
+          <button class="czd-enter-btn" id="czdEnterBtn">⚔ Entrar en la zona</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Game canvas + HUD + controls -->
@@ -22098,6 +22443,8 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
       <button id="cePauseBtn" onclick="CE.togglePause()">⏸</button>
       <div id="ceBuffRow"></div>
     </div>
+    <!-- Party portraits (shown when there are companions) -->
+    <div id="cePartyHud"></div>
     <!-- Boss HP bar -->
     <div id="ceBossBar" class="hide">
       <div id="ceBossName">💀 JEFE</div>
