@@ -4438,13 +4438,13 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   transition: background 2.5s ease;
 }
 .camp-sky.sky-clear {
-  background: linear-gradient(180deg,#08041a 0%,#180a40 35%,#2e1268 65%,#120828 100%);
+  background: linear-gradient(180deg,#06031a 0%,#130840 35%,#2a1065 65%,#1e0c30 82%,#2a0e10 100%);
 }
 .camp-sky.sky-overcast {
-  background: linear-gradient(180deg,#0a0a18 0%,#141425 35%,#1e1c32 65%,#0e0e1e 100%);
+  background: linear-gradient(180deg,#08071a 0%,#110e28 35%,#1a1630 65%,#15101e 82%,#1a0e0c 100%);
 }
 .camp-sky.sky-storm {
-  background: linear-gradient(180deg,#050509 0%,#0b090f 35%,#12101a 65%,#060609 100%);
+  background: linear-gradient(180deg,#06041a 0%,#0e0828 35%,#160b22 60%,#180a12 80%,#1c0c08 100%);
 }
 /* star dots */
 .camp-stars { position: absolute; inset: 0; pointer-events: none; }
@@ -4878,19 +4878,19 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 /* ── Camp epic background ── */
 .camp-moon {
   position: absolute; top: 7%; right: 7%;
-  width: 44px; height: 44px; border-radius: 50%;
-  background: radial-gradient(circle at 38% 35%,#fffff8 0%,#eee0b8 45%,#c8a96a 100%);
+  width: 54px; height: 54px; border-radius: 50%;
   box-shadow:
     0 0 0 1px rgba(255,246,180,.18),
-    0 0 18px rgba(255,244,160,.38),
-    0 0 55px rgba(255,238,130,.2),
-    0 0 110px rgba(255,228,100,.11);
+    0 0 22px rgba(255,244,160,.42),
+    0 0 65px rgba(255,238,130,.22),
+    0 0 130px rgba(255,228,100,.13);
   animation: campMoonPulse 9s ease-in-out infinite;
   pointer-events: none;
+  overflow: hidden;
 }
 @keyframes campMoonPulse {
-  0%,100% { box-shadow: 0 0 0 1px rgba(255,246,180,.18),0 0 18px rgba(255,244,160,.38),0 0 55px rgba(255,238,130,.2),0 0 110px rgba(255,228,100,.11); }
-  50%      { box-shadow: 0 0 0 1px rgba(255,246,180,.26),0 0 28px rgba(255,244,160,.52),0 0 80px rgba(255,238,130,.28),0 0 140px rgba(255,228,100,.16); }
+  0%,100% { box-shadow: 0 0 0 1px rgba(255,246,180,.18),0 0 22px rgba(255,244,160,.42),0 0 65px rgba(255,238,130,.22),0 0 130px rgba(255,228,100,.13); }
+  50%      { box-shadow: 0 0 0 1px rgba(255,246,180,.28),0 0 34px rgba(255,244,160,.56),0 0 95px rgba(255,238,130,.3),0 0 165px rgba(255,228,100,.18); }
 }
 .camp-nebula-l {
   position: absolute; width: 260px; height: 190px;
@@ -4921,65 +4921,64 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 /* campfire scene — in normal flow inside camp-char-wrap, below state label */
 .camp-fire-scene {
   position: relative;
-  width: 128px; height: 67px;
+  width: 200px; height: 80px;
   flex-shrink: 0;
   margin: 4px auto 0;
   pointer-events: none;
+  overflow: visible;
 }
 .camp-fire-spark-canvas {
-  position: absolute; bottom: 6px; left: 50%;
+  position: absolute; bottom: 0; left: 50%;
   transform: translateX(-50%);
-  width: 112px; height: 220px;
+  width: 200px; height: 320px;
   pointer-events: none;
 }
-.camp-fire-glow-base {
-  position: absolute; bottom: 3px; left: 50%;
-  transform: translateX(-50%);
-  width: 124px; height: 64px;
-  background: radial-gradient(ellipse at 50% 90%,rgba(251,146,60,.52) 0%,rgba(234,88,12,.26) 38%,transparent 68%);
+/* Hidden — drawn on canvas instead */
+.camp-fire-glow-base, .camp-fire-body, .camp-fire-logs { display: none; }
+/* Firefly dots */
+.camp-firefly {
+  position: absolute; width: 4px; height: 4px; border-radius: 50%;
+  background: #c8f060;
+  box-shadow: 0 0 5px #a0e030, 0 0 10px rgba(160,224,48,.5);
+  animation: fireflyPulse var(--fdur,3s) ease-in-out infinite,
+             fireflyFloat var(--fmov,6s) ease-in-out infinite alternate;
   pointer-events: none;
-  animation: campFireGlow 1.9s ease-in-out infinite alternate;
 }
-@keyframes campFireGlow {
-  from { opacity:.75; transform: translateX(-50%) scaleX(1); }
-  to   { opacity:1;   transform: translateX(-50%) scaleX(1.1); }
+@keyframes fireflyPulse {
+  0%,100% { opacity: var(--flo,.08); }
+  45%,55% { opacity: var(--fhi,.85); }
 }
-.camp-fire-body {
-  position: absolute; bottom: 14px; left: 50%;
-  transform: translateX(-50%);
-  width: 48px; height: 46px;
+@keyframes fireflyFloat {
+  0%   { transform: translate(0,0); }
+  33%  { transform: translate(var(--fx1,10px), var(--fy1,-8px)); }
+  66%  { transform: translate(var(--fx2,-9px), var(--fy2,10px)); }
+  100% { transform: translate(var(--fx3,6px), var(--fy3,-5px)); }
 }
-.camp-fire-body::before {
-  content: ''; position: absolute; bottom: 0;
-  left: 4px; width: 34px; height: 43px;
-  background: linear-gradient(to top,#fbbf24 0%,#f97316 35%,#ef4444 68%,transparent 100%);
-  border-radius: 52% 52% 24% 24%;
-  animation: campFire1 .25s ease-in-out infinite alternate;
-  transform-origin: bottom center;
+/* Shooting star */
+.camp-shooting-star {
+  position: absolute; top: 12%; right: 18%;
+  width: 0; height: 0; pointer-events: none; opacity: 0;
 }
-.camp-fire-body::after {
-  content: ''; position: absolute; bottom: 0;
-  left: 13px; width: 21px; height: 32px;
-  background: linear-gradient(to top,#fef08a 0%,#fbbf24 40%,#fb923c 72%,transparent 100%);
-  border-radius: 50% 50% 22% 22%;
-  animation: campFire2 .20s ease-in-out infinite alternate;
-  transform-origin: bottom center;
+.camp-shooting-star::after {
+  content: ''; position: absolute;
+  width: 140px; height: 1.5px;
+  right: 0; top: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,200,.85) 65%, #fff 100%);
+  border-radius: 1px;
 }
-@keyframes campFire1 {
-  from { transform: scaleX(1) scaleY(1) rotate(-2.5deg); }
-  to   { transform: scaleX(.84) scaleY(1.08) rotate(2.5deg); }
+@keyframes shootingStarFly {
+  0%   { transform: translate(0,0);           opacity: 0; }
+  6%   { opacity: 1; }
+  55%  { transform: translate(-190px,82px);   opacity: .75; }
+  80%  { transform: translate(-215px,94px);   opacity: 0; }
+  100% { opacity: 0; }
 }
-@keyframes campFire2 {
-  from { transform: scaleX(1.06) scaleY(1) rotate(1.5deg); }
-  to   { transform: scaleX(.9) scaleY(.95) rotate(-2deg); }
-}
-.camp-fire-logs {
-  position: absolute; bottom: 10px; left: 50%;
-  transform: translateX(-50%);
-  width: 50px; height: 11px;
-  background: linear-gradient(to right,#3d1f06,#6b3a14,#4e2a0a,#6b3a14,#3d1f06);
-  border-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.65);
+.camp-shooting-star.active { animation: shootingStarFly 1.3s ease-out forwards; }
+/* Ground strip */
+.camp-ground-strip {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 72px;
+  background: linear-gradient(0deg,#150e06 0%,#1e1408 45%,transparent 100%);
+  pointer-events: none; z-index: 0;
 }
 
 /* ── Castle throne door ── */
@@ -6874,24 +6873,67 @@ button:active:not(:disabled), .btn:active:not(:disabled),
         <div class="camp-stars" id="campStars"></div>
         <div class="camp-nebula-l"></div>
         <div class="camp-nebula-r"></div>
-        <div class="camp-moon"></div>
+        <div class="camp-moon">
+          <svg width="54" height="54" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="moonGrd" cx="40%" cy="35%" r="72%">
+                <stop offset="0%" stop-color="#fffff8"/>
+                <stop offset="42%" stop-color="#eee0b8"/>
+                <stop offset="100%" stop-color="#c8a96a"/>
+              </radialGradient>
+            </defs>
+            <circle cx="27" cy="27" r="27" fill="url(#moonGrd)"/>
+            <circle cx="34" cy="18" r="4" fill="rgba(120,88,28,.16)"/>
+            <circle cx="34" cy="18" r="2.8" fill="rgba(255,255,210,.2)"/>
+            <circle cx="16" cy="30" r="2.5" fill="rgba(110,80,22,.13)"/>
+            <circle cx="16" cy="30" r="1.6" fill="rgba(255,255,200,.15)"/>
+            <circle cx="40" cy="34" r="2.2" fill="rgba(110,80,22,.11)"/>
+            <circle cx="25" cy="38" r="1.5" fill="rgba(110,80,22,.1)"/>
+            <circle cx="20" cy="16" r="1.2" fill="rgba(110,80,22,.09)"/>
+          </svg>
+        </div>
+        <div class="camp-shooting-star" id="campShootingStar"></div>
         <svg class="camp-horizon" viewBox="0 0 390 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0,220 L0,155 L50,105 L90,135 L130,80 L180,125 L210,60 L250,115 L290,85 L330,118 L370,88 L390,112 L390,220 Z" fill="#09060f"/>
-          <path d="M0,220 L0,182 L45,160 L90,174 L125,152 L165,170 L205,150 L250,172 L282,157 L320,172 L355,160 L390,170 L390,220 Z" fill="#060410"/>
-          <polygon points="5,200 28,158 50,200" fill="#050210"/>
-          <polygon points="-2,210 24,163 50,210" fill="#060312"/>
-          <polygon points="42,206 66,161 90,206" fill="#040210"/>
-          <polygon points="36,216 63,169 90,216" fill="#050310"/>
-          <polygon points="300,205 323,162 346,205" fill="#050210"/>
-          <polygon points="295,215 320,168 345,215" fill="#060312"/>
-          <polygon points="338,202 362,158 386,202" fill="#040210"/>
-          <polygon points="334,213 360,166 386,213" fill="#050310"/>
-          <rect x="25" y="200" width="5" height="16" fill="#04020e"/>
-          <rect x="62" y="206" width="5" height="14" fill="#04020e"/>
-          <rect x="319" y="205" width="5" height="14" fill="#04020e"/>
-          <rect x="358" y="202" width="5" height="14" fill="#04020e"/>
+          <defs>
+            <linearGradient id="mistGrd" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#8088b0" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#8088b0" stop-opacity=".11"/>
+            </linearGradient>
+          </defs>
+          <!-- Far mountains - blueish silhouettes -->
+          <path d="M0,220 L0,152 L42,104 L82,136 L118,78 L162,122 L195,56 L232,108 L268,76 L308,112 L342,80 L372,106 L390,90 L390,220 Z" fill="#0d0820"/>
+          <!-- Snow caps on far peaks -->
+          <polygon points="118,78 132,108 104,108" fill="rgba(195,210,235,.5)"/>
+          <polygon points="195,56 210,88 180,88" fill="rgba(195,210,235,.55)"/>
+          <polygon points="342,80 356,106 328,106" fill="rgba(195,210,235,.45)"/>
+          <!-- Near mountains - darker foreground -->
+          <path d="M0,220 L0,184 L44,162 L88,176 L122,154 L162,172 L202,152 L248,174 L280,158 L318,175 L354,161 L390,172 L390,220 Z" fill="#070410"/>
+          <!-- Mist layer -->
+          <rect x="0" y="168" width="390" height="36" fill="url(#mistGrd)"/>
+          <!-- Pine trees — left side (layered triangles) -->
+          <polygon points="-4,220 16,170 36,220" fill="#050210"/>
+          <polygon points="2,220 20,176 38,220" fill="#060314"/>
+          <polygon points="30,220 52,162 74,220" fill="#040210"/>
+          <polygon points="38,220 62,170 86,220" fill="#050312"/>
+          <polygon points="68,220 88,174 108,220" fill="#040210"/>
+          <!-- Pine trunks left -->
+          <rect x="14" y="212" width="4" height="8" fill="#03010a"/>
+          <rect x="50" y="213" width="3" height="7" fill="#03010a"/>
+          <rect x="60" y="211" width="4" height="9" fill="#03010a"/>
+          <rect x="85" y="213" width="3" height="7" fill="#03010a"/>
+          <!-- Pine trees — right side -->
+          <polygon points="282,220 304,172 326,220" fill="#040210"/>
+          <polygon points="306,220 328,164 350,220" fill="#050312"/>
+          <polygon points="330,220 354,170 378,220" fill="#040210"/>
+          <polygon points="354,220 376,168 398,220" fill="#060314"/>
+          <!-- Pine trunks right -->
+          <rect x="302" y="212" width="4" height="8" fill="#03010a"/>
+          <rect x="325" y="213" width="3" height="7" fill="#03010a"/>
+          <rect x="352" y="212" width="4" height="8" fill="#03010a"/>
+          <rect x="373" y="213" width="3" height="7" fill="#03010a"/>
         </svg>
         <div class="camp-ground-glow"></div>
+        <div class="camp-ground-strip"></div>
         <div class="camp-vignette"></div>
       </div>
       <!-- Hero zone -->
@@ -11906,24 +11948,60 @@ function _campRenderBg() {
   else if (score >= 4)          { sky.classList.add('sky-overcast'); }
   else                          { sky.classList.add('sky-storm'); }
 
-  // Seed stars once
+  // Seed stars + fireflies once
   var starsEl = document.getElementById('campStars');
   if (starsEl && !starsEl._seeded) {
     starsEl._seeded = true;
-    var starPalette = ['#ffffff','#dde8ff','#ffe8c8','#d8ccff','#f0f8ff'];
-    for (var i = 0; i < 80; i++) {
+    var starPalette = ['#ffffff','#dde8ff','#ffe8c8','#d8ccff','#f0f8ff','#fff6e8'];
+    for (var i = 0; i < 120; i++) {
       var s = document.createElement('div');
       s.className = 'camp-star';
-      var sz = .7 + Math.random() * 2.4;
+      var sz = .5 + Math.random() * 2.6;
       var clr = starPalette[Math.floor(Math.random()*starPalette.length)];
       s.style.cssText = 'width:'+sz+'px;height:'+sz+'px;'
-        +'left:'+Math.random()*100+'%;top:'+Math.random()*62+'%;'
-        +'--dur:'+(1.6+Math.random()*3.8)+'s;'
-        +'--lo:'+(0.06+Math.random()*0.18)+';--hi:'+(0.52+Math.random()*0.48)+';'
-        +'animation-delay:'+(Math.random()*5)+'s;'
+        +'left:'+Math.random()*100+'%;top:'+Math.random()*68+'%;'
+        +'--dur:'+(1.4+Math.random()*4.2)+'s;'
+        +'--lo:'+(0.04+Math.random()*0.16)+';--hi:'+(0.45+Math.random()*0.55)+';'
+        +'animation-delay:'+(Math.random()*6)+'s;'
         +'background:'+clr+';';
       starsEl.appendChild(s);
     }
+    // Fireflies
+    for (var i = 0; i < 9; i++) {
+      var ff = document.createElement('div');
+      ff.className = 'camp-firefly';
+      ff.style.cssText =
+        'left:'+(8+Math.random()*84)+'%;'
+        +'top:'+(22+Math.random()*52)+'%;'
+        +'--fdur:'+(2.2+Math.random()*3.5)+'s;'
+        +'--fmov:'+(5+Math.random()*6)+'s;'
+        +'--flo:'+(0.04+Math.random()*0.09)+';'
+        +'--fhi:'+(0.55+Math.random()*0.4)+';'
+        +'--fx1:'+((Math.random()-.5)*22)+'px;'
+        +'--fy1:'+((Math.random()-.5)*18)+'px;'
+        +'--fx2:'+((Math.random()-.5)*22)+'px;'
+        +'--fy2:'+((Math.random()-.5)*18)+'px;'
+        +'--fx3:'+((Math.random()-.5)*16)+'px;'
+        +'--fy3:'+((Math.random()-.5)*16)+'px;'
+        +'animation-delay:'+(Math.random()*8)+'s;';
+      starsEl.appendChild(ff);
+    }
+    // Shooting star — trigger every 15s
+    (function() {
+      function shootStar() {
+        var ss = document.getElementById('campShootingStar');
+        if (!ss) return;
+        ss.style.top  = (7+Math.random()*22)+'%';
+        ss.style.right= (8+Math.random()*45)+'%';
+        ss.classList.remove('active');
+        void ss.offsetWidth;
+        ss.classList.add('active');
+      }
+      if (!starsEl._shootTimer) {
+        starsEl._shootTimer = setInterval(shootStar, 15000);
+        setTimeout(shootStar, 4000); // first one after 4s
+      }
+    })();
   }
   _campStartFire();
   _campUpdateDoor();
@@ -11933,40 +12011,165 @@ function _campStartFire() {
   var canvas = document.getElementById('campFireCanvas');
   if (!canvas || canvas._firing) return;
   var ctx = canvas.getContext('2d');
-  var W = canvas.offsetWidth || 140;
-  var H = canvas.offsetHeight || 190;
+  var W = 200, H = 320;
   canvas.width = W; canvas.height = H;
   canvas._firing = true;
+
+  var FBY = H - 55; // fire base Y
+  var FCX = W / 2;  // fire center X
+
   function mkSpark() {
-    return {
-      x: W/2 + (Math.random()-.5)*32,
-      y: H - 20,
-      vx: (Math.random()-.5)*1.1,
-      vy: -(1.6+Math.random()*2.6),
-      life: Math.random()*35,
-      maxLife: 55+Math.random()*70,
-      sz: .9+Math.random()*1.9,
-      hue: 16+Math.random()*42
-    };
+    return { x:FCX+(Math.random()-.5)*34, y:FBY-4, vx:(Math.random()-.5)*1.5,
+      vy:-(1.8+Math.random()*3.6), life:Math.random()*20, maxLife:40+Math.random()*90,
+      sz:.8+Math.random()*2.2, hue:16+Math.random()*46 };
   }
-  var sparks = [];
-  for (var i=0;i<24;i++) sparks.push(mkSpark());
+  function mkEmber() {
+    return { x:FCX+(Math.random()-.5)*22, y:FBY-4, vx:(Math.random()-.5)*.9,
+      vy:-(0.7+Math.random()*2), life:Math.random()*30, maxLife:70+Math.random()*130,
+      sz:1.4+Math.random()*2.8, hue:20+Math.random()*32, idx:Math.random()*10 };
+  }
+  function mkFirefly() {
+    return { x:18+Math.random()*(W-36), y:16+Math.random()*(H-130),
+      vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.3,
+      phase:Math.random()*Math.PI*2, period:2.5+Math.random()*4 };
+  }
+
+  var sparks=[]; var embers=[]; var flies=[];
+  for(var i=0;i<38;i++){ var s=mkSpark(); s.life=Math.random()*s.maxLife; sparks.push(s); }
+  for(var i=0;i<10;i++){ var e=mkEmber(); e.life=Math.random()*e.maxLife; embers.push(e); }
+  for(var i=0;i<7;i++) flies.push(mkFirefly());
+
+  function drawFlamePetal(cx,cy,hw,h,t,grad,phase) {
+    var osc=Math.sin(t*3.8+phase)*.14;
+    var tip=cx+Math.sin(t*5.2+phase)*hw*.22;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.bezierCurveTo(cx-hw*(1.1+osc),cy-h*.4, cx-hw*(.5-osc*.5),cy-h*.88, tip,cy-h);
+    ctx.bezierCurveTo(cx+hw*(.5+osc*.5),cy-h*.88, cx+hw*(1.1-osc),cy-h*.4, cx,cy);
+    var g=ctx.createLinearGradient(cx,cy-h,cx,cy);
+    grad.forEach(function(s){g.addColorStop(s[0],s[1]);});
+    ctx.fillStyle=g; ctx.fill(); ctx.restore();
+  }
+
+  function drawFire(t) {
+    var o1=Math.sin(t*3.1+.5)*.12;
+    // Outer glow halo
+    drawFlamePetal(FCX,FBY,46+o1*12,82,t,[
+      [0,'rgba(200,40,0,0)'],[.28,'rgba(220,50,10,.45)'],[.65,'rgba(180,25,0,.3)'],[1,'rgba(150,15,0,0)']],o1);
+    // Outer red flame
+    drawFlamePetal(FCX,FBY,36+o1*8,70,t,[
+      [0,'rgba(255,50,0,0)'],[.25,'rgba(255,55,8,.8)'],[.6,'rgba(230,35,0,.65)'],[1,'rgba(190,20,0,0)']],o1);
+    // Middle orange
+    var o2=Math.sin(t*4.2+1.5)*.1;
+    drawFlamePetal(FCX,FBY,26+o2*7,56,t,[
+      [0,'rgba(255,130,0,0)'],[.25,'rgba(255,135,5,.88)'],[.65,'rgba(255,100,0,.72)'],[1,'rgba(240,75,0,0)']],o2+.4);
+    // Inner yellow-orange
+    var o3=Math.sin(t*5.5+3.0)*.08;
+    drawFlamePetal(FCX,FBY,16+o3*5,42,t,[
+      [0,'rgba(255,215,30,0)'],[.22,'rgba(255,210,28,.92)'],[.62,'rgba(255,155,15,.78)'],[1,'rgba(255,110,0,0)']],o3-.3);
+    // Core white-yellow
+    var o4=Math.sin(t*6.8+2.2)*.07;
+    drawFlamePetal(FCX,FBY,9+o4*3,26,t,[
+      [0,'rgba(255,255,200,0)'],[.18,'rgba(255,252,200,.96)'],[.58,'rgba(255,228,110,.82)'],[1,'rgba(255,195,70,0)']],o4+.8);
+  }
+
+  function drawGlow(t) {
+    var pa=.52+Math.sin(t*2.1)*.13, pw=1+Math.sin(t*1.7)*.08;
+    var grd=ctx.createRadialGradient(FCX,FBY,0,FCX,FBY,95*pw);
+    grd.addColorStop(0,'rgba(255,145,30,'+pa+')');
+    grd.addColorStop(.32,'rgba(240,90,18,'+(pa*.62)+')');
+    grd.addColorStop(.62,'rgba(200,50,8,'+(pa*.22)+')');
+    grd.addColorStop(1,'rgba(170,25,0,0)');
+    ctx.save(); ctx.scale(1,.38);
+    ctx.beginPath(); ctx.arc(FCX,FBY/.38,95*pw,0,Math.PI*2);
+    ctx.fillStyle=grd; ctx.fill(); ctx.restore();
+  }
+
+  var STONE_ANGS=[0,55,110,180,250,305];
+  function drawStones() {
+    STONE_ANGS.forEach(function(deg) {
+      var a=deg*Math.PI/180, r=36;
+      var sx=FCX+Math.cos(a)*r, sy=FBY+3+Math.sin(a)*r*.44;
+      var sw=7+Math.abs(Math.cos(a))*3.5, sh=4+Math.abs(Math.sin(a))*2;
+      ctx.save();
+      ctx.beginPath(); ctx.ellipse(sx,sy,sw,sh,a*.35,0,Math.PI*2);
+      ctx.fillStyle='#2e2420'; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(sx-1,sy-1.5,sw-2,sh-1.5,a*.35,0,Math.PI*2);
+      ctx.fillStyle='#44352a'; ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  function drawOneLog(x1,y1,x2,y2) {
+    var ang=Math.atan2(y2-y1,x2-x1), len=Math.hypot(x2-x1,y2-y1);
+    ctx.save(); ctx.translate(x1,y1); ctx.rotate(ang);
+    ctx.fillStyle='#5a2e0e';
+    ctx.beginPath(); ctx.arc(0,0,4.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#5a2e0e';
+    ctx.fillRect(0,-4.5,len,9);
+    ctx.fillStyle='#7a4218';
+    ctx.fillRect(2,-3,len-4,3.5);
+    ctx.fillStyle='#3a1c08';
+    ctx.beginPath(); ctx.arc(0,0,4.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#5a3012';
+    ctx.beginPath(); ctx.arc(0,0,2.8,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+  function drawLogs() {
+    drawOneLog(FCX-20,FBY+4, FCX+14,FBY+8);
+    drawOneLog(FCX+20,FBY+4, FCX-14,FBY+8);
+  }
+
   function tick() {
     if (!canvas._firing) return;
+    var t = performance.now()/1000;
     ctx.clearRect(0,0,W,H);
-    for (var i=0;i<sparks.length;i++) {
+
+    drawGlow(t);
+    drawStones();
+    drawLogs();
+    drawFire(t);
+
+    // Sparks
+    for(var i=0;i<sparks.length;i++) {
       var sp=sparks[i];
-      sp.x += sp.vx + (Math.random()-.5)*.38;
-      sp.y += sp.vy;
-      sp.vy *= .984;
-      sp.life++;
-      if (sp.life>sp.maxLife) { sparks[i]=mkSpark(); continue; }
-      var t=sp.life/sp.maxLife;
-      var a=t<.22?t/.22:Math.max(0,1-(t-.22)/.78);
+      sp.x += sp.vx+(Math.random()-.5)*.48; sp.y+=sp.vy; sp.vy*=.982; sp.life++;
+      if(sp.life>sp.maxLife){sparks[i]=mkSpark();continue;}
+      var tt=sp.life/sp.maxLife, a=tt<.22?tt/.22:Math.max(0,1-(tt-.22)/.78);
       ctx.beginPath();
-      ctx.arc(sp.x,sp.y,Math.max(.4,sp.sz*(1-t*.6)),0,Math.PI*2);
-      ctx.fillStyle='hsla('+sp.hue+',100%,'+(62+t*24)+'%,'+a+')';
+      ctx.arc(sp.x,sp.y,Math.max(.3,sp.sz*(1-tt*.65)),0,Math.PI*2);
+      ctx.fillStyle='hsla('+sp.hue+',100%,'+(60+tt*26)+'%,'+a+')';
       ctx.fill();
+    }
+    // Embers (glowing, slower)
+    for(var i=0;i<embers.length;i++) {
+      var em=embers[i];
+      em.x+=em.vx+Math.sin(t*1.8+em.idx)*.32; em.y+=em.vy; em.vy*=.991; em.life++;
+      if(em.life>em.maxLife){embers[i]=mkEmber();continue;}
+      var tt=em.life/em.maxLife, a=tt<.25?tt/.25:Math.max(0,1-(tt-.25)/.75);
+      ctx.beginPath(); ctx.arc(em.x,em.y,em.sz*2.2,0,Math.PI*2);
+      ctx.fillStyle='hsla('+em.hue+',100%,60%,'+(a*.28)+')'; ctx.fill();
+      ctx.beginPath(); ctx.arc(em.x,em.y,Math.max(.5,em.sz*(1-tt*.5)),0,Math.PI*2);
+      ctx.fillStyle='hsla('+em.hue+',100%,'+(70+tt*18)+'%,'+a+')'; ctx.fill();
+    }
+    // Fireflies
+    for(var i=0;i<flies.length;i++) {
+      var ff=flies[i];
+      ff.x+=ff.vx+Math.sin(t*.7+i*1.3)*.28; ff.y+=ff.vy+Math.cos(t*.9+i*1.7)*.22;
+      if(ff.x<14)ff.vx+=.04; if(ff.x>W-14)ff.vx-=.04;
+      if(ff.y<12)ff.vy+=.03; if(ff.y>H-120)ff.vy-=.03;
+      ff.vx*=.99; ff.vy*=.99;
+      var br=.5+.5*Math.sin((t/ff.period)*Math.PI*2+ff.phase);
+      if(br<.07) continue;
+      var grd=ctx.createRadialGradient(ff.x,ff.y,0,ff.x,ff.y,9);
+      grd.addColorStop(0,'rgba(195,240,70,'+(br*.72)+')');
+      grd.addColorStop(.5,'rgba(155,220,42,'+(br*.36)+')');
+      grd.addColorStop(1,'rgba(70,175,15,0)');
+      ctx.beginPath(); ctx.arc(ff.x,ff.y,9,0,Math.PI*2);
+      ctx.fillStyle=grd; ctx.fill();
+      ctx.beginPath(); ctx.arc(ff.x,ff.y,1.6,0,Math.PI*2);
+      ctx.fillStyle='rgba(220,255,95,'+br+')'; ctx.fill();
     }
     canvas._raf=requestAnimationFrame(tick);
   }
