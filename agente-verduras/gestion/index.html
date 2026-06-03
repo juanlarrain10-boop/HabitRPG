@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verdurín — Gestión de Pedidos</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark:  #1E5631;
+      --green-mid:   #2d6a4f;
+      --green-light: #52b788;
+      --green-pale:  #d8f3dc;
+      --bg:          #f0f7f1;
+      --white:       #ffffff;
+      --text:        #1a1a1a;
+      --muted:       #6c757d;
+      --border:      #dee2e6;
+      --danger:      #dc3545;
+      --shadow:      0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 32px;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--green-dark);
+      color: white;
+      padding: 14px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+    }
+    header h1 { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.3px; }
+    header p  { font-size: 0.78rem; opacity: 0.75; margin-top: 2px; }
+
+    /* NAV */
+    nav {
+      background: var(--white);
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 60px;
+      z-index: 99;
+    }
+    nav button {
+      flex: 1;
+      padding: 11px 4px 9px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      transition: color .15s;
+      min-width: 60px;
+    }
+    nav button .icon { font-size: 1.25rem; line-height: 1; }
+    nav button.active {
+      color: var(--green-dark);
+      border-bottom: 3px solid var(--green-dark);
+      margin-bottom: -2px;
+    }
+
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 16px 14px 0;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* CARD */
+    .card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+    .card h2 {
+      font-size: 0.95rem;
+      color: var(--green-dark);
+      margin-bottom: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    /* FORM */
+    .form-group { margin-bottom: 15px; }
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 7px;
+    }
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color .15s;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 3px rgba(82,183,136,.12);
+    }
+    textarea { resize: vertical; min-height: 68px; }
+
+    /* CANASTA OPTIONS */
+    .canasta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .radio-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .radio-card label {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .15s;
+      font-weight: 400;
+      margin: 0;
+    }
+    .radio-card label .rc-name { font-weight: 700; font-size: 0.88rem; color: var(--green-dark); }
+    .radio-card label .rc-price { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .radio-card input:checked + label {
+      border-color: var(--green-dark);
+      background: var(--green-pale);
+    }
+    .span2 { grid-column: span 2; }
+
+    /* PAPAS GRID */
+    .papas-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .papas-grid .radio-card label {
+      padding: 8px 4px;
+      text-align: center;
+      align-items: center;
+    }
+    .papas-grid .rc-name { font-size: 0.82rem; }
+    .papas-grid .rc-price { font-size: 0.7rem; }
+
+    /* TOTAL PREVIEW */
+    .total-preview {
+      background: var(--green-pale);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .total-preview .tp-label { font-weight: 700; color: var(--green-dark); font-size: 0.9rem; }
+    .total-preview .tp-amount { font-size: 1.4rem; font-weight: 900; color: var(--green-dark); }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 9px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-primary { background: var(--green-dark); color: white; width: 100%; }
+    .btn-primary:active { background: var(--green-mid); }
+    .btn-secondary { background: var(--green-pale); color: var(--green-dark); }
+    .btn-danger { background: transparent; color: var(--danger); padding: 5px 9px; font-size: 0.82rem; }
+    .btn-block { width: 100%; }
+
+    /* TABLE */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -2px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    th {
+      background: var(--green-dark);
+      color: white;
+      padding: 9px 11px;
+      text-align: left;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    th:first-child { border-radius: 8px 0 0 0; }
+    th:last-child  { border-radius: 0 8px 0 0; }
+    td { padding: 9px 11px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f8fdf9; }
+    tfoot td {
+      background: var(--green-pale);
+      font-weight: 800;
+      color: var(--green-dark);
+      border-top: 2px solid var(--green-light);
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-basica       { background: #e8f5e9; color: #2e7d32; }
+    .badge-completa     { background: #e3f2fd; color: #1565c0; }
+    .badge-premium      { background: #fff8e1; color: #e65100; }
+    .badge-personalizada{ background: #f3e5f5; color: #6a1b9a; }
+    .badge-papas        { background: #fff3e0; color: #bf360c; }
+
+    /* SHOPPING LIST */
+    .ing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+    .ing-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: var(--bg);
+      border-radius: 8px;
+    }
+    .ing-name { font-size: 0.84rem; font-weight: 500; }
+    .ing-qty  { font-size: 0.84rem; font-weight: 800; color: var(--green-dark); margin-left: 6px; white-space: nowrap; }
+    .ing-item.adjusted { background: #fff8e1; }
+    .ing-sub  { font-size: 0.7rem; font-weight: 500; color: #b45309; display: block; }
+
+    /* MODS */
+    .mod-item {
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.84rem;
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+    .mod-item:last-child { border-bottom: none; }
+    .mod-name { font-weight: 700; color: var(--green-dark); flex-shrink: 0; }
+
+    /* SUMMARY */
+    .sum-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .sum-card {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .sum-card.big { grid-column: span 2; background: var(--green-dark); }
+    .sum-label { font-size: 0.73rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
+    .sum-card.big .sum-label { color: rgba(255,255,255,.65); }
+    .sum-value { font-size: 1.2rem; font-weight: 900; color: var(--green-dark); }
+    .sum-card.big .sum-value { color: white; font-size: 1.6rem; }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .split-person {
+      background: var(--green-pale);
+      border-radius: 10px;
+      padding: 16px 12px;
+      text-align: center;
+    }
+    .split-name   { font-size: 0.78rem; font-weight: 700; color: var(--green-mid); margin-bottom: 5px; }
+    .split-amount { font-size: 1.3rem; font-weight: 900; color: var(--green-dark); }
+
+    .vega-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vega-row span { color: var(--muted); font-size: 1rem; flex-shrink: 0; font-weight: 700; }
+
+    /* EMPTY */
+    .empty {
+      text-align: center;
+      padding: 38px 20px;
+      color: var(--muted);
+    }
+    .empty .ei { font-size: 2.8rem; margin-bottom: 10px; }
+    .empty p { font-size: 0.88rem; line-height: 1.5; }
+
+    .hidden { display: none !important; }
+
+    .print-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 440px) {
+      .papas-grid { grid-template-columns: repeat(3, 1fr); }
+      .ing-grid { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      header, nav, .print-row, .btn-danger, #tab-agregar, #tab-resumen { display: none !important; }
+      .section { display: block !important; }
+      .card { box-shadow: none; border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🥦 Verdurín — Gestión de Pedidos</h1>
+  <p id="semana-label"></p>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('pedidos')">
+    <span class="icon">📋</span>Pedidos
+  </button>
+  <button onclick="showTab('agregar')">
+    <span class="icon">➕</span>Agregar
+  </button>
+  <button onclick="showTab('compra')">
+    <span class="icon">🛒</span>Compra
+  </button>
+  <button onclick="showTab('resumen')">
+    <span class="icon">💰</span>Resumen
+  </button>
+</nav>
+
+<main>
+
+  <!-- ── PEDIDOS ── -->
+  <div id="tab-pedidos" class="section active">
+    <div class="card">
+      <h2>📋 Pedidos de la semana</h2>
+      <div id="pedidos-container"></div>
+    </div>
+  </div>
+
+  <!-- ── AGREGAR ── -->
+  <div id="tab-agregar" class="section">
+    <div class="card">
+      <h2>➕ Nuevo pedido</h2>
+
+      <div class="form-group">
+        <label for="inp-nombre">Nombre del cliente</label>
+        <input type="text" id="inp-nombre" placeholder="Ej: María González" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de canasta</label>
+        <div class="canasta-grid">
+          <div class="radio-card">
+            <input type="radio" name="canasta" id="c-ninguna" value="ninguna" checked>
+            <label for="c-ninguna">
+              <span class="rc-name">Sin canasta</span>
+              <span class="rc-price">Solo papas</span>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="canasta" id="c-basica" value="basica">
+            <label for="c-basica">
+              <span class="rc-name">🧺 Básica</span>
+              <span class="rc-price">$16.900</span>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="canasta" id="c-completa" value="completa">
+            <label for="c-completa">
+              <span class="rc-name">🧺 Completa</span>
+              <span class="rc-price">$24.900</span>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="canasta" id="c-premium" value="premium">
+            <label for="c-premium">
+              <span class="rc-name">⭐ Premium</span>
+              <span class="rc-price">$34.900</span>
+            </label>
+          </div>
+          <div class="radio-card span2">
+            <input type="radio" name="canasta" id="c-personalizada" value="personalizada">
+            <label for="c-personalizada">
+              <span class="rc-name">✏️ Personalizada</span>
+              <span class="rc-price">Precio manual</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group hidden" id="wrap-precio-custom">
+        <label for="inp-precio-custom">Precio canasta personalizada ($)</label>
+        <input type="number" id="inp-precio-custom" placeholder="Ej: 20000" min="0">
+      </div>
+
+      <div class="form-group hidden" id="wrap-mods">
+        <label for="inp-mods">Modificaciones</label>
+        <textarea id="inp-mods" placeholder="Ej: sin ajo, lechuga española en vez de costina"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Papas 🥔 <span id="papas-hint" style="font-weight:400;color:var(--muted);font-size:0.75rem;"></span></label>
+        <div class="papas-grid" id="papas-grid"></div>
+      </div>
+
+      <div class="total-preview">
+        <span class="tp-label">Total a cobrar</span>
+        <span class="tp-amount" id="total-preview">$0</span>
+      </div>
+
+      <button class="btn btn-primary" onclick="agregarPedido()">✅ Agregar pedido</button>
+    </div>
+  </div>
+
+  <!-- ── COMPRA ── -->
+  <div id="tab-compra" class="section">
+    <div class="card">
+      <h2>🛒 Lista de compra</h2>
+      <div class="print-row">
+        <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir</button>
+      </div>
+      <div id="compra-container"></div>
+    </div>
+
+    <div class="card hidden" id="card-papas-compra">
+      <h2>🥔 Papas a comprar</h2>
+      <div id="papas-compra"></div>
+    </div>
+
+    <div class="card hidden" id="card-mods">
+      <h2>⚠️ Modificaciones a considerar</h2>
+      <div id="mods-lista"></div>
+    </div>
+  </div>
+
+  <!-- ── RESUMEN ── -->
+  <div id="tab-resumen" class="section">
+    <div class="card">
+      <h2>💰 Resumen financiero</h2>
+      <div class="sum-grid" id="sum-grid"></div>
+    </div>
+
+    <div class="card">
+      <h2>🏪 Costo estimado La Vega</h2>
+      <div class="form-group">
+        <label for="inp-vega">Total gastado en la compra</label>
+        <div class="vega-row">
+          <span>$</span>
+          <input type="number" id="inp-vega" placeholder="0" min="0" oninput="renderResumen()">
+        </div>
+      </div>
+      <div id="ganancia-wrap" class="hidden">
+        <div class="sum-grid">
+          <div class="sum-card">
+            <div class="sum-label">Ganancia bruta</div>
+            <div class="sum-value" id="val-ganancia">$0</div>
+          </div>
+          <div class="sum-card">
+            <div class="sum-label">Margen</div>
+            <div class="sum-value" id="val-margen">0%</div>
+          </div>
+        </div>
+        <div class="split-grid">
+          <div class="split-person">
+            <div class="split-name">👤 Juan</div>
+            <div class="split-amount" id="split-juan">$0</div>
+          </div>
+          <div class="split-person">
+            <div class="split-name">👤 Amalia</div>
+            <div class="split-amount" id="split-amalia">$0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <button class="btn btn-danger btn-block" onclick="limpiarSemana()">
+        🗑️ Limpiar todos los pedidos de esta semana
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ── DATA ─────────────────────────────────────────────────────── */
+const CANASTAS = {
+  basica: {
+    nombre: 'Básica', precio: 16900,
+    ingredientes: [
+      { nombre: 'Tomate',         cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Palta',          cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Cebolla',        cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Zanahoria',      cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Lechuga costina',cantidad: 1,   unidad: 'u'       },
+      { nombre: 'Pimentón verde', cantidad: 2,   unidad: 'u'       },
+      { nombre: 'Plátano',        cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Limón',          cantidad: 0.5, unidad: 'kg'      },
+      { nombre: 'Ajo',            cantidad: 2,   unidad: 'cabezas' },
+      { nombre: 'Cilantro',       cantidad: 1,   unidad: 'atado'   },
+    ],
+  },
+  completa: {
+    nombre: 'Completa', precio: 24900,
+    ingredientes: [
+      { nombre: 'Tomate',         cantidad: 2,   unidad: 'kg'      },
+      { nombre: 'Palta',          cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Cebolla',        cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Zanahoria',      cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Lechuga costina',cantidad: 1,   unidad: 'u'       },
+      { nombre: 'Pimentón verde', cantidad: 3,   unidad: 'u'       },
+      { nombre: 'Brócoli',        cantidad: 1,   unidad: 'u'       },
+      { nombre: 'Plátano',        cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Naranja',        cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Limón',          cantidad: 0.5, unidad: 'kg'      },
+      { nombre: 'Manzana',        cantidad: 0.5, unidad: 'kg'      },
+      { nombre: 'Ajo',            cantidad: 3,   unidad: 'cabezas' },
+      { nombre: 'Cilantro',       cantidad: 1,   unidad: 'atado'   },
+    ],
+  },
+  premium: {
+    nombre: 'Premium', precio: 34900,
+    ingredientes: [
+      { nombre: 'Tomate',         cantidad: 2,   unidad: 'kg'      },
+      { nombre: 'Palta',          cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Frutilla',       cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Manzana',        cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Naranja',        cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Lechuga costina',cantidad: 1,   unidad: 'u'       },
+      { nombre: 'Pimentón rojo',  cantidad: 2,   unidad: 'u'       },
+      { nombre: 'Brócoli',        cantidad: 1,   unidad: 'u'       },
+      { nombre: 'Plátano',        cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Limón',          cantidad: 1,   unidad: 'kg'      },
+      { nombre: 'Piña',           cantidad: 1,   unidad: 'u'       },
+      { nombre: 'Arándanos',      cantidad: 125, unidad: 'g'       },
+      { nombre: 'Ajo',            cantidad: 4,   unidad: 'cabezas' },
+      { nombre: 'Cilantro',       cantidad: 1,   unidad: 'atado'   },
+    ],
+  },
+};
+
+const PAPAS = {
+  '2kg':  { con: 3000,  sin: 3500  },
+  '5kg':  { con: 5000,  sin: 6500  },
+  '10kg': { con: 10000, sin: 12000 },
+  '20kg': { con: 18000, sin: 22000 },
+};
+
+const MODS_RULES = [
+  { keywords: ['sin ajo'],                                ing: 'Ajo'             },
+  { keywords: ['sin cebolla'],                            ing: 'Cebolla'         },
+  { keywords: ['sin cilantro'],                           ing: 'Cilantro'        },
+  { keywords: ['sin cebollín', 'sin cebollin'],           ing: 'Cebollín'        },
+  { keywords: ['sin pimentón', 'sin pimenton'],           ing: 'Pimentón verde'  },
+  { keywords: ['sin pimentón', 'sin pimenton'],           ing: 'Pimentón rojo'   },
+  { keywords: ['sin brócoli', 'sin brocoli'],             ing: 'Brócoli'         },
+  { keywords: ['sin zanahoria'],                          ing: 'Zanahoria'       },
+  { keywords: ['sin limón', 'sin limon'],                 ing: 'Limón'           },
+  { keywords: ['sin plátano', 'sin platano'],             ing: 'Plátano'         },
+  { keywords: ['sin palta'],                              ing: 'Palta'           },
+  { keywords: ['sin tomate'],                             ing: 'Tomate'          },
+  { keywords: ['sin naranja'],                            ing: 'Naranja'         },
+  { keywords: ['sin manzana'],                            ing: 'Manzana'         },
+  { keywords: ['sin frutilla'],                           ing: 'Frutilla'        },
+  { keywords: ['sin arándanos', 'sin arandanos'],         ing: 'Arándanos'       },
+  { keywords: ['sin piña', 'sin pina'],                   ing: 'Piña'            },
+  { keywords: ['sin lechuga'],                            ing: 'Lechuga costina' },
+];
+
+function getModSubtractions(text) {
+  if (!text) return new Set();
+  const lower = text.toLowerCase();
+  const removed = new Set();
+  for (const rule of MODS_RULES) {
+    if (rule.keywords.some(kw => lower.includes(kw))) removed.add(rule.ing);
+  }
+  return removed;
+}
+
+/* ── STATE ────────────────────────────────────────────────────── */
+let pedidos = JSON.parse(localStorage.getItem('verdurin-pedidos') || '[]');
+
+function save() {
+  localStorage.setItem('verdurin-pedidos', JSON.stringify(pedidos));
+}
+
+/* ── INIT ─────────────────────────────────────────────────────── */
+(function init() {
+  const hoy  = new Date();
+  const lunes = new Date(hoy);
+  lunes.setDate(hoy.getDate() - ((hoy.getDay() + 6) % 7));
+  const sabado = new Date(lunes);
+  sabado.setDate(lunes.getDate() + 5);
+  const mes = (d) => d.toLocaleString('es-CL', { month: 'long' });
+  document.getElementById('semana-label').textContent =
+    `${lunes.getDate()} – ${sabado.getDate()} de ${mes(sabado)}`;
+
+  document.querySelectorAll('input[name="canasta"]').forEach(r =>
+    r.addEventListener('change', onCanastaChange)
+  );
+  document.getElementById('inp-precio-custom').addEventListener('input', updatePreview);
+
+  renderPapasGrid();
+  renderAll();
+})();
+
+/* ── CANASTA CHANGE ───────────────────────────────────────────── */
+function onCanastaChange() {
+  const v = selCanasta();
+  document.getElementById('wrap-precio-custom').classList.toggle('hidden', v !== 'personalizada');
+  document.getElementById('wrap-mods').classList.toggle('hidden', v === 'ninguna');
+  renderPapasGrid();
+  updatePreview();
+}
+
+function selCanasta() {
+  return document.querySelector('input[name="canasta"]:checked')?.value || 'ninguna';
+}
+
+function selPapas() {
+  return document.querySelector('input[name="papas"]:checked')?.value || 'ninguna';
+}
+
+function tieneCanasta() {
+  const v = selCanasta();
+  return v !== 'ninguna';
+}
+
+/* ── PAPAS GRID ───────────────────────────────────────────────── */
+function renderPapasGrid() {
+  const conC = tieneCanasta();
+  document.getElementById('papas-hint').textContent =
+    conC ? '(precios con canasta)' : '(precios sin canasta)';
+
+  const opts = [
+    { value: 'ninguna', label: 'Ninguna', price: null },
+    ...Object.entries(PAPAS).map(([kg, p]) => ({
+      value: kg,
+      label: kg,
+      price: conC ? p.con : p.sin,
+    })),
+  ];
+
+  document.getElementById('papas-grid').innerHTML = opts.map((o, i) => `
+    <div class="radio-card">
+      <input type="radio" name="papas" id="p-${o.value}" value="${o.value}" ${i === 0 ? 'checked' : ''}>
+      <label for="p-${o.value}">
+        <span class="rc-name">${o.label}</span>
+        <span class="rc-price">${o.price !== null ? fmt(o.price) : '—'}</span>
+      </label>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('input[name="papas"]').forEach(r =>
+    r.addEventListener('change', updatePreview)
+  );
+}
+
+/* ── TOTAL PREVIEW ────────────────────────────────────────────── */
+function updatePreview() {
+  document.getElementById('total-preview').textContent = fmt(calcTotal());
+}
+
+function calcTotal(canasta, papas, precioCustom) {
+  canasta     = canasta     ?? selCanasta();
+  papas       = papas       ?? selPapas();
+  precioCustom = precioCustom ?? (parseInt(document.getElementById('inp-precio-custom').value) || 0);
+
+  let t = 0;
+  if (canasta === 'basica')         t += 16900;
+  else if (canasta === 'completa')  t += 24900;
+  else if (canasta === 'premium')   t += 34900;
+  else if (canasta === 'personalizada') t += precioCustom;
+
+  if (papas !== 'ninguna') {
+    const p = PAPAS[papas];
+    t += (canasta !== 'ninguna') ? p.con : p.sin;
+  }
+  return t;
+}
+
+/* ── AGREGAR ──────────────────────────────────────────────────── */
+function agregarPedido() {
+  const nombre = document.getElementById('inp-nombre').value.trim();
+  if (!nombre) { alert('Ingresa el nombre del cliente.'); return; }
+
+  const canasta      = selCanasta();
+  const papas        = selPapas();
+  const precioCustom = parseInt(document.getElementById('inp-precio-custom').value) || 0;
+  const mods         = document.getElementById('inp-mods').value.trim();
+
+  if (canasta === 'personalizada' && !precioCustom) {
+    alert('Ingresa el precio de la canasta personalizada.');
+    return;
+  }
+
+  let precioCanasta = 0;
+  if (canasta === 'basica')          precioCanasta = 16900;
+  else if (canasta === 'completa')   precioCanasta = 24900;
+  else if (canasta === 'premium')    precioCanasta = 34900;
+  else if (canasta === 'personalizada') precioCanasta = precioCustom;
+
+  let precioPapas = 0;
+  if (papas !== 'ninguna') {
+    precioPapas = (canasta !== 'ninguna') ? PAPAS[papas].con : PAPAS[papas].sin;
+  }
+
+  pedidos.push({
+    id: Date.now(),
+    nombre,
+    canasta:       canasta !== 'ninguna' ? canasta : null,
+    precioCanasta,
+    papas:         papas !== 'ninguna' ? papas : null,
+    precioPapas,
+    mods,
+    total: precioCanasta + precioPapas,
+  });
+
+  save();
+  renderAll();
+  resetForm();
+  showTab('pedidos');
+}
+
+function resetForm() {
+  document.getElementById('inp-nombre').value = '';
+  document.getElementById('inp-mods').value = '';
+  document.getElementById('inp-precio-custom').value = '';
+  document.querySelector('input[name="canasta"][value="ninguna"]').checked = true;
+  document.getElementById('wrap-precio-custom').classList.add('hidden');
+  document.getElementById('wrap-mods').classList.add('hidden');
+  renderPapasGrid();
+  updatePreview();
+}
+
+function eliminarPedido(id) {
+  if (!confirm('¿Eliminar este pedido?')) return;
+  pedidos = pedidos.filter(p => p.id !== id);
+  save();
+  renderAll();
+}
+
+/* ── RENDER ALL ───────────────────────────────────────────────── */
+function renderAll() {
+  renderPedidos();
+  renderCompra();
+  renderResumen();
+}
+
+/* ── RENDER PEDIDOS ───────────────────────────────────────────── */
+function renderPedidos() {
+  const el = document.getElementById('pedidos-container');
+
+  if (!pedidos.length) {
+    el.innerHTML = `<div class="empty"><div class="ei">🥦</div>
+      <p>No hay pedidos esta semana.<br>Toca <strong>Agregar</strong> para añadir clientes.</p></div>`;
+    return;
+  }
+
+  const totalGeneral = pedidos.reduce((s, p) => s + p.total, 0);
+
+  el.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Canasta</th>
+            <th>Papas</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${pedidos.map((p, i) => `
+            <tr>
+              <td style="color:var(--muted)">${i + 1}</td>
+              <td>
+                <strong>${esc(p.nombre)}</strong>
+                ${p.mods ? `<br><small style="color:var(--muted)">✏️ ${esc(p.mods)}</small>` : ''}
+              </td>
+              <td>
+                ${p.canasta
+                  ? `<span class="badge badge-${p.canasta}">${CANASTAS[p.canasta]?.nombre || 'Custom'}</span>
+                     <br><small style="color:var(--muted)">${fmt(p.precioCanasta)}</small>`
+                  : `<span style="color:var(--muted)">—</span>`}
+              </td>
+              <td>
+                ${p.papas
+                  ? `<span class="badge badge-papas">${p.papas}</span>
+                     <br><small style="color:var(--muted)">${fmt(p.precioPapas)}</small>`
+                  : `<span style="color:var(--muted)">—</span>`}
+              </td>
+              <td><strong>${fmt(p.total)}</strong></td>
+              <td><button class="btn btn-danger" onclick="eliminarPedido(${p.id})">✕</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4">TOTAL — ${pedidos.length} pedido${pedidos.length !== 1 ? 's' : ''}</td>
+            <td colspan="2">${fmt(totalGeneral)}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+}
+
+/* ── RENDER COMPRA ────────────────────────────────────────────── */
+function renderCompra() {
+  const conCanasta = pedidos.filter(p => p.canasta && CANASTAS[p.canasta]);
+  const conPapas   = pedidos.filter(p => p.papas);
+  const conMods    = pedidos.filter(p => p.mods);
+
+  // Ingredients
+  const el = document.getElementById('compra-container');
+  if (!conCanasta.length) {
+    el.innerHTML = `<div class="empty"><div class="ei">🛒</div>
+      <p>Agrega pedidos con canastas para generar la lista de compra.</p></div>`;
+  } else {
+    const map = {};
+    for (const p of conCanasta) {
+      const removed = getModSubtractions(p.mods);
+      for (const ing of CANASTAS[p.canasta].ingredientes) {
+        const key = `${ing.nombre}||${ing.unidad}`;
+        if (!map[key]) map[key] = { nombre: ing.nombre, unidad: ing.unidad, cant: 0, subs: 0 };
+        if (removed.has(ing.nombre)) {
+          map[key].subs += ing.cantidad;
+        } else {
+          map[key].cant += ing.cantidad;
+        }
+      }
+    }
+    const ings = Object.values(map).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+    const totalAjustes = ings.filter(i => i.subs > 0).length;
+    el.innerHTML = `
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
+        Basado en ${conCanasta.length} canasta${conCanasta.length !== 1 ? 's' : ''} estándar.
+        ${totalAjustes ? `<span style="color:#b45309"> · ${totalAjustes} ingrediente${totalAjustes !== 1 ? 's' : ''} ajustado${totalAjustes !== 1 ? 's' : ''} por modificaciones.</span>` : ''}
+      </p>
+      <div class="ing-grid">
+        ${ings.filter(i => i.cant > 0 || i.subs > 0).map(i => `
+          <div class="ing-item ${i.subs > 0 ? 'adjusted' : ''}">
+            <span class="ing-name">${i.nombre}</span>
+            <span class="ing-qty">
+              ${i.cant > 0 ? fmtCant(i.cant, i.unidad) : '<span style="color:var(--muted);font-weight:500">—</span>'}
+              ${i.subs > 0 ? `<span class="ing-sub">−${fmtCant(i.subs, i.unidad)} (mod)</span>` : ''}
+            </span>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  // Papas
+  const cardPapas = document.getElementById('card-papas-compra');
+  if (conPapas.length) {
+    cardPapas.classList.remove('hidden');
+    const map = {};
+    let totalKg = 0;
+    for (const p of conPapas) {
+      map[p.papas] = (map[p.papas] || 0) + 1;
+      totalKg += parseInt(p.papas);
+    }
+    document.getElementById('papas-compra').innerHTML = `
+      <div class="ing-grid">
+        ${Object.entries(map).sort().map(([kg, n]) => `
+          <div class="ing-item">
+            <span class="ing-name">Bolsas ${kg}</span>
+            <span class="ing-qty">${n} bolsa${n !== 1 ? 's' : ''}</span>
+          </div>`).join('')}
+        <div class="ing-item" style="background:var(--green-pale);grid-column:span 2;">
+          <span class="ing-name" style="font-weight:700">Total papas</span>
+          <span class="ing-qty">${totalKg} kg</span>
+        </div>
+      </div>`;
+  } else {
+    cardPapas.classList.add('hidden');
+  }
+
+  // Modificaciones
+  const cardMods = document.getElementById('card-mods');
+  if (conMods.length) {
+    cardMods.classList.remove('hidden');
+    document.getElementById('mods-lista').innerHTML =
+      conMods.map(p => {
+        const removed = getModSubtractions(p.mods);
+        const ingNames = p.canasta ? CANASTAS[p.canasta].ingredientes.map(i => i.nombre) : [];
+        const autoHandled = [...removed].filter(r => ingNames.includes(r));
+        return `
+          <div class="mod-item">
+            <div style="flex:1">
+              <span class="mod-name">${esc(p.nombre)}:</span>
+              <span style="margin-left:4px">${esc(p.mods)}</span>
+              ${autoHandled.length
+                ? `<br><small style="color:var(--green-dark)">✅ Descontado en lista: ${autoHandled.join(', ')}</small>`
+                : ''}
+            </div>
+          </div>`;
+      }).join('');
+  } else {
+    cardMods.classList.add('hidden');
+  }
+}
+
+/* ── RENDER RESUMEN ───────────────────────────────────────────── */
+function renderResumen() {
+  const totalCanastas = pedidos.reduce((s, p) => s + p.precioCanasta, 0);
+  const totalPapas    = pedidos.reduce((s, p) => s + p.precioPapas,   0);
+  const totalGeneral  = totalCanastas + totalPapas;
+
+  document.getElementById('sum-grid').innerHTML = `
+    <div class="sum-card">
+      <div class="sum-label">Canastas (${pedidos.filter(p=>p.canasta).length})</div>
+      <div class="sum-value">${fmt(totalCanastas)}</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Papas (${pedidos.filter(p=>p.papas).length})</div>
+      <div class="sum-value">${fmt(totalPapas)}</div>
+    </div>
+    <div class="sum-card big">
+      <div class="sum-label">TOTAL A COBRAR</div>
+      <div class="sum-value">${fmt(totalGeneral)}</div>
+    </div>`;
+
+  const costoVega = parseInt(document.getElementById('inp-vega').value) || 0;
+  const wrapG = document.getElementById('ganancia-wrap');
+
+  if (costoVega > 0) {
+    const ganancia = totalGeneral - costoVega;
+    const margen   = totalGeneral ? Math.round((ganancia / totalGeneral) * 100) : 0;
+    const mitad    = Math.round(ganancia / 2);
+
+    wrapG.classList.remove('hidden');
+    document.getElementById('val-ganancia').textContent = fmt(ganancia);
+    document.getElementById('val-margen').textContent   = `${margen}%`;
+    document.getElementById('split-juan').textContent   = fmt(mitad);
+    document.getElementById('split-amalia').textContent = fmt(mitad);
+  } else {
+    wrapG.classList.add('hidden');
+  }
+}
+
+/* ── LIMPIAR ──────────────────────────────────────────────────── */
+function limpiarSemana() {
+  if (!pedidos.length) { alert('No hay pedidos para eliminar.'); return; }
+  if (!confirm(`¿Eliminar los ${pedidos.length} pedidos de esta semana?`)) return;
+  pedidos = [];
+  document.getElementById('inp-vega').value = '';
+  save();
+  renderAll();
+}
+
+/* ── NAV ──────────────────────────────────────────────────────── */
+function showTab(tab) {
+  const tabs = ['pedidos', 'agregar', 'compra', 'resumen'];
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.querySelectorAll('nav button')[tabs.indexOf(tab)].classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* ── UTILS ────────────────────────────────────────────────────── */
+function fmt(n) {
+  return '$' + Math.round(n).toLocaleString('es-CL');
+}
+
+function fmtCant(n, unidad) {
+  const s = n % 1 === 0 ? String(n) : n.toFixed(1).replace('.', ',');
+  return `${s} ${unidad}`;
+}
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

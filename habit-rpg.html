@@ -11678,6 +11678,10 @@ function _shopTargetComp() {
 }
 function _shopActiveClass() {
   var comp = _shopTargetComp();
+  return comp ? (comp.class || char.class) : char.class;
+}
+function _shopActiveClass() {
+  var comp = _shopTargetComp();
   return comp ? (comp.class||'guerrero') : (char.class||'guerrero');
 }
 function openShopForCompanion(heroIdx) {
@@ -13811,13 +13815,13 @@ const BUFFS = [
 ];
 
 const CLS = {
-  guerrero: { color:'#e74c3c', trail:'#ff9999', spd:200, atk:{t:'arc',   dmg:25, cd:.5,  range:80,  ang:Math.PI*.6}, sp:{t:'stun',  cd:8, dur:2, range:160} },
-  mago:     { color:'#9b59b6', trail:'#d7aefb', spd:170, atk:{t:'proj',  dmg:40, cd:.7,  pspd:400,  col:'#88f'},     sp:{t:'blast', cd:8, dmg:120, range:140} },
-  monje:    { color:'#f39c12', trail:'#fdd88a', spd:220, atk:{t:'combo', dmg:13, cd:.2,  range:55},                  sp:{t:'haste', cd:8, dur:3, mult:3} },
-  asesino:  { color:'#1abc9c', trail:'#7ee8d2', spd:240, atk:{t:'stab',  dmg:30, cd:.4,  range:90},                  sp:{t:'invis', cd:8, dur:3, mult:3} },
-  druida:   { color:'#27ae60', trail:'#82e0aa', spd:180, atk:{t:'wave',  dmg:20, cd:.8,  range:110},                 sp:{t:'heal',  cd:8, pct:.30} },
-  barbaro:  { color:'#e67e22', trail:'#f5b97e', spd:190, atk:{t:'heavy', dmg:65, cd:1.2, range:95,  ang:Math.PI*.8}, sp:{t:'frenzy',cd:8, dur:3, dm:2, sm:2} },
-  arquero:  { color:'#3498db', trail:'#85c1e9', spd:200, atk:{t:'arrow', dmg:25, cd:.35, pspd:650,  col:'#adf'},     sp:{t:'rain',  cd:8, dmg:30, cnt:15, range:180} },
+  guerrero: { color:'#e74c3c', trail:'#ff9999', spd:250, atk:{t:'arc',   dmg:25, cd:.5,  range:80,  ang:Math.PI*.6}, sp:{t:'stun',  cd:8, dur:2, range:160} },
+  mago:     { color:'#9b59b6', trail:'#d7aefb', spd:213, atk:{t:'proj',  dmg:40, cd:.7,  pspd:400,  col:'#88f'},     sp:{t:'blast', cd:8, dmg:120, range:140} },
+  monje:    { color:'#f39c12', trail:'#fdd88a', spd:275, atk:{t:'combo', dmg:13, cd:.2,  range:55},                  sp:{t:'haste', cd:8, dur:3, mult:3} },
+  asesino:  { color:'#1abc9c', trail:'#7ee8d2', spd:300, atk:{t:'stab',  dmg:30, cd:.4,  range:90},                  sp:{t:'invis', cd:8, dur:3, mult:3} },
+  druida:   { color:'#27ae60', trail:'#82e0aa', spd:225, atk:{t:'wave',  dmg:20, cd:.8,  range:110},                 sp:{t:'heal',  cd:8, pct:.30} },
+  barbaro:  { color:'#e67e22', trail:'#f5b97e', spd:238, atk:{t:'heavy', dmg:65, cd:1.2, range:95,  ang:Math.PI*.8}, sp:{t:'frenzy',cd:8, dur:3, dm:2, sm:2} },
+  arquero:  { color:'#3498db', trail:'#85c1e9', spd:250, atk:{t:'arrow', dmg:25, cd:.35, pspd:650,  col:'#adf'},     sp:{t:'rain',  cd:8, dmg:30, cnt:15, range:180} },
 };
 const WALL_T = 40;
 
@@ -13936,6 +13940,7 @@ function _mkHero(cls, lv, x, y, isMain, charData) {
   return { x, y, w:sz, h:sz, facing:0, fd:1, hp:maxHp, maxHp, spd:cd.spd*(isMain?1:0.85), cls, cd,
     atkCd:0, attacking:false, atkTime:0, atkAng:0,
     dashCd:0, dashing:false, dashTime:0, dvx:0, dvy:0, invul:0,
+    dashCharges:2, dashMaxCharges:2,
     spCd:0, spActive:false, spEff:null, spTime:0, spMul:false,
     hitTime:0, trail:[], goldEarned:0,
     dmgMult:1, rangeMult:1, regenOnKill:0, doubleShot:false,
@@ -14142,7 +14147,7 @@ function updateP(dt) {
   P.y=clamp(P.y,roomY+P.h/2,roomY+roomH-P.h/2);
   if(P.dashing||(P.spActive&&P.spEff==='frenzy')) P.trail.push({x:P.x,y:P.y,a:.6,t:.2});
   P.trail=P.trail.filter(t=>{t.a-=dt*4;t.t-=dt;return t.t>0;});
-  if(P.atkCd  >0)P.atkCd  -=dt; if(P.dashCd>0)P.dashCd-=dt;
+  if(P.atkCd>0)P.atkCd-=dt; if(P.dashCd>0){P.dashCd-=dt;if(P.dashCd<=0){P.dashCd=0;P.dashCharges=P.dashMaxCharges||2;}}
   if(P.spCd   >0)P.spCd   -=dt; if(P.invul  >0)P.invul  -=dt;
   if(P.hitTime>0)P.hitTime -=dt;
   if(P.atkTime>0){P.atkTime-=dt; if(P.atkTime<=0)P.attacking=false;}
@@ -14187,15 +14192,19 @@ function doAttack() {
 
 // ── Dash ─────────────────────────────────────────────────────
 function doDash() {
-  if(!running||paused||!P||P.hp<=0||P.dashing||P.dashCd>0) return;
+  if(!running||paused||!P||P.hp<=0||P.dashing) return;
+  if((P.dashCharges!==undefined?P.dashCharges:1)<=0) return;
   let dx=0,dy=0;
   if(keys['arrowleft'] ||keys['a'])dx-=1; if(keys['arrowright']||keys['d'])dx+=1;
   if(keys['arrowup']   ||keys['w'])dy-=1; if(keys['arrowdown'] ||keys['s'])dy+=1;
   if(joy.active){dx=joy.dx;dy=joy.dy;}
   if(!dx&&!dy)dx=P.fd;
   const dl=Math.hypot(dx,dy);
-  P.dashing=true;P.dashTime=.18;P.dvx=(dx/dl)*560;P.dvy=(dy/dl)*560;P.invul=.3;
-  P.dashCd=P.dashNoCd?0:1.5;
+  P.dashing=true;P.dashTime=.18;P.dvx=(dx/dl)*780;P.dvy=(dy/dl)*780;P.invul=.3;
+  if(!P.dashNoCd){
+    P.dashCharges=Math.max(0,(P.dashCharges!==undefined?P.dashCharges:1)-1);
+    if(P.dashCharges===0)P.dashCd=1.0;
+  }
   try{if(navigator.vibrate)navigator.vibrate(10);}catch(e){}
 }
 
@@ -15339,8 +15348,14 @@ function hudUpdate() {
 }
 function dashBtnUpd() {
   const btn=$$('ceDashBtn');if(!btn||!P)return;
-  const pct=P.dashCd>0?Math.max(0,1-P.dashCd/1.5):1;
-  btn.style.background=`conic-gradient(#60a5fa ${pct*360}deg,#1e3a5f ${pct*360}deg)`;btn.disabled=P.dashCd>0;
+  const ch=P.dashCharges!==undefined?P.dashCharges:1;
+  const mc=P.dashMaxCharges||2;
+  const pct=P.dashCd>0?Math.max(0,1-P.dashCd/1.0):1;
+  btn.style.background=`conic-gradient(#60a5fa ${pct*360}deg,#1e3a5f ${pct*360}deg)`;
+  btn.disabled=ch<=0;
+  let dots=btn.querySelector('.dash-charges');
+  if(!dots){dots=document.createElement('div');dots.className='dash-charges';dots.style.cssText='position:absolute;bottom:3px;left:50%;transform:translateX(-50%);display:flex;gap:3px;pointer-events:none';btn.style.position='relative';btn.appendChild(dots);}
+  dots.innerHTML=Array.from({length:mc}).map((_,i)=>`<span style="width:5px;height:5px;border-radius:50%;background:${i<ch?'#7dd3fc':'rgba(15,30,60,.9)'};display:inline-block"></span>`).join('');
 }
 function spBtnUpd() {
   const btn=$$('ceSpecialBtn');if(!btn||!P)return;
@@ -15404,8 +15419,9 @@ function onJoyMove(e) {
   e.preventDefault();if(!joy.active)return;
   for(const t of e.changedTouches){
     if(t.identifier!==joy.tid)continue;
-    const dx=t.clientX-joy.bx,dy=t.clientY-joy.by,dist=Math.hypot(dx,dy),maxR=45,cl=Math.min(dist,maxR);
-    joy.dx=dist>0?dx/dist*(cl/maxR):0;joy.dy=dist>0?dy/dist*(cl/maxR):0;
+    const dx=t.clientX-joy.bx,dy=t.clientY-joy.by,dist=Math.hypot(dx,dy),maxR=38,cl=Math.min(dist,maxR);
+    const eff=dist>0?Math.pow(cl/maxR,.78):0;
+    joy.dx=dist>0?(dx/dist)*eff:0;joy.dy=dist>0?(dy/dist)*eff:0;
     const k=$$('ceJoystickKnob');if(k)k.style.transform=`translate(${joy.dx*maxR}px,${joy.dy*maxR}px)`;
   }
 }
@@ -15697,7 +15713,8 @@ function _buildShopCard(item) {
   const canAfford  = (char.gold || 0) >= item.cost;
   const rarity     = item.rarity || 'comun';
 
-  const classLocked = item.slot !== 'consumable' && item.classes && item.classes.length > 0 && !!char.class && !item.classes.includes(char.class);
+  const shopCls = (typeof _shopActiveClass === 'function') ? _shopActiveClass() : char.class;
+  const classLocked = item.slot !== 'consumable' && item.classes && item.classes.length > 0 && !!shopCls && !item.classes.includes(shopCls);
   const allowedClsNames = classLocked ? item.classes.map(c => CLASSES[c]?.name || c).join('/') : '';
 
   const mySubclasses = char.subclasses || [];
@@ -15755,7 +15772,7 @@ function _buildShopCard(item) {
   const rarityLabels = { comun:'Común', raro:'Raro', epico:'Épico', legendario:'Legendario', evento:'Exclusivo' };
 
   let classNote = '';
-  if (!classLocked && !subclassLocked && item.classes && item.classes.length > 0 && char.class && item.classes.includes(char.class) && !item.subclass)
+  if (!classLocked && !subclassLocked && item.classes && item.classes.length > 0 && shopCls && item.classes.includes(shopCls) && !item.subclass)
     classNote = '⭐ Recomendado para tu clase';
 
   let bottomNote = '';
@@ -15825,7 +15842,7 @@ function renderShopGrid() {
   grid.innerHTML = '';
   const allItems = (shopCat === 'all' ? SHOP_ITEMS : SHOP_ITEMS.filter(i => i.cat === shopCat)).filter(i => !i.exclusive);
 
-  const myClass  = char.class;
+  const myClass  = (typeof _shopActiveClass === 'function') ? _shopActiveClass() : char.class;
   const byLevel  = (a,b) => a.minLevel - b.minLevel;
 
   const myClassItems   = allItems.filter(i => !i.subclass && i.classes && i.classes.length > 0 && myClass && i.classes.includes(myClass)).sort(byLevel);
