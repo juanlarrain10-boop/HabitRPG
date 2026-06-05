@@ -4558,9 +4558,10 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 10px;
   padding-bottom: 0px;
+  margin-bottom: 30px;
 }
 .camp-char-avatar-ring {
-  width: 170px; height: 170px; border-radius: 50%;
+  width: 150px; height: 150px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   position: relative;
   transition: box-shadow .5s;
@@ -22466,8 +22467,8 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 /* ═══ PARTY SYSTEM ═══════════════════════════════════════════ */
 /* Camp: 3 heroes around campfire */
 .camp-party-scene{display:flex;align-items:flex-end;justify-content:center;gap:24px;width:100%;min-height:180px;padding-bottom:60px;}
-.camp-comp-slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;padding-bottom:50px;flex-shrink:0;width:84px;}
-.camp-comp-img{width:76px;height:76px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.15);image-rendering:pixelated;image-rendering:crisp-edges;}
+.camp-comp-slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;padding-bottom:20px;flex-shrink:0;width:84px;}
+.camp-comp-img{width:90px;height:90px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.15);image-rendering:pixelated;image-rendering:crisp-edges;}
 .camp-comp-img.cp-active{border-color:#ffd700;box-shadow:0 0 12px #ffd70055;}
 .camp-comp-img.cp-locked{filter:brightness(.12) saturate(0);border-color:rgba(255,255,255,.05);}
 .camp-comp-img.aura-fire{box-shadow:0 0 14px rgba(255,80,20,.8),0 0 6px rgba(255,80,20,.4);}
