@@ -4530,10 +4530,11 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 
 /* ── Hero zone ── */
 .camp-hero-zone {
-  background: transparent;
   position: relative; z-index: 1; flex: 1;
   display: flex; flex-direction: column; align-items: center;
-  padding: 12px 16px 18px; gap: 18px;
+  justify-content: flex-end;
+  padding: 0 16px 20px; gap: 8px;
+  background: transparent;
 }
 .camp-rpg-msg {
   width: 100%; text-align: center;
@@ -4555,6 +4556,7 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 .camp-char-wrap {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 10px;
+  padding-bottom: 0px;
 }
 .camp-char-avatar-ring {
   width: 170px; height: 170px; border-radius: 50%;
@@ -22462,8 +22464,8 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 .cim-close{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;padding:10px 20px;border-radius:8px;cursor:pointer;width:100%;margin-top:6px;font-family:inherit;}
 /* ═══ PARTY SYSTEM ═══════════════════════════════════════════ */
 /* Camp: 3 heroes around campfire */
-.camp-party-scene{display:flex;align-items:flex-end;justify-content:center;gap:16px;width:100%;min-height:260px;padding-bottom:0px;}
-.camp-comp-slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;padding-bottom:40px;flex-shrink:0;width:84px;}
+.camp-party-scene{display:flex;align-items:flex-end;justify-content:center;gap:24px;width:100%;min-height:180px;padding-bottom:0px;}
+.camp-comp-slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;padding-bottom:0px;flex-shrink:0;width:84px;}
 .camp-comp-img{width:76px;height:76px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.15);image-rendering:pixelated;image-rendering:crisp-edges;}
 .camp-comp-img.cp-active{border-color:#ffd700;box-shadow:0 0 12px #ffd70055;}
 .camp-comp-img.cp-locked{filter:brightness(.12) saturate(0);border-color:rgba(255,255,255,.05);}
