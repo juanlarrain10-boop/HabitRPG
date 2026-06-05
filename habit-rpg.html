@@ -6961,7 +6961,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
           <div class="camp-comp-slot" id="campComp2" onclick="setActiveHero(2)" title="Héroe 3"></div>
         </div>
         <!-- Castle door to Sala del Trono -->
-        <div class="camp-throne-door" id="campThroneDoor" onclick="openThroneFromDoor()">
+        <div class="camp-throne-door" id="campThroneDoor" onclick="openThroneFromDoor()" style="z-index: 0; position: absolute; bottom: 10px; right: 10px;">
           <svg class="camp-throne-door-svg" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <radialGradient id="ctdG" cx="50%" cy="72%" r="55%">
@@ -22466,7 +22466,7 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 /* ═══ PARTY SYSTEM ═══════════════════════════════════════════ */
 /* Camp: 3 heroes around campfire */
 .camp-party-scene{display:flex;align-items:flex-end;justify-content:center;gap:24px;width:100%;min-height:180px;padding-bottom:60px;}
-.camp-comp-slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;padding-bottom:30px;flex-shrink:0;width:84px;}
+.camp-comp-slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;padding-bottom:50px;flex-shrink:0;width:84px;}
 .camp-comp-img{width:76px;height:76px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.15);image-rendering:pixelated;image-rendering:crisp-edges;}
 .camp-comp-img.cp-active{border-color:#ffd700;box-shadow:0 0 12px #ffd70055;}
 .camp-comp-img.cp-locked{filter:brightness(.12) saturate(0);border-color:rgba(255,255,255,.05);}
