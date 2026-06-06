@@ -15236,191 +15236,465 @@ function drawBossDarkLord(ctx,e,f){
 // ZONE BACKGROUNDS + AMBIENT PARTICLES
 // ═══════════════════════════════════════════════════════════════
 
-// ── Shared bg helpers ────────────────────────────────────────
-function bgVignette(r,g,b){
-  const vg=ctx.createRadialGradient(roomX+roomW/2,roomY+roomH/2,Math.min(roomW,roomH)*.2,roomX+roomW/2,roomY+roomH/2,Math.max(roomW,roomH)*.8);
-  vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,`rgba(${r},${g},${b},.55)`);
-  ctx.fillStyle=vg;ctx.fillRect(roomX,roomY,roomW,roomH);
-}
-function bgFloor(col){ctx.fillStyle=col;ctx.fillRect(roomX,roomY,roomW,roomH);}
-function bgWall(col){ctx.fillStyle=col;ctx.fillRect(0,0,canvas.width,canvas.height);}
-function bgGrid(col,sz){
-  ctx.strokeStyle=col;ctx.lineWidth=1;
-  for(let x=roomX;x<roomX+roomW;x+=sz)for(let y=roomY;y<roomY+roomH;y+=sz)ctx.strokeRect(x,y,sz,sz);
+// ── Helpers mejorados ──────────────────────────────────────
+
+function bgWall(col) {
+  ctx.fillStyle = col;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// ── ZONA 1: BOSQUE ────────────────────────────────────────────
-function drawBgForest(){
-  bgWall('#08120a');bgFloor('#162a16');
-  // Grass patches on floor
-  ctx.fillStyle='#1e3a1e';
-  for(let i=0;i<18;i++){const px=roomX+((i*137)%roomW),py=roomY+((i*91)%roomH);ctx.fillRect(px,py,8+i%5,5+i%3);}
-  bgGrid('rgba(0,0,0,.15)',48);
-  // Trees on left wall
-  const treeXs=[roomX-WALL_T+6, roomX-WALL_T+18, roomX-WALL_T+30];
-  treeXs.forEach(function(tx){
-    const th=60+tx%30;
-    ctx.fillStyle='#2c1a0a';ctx.fillRect(tx,roomY+roomH-th,6,th); // trunk
-    ctx.fillStyle='#0f2b0f';ctx.beginPath();ctx.arc(tx+3,roomY+roomH-th-12,14,0,Math.PI*2);ctx.fill(); // canopy
-    ctx.fillStyle='#143a14';ctx.beginPath();ctx.arc(tx+3,roomY+roomH-th-18,10,0,Math.PI*2);ctx.fill();
-  });
-  // Trees on right wall
-  const rtreeXs=[roomX+roomW+6, roomX+roomW+18, roomX+roomW+30];
-  rtreeXs.forEach(function(tx){
-    const th=50+tx%25;
-    ctx.fillStyle='#2c1a0a';ctx.fillRect(tx,roomY+roomH-th,6,th);
-    ctx.fillStyle='#0f2b0f';ctx.beginPath();ctx.arc(tx+3,roomY+roomH-th-12,14,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#143a14';ctx.beginPath();ctx.arc(tx+3,roomY+roomH-th-18,10,0,Math.PI*2);ctx.fill();
-  });
-  // Top wall: tree silhouette band
-  ctx.fillStyle='#0a1f0a';ctx.fillRect(0,0,canvas.width,roomY);
-  // Pixel art bushes along floor edges
-  ctx.fillStyle='#1a3d1a';
-  for(let x=roomX;x<roomX+roomW;x+=40){ctx.fillRect(x,roomY+roomH-8,16,8);ctx.fillRect(x+6,roomY+roomH-13,8,5);}
-  bgVignette(0,10,0);
+function bgFloor(col) {
+  ctx.fillStyle = col;
+  ctx.fillRect(roomX, roomY, roomW, roomH);
 }
 
-// ── ZONA 2: CUEVA ─────────────────────────────────────────────
-function drawBgCave(){
-  bgWall('#0a0704');bgFloor('#19150e');
-  // Stone tile grid
-  bgGrid('rgba(0,0,0,.2)',40);
-  // Floor cracks
-  ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=1.5;
-  [[0,.3,.6,.9],[.2,.1,.8,.5],[.5,.7,.3,.2]].forEach(function(c){
-    ctx.beginPath();ctx.moveTo(roomX+c[0]*roomW,roomY+c[1]*roomH);ctx.lineTo(roomX+c[2]*roomW,roomY+c[3]*roomH);ctx.stroke();
-  });
-  // Stalactites from ceiling
-  ctx.fillStyle='#0d0a07';
-  var stPts=[.1,.18,.27,.35,.45,.52,.63,.72,.81,.9];
-  stPts.forEach(function(p,i){
-    var h=18+i*7%(35),w=7+i%5;
-    var x=roomX+p*roomW;
-    ctx.beginPath();ctx.moveTo(x-w/2,roomY);ctx.lineTo(x+w/2,roomY);ctx.lineTo(x,roomY+h);ctx.fill();
-  });
-  // Stalagnites from floor
-  ctx.fillStyle='#100c08';
-  [.08,.22,.38,.55,.7,.85].forEach(function(p,i){
-    var h=10+i*5%20,w=5+i%4;
-    var x=roomX+p*roomW;
-    ctx.beginPath();ctx.moveTo(x-w/2,roomY+roomH);ctx.lineTo(x+w/2,roomY+roomH);ctx.lineTo(x,roomY+roomH-h);ctx.fill();
-  });
-  // Glowing crystals on walls
-  [[roomX-8,roomY+roomH*.25],[roomX-12,roomY+roomH*.6],[roomX+roomW+5,roomY+roomH*.35],[roomX+roomW+9,roomY+roomH*.7]].forEach(function(pos){
-    ctx.shadowBlur=14;ctx.shadowColor='#00bfff';
-    ctx.fillStyle='#1a8fcc';ctx.fillRect(pos[0],pos[1],10,18);
-    ctx.fillStyle='#40d0ff';ctx.fillRect(pos[0]+2,pos[1],4,8);
-    ctx.shadowBlur=0;
-  });
-  // Water puddles on floor
-  ctx.fillStyle='rgba(20,50,80,.35)';
-  [{x:.2,y:.7,w:40,h:12},{x:.6,y:.3,w:30,h:9},{x:.8,y:.8,w:25,h:8}].forEach(function(p){
-    ctx.beginPath();ctx.ellipse(roomX+p.x*roomW,roomY+p.y*roomH,p.w/2,p.h/2,0,0,Math.PI*2);ctx.fill();
-  });
-  bgVignette(5,3,10);
+function bgTiles(light, dark, sz) {
+  const cols = Math.ceil(roomW / sz) + 1;
+  const rows = Math.ceil(roomH / sz) + 1;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const x = roomX + c * sz;
+      const y = roomY + r * sz;
+      ctx.fillStyle = (r + c) % 2 === 0 ? light : dark;
+      ctx.fillRect(x, y, sz, sz);
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+      ctx.lineWidth = 0.8;
+      ctx.strokeRect(x, y, sz, sz);
+    }
+  }
 }
 
-// ── ZONA 3: RUINAS ────────────────────────────────────────────
-function drawBgRuins(){
-  bgWall('#0e0c09');bgFloor('#211d17');
-  bgGrid('rgba(0,0,0,.22)',48);
-  // Worn floor cracks (irregular)
-  ctx.strokeStyle='rgba(0,0,0,.5)';ctx.lineWidth=1;
-  [[.05,.2,.4,.6],[.3,.8,.7,.4],[.55,.05,.9,.7],[.1,.9,.5,.1]].forEach(function(c){
-    ctx.beginPath();ctx.moveTo(roomX+c[0]*roomW,roomY+c[1]*roomH);ctx.quadraticCurveTo(roomX+(c[0]+c[2])*roomW/2,roomY+(c[1]+c[3])*roomH/2+20,roomX+c[2]*roomW,roomY+c[3]*roomH);ctx.stroke();
-  });
-  // Broken columns — left and right
-  [[roomX-WALL_T+4,roomY+roomH*.15],[roomX-WALL_T+4,roomY+roomH*.65],[roomX+roomW+4,roomY+roomH*.25],[roomX+roomW+4,roomY+roomH*.75]].forEach(function(pos,i){
-    var h=roomH*.45,w=22;
-    ctx.fillStyle='#2a2319';ctx.fillRect(pos[0],pos[1],w,h); // column body
-    ctx.fillStyle='#1a160f';ctx.fillRect(pos[0],pos[1],w,6); // capital top
-    // Damaged chunk
-    ctx.fillStyle='#0e0c09';ctx.fillRect(pos[0]+(i%2)*8,pos[1]+h*.4,w*.6,h*.2);
-    // Moss on bottom
-    ctx.fillStyle='#1a3010';ctx.fillRect(pos[0],pos[1]+h-16,w,8);ctx.fillRect(pos[0]+3,pos[1]+h-22,w-6,6);
-  });
-  // Moss/grass patches on floor
-  ctx.fillStyle='#1a3015';
-  [{x:.1,y:.2},{x:.5,y:.7},{x:.8,y:.15},{x:.3,y:.85},{x:.7,y:.5}].forEach(function(p){
-    ctx.fillRect(roomX+p.x*roomW,roomY+p.y*roomH,18,8);
-    ctx.fillStyle='#0f2210';ctx.fillRect(roomX+p.x*roomW+3,roomY+p.y*roomH-4,10,5);
-    ctx.fillStyle='#1a3015';
-  });
-  // Arch silhouette top
-  ctx.fillStyle='rgba(0,0,0,.3)';
-  ctx.beginPath();ctx.arc(roomX+roomW/2,roomY,roomW*.35,0,Math.PI);ctx.fill();
-  bgVignette(10,8,0);
+function bgVignette(r, g, b) {
+  const cx = roomX + roomW / 2;
+  const cy = roomY + roomH / 2;
+  const rad = Math.max(roomW, roomH) * 0.85;
+  const grd = ctx.createRadialGradient(cx, cy, rad * 0.3, cx, cy, rad);
+  grd.addColorStop(0, `rgba(${r},${g},${b},0)`);
+  grd.addColorStop(1, `rgba(${r},${g},${b},0.82)`);
+  ctx.fillStyle = grd;
+  ctx.fillRect(roomX, roomY, roomW, roomH);
 }
 
-// ── ZONA 4: VOLCÁN ────────────────────────────────────────────
-function drawBgVolcano(){
-  bgWall('#0d0500');bgFloor('#140a02');
-  bgGrid('rgba(0,0,0,.25)',40);
-  // Lava cracks (glowing orange lines)
-  const t=performance.now()/1000;
-  const crackGlow=0.7+Math.sin(t*2)*.3;
-  ctx.shadowBlur=12;
-  var cracks=[
-    [{x:.1,y:.5},{x:.25,y:.3},{x:.4,y:.7}],
-    [{x:.5,y:.1},{x:.6,y:.4},{x:.8,y:.2}],
-    [{x:.15,y:.8},{x:.3,y:.6},{x:.45,y:.85}],
-    [{x:.6,y:.65},{x:.75,y:.45},{x:.9,y:.7}],
-    [{x:.35,y:.15},{x:.5,y:.35},{x:.65,y:.1}],
-  ];
-  cracks.forEach(function(pts){
-    var col='rgba(255,'+(100+Math.floor(crackGlow*80))+',0,'+(0.55+crackGlow*.3)+')';
-    ctx.shadowColor=col;ctx.strokeStyle=col;ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(roomX+pts[0].x*roomW,roomY+pts[0].y*roomH);
-    for(var i=1;i<pts.length;i++)ctx.lineTo(roomX+pts[i].x*roomW,roomY+pts[i].y*roomH);
+function bgTorchLight(px, py, color) {
+  color = color || '255,180,60';
+  const rad = Math.min(roomW, roomH) * 0.55;
+  const grd = ctx.createRadialGradient(px, py, 0, px, py, rad);
+  grd.addColorStop(0, `rgba(${color},0.18)`);
+  grd.addColorStop(0.4, `rgba(${color},0.07)`);
+  grd.addColorStop(1, `rgba(${color},0)`);
+  ctx.fillStyle = grd;
+  ctx.fillRect(roomX, roomY, roomW, roomH);
+}
+
+function drawCrack(x, y, len, angle, col) {
+  ctx.save();
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  let cx = x, cy = y;
+  const segs = 4;
+  for (let i = 0; i < segs; i++) {
+    const a = angle + (Math.random() - 0.5) * 0.8;
+    cx += Math.cos(a) * len / segs;
+    cy += Math.sin(a) * len / segs;
+    ctx.lineTo(cx, cy);
+    if (i < segs - 1 && Math.random() > 0.5) {
+      ctx.moveTo(cx, cy);
+      const ba = a + (Math.random() > 0.5 ? 0.6 : -0.6);
+      ctx.lineTo(cx + Math.cos(ba) * (len / segs) * 0.5,
+                 cy + Math.sin(ba) * (len / segs) * 0.5);
+      ctx.moveTo(cx, cy);
+    }
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawPillar(x, y, w, h, topCol, sideCol, crackCol) {
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fillRect(x + 4, y + 4, w, h);
+  ctx.fillStyle = sideCol;
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = topCol;
+  ctx.fillRect(x, y, w * 0.45, h);
+  drawCrack(x + w * 0.3, y + h * 0.2, h * 0.4, Math.PI / 2, crackCol);
+  ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x, y, w, h);
+}
+
+function drawWallTorch(x, y, t, flickerSeed, baseCol) {
+  const flicker = Math.sin(t * 0.008 + flickerSeed) * 0.3 + 0.7;
+  ctx.fillStyle = '#5a4a2a';
+  ctx.fillRect(x - 3, y, 6, 10);
+  ctx.save();
+  ctx.globalAlpha = flicker;
+  const fGrd = ctx.createRadialGradient(x, y - 4, 0, x, y - 4, 12);
+  fGrd.addColorStop(0, '#fff7a0');
+  fGrd.addColorStop(0.4, baseCol);
+  fGrd.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = fGrd;
+  ctx.beginPath();
+  ctx.ellipse(x, y - 4, 8 * flicker, 12, 0, 0, Math.PI * 2);
+  ctx.fill();
+  const wGrd = ctx.createRadialGradient(x, y, 0, x, y, 50);
+  wGrd.addColorStop(0, `rgba(255,160,40,${0.25 * flicker})`);
+  wGrd.addColorStop(1, 'rgba(255,160,40,0)');
+  ctx.fillStyle = wGrd;
+  ctx.fillRect(x - 50, y - 40, 100, 80);
+  ctx.restore();
+}
+
+// ── ZONA 1: BOSQUE ─────────────────────────────────────────
+function drawBgForest(t, px, py) {
+  bgWall('#06100a');
+  bgTiles('#182e18', '#142812', 28);
+  ctx.save();
+  ctx.globalAlpha = 0.25;
+  ctx.strokeStyle = '#3d2a0e';
+  ctx.lineWidth = 3;
+  const rootSeeds = [0.15, 0.35, 0.55, 0.72, 0.88];
+  rootSeeds.forEach(function(s, i) {
+    const ry = roomY + roomH * s;
+    ctx.beginPath();
+    ctx.moveTo(roomX, ry);
+    for (let x = roomX; x < roomX + roomW; x += 15) {
+      ctx.lineTo(x, ry + Math.sin(x * 0.05 + i) * 4);
+    }
     ctx.stroke();
-    // Inner bright
-    ctx.strokeStyle='rgba(255,200,0,'+crackGlow*.6+')';ctx.lineWidth=1;ctx.stroke();
   });
-  ctx.shadowBlur=0;
-  // Lava pools
-  ctx.shadowBlur=16;ctx.shadowColor='#ff6600';
-  [{x:.2,y:.5,w:50,h:18},{x:.7,y:.3,w:40,h:14}].forEach(function(p){
-    ctx.fillStyle='rgba(200,60,0,.7)';ctx.beginPath();ctx.ellipse(roomX+p.x*roomW,roomY+p.y*roomH,p.w/2,p.h/2,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='rgba(255,120,0,.5)';ctx.beginPath();ctx.ellipse(roomX+p.x*roomW,roomY+p.y*roomH,p.w/3,p.h/3,0,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  const treePositions = [0.1, 0.3, 0.55, 0.75, 0.92];
+  treePositions.forEach(function(s, i) {
+    const ty = roomY + roomH * s;
+    const tx_l = roomX - WALL_T * 0.5;
+    ctx.save();
+    ctx.globalAlpha = 0.7;
+    ctx.fillStyle = '#3d2a0e';
+    ctx.fillRect(tx_l - 5, ty - 30, 10, 40);
+    ctx.fillStyle = i % 2 === 0 ? '#1a4a1a' : '#123512';
+    ctx.beginPath();
+    ctx.arc(tx_l, ty - 35, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#0e2e0e';
+    ctx.beginPath();
+    ctx.arc(tx_l + 8, ty - 28, 14, 0, Math.PI * 2);
+    ctx.fill();
+    const tx_r = roomX + roomW + WALL_T * 0.5;
+    ctx.fillStyle = '#3d2a0e';
+    ctx.fillRect(tx_r - 5, ty - 30, 10, 40);
+    ctx.fillStyle = i % 2 === 0 ? '#1a4a1a' : '#123512';
+    ctx.beginPath();
+    ctx.arc(tx_r, ty - 35, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   });
-  ctx.shadowBlur=0;
-  // Rock formations on walls
-  ctx.fillStyle='#1a0800';
-  [[roomX-10,roomY+roomH*.3,14,50],[roomX+roomW,roomY+roomH*.5,14,60]].forEach(function(r){ctx.fillRect(r[0],r[1],r[2],r[3]);});
-  bgVignette(30,5,0);
+  ctx.save();
+  const bugs = [
+    {x:0.2,y:0.3,s:1.2},{x:0.7,y:0.15,s:0.9},{x:0.5,y:0.6,s:1.1},
+    {x:0.85,y:0.45,s:0.8},{x:0.1,y:0.7,s:1.0}
+  ];
+  bugs.forEach(function(b) {
+    const bx = roomX + roomW * b.x;
+    const by = roomY + roomH * b.y;
+    const pulse = Math.sin(t * 0.004 * b.s + b.x * 10) * 0.5 + 0.5;
+    ctx.globalAlpha = pulse * 0.7;
+    ctx.fillStyle = '#aaff44';
+    ctx.beginPath();
+    ctx.arc(bx, by, 2, 0, Math.PI * 2);
+    ctx.fill();
+    const grd = ctx.createRadialGradient(bx,by,0,bx,by,12);
+    grd.addColorStop(0, 'rgba(100,255,0,0.4)');
+    grd.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(bx, by, 12, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.restore();
+  bgTorchLight(px, py, '80,200,80');
+  bgVignette(4, 12, 4);
 }
 
-// ── ZONA 5: CASTILLO OSCURO ───────────────────────────────────
-function drawBgCastle(){
-  bgWall('#060410');bgFloor('#0d0a1e');
-  // Marble tile floor (cross pattern)
-  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
-  for(let x=roomX;x<roomX+roomW;x+=56)for(let y=roomY;y<roomY+roomH;y+=56){ctx.strokeRect(x,y,56,56);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+56,y+56);ctx.stroke();}
-  // Stone blocks on outer walls
-  ctx.fillStyle='#080614';
-  for(let r=0;r<5;r++){const off=(r%2)*22;for(let c=-1;c<canvas.width/44+1;c++)ctx.fillRect(off+c*44+1,r*18+1,42,16);}
-  // Torches on side walls
-  const tf=performance.now()/1000;
-  [[roomX-WALL_T+8,roomY+roomH*.2],[roomX-WALL_T+8,roomY+roomH*.7],[roomX+roomW+WALL_T-8,roomY+roomH*.3],[roomX+roomW+WALL_T-8,roomY+roomH*.65]].forEach(function(pos){
-    // Torch bracket
-    ctx.fillStyle='#4a3a1a';ctx.fillRect(pos[0]-3,pos[1],6,16);
-    // Flame
-    const fg=0.5+Math.sin(tf*8+pos[0])*.5;
-    ctx.shadowBlur=20+fg*10;ctx.shadowColor='#ff8800';
-    ctx.fillStyle='rgba(255,'+(100+fg*80)+',0,.9)';
-    ctx.beginPath();ctx.ellipse(pos[0],pos[1]-4,4,6,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='rgba(255,220,0,.7)';
-    ctx.beginPath();ctx.ellipse(pos[0],pos[1]-5,2,4,0,0,Math.PI*2);ctx.fill();
-    ctx.shadowBlur=0;
-    // Glow on floor
-    ctx.globalAlpha=.06+fg*.04;ctx.fillStyle='#ff8800';ctx.beginPath();ctx.arc(pos[0],pos[1]+20,22,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+// ── ZONA 2: CUEVA ──────────────────────────────────────────
+function drawBgCave(t, px, py) {
+  bgWall('#0a0704');
+  bgTiles('#1e1810', '#19140c', 32);
+  ctx.save();
+  ctx.globalAlpha = 0.12;
+  [[0.2,0.4],[0.6,0.7],[0.8,0.2],[0.35,0.85]].forEach(function(sp) {
+    const wx = roomX + roomW * sp[0];
+    const wy = roomY + roomH * sp[1];
+    ctx.fillStyle = '#2a3a4a';
+    ctx.beginPath();
+    ctx.ellipse(wx, wy, 30, 18, 0.3, 0, Math.PI * 2);
+    ctx.fill();
   });
-  // Gothic window light (purple, top center)
-  ctx.shadowBlur=30;ctx.shadowColor='#6b21a8';
-  ctx.globalAlpha=.18;ctx.fillStyle='#6b21a8';
-  ctx.fillRect(roomX+roomW/2-20,roomY-WALL_T,40,WALL_T);
-  ctx.globalAlpha=1;ctx.shadowBlur=0;
-  bgVignette(10,0,30);
+  ctx.restore();
+  ctx.save();
+  ctx.fillStyle = '#2a2218';
+  const numStal = Math.floor(roomW / 35);
+  for (let i = 0; i < numStal; i++) {
+    const sx = roomX + (i + 0.5) * (roomW / numStal);
+    const sh = 15 + (i * 7) % 28;
+    ctx.beginPath();
+    ctx.moveTo(sx - 7, roomY);
+    ctx.lineTo(sx + 7, roomY);
+    ctx.lineTo(sx, roomY + sh);
+    ctx.closePath();
+    ctx.fill();
+    const dropPhase = (t * 0.002 + i * 0.7) % 1;
+    if (dropPhase < 0.3) {
+      ctx.globalAlpha = dropPhase / 0.3;
+      ctx.fillStyle = '#4a7a9a';
+      ctx.beginPath();
+      ctx.arc(sx, roomY + sh + dropPhase * 60, 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#2a2218';
+    }
+  }
+  ctx.restore();
+  const colPositions = [0.15, 0.42, 0.68, 0.88];
+  colPositions.forEach(function(s) {
+    const cy = roomY + roomH * s;
+    drawPillar(roomX + 2, cy, 16, 40, '#3a3228', '#2a2218', '#111008');
+    drawPillar(roomX + roomW - 18, cy, 16, 40, '#3a3228', '#2a2218', '#111008');
+  });
+  ctx.save();
+  ctx.globalAlpha = 0.3;
+  [[0.3,0.3],[0.65,0.6],[0.5,0.8]].forEach(function(c) {
+    drawCrack(roomX + roomW*c[0], roomY + roomH*c[1], 40, Math.PI*0.3, '#0a0704');
+  });
+  ctx.restore();
+  bgTorchLight(px, py, '180,120,40');
+  bgVignette(6, 4, 2);
+}
+
+// ── ZONA 3: RUINAS ─────────────────────────────────────────
+function drawBgRuins(t, px, py) {
+  bgWall('#0c0a07');
+  bgTiles('#2a2318', '#221c12', 36);
+  ctx.save();
+  ctx.globalAlpha = 0.4;
+  const crackPositions = [
+    [0.15,0.2,50,0.4],[0.45,0.55,60,1.1],[0.75,0.3,40,0.7],
+    [0.3,0.75,55,1.8],[0.6,0.15,35,0.2],[0.85,0.7,45,2.1]
+  ];
+  crackPositions.forEach(function(c) {
+    drawCrack(roomX+roomW*c[0], roomY+roomH*c[1], c[2], c[3], '#0a0800');
+  });
+  ctx.restore();
+  const ruinCols = [0.08, 0.35, 0.62, 0.88];
+  ruinCols.forEach(function(s, i) {
+    const cy = roomY + roomH * s;
+    const lx = roomX + 2;
+    const colH = i % 2 === 0 ? 60 : 35;
+    drawPillar(lx, cy - colH/2, 18, colH, '#4a4030', '#35301f', '#1a1710');
+    if (i % 2 === 0) {
+      ctx.save();
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = '#35301f';
+      ctx.fillRect(lx + 20, cy + colH/2 - 8, 22, 10);
+      ctx.restore();
+    }
+    const rx = roomX + roomW - 20;
+    const colH2 = i % 2 === 1 ? 60 : 40;
+    drawPillar(rx, cy - colH2/2, 18, colH2, '#4a4030', '#35301f', '#1a1710');
+  });
+  ctx.save();
+  ctx.globalAlpha = 0.15;
+  ctx.fillStyle = '#1a3010';
+  [[roomX, roomY],[roomX+roomW-40, roomY],[roomX, roomY+roomH-30],[roomX+roomW-40, roomY+roomH-30]].forEach(function(m) {
+    ctx.beginPath();
+    ctx.ellipse(m[0]+20, m[1]+15, 28, 18, 0, 0, Math.PI*2);
+    ctx.fill();
+  });
+  ctx.restore();
+  drawWallTorch(roomX - WALL_T*0.4, roomY + roomH*0.25, t, 0, '#ff8020');
+  drawWallTorch(roomX - WALL_T*0.4, roomY + roomH*0.75, t, 2, '#ff8020');
+  drawWallTorch(roomX + roomW + WALL_T*0.4, roomY + roomH*0.25, t, 4, '#ff8020');
+  drawWallTorch(roomX + roomW + WALL_T*0.4, roomY + roomH*0.75, t, 6, '#ff8020');
+  bgTorchLight(px, py, '255,160,60');
+  bgVignette(8, 6, 2);
+}
+
+// ── ZONA 4: VOLCÁN ─────────────────────────────────────────
+function drawBgVolcano(t, px, py) {
+  bgWall('#0d0500');
+  bgTiles('#1e0d04', '#180900', 30);
+  ctx.save();
+  const lavaLines = [
+    {x:0.1,y:0.2,len:90,angle:0.8},
+    {x:0.5,y:0.1,len:70,angle:1.3},
+    {x:0.7,y:0.45,len:80,angle:0.5},
+    {x:0.2,y:0.65,len:60,angle:1.1},
+    {x:0.55,y:0.8,len:75,angle:0.3},
+  ];
+  lavaLines.forEach(function(l, i) {
+    const lx = roomX + roomW * l.x;
+    const ly = roomY + roomH * l.y;
+    const pulse = Math.sin(t * 0.003 + i) * 0.3 + 0.7;
+    ctx.globalAlpha = pulse * 0.6;
+    ctx.strokeStyle = '#ff4400';
+    ctx.lineWidth = 3;
+    ctx.shadowColor = '#ff6600';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.moveTo(lx, ly);
+    let cx2 = lx, cy2 = ly;
+    for (let s = 0; s < 5; s++) {
+      const a = l.angle + (s % 2 === 0 ? 0.3 : -0.3);
+      cx2 += Math.cos(a) * l.len / 5;
+      cy2 += Math.sin(a) * l.len / 5;
+      ctx.lineTo(cx2, cy2);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = pulse * 0.4;
+    ctx.strokeStyle = '#ffaa00';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+  ctx.restore();
+  const rocks = [0.1, 0.3, 0.5, 0.7, 0.9];
+  rocks.forEach(function(s) {
+    const ry = roomY + roomH * s;
+    ctx.save();
+    ctx.fillStyle = '#2a1208';
+    ctx.beginPath();
+    ctx.ellipse(roomX + 8, ry, 14, 10, 0.3, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#3a1a0a';
+    ctx.beginPath();
+    ctx.ellipse(roomX + 6, ry - 3, 8, 6, -0.2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#2a1208';
+    ctx.beginPath();
+    ctx.ellipse(roomX+roomW-8, ry, 14, 10, -0.3, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#3a1a0a';
+    ctx.beginPath();
+    ctx.ellipse(roomX+roomW-6, ry-3, 8, 6, 0.2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  });
+  ctx.save();
+  const ashes = [
+    {x:0.2,y:0.3,s:0.7},{x:0.5,y:0.1,s:1.0},{x:0.8,y:0.5,s:0.8},
+    {x:0.35,y:0.7,s:0.9},{x:0.65,y:0.4,s:0.6}
+  ];
+  ashes.forEach(function(a) {
+    const ax = roomX + roomW*a.x + Math.sin(t*0.001*a.s)*15;
+    const ay = roomY + roomH*((a.y - t*0.0003*a.s + 1) % 1);
+    ctx.globalAlpha = 0.4 * a.s;
+    ctx.fillStyle = '#888';
+    ctx.beginPath();
+    ctx.arc(ax, ay, 2, 0, Math.PI*2);
+    ctx.fill();
+  });
+  ctx.restore();
+  bgTorchLight(px, py, '255,80,0');
+  const lGrd = ctx.createRadialGradient(
+    roomX+roomW/2, roomY+roomH, 0,
+    roomX+roomW/2, roomY+roomH, roomH*0.7
+  );
+  lGrd.addColorStop(0, 'rgba(255,60,0,0.12)');
+  lGrd.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = lGrd;
+  ctx.fillRect(roomX, roomY, roomW, roomH);
+  bgVignette(10, 3, 0);
+}
+
+// ── ZONA 5: CASTILLO OSCURO ────────────────────────────────
+function drawBgCastle(t, px, py) {
+  bgWall('#04030e');
+  bgTiles('#0f0d24', '#0a091c', 34);
+  ctx.save();
+  ctx.globalAlpha = 0.06;
+  ctx.strokeStyle = '#6060ff';
+  ctx.lineWidth = 1;
+  for (let gx = roomX; gx < roomX+roomW; gx += 68) {
+    for (let gy = roomY; gy < roomY+roomH; gy += 68) {
+      ctx.strokeRect(gx+5, gy+5, 58, 58);
+      ctx.beginPath();
+      ctx.moveTo(gx+34, gy+5);
+      ctx.lineTo(gx+34, gy+63);
+      ctx.moveTo(gx+5, gy+34);
+      ctx.lineTo(gx+63, gy+34);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+  const gothicCols = [0.1, 0.3, 0.55, 0.75, 0.92];
+  gothicCols.forEach(function(s) {
+    const cy = roomY + roomH * s;
+    drawPillar(roomX+2, cy-30, 14, 60, '#1e1a40', '#14103a', '#08061c');
+    drawPillar(roomX+roomW-16, cy-30, 14, 60, '#1e1a40', '#14103a', '#08061c');
+    ctx.save();
+    ctx.fillStyle = '#2a2460';
+    ctx.fillRect(roomX, cy-32, 18, 6);
+    ctx.fillRect(roomX+roomW-18, cy-32, 18, 6);
+    ctx.restore();
+  });
+  [0.2, 0.5, 0.8].forEach(function(s, i) {
+    const ty = roomY + roomH * s;
+    const flicker = Math.sin(t * 0.005 + i * 2) * 0.5 + 0.5;
+    const r2 = Math.round(80 + flicker * 40);
+    const g2 = Math.round(20 + flicker * 10);
+    const b2 = Math.round(200 + flicker * 55);
+    const castleCol = `rgb(${r2},${g2},${b2})`;
+    ctx.fillStyle = '#3a3060';
+    ctx.fillRect(roomX - WALL_T*0.5 - 3, ty, 6, 12);
+    ctx.fillRect(roomX + roomW + WALL_T*0.5 - 3, ty, 6, 12);
+    ctx.save();
+    ctx.globalAlpha = 0.8 * flicker + 0.2;
+    const fGrd1 = ctx.createRadialGradient(roomX - WALL_T*0.5, ty-6, 0, roomX - WALL_T*0.5, ty-6, 14);
+    fGrd1.addColorStop(0, '#ffffff');
+    fGrd1.addColorStop(0.3, castleCol);
+    fGrd1.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = fGrd1;
+    ctx.beginPath();
+    ctx.ellipse(roomX - WALL_T*0.5, ty-6, 9*flicker+3, 14, 0, 0, Math.PI*2);
+    ctx.fill();
+    const fGrd2 = ctx.createRadialGradient(roomX+roomW+WALL_T*0.5, ty-6, 0, roomX+roomW+WALL_T*0.5, ty-6, 14);
+    fGrd2.addColorStop(0, '#ffffff');
+    fGrd2.addColorStop(0.3, castleCol);
+    fGrd2.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = fGrd2;
+    ctx.beginPath();
+    ctx.ellipse(roomX+roomW+WALL_T*0.5, ty-6, 9*flicker+3, 14, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  });
+  ctx.save();
+  const particles = [
+    {x:0.15,y:0.2,s:0.6},{x:0.4,y:0.55,s:0.9},{x:0.7,y:0.1,s:0.7},
+    {x:0.55,y:0.8,s:1.0},{x:0.85,y:0.35,s:0.8},{x:0.25,y:0.9,s:0.5}
+  ];
+  particles.forEach(function(p, i) {
+    const ax = roomX + roomW*p.x + Math.sin(t*0.002*p.s+i)*20;
+    const ay = roomY + roomH*((p.y - t*0.0004*p.s + 1) % 1);
+    const pulse = Math.sin(t*0.005*p.s+i) * 0.5 + 0.5;
+    ctx.globalAlpha = pulse * 0.7;
+    ctx.fillStyle = '#a060ff';
+    ctx.beginPath();
+    ctx.arc(ax, ay, 2.5, 0, Math.PI*2);
+    ctx.fill();
+    const pgrd = ctx.createRadialGradient(ax,ay,0,ax,ay,15);
+    pgrd.addColorStop(0, 'rgba(140,60,255,0.3)');
+    pgrd.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = pgrd;
+    ctx.beginPath();
+    ctx.arc(ax, ay, 15, 0, Math.PI*2);
+    ctx.fill();
+  });
+  ctx.restore();
+  bgTorchLight(px, py, '100,40,255');
+  bgVignette(3, 1, 10);
 }
 
 // ── AMBIENT PARTICLE SYSTEM ───────────────────────────────────
@@ -15478,14 +15752,18 @@ function drawAmbient(){
 
 // ── Dispatch drawBg to zone ───────────────────────────────────
 function drawBg() {
-  const zi=ZONES.indexOf(currentZone);
+  const zi = ZONES.indexOf(currentZone);
+  const hero = combatHeroes[activeCombatSlot];
+  const hx = hero ? hero.x : roomX + roomW / 2;
+  const hy = hero ? hero.y : roomY + roomH / 2;
+  const t = lastTs;
   switch(zi){
-    case 0:drawBgForest();break;
-    case 1:drawBgCave();break;
-    case 2:drawBgRuins();break;
-    case 3:drawBgVolcano();break;
-    case 4:drawBgCastle();break;
-    default:drawBgDefault();
+    case 0: drawBgForest(t, hx, hy); break;
+    case 1: drawBgCave(t, hx, hy); break;
+    case 2: drawBgRuins(t, hx, hy); break;
+    case 3: drawBgVolcano(t, hx, hy); break;
+    case 4: drawBgCastle(t, hx, hy); break;
+    default: drawBgDefault();
   }
 }
 function drawBgDefault(){
@@ -15506,20 +15784,6 @@ function render() {
   drawBg(); drawAmbient(); drawDoor(); drawCoins(); drawParts(); drawEnemies(); drawProjs(); drawCombatCompanions(); drawTrail(); drawPlayer(); drawDnums();
 }
 
-function drawBg() {
-  const z=currentZone;
-  ctx.fillStyle=z.wall; ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle=z.floor; ctx.fillRect(roomX,roomY,roomW,roomH);
-  ctx.strokeStyle='rgba(255,255,255,.04)'; ctx.lineWidth=1;
-  for(let x=roomX;x<roomX+roomW;x+=48)for(let y=roomY;y<roomY+roomH;y+=48)ctx.strokeRect(x,y,48,48);
-  drawBricks(roomX-WALL_T,roomY-WALL_T,roomW+WALL_T*2,WALL_T,z.wall);
-  drawBricks(roomX-WALL_T,roomY+roomH, roomW+WALL_T*2,WALL_T,z.wall);
-  drawBricks(roomX-WALL_T,roomY,       WALL_T,roomH,  z.wall);
-  drawBricks(roomX+roomW, roomY,       WALL_T,roomH,  z.wall);
-  const g=ctx.createRadialGradient(roomX+roomW/2,roomY+roomH/2,Math.min(roomW,roomH)*.25,roomX+roomW/2,roomY+roomH/2,Math.max(roomW,roomH)*.75);
-  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.4)');
-  ctx.fillStyle=g; ctx.fillRect(roomX,roomY,roomW,roomH);
-}
 function drawBricks(bx,by,bw,bh,base) {
   ctx.fillStyle=hex2rgb(base,-10); ctx.fillRect(bx,by,bw,bh);
   ctx.fillStyle=hex2rgb(base,-25);
