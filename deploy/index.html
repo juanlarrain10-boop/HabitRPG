@@ -14325,8 +14325,8 @@ function enterZone(zone) {
 
 function resizeCanvas() {
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-  const mh = window.innerHeight > 600 ? 110 : 90;
-  const mv = window.innerWidth  > 600 ? 130 : 90;
+  const mh = window.innerHeight > 600 ? 80 : 60;
+  const mv = window.innerWidth  > 600 ? 60 : 20;
   roomX = WALL_T + mv/2; roomY = WALL_T + mh/2;
   roomW = canvas.width  - WALL_T*2 - mv;
   roomH = canvas.height - WALL_T*2 - mh;
