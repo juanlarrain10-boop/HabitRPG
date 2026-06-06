@@ -14909,7 +14909,10 @@ function showResult(won) {
   const rs=$$('ceResultScreen'); rs.classList.remove('hide');
   const totalGold=combatHeroes.reduce(function(s,h){return s+(h?h.goldEarned||0:0);},0);
   const goldFinal=won?totalGold:Math.floor(totalGold*.5);
-  const xpFinal=won?currentZone.xp:0;
+  const roomsCleared = currentRoom - 1;
+  const xpFinal = won
+    ? currentZone.xp
+    : Math.floor(currentZone.xp * 0.15 * roomsCleared);
   const buffHTML=runBuffs.length
     ?BUFFS.filter(b=>runBuffs.includes(b.id)).map(b=>`${b.icon} ${b.name}`).join(' · ')
     :'Ninguna';
