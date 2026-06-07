@@ -14228,6 +14228,7 @@ let canvas, ctx, rafId = null, running = false, paused = false, lastTs = 0;
 let P, enemies, projs, coins, parts, dnums;
 let ambParts = [], ambTimer = 0;
 let keys = {}, currentZone, victoryPending = false;
+let pendingWave = [];
 let roomX, roomY, roomW, roomH;
 let joy = { active:false, tid:-1, bx:0, by:0, dx:0, dy:0 };
 let currentRoom = 1, runBuffs = [], door = null;
@@ -14386,12 +14387,20 @@ function initGame() {
 }
 
 function spawnRoomEnemies(room) {
-  const z=currentZone, lv=(typeof char!=='undefined')?char.level:1;
-  const rc=ROOM_CFGS[room-1];
-  const lm=1+lv*0.05;
-  enemies=[];
+  // Sala 3 → sala de descanso (no boss room)
+  if (room === 3) {
+    showRestRoom();
+    return;
+  }
+
+  const z = currentZone, lv = (typeof char !== 'undefined') ? char.level : 1;
+  const rc = ROOM_CFGS[room-1];
+  const lm = 1 + lv * 0.05;
+  enemies = [];
+  pendingWave = [];
+
   if (rc.types.includes('boss')) {
-    const bHp=Math.ceil(z.eHp*lm*rc.hm);
+    const bHp = Math.ceil(z.eHp * lm * rc.hm);
     enemies.push({
       x:roomX+roomW/2, y:roomY+roomH*0.3, w:48, h:48,
       hp:bHp, maxHp:bHp, spd:z.eSpd*0.7, color:z.ec, dmg:Math.ceil(z.eDmg*1.5),
@@ -14401,25 +14410,32 @@ function spawnRoomEnemies(room) {
     });
     return;
   }
-  const cnt = z.cnt + (room-1); // grows: sala1=cnt, sala2=cnt+1, etc.
-  for (let i=0; i<cnt; i++) {
-    const type=rc.types[i%rc.types.length];
-    let w=28,h=28,hp,spd,dmg,gold;
-    switch(type){
-      case 'fast':   w=20;h=20;hp=Math.ceil(z.eHp*lm*rc.hm*.7);spd=z.eSpd*rc.sm*1.6;dmg=Math.ceil(z.eDmg*.8);gold=Math.ceil(z.gold*rc.gm*.9);break;
-      case 'shooter':hp=Math.ceil(z.eHp*lm*rc.hm*.9);spd=z.eSpd*rc.sm*.65;dmg=Math.ceil(z.eDmg*.6);gold=Math.ceil(z.gold*rc.gm*1.2);break;
-      case 'tank':   w=36;h=36;hp=Math.ceil(z.eHp*lm*rc.hm*2);spd=z.eSpd*rc.sm*.45;dmg=Math.ceil(z.eDmg*1.6);gold=Math.ceil(z.gold*rc.gm*2);break;
-      default:       hp=Math.ceil(z.eHp*lm*rc.hm);spd=z.eSpd*rc.sm+(Math.random()-.5)*12;dmg=z.eDmg;gold=Math.ceil(z.gold*rc.gm);
+
+  const cnt = z.cnt + (room - 1);
+  const allEnemies = [];
+  for (let i = 0; i < cnt; i++) {
+    const type = rc.types[i % rc.types.length];
+    let w=28, h=28, hp, spd, dmg, gold;
+    switch(type) {
+      case 'fast':    w=20;h=20;hp=Math.ceil(z.eHp*lm*rc.hm*.7);spd=z.eSpd*rc.sm*1.6;dmg=Math.ceil(z.eDmg*.8);gold=Math.ceil(z.gold*rc.gm*.9);break;
+      case 'shooter': hp=Math.ceil(z.eHp*lm*rc.hm*.9);spd=z.eSpd*rc.sm*.65;dmg=Math.ceil(z.eDmg*.6);gold=Math.ceil(z.gold*rc.gm*1.2);break;
+      case 'tank':    w=36;h=36;hp=Math.ceil(z.eHp*lm*rc.hm*2);spd=z.eSpd*rc.sm*.45;dmg=Math.ceil(z.eDmg*1.6);gold=Math.ceil(z.gold*rc.gm*2);break;
+      default:        hp=Math.ceil(z.eHp*lm*rc.hm);spd=z.eSpd*rc.sm+(Math.random()-.5)*12;dmg=z.eDmg;gold=Math.ceil(z.gold*rc.gm);
     }
-    let ex,ey; const edge=i%4;
-    if(edge===0){ex=roomX+Math.random()*roomW;ey=roomY+10;}
-    else if(edge===1){ex=roomX+roomW-10;ey=roomY+Math.random()*roomH;}
-    else if(edge===2){ex=roomX+Math.random()*roomW;ey=roomY+roomH-10;}
-    else{ex=roomX+10;ey=roomY+Math.random()*roomH;}
-    enemies.push({x:ex,y:ey,w,h,hp,maxHp:hp,spd,color:z.ec,dmg,gold,
+    let ex, ey; const edge = i % 4;
+    if      (edge===0){ex=roomX+Math.random()*roomW;ey=roomY+10;}
+    else if (edge===1){ex=roomX+roomW-10;ey=roomY+Math.random()*roomH;}
+    else if (edge===2){ex=roomX+Math.random()*roomW;ey=roomY+roomH-10;}
+    else              {ex=roomX+10;ey=roomY+Math.random()*roomH;}
+    allEnemies.push({x:ex,y:ey,w,h,hp,maxHp:hp,spd,color:z.ec,dmg,gold,
       vx:0,vy:0,hitTime:0,stunTime:0,atkCd:0,dead:false,
-      type,shootCd:type==='shooter'?1.5+Math.random()*1.5:0});
+      type, shootCd:type==='shooter'?1.5+Math.random()*1.5:0});
   }
+
+  // Split en 2 oleadas
+  const wave1Size = Math.ceil(allEnemies.length / 2);
+  enemies     = allEnemies.slice(0, wave1Size);
+  pendingWave = allEnemies.slice(wave1Size);
 }
 
 // ── Loop ─────────────────────────────────────────────────────
@@ -14930,7 +14946,7 @@ function startNextRoom(){
   currentRoom++;
   if(P.dashNoCd&&P.dashNoCdRoom<=currentRoom)P.dashNoCd=false;
   door=null; enemies=[]; projs=[]; coins=[]; parts=[]; dnums=[]; ambParts=[]; ambTimer=0;
-  victoryPending=false;
+  victoryPending=false; pendingWave=[];
   P.x=roomX+roomW/2; P.y=roomY+roomH*.75; P.trail=[];
   P.attacking=false; P.atkTime=0; P.invul=0; P.hitTime=0;
   if(!P.dmgMult||P.dmgMult<1)P.dmgMult=1;
@@ -14955,10 +14971,67 @@ function startNextRoom(){
 function checkVictory(){
   if(victoryPending||!enemies.length)return;
   if(enemies.every(e=>e.dead)){
+    if (pendingWave.length > 0) {
+      const wave2 = pendingWave.splice(0);
+      victoryPending = true;
+      setTimeout(function() {
+        victoryPending = false;
+        enemies.push.apply(enemies, wave2);
+        showWaveToast('¡Segunda oleada!');
+      }, 1200);
+      return;
+    }
     victoryPending=true;
     if(currentRoom<ROOMS_PER_ZONE){setTimeout(()=>openDoor(),800);}
     else{setTimeout(()=>showResult(true),1500);}
   }
+}
+function showWaveToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:absolute;top:28%;left:50%;transform:translateX(-50%);background:rgba(139,92,246,0.92);color:#fff;padding:8px 22px;border-radius:20px;font-weight:800;font-size:1rem;z-index:200;pointer-events:none;animation:fadeUpOut 1.5s forwards;white-space:nowrap;';
+  const container = document.getElementById('ceGameContainer') || document.body;
+  container.appendChild(t);
+  setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 1500);
+}
+function showRestRoom() {
+  paused = true;
+  const el = document.getElementById('ceUpgradeScreen');
+  const sub = document.getElementById('ceUpgradeSub');
+  const opts = document.getElementById('ceUpgradeOptions');
+  const title = el ? el.querySelector('.ce-upgrade-title') : null;
+  if (title) title.textContent = '⛺ Descanso';
+  if (sub)   sub.textContent   = 'Sala 3 · Momento de calma';
+  if (opts)  opts.innerHTML =
+    '<button class="ce-upgrade-opt" style="flex-direction:column;gap:6px" onclick="CE.restHeal()">' +
+      '<span style="font-size:1.8rem">💧</span>' +
+      '<div><div class="ceup-name">Fuente de vida</div>' +
+      '<div class="ceup-desc">Restaura 30% HP a todos</div></div>' +
+    '</button>' +
+    '<button class="ce-upgrade-opt" style="flex-direction:column;gap:6px" onclick="CE.restContinue()">' +
+      '<span style="font-size:1.8rem">⚔️</span>' +
+      '<div><div class="ceup-name">Seguir adelante</div>' +
+      '<div class="ceup-desc">Sin curación</div></div>' +
+    '</button>';
+  el.classList.remove('hide');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add('active'); }); });
+}
+function restHeal() {
+  combatHeroes.forEach(function(h) {
+    if (h && !h.dead) h.hp = Math.min(h.maxHp, h.hp + Math.floor(h.maxHp * 0.30));
+  });
+  const el = document.getElementById('ceUpgradeScreen');
+  const title = el ? el.querySelector('.ce-upgrade-title') : null;
+  if (title) title.textContent = '⬆ Mejora tu héroe';
+  el.classList.remove('active');
+  setTimeout(function() { el.classList.add('hide'); paused = false; startNextRoom(); }, 350);
+}
+function restContinue() {
+  const el = document.getElementById('ceUpgradeScreen');
+  const title = el ? el.querySelector('.ce-upgrade-title') : null;
+  if (title) title.textContent = '⬆ Mejora tu héroe';
+  el.classList.remove('active');
+  setTimeout(function() { el.classList.add('hide'); paused = false; startNextRoom(); }, 350);
 }
 function onDeath(){ setTimeout(()=>showResult(false),1200); }
 function showResult(won) {
@@ -16359,7 +16432,7 @@ function unbindInput() {
   keys={};
 }
 
-return { showZoneMap, enterZone, exit, togglePause, showChestScreen, openChest, claimChestReward, _atk:doAttack, _dash:doDash, _sp:doSpecial };
+return { showZoneMap, enterZone, exit, togglePause, showChestScreen, openChest, claimChestReward, restHeal, restContinue, _atk:doAttack, _dash:doDash, _sp:doSpecial };
 })();
 
 // ── Backwards-compat stubs ────────────────────────────────────
@@ -23232,6 +23305,7 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 .chest-claim-btn:active{transform:scale(0.95) !important;}
 .chest-particle{position:absolute;border-radius:50%;pointer-events:none;animation:burstOut 0.8s ease-out forwards;}
 @keyframes burstOut{0%{transform:translate(0,0) scale(1);opacity:1;}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}}
+@keyframes fadeUpOut{0%{opacity:1;transform:translateX(-50%) translateY(0);}60%{opacity:1;}100%{opacity:0;transform:translateX(-50%) translateY(-40px);}}
 /* Pause menu */
 #cePauseMenu{position:absolute;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:20;}
 .ce-pause-box{background:linear-gradient(135deg,#1e1e2e,#2a2a3e);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:32px;text-align:center;min-width:240px;}
