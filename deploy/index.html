@@ -14962,32 +14962,206 @@ function checkVictory(){
 }
 function onDeath(){ setTimeout(()=>showResult(false),1200); }
 function showResult(won) {
-  running=false; unbindInput();
-  const rs=$$('ceResultScreen'); rs.classList.remove('hide');
-  const totalGold=combatHeroes.reduce(function(s,h){return s+(h?h.goldEarned||0:0);},0);
-  const goldFinal=won?totalGold:Math.floor(totalGold*.5);
+  running = false; unbindInput();
+  const rs = $$('ceResultScreen');
+  rs.classList.remove('hide');
+
+  const totalGold = combatHeroes.reduce(function(s,h){ return s+(h?h.goldEarned||0:0); }, 0);
+  const goldFinal = won ? totalGold : Math.floor(totalGold * 0.5);
   const roomsCleared = currentRoom - 1;
   const xpFinal = won
     ? currentZone.xp
     : Math.floor(currentZone.xp * 0.15 * roomsCleared);
-  const buffHTML=runBuffs.length
-    ?BUFFS.filter(b=>runBuffs.includes(b.id)).map(b=>`${b.icon} ${b.name}`).join(' · ')
-    :'Ninguna';
-  P._finalGold=goldFinal; P._finalXp=xpFinal;
-  rs.innerHTML=`<div class="ce-result-box">
-    <div class="ce-result-icon">${won?'🏆':'💀'}</div>
-    <div class="ce-result-title">${won?'¡Zona Completada!':'Derrotado'}</div>
-    <div class="ce-result-rewards">
-      <div>🪙 +${goldFinal} oro${!won?' (50% sobreviviente)':''}</div>
-      ${won?`<div>⭐ +${xpFinal} XP</div>`:''}
-      <div style="font-size:.72rem;color:#94a3b8;margin-top:6px">Sala ${currentRoom}/${ROOMS_PER_ZONE}</div>
-      ${runBuffs.length?`<div class="ce-result-buffs">${buffHTML}</div>`:''}
-    </div>
-    <button class="ce-result-btn ce-btn-claim" onclick="CE.claimReward()">
-      ${won?'✨ Reclamar recompensa':'🪙 Volver con botín'}
-    </button>
-  </div>`;
-  try{if(navigator.vibrate)navigator.vibrate(won?[100,50,100]:200);}catch(e){}
+
+  const buffHTML = runBuffs.length
+    ? BUFFS.filter(function(b){ return runBuffs.includes(b.id); }).map(function(b){ return b.icon+' '+b.name; }).join(' · ')
+    : 'Ninguna';
+
+  P._finalGold = goldFinal;
+  P._finalXp   = xpFinal;
+
+  rs.innerHTML = '<div class="ce-result-box">' +
+    '<span class="ce-result-icon">'+(won?'🏆':'💀')+'</span>' +
+    '<div class="ce-result-title">'+(won?'¡Zona Completada!':'Derrotado')+'</div>' +
+    '<div class="ce-result-rewards">' +
+      '<div>🪙 +'+goldFinal+' oro'+((!won)?' (50% sobreviviente)':'')+'</div>' +
+      '<div>⭐ +'+xpFinal+' XP'+(won?'':' (parcial)')+'</div>' +
+      '<div style="font-size:.72rem;color:#94a3b8;margin-top:4px">Sala '+currentRoom+'/'+(ROOMS_PER_ZONE||5)+'</div>' +
+      (runBuffs.length?'<div class="ce-result-buffs">'+buffHTML+'</div>':'') +
+    '</div>' +
+    '<button class="ce-btn-claim" onclick="CE.showChestScreen('+won+')">' +
+      (won?'🎁 Abrir baúl de victoria':'📦 Ver botín de consolación') +
+    '</button>' +
+  '</div>';
+
+  try { if(navigator.vibrate) navigator.vibrate(won ? [100,50,100] : 200); } catch(e) {}
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ rs.classList.add('active'); }); });
+}
+function getChestRarity(won, room) {
+  const rand = Math.random();
+  if (won) {
+    if (rand < 0.05) return 'legendario';
+    if (rand < 0.22) return 'epico';
+    if (rand < 0.55) return 'raro';
+    if (rand < 0.80) return 'poco_comun';
+    return 'comun';
+  } else {
+    if (rand < 0.01) return 'epico';
+    if (rand < 0.15) return 'raro';
+    if (rand < 0.45) return 'poco_comun';
+    return 'comun';
+  }
+}
+function rarityLabel(r) {
+  return ({comun:'Común',poco_comun:'Poco común',raro:'Raro',epico:'Épico',legendario:'Legendario'})[r] || r;
+}
+function getItemsForChest(targetRarity, count) {
+  count = count || 5;
+  if (typeof SHOP_ITEMS === 'undefined' || !SHOP_ITEMS) return [];
+  const charClass = (char && char.clase) ? char.clase.toLowerCase() : '';
+  const charLevel = (char && char.nivel) ? char.nivel : 1;
+  const rarityOrder = ['comun','poco_comun','raro','epico','legendario'];
+  const targetIdx = rarityOrder.indexOf(targetRarity);
+  let pool = SHOP_ITEMS.filter(function(item) {
+    if (item.exclusive) return false;
+    if (item.minLevel && item.minLevel > charLevel + 5) return false;
+    if (item.classes && item.classes.length > 0 && !item.classes.includes(charClass)) return false;
+    return Math.abs(rarityOrder.indexOf(item.rarity) - targetIdx) <= 1;
+  });
+  if (pool.length < count) {
+    pool = SHOP_ITEMS.filter(function(item) {
+      if (item.exclusive) return false;
+      return Math.abs(rarityOrder.indexOf(item.rarity) - targetIdx) <= 2;
+    });
+  }
+  return pool.sort(function(){ return Math.random() - 0.5; }).slice(0, count);
+}
+function spawnChestParticles(container) {
+  const colors = ['#ffd700','#ff8800','#ffffff','#ff4444','#44aaff','#aa44ff'];
+  for (var i = 0; i < 24; i++) {
+    var p = document.createElement('div');
+    p.className = 'chest-particle';
+    var size = 4 + Math.random() * 6;
+    var angle = (Math.PI * 2 * i) / 24 + Math.random() * 0.5;
+    var dist = 60 + Math.random() * 100;
+    p.style.cssText = 'width:'+size+'px;height:'+size+'px;background:'+colors[Math.floor(Math.random()*colors.length)]+';left:50%;top:30%;--dx:'+Math.cos(angle)*dist+'px;--dy:'+Math.sin(angle)*dist+'px;box-shadow:0 0 6px currentColor;';
+    container.appendChild(p);
+    (function(el){ setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 900); })(p);
+  }
+}
+function showChestScreen(won) {
+  const rs = $$('ceResultScreen');
+  rs.classList.remove('active');
+  setTimeout(function(){ rs.classList.add('hide'); }, 400);
+
+  let chestEl = document.getElementById('ceChestScreen');
+  if (!chestEl) {
+    chestEl = document.createElement('div');
+    chestEl.id = 'ceChestScreen';
+    chestEl.className = 'hide';
+    (document.getElementById('ceGameContainer') || document.body).appendChild(chestEl);
+  }
+
+  const chestType = won ? '🎁' : '📦';
+  const chestName = won ? 'Baúl de Victoria' : 'Botín de Consolación';
+  const cardCount = won ? 5 : 3;
+  const targetRarity = getChestRarity(won, currentRoom);
+  const items = getItemsForChest(targetRarity, cardCount);
+
+  chestEl.innerHTML =
+    '<div class="chest-container">' +
+      '<div class="chest-emoji" id="chestEmoji" onclick="CE.openChest('+won+','+cardCount+')">'+chestType+'</div>' +
+      '<div class="chest-label">'+chestName+'</div>' +
+      '<div class="chest-tap-hint">Toca para abrir</div>' +
+    '</div>' +
+    '<div class="chest-base-rewards" id="chestBaseRewards" style="display:none">' +
+      '<div class="chest-reward-pill">🪙 +'+(P._finalGold||0)+'</div>' +
+      '<div class="chest-reward-pill">⭐ +'+(P._finalXp||0)+' XP</div>' +
+    '</div>' +
+    '<div class="chest-cards-title" id="chestCardsTitle" style="display:none">' +
+      'Elige '+(cardCount===5?'una de las 5 cartas':'una de las 3 cartas') +
+    '</div>' +
+    '<div class="chest-cards" id="chestCards"></div>' +
+    '<button class="chest-claim-btn" id="chestClaimBtn" style="display:none" onclick="CE.claimChestReward()">' +
+      '✨ Reclamar y continuar' +
+    '</button>';
+
+  chestEl._items = items;
+  chestEl._won = won;
+  chestEl._selectedItem = null;
+
+  chestEl.classList.remove('hide');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){ chestEl.classList.add('active'); });
+  });
+}
+function openChest(won, cardCount) {
+  const chestEl = document.getElementById('ceChestScreen');
+  const emoji = document.getElementById('chestEmoji');
+  if (!emoji || emoji.classList.contains('opening')) return;
+
+  emoji.classList.add('opening');
+  spawnChestParticles(chestEl);
+  try { if(navigator.vibrate) navigator.vibrate([50,30,80,30,120]); } catch(e) {}
+
+  const hint = emoji.parentNode ? emoji.parentNode.querySelector('.chest-tap-hint') : null;
+  if (hint) hint.style.opacity = '0';
+  emoji.style.cursor = 'default';
+  emoji.onclick = null;
+
+  setTimeout(function() {
+    const baseRewards = document.getElementById('chestBaseRewards');
+    const cardsTitle  = document.getElementById('chestCardsTitle');
+    if (baseRewards) baseRewards.style.display = 'flex';
+    if (cardsTitle)  cardsTitle.style.display  = 'block';
+    chestEl.classList.add('cards-in');
+
+    const cardsContainer = document.getElementById('chestCards');
+    const items = chestEl._items || [];
+
+    items.forEach(function(item, i) {
+      const card = document.createElement('div');
+      card.className = 'chest-card facedown';
+      card.dataset.rarity = item.rarity || 'comun';
+      card.innerHTML =
+        '<div class="card-back">🎴<div class="card-back-label">?</div></div>' +
+        '<div class="card-front">' +
+          '<span class="card-item-icon">'+(item.icon||'⚔️')+'</span>' +
+          '<div class="card-item-name">'+item.name+'</div>' +
+          '<div class="card-item-slot">'+(item.slot||'')+'</div>' +
+          '<span class="card-rarity-badge '+(item.rarity||'comun')+'">'+rarityLabel(item.rarity||'comun')+'</span>' +
+        '</div>';
+      card.onclick = (function(c, it, idx){ return function(){ selectChestCard(c, it, idx); }; })(card, item, i);
+      cardsContainer.appendChild(card);
+      (function(c, delay){
+        setTimeout(function() {
+          c.classList.add('card-in');
+          setTimeout(function() {
+            c.classList.remove('facedown');
+            try { if(navigator.vibrate) navigator.vibrate(30); } catch(e) {}
+          }, 200);
+        }, delay);
+      })(card, 150 + i * 140);
+    });
+  }, 500);
+}
+function selectChestCard(card, item, idx) {
+  const chestEl = document.getElementById('ceChestScreen');
+  if (chestEl._selectedItem) return;
+
+  chestEl._selectedItem = item;
+
+  document.querySelectorAll('.chest-card').forEach(function(c) {
+    if (c === card) c.classList.add('chosen');
+    else c.classList.add('rejected');
+  });
+
+  try { if(navigator.vibrate) navigator.vibrate([80,40,80]); } catch(e) {}
+
+  setTimeout(function() {
+    const btn = document.getElementById('chestClaimBtn');
+    if (btn) { btn.style.display = 'block'; btn.classList.add('btn-in'); }
+  }, 500);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -16097,21 +16271,30 @@ function togglePause() {
 }
 
 // ── Reward & exit ────────────────────────────────────────────
-function claimReward() {
-  const gold=P?(P._finalGold!=null?P._finalGold:P.goldEarned):0;
-  const xp=P?(P._finalXp||0):0;
-  const zone=currentZone;
+function claimChestReward() {
+  const chestEl = document.getElementById('ceChestScreen');
+  const selectedItem = chestEl ? chestEl._selectedItem : null;
+  const gold = P ? (P._finalGold != null ? P._finalGold : 0) : 0;
+  const xp   = P ? (P._finalXp || 0) : 0;
+  const zone = currentZone;
   exit();
-  if(typeof addGold==='function')addGold(gold);
-  if(xp>0&&typeof addXP==='function')addXP(xp,'fuerza','Combate: '+zone.name);
-  if(typeof saveChar==='function')saveChar();
-  if(typeof checkLevelUp==='function')checkLevelUp();
+  if (typeof addGold === 'function' && gold > 0) addGold(gold);
+  if (typeof addXP === 'function' && xp > 0)
+    addXP(xp, 'fuerza', 'Combate: ' + (zone ? zone.name : 'Zona'));
+  if (selectedItem && char) {
+    if (!char.inventory) char.inventory = [];
+    char.inventory.push(Object.assign({}, selectedItem, { fromChest: true }));
+    if (typeof showToast === 'function')
+      showToast(selectedItem.icon + ' ' + selectedItem.name + ' añadido al inventario');
+  }
+  if (typeof saveChar === 'function') saveChar();
+  if (typeof checkLevelUp === 'function') checkLevelUp();
 }
 function exit() {
   running=false;paused=false;victoryPending=false;door=null;
   if(rafId){cancelAnimationFrame(rafId);rafId=null;}
   unbindInput();
-  ['combatOverlay','ceGameContainer','ceZoneMap','ceResultScreen','cePauseMenu','ceUpgradeScreen','ceBossBar'].forEach(id=>{
+  ['combatOverlay','ceGameContainer','ceZoneMap','ceResultScreen','cePauseMenu','ceUpgradeScreen','ceBossBar','ceChestScreen'].forEach(id=>{
     const el=$$( id);if(el)el.classList.add('hide');
   });
   keys={}; joy={active:false,tid:-1,bx:0,by:0,dx:0,dy:0};
@@ -16176,7 +16359,7 @@ function unbindInput() {
   keys={};
 }
 
-return { showZoneMap, enterZone, exit, togglePause, claimReward, _atk:doAttack, _dash:doDash, _sp:doSpecial };
+return { showZoneMap, enterZone, exit, togglePause, showChestScreen, openChest, claimChestReward, _atk:doAttack, _dash:doDash, _sp:doSpecial };
 })();
 
 // ── Backwards-compat stubs ────────────────────────────────────
@@ -22895,7 +23078,7 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 #combatOverlay.hide{display:none !important;}
 #ceZoneMap.hide,#ceGameContainer.hide,#ceHud.hide,
 #ceJoystickZone.hide,#ceBtnsArea.hide,
-#ceResultScreen.hide,#cePauseMenu.hide,#ceUpgradeScreen.hide,
+#ceResultScreen.hide,#cePauseMenu.hide,#ceUpgradeScreen.hide,#ceChestScreen.hide,
 #ceZoneDetail.hide{display:none !important;}
 /* Zone map — fantasy illustrated */
 #ceZoneMap{position:absolute;inset:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#050810 0%,#0a0e1a 40%,#060912 100%);overflow:hidden;}
@@ -22983,16 +23166,72 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 #ceAtkBtn{width:70px;height:70px;background:#dc2626;box-shadow:0 0 22px rgba(220,38,38,.55);}
 #ceDashBtn{width:54px;height:54px;box-shadow:0 0 14px rgba(96,165,250,.35);}
 /* Result screen */
-#ceResultScreen{position:absolute;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:20;}
-.ce-result-box{background:linear-gradient(135deg,#1e1e2e,#2a2a3e);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:32px 26px;text-align:center;max-width:320px;width:90%;}
-.ce-result-icon{font-size:3rem;margin-bottom:8px;}
-.ce-result-title{font-size:1.8rem;font-weight:800;color:#e2e8f0;margin-bottom:14px;}
-.ce-result-rewards{background:rgba(255,255,255,.05);border-radius:10px;padding:12px;margin-bottom:16px;}
-.ce-result-rewards>div{font-size:1.1rem;font-weight:600;color:#fbbf24;margin:4px 0;}
-.ce-result-sub{color:#64748b;font-size:.9rem;margin-bottom:16px;}
-.ce-result-btn{display:block;width:100%;padding:12px;margin-top:10px;border-radius:10px;border:none;font-size:1rem;font-weight:700;cursor:pointer;color:#fff;background:rgba(255,255,255,.1);transition:background .15s;}
-.ce-result-btn:hover{background:rgba(255,255,255,.2);}
-.ce-btn-claim{background:linear-gradient(135deg,#7c3aed,#4f46e5) !important;}
+#ceResultScreen{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background 0.4s ease;display:flex;align-items:center;justify-content:center;z-index:20;}
+#ceResultScreen.active{background:rgba(0,0,0,0.85);}
+.ce-result-box{width:88%;max-width:340px;background:linear-gradient(160deg,#1a1830,#0e0c1e);border:1px solid rgba(139,92,246,0.3);border-radius:24px;padding:28px 20px;text-align:center;transform:scale(0.8);opacity:0;transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s ease;box-shadow:0 20px 60px rgba(0,0,0,0.7);}
+#ceResultScreen.active .ce-result-box{transform:scale(1);opacity:1;}
+.ce-result-icon{font-size:3.5rem;margin-bottom:8px;display:block;}
+.ce-result-title{font-size:1.6rem;font-weight:800;color:#e2e8f0;margin-bottom:16px;}
+.ce-result-rewards{margin-bottom:20px;}
+.ce-result-rewards>div{font-size:1rem;font-weight:700;color:#fbbf24;margin-bottom:6px;}
+.ce-result-buffs{font-size:0.72rem;color:#94a3b8;margin-top:8px;}
+.ce-btn-claim{padding:12px 32px;border-radius:12px;border:none;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-size:0.95rem;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,0.4);transition:transform 0.15s;font-family:inherit;}
+.ce-btn-claim:active{transform:scale(0.95);}
+/* Chest screen */
+#ceChestScreen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:125;padding:20px;background:rgba(0,0,0,0);transition:background 0.5s ease;}
+#ceChestScreen.active{background:rgba(0,0,0,0.92);}
+.chest-container{display:flex;flex-direction:column;align-items:center;margin-bottom:28px;transform:scale(0.5);opacity:0;transition:transform 0.6s cubic-bezier(0.34,1.56,0.64,1),opacity 0.4s ease;}
+#ceChestScreen.active .chest-container{transform:scale(1);opacity:1;}
+.chest-emoji{font-size:5rem;line-height:1;filter:drop-shadow(0 0 20px rgba(255,200,0,0.8));cursor:pointer;animation:chestFloat 2.5s ease-in-out infinite;transition:transform 0.2s;user-select:none;}
+.chest-emoji:active{transform:scale(0.88);}
+@keyframes chestFloat{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-10px) rotate(2deg);}}
+.chest-emoji.opening{animation:chestOpen 0.5s ease forwards;}
+@keyframes chestOpen{0%{transform:scale(1);}40%{transform:scale(1.3) rotate(-5deg);filter:drop-shadow(0 0 50px rgba(255,255,100,1));}70%{transform:scale(0.9) rotate(3deg);}100%{transform:scale(1.1);}}
+.chest-label{font-size:0.8rem;font-weight:700;color:rgba(255,200,80,0.8);text-transform:uppercase;letter-spacing:0.12em;margin-top:8px;text-align:center;}
+.chest-tap-hint{font-size:0.7rem;color:rgba(180,160,200,0.6);margin-top:4px;animation:hintBlink 1.5s infinite;}
+@keyframes hintBlink{0%,100%{opacity:0.6}50%{opacity:1}}
+.chest-base-rewards{display:flex;gap:14px;margin-bottom:24px;transform:translateY(20px);opacity:0;transition:all 0.4s ease 0.2s;}
+#ceChestScreen.cards-in .chest-base-rewards{transform:translateY(0);opacity:1;}
+.chest-reward-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:6px 14px;font-size:0.9rem;font-weight:700;color:#fff;}
+.chest-cards-title{font-size:0.75rem;color:rgba(200,180,255,0.7);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;transform:translateY(10px);opacity:0;transition:all 0.3s ease 0.15s;}
+#ceChestScreen.cards-in .chest-cards-title{transform:translateY(0);opacity:1;}
+.chest-cards{display:flex;gap:8px;justify-content:center;width:100%;max-width:420px;margin-bottom:20px;}
+.chest-card{flex:1;max-width:90px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px 12px;background:rgba(20,15,40,0.9);border:2px solid rgba(100,80,180,0.4);border-radius:16px;cursor:pointer;transform:translateY(60px) scale(0.8);opacity:0;transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s ease,border-color 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;min-height:120px;justify-content:center;color:inherit;font-family:inherit;}
+.chest-card.card-in{transform:translateY(0) scale(1);opacity:1;}
+.chest-card:active{transform:scale(0.93) !important;}
+.chest-card[data-rarity="comun"]{border-color:rgba(160,160,160,0.5);}
+.chest-card[data-rarity="poco_comun"]{border-color:rgba(80,200,80,0.6);}
+.chest-card[data-rarity="raro"]{border-color:rgba(60,140,255,0.7);}
+.chest-card[data-rarity="epico"]{border-color:rgba(180,60,255,0.8);}
+.chest-card[data-rarity="legendario"]{border-color:rgba(255,180,0,0.9);box-shadow:0 0 20px rgba(255,180,0,0.3);}
+.chest-card::after{content:'';position:absolute;top:0;left:5%;right:5%;height:3px;border-radius:0 0 3px 3px;}
+.chest-card[data-rarity="comun"]::after{background:#aaa;}
+.chest-card[data-rarity="poco_comun"]::after{background:#4c4;box-shadow:0 0 8px #4c4;}
+.chest-card[data-rarity="raro"]::after{background:#48f;box-shadow:0 0 10px #48f;}
+.chest-card[data-rarity="epico"]::after{background:#c4f;box-shadow:0 0 14px #c4f;}
+.chest-card[data-rarity="legendario"]::after{background:linear-gradient(90deg,#f80,#ff0,#f80);box-shadow:0 0 18px rgba(255,200,0,1);animation:legendShimmer 1.5s infinite;}
+.chest-card.facedown .card-front{display:none;}
+.chest-card.facedown .card-back{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.chest-card:not(.facedown) .card-back{display:none;}
+.card-back{color:rgba(150,120,200,0.7);font-size:2rem;}
+.card-back-label{font-size:0.6rem;color:rgba(150,120,200,0.5);text-transform:uppercase;letter-spacing:0.1em;}
+.card-front{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.card-item-icon{font-size:2rem;}
+.card-item-name{font-size:0.62rem;font-weight:700;color:#fff;text-align:center;line-height:1.2;}
+.card-item-slot{font-size:0.55rem;color:rgba(180,160,210,0.6);text-transform:uppercase;}
+.card-rarity-badge{font-size:0.5rem;font-weight:800;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+.card-rarity-badge.comun{background:rgba(160,160,160,0.2);color:#aaa;}
+.card-rarity-badge.poco_comun{background:rgba(80,200,80,0.2);color:#4d4;}
+.card-rarity-badge.raro{background:rgba(60,140,255,0.2);color:#5af;}
+.card-rarity-badge.epico{background:rgba(180,60,255,0.2);color:#d8f;}
+.card-rarity-badge.legendario{background:rgba(255,180,0,0.25);color:#fc0;box-shadow:0 0 8px rgba(255,180,0,0.5);}
+.chest-card.chosen{border-color:#a78bfa !important;background:rgba(139,92,246,0.2);box-shadow:0 0 30px rgba(139,92,246,0.5);transform:scale(1.06) !important;}
+.chest-card.rejected{opacity:0.2;transform:scale(0.92) !important;filter:grayscale(0.8);pointer-events:none;}
+.chest-claim-btn{padding:13px 36px;border-radius:14px;border:none;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;letter-spacing:0.04em;box-shadow:0 4px 20px rgba(124,58,237,0.5);transform:translateY(20px);opacity:0;transition:all 0.3s ease,transform 0.2s;font-family:inherit;}
+.chest-claim-btn.btn-in{transform:translateY(0);opacity:1;}
+.chest-claim-btn:active{transform:scale(0.95) !important;}
+.chest-particle{position:absolute;border-radius:50%;pointer-events:none;animation:burstOut 0.8s ease-out forwards;}
+@keyframes burstOut{0%{transform:translate(0,0) scale(1);opacity:1;}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}}
 /* Pause menu */
 #cePauseMenu{position:absolute;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:20;}
 .ce-pause-box{background:linear-gradient(135deg,#1e1e2e,#2a2a3e);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:32px;text-align:center;min-width:240px;}
@@ -23234,6 +23473,9 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 
     <!-- Victory / defeat result -->
     <div id="ceResultScreen" class="hide"></div>
+
+    <!-- Chest reward screen -->
+    <div id="ceChestScreen" class="hide"></div>
 
     <!-- Pause menu -->
     <div id="cePauseMenu" class="hide">
