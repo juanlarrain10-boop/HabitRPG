@@ -15209,10 +15209,6 @@ function openChest(won, cardCount) {
       (function(c, delay){
         setTimeout(function() {
           c.classList.add('card-in');
-          setTimeout(function() {
-            c.classList.remove('facedown');
-            try { if(navigator.vibrate) navigator.vibrate(30); } catch(e) {}
-          }, 200);
         }, delay);
       })(card, 150 + i * 140);
     });
@@ -15224,17 +15220,31 @@ function selectChestCard(card, item, idx) {
 
   chestEl._selectedItem = item;
 
-  document.querySelectorAll('.chest-card').forEach(function(c) {
-    if (c === card) c.classList.add('chosen');
-    else c.classList.add('rejected');
-  });
-
   try { if(navigator.vibrate) navigator.vibrate([80,40,80]); } catch(e) {}
 
+  // Voltear la carta elegida con animación
+  card.classList.add('flipping');
+  setTimeout(function() {
+    card.classList.remove('facedown', 'flipping');
+    try { if(navigator.vibrate) navigator.vibrate(30); } catch(e) {}
+  }, 500);
+
+  // Desaparecer las otras cartas a los 400ms
+  setTimeout(function() {
+    document.querySelectorAll('.chest-card').forEach(function(c) {
+      if (c === card) c.classList.add('chosen');
+      else {
+        c.classList.add('rejected');
+        c.style.opacity = '0';
+      }
+    });
+  }, 400);
+
+  // Mostrar botón reclamar solo después del volteo completo (600ms)
   setTimeout(function() {
     const btn = document.getElementById('chestClaimBtn');
     if (btn) { btn.style.display = 'block'; btn.classList.add('btn-in'); }
-  }, 500);
+  }, 600);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -23283,9 +23293,12 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 .chest-card[data-rarity="raro"]::after{background:#48f;box-shadow:0 0 10px #48f;}
 .chest-card[data-rarity="epico"]::after{background:#c4f;box-shadow:0 0 14px #c4f;}
 .chest-card[data-rarity="legendario"]::after{background:linear-gradient(90deg,#f80,#ff0,#f80);box-shadow:0 0 18px rgba(255,200,0,1);animation:legendShimmer 1.5s infinite;}
+.chest-card.facedown{cursor:pointer;background:linear-gradient(135deg,#1a1040,#2a1860);border-color:rgba(139,92,246,0.5);}
 .chest-card.facedown .card-front{display:none;}
 .chest-card.facedown .card-back{display:flex;flex-direction:column;align-items:center;gap:4px;}
 .chest-card:not(.facedown) .card-back{display:none;}
+@keyframes cardFlip{0%{transform:rotateY(0deg) scale(1);}50%{transform:rotateY(90deg) scale(1.05);}100%{transform:rotateY(0deg) scale(1);}}
+.chest-card.flipping{animation:cardFlip 0.5s ease forwards;}
 .card-back{color:rgba(150,120,200,0.7);font-size:2rem;}
 .card-back-label{font-size:0.6rem;color:rgba(150,120,200,0.5);text-transform:uppercase;letter-spacing:0.1em;}
 .card-front{display:flex;flex-direction:column;align-items:center;gap:5px;}
