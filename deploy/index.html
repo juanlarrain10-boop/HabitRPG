@@ -4642,6 +4642,84 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
 }
 #campCharSvg { image-rendering: pixelated; image-rendering: crisp-edges; }
 
+/* Tinte de rareza en el anillo del héroe */
+.camp-char-avatar-ring.eq-raro {
+  filter: drop-shadow(0 0 8px rgba(80,160,255,0.6));
+}
+.camp-char-avatar-ring.eq-epico {
+  filter: drop-shadow(0 0 14px rgba(192,80,255,0.8));
+  animation: epicGlow 2s ease-in-out infinite;
+}
+.camp-char-avatar-ring.eq-legendario {
+  filter: drop-shadow(0 0 20px rgba(255,190,0,0.9));
+  animation: legendGlow 1.5s ease-in-out infinite;
+}
+@keyframes epicGlow {
+  0%,100% { filter: drop-shadow(0 0 14px rgba(192,80,255,0.7)); }
+  50%      { filter: drop-shadow(0 0 24px rgba(192,80,255,1)); }
+}
+@keyframes legendGlow {
+  0%,100% { filter: drop-shadow(0 0 18px rgba(255,190,0,0.8)); }
+  50%      { filter: drop-shadow(0 0 32px rgba(255,200,0,1)); }
+}
+
+/* Badges de equipo alrededor del héroe */
+.camp-eq-badges {
+  position: absolute;
+  inset: -18px;
+  pointer-events: none;
+  z-index: 10;
+}
+.camp-eq-badge {
+  position: absolute;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  border: 2px solid rgba(0,0,0,0.5);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+}
+.camp-eq-badge.comun      { background: rgba(100,100,100,0.9); border-color: #888; }
+.camp-eq-badge.poco_comun { background: rgba(30,120,30,0.9);   border-color: #4c4; }
+.camp-eq-badge.raro       { background: rgba(20,60,180,0.9);   border-color: #5af; }
+.camp-eq-badge.epico      { background: rgba(100,20,200,0.9);  border-color: #c4f; }
+.camp-eq-badge.legendario {
+  background: rgba(160,100,0,0.9); border-color: #fc0;
+  animation: badgeLegend 1.5s infinite;
+}
+@keyframes badgeLegend {
+  0%,100% { box-shadow: 0 0 6px rgba(255,200,0,0.6); }
+  50%      { box-shadow: 0 0 14px rgba(255,200,0,1); }
+}
+
+/* Posiciones de los badges (8 slots alrededor del círculo) */
+.camp-eq-badge[data-slot="weapon"]    { top: 50%; left: -8px;  transform: translateY(-50%); }
+.camp-eq-badge[data-slot="leftHand"]  { top: 50%; right: -8px; transform: translateY(-50%); }
+.camp-eq-badge[data-slot="head"]      { top: -8px; left: 50%;  transform: translateX(-50%); }
+.camp-eq-badge[data-slot="armor"]     { bottom: -8px; left: 50%; transform: translateX(-50%); }
+.camp-eq-badge[data-slot="accessory"] { top: 15%;  left: 5%;   }
+.camp-eq-badge[data-slot="cape"]      { top: 15%;  right: 5%;  }
+.camp-eq-badge[data-slot="legs"]      { bottom: 15%; left: 5%; }
+.camp-eq-badge[data-slot="feet"]      { bottom: 15%; right: 5%;}
+
+/* Panel de equipo mini bajo el nombre */
+.camp-eq-summary {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  justify-content: center; margin-top: 6px;
+  max-width: 180px;
+}
+.camp-eq-sum-item {
+  font-size: 0.6rem; padding: 2px 6px;
+  border-radius: 8px; font-weight: 700;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--dim);
+}
+.camp-eq-sum-item.raro       { border-color: rgba(80,160,255,0.4); color: #5af; }
+.camp-eq-sum-item.epico      { border-color: rgba(192,80,255,0.5); color: #c4f; }
+.camp-eq-sum-item.legendario { border-color: rgba(255,190,0,0.6);  color: #fc0; }
+
 .camp-char-name {
   font-family: var(--pxfont); font-size: .48rem;
   color: var(--txt); letter-spacing: .06em;
@@ -12579,6 +12657,68 @@ function _campRenderChar() {
   var sm = stateMap[state] || stateMap.normal;
   ring.className = 'camp-char-avatar-ring ' + sm.cls;
   if (stateEl) { stateEl.className = 'camp-char-state-label ' + sm.cls; stateEl.textContent = sm.label; }
+  updateCampEquipDisplay();
+}
+
+function updateCampEquipDisplay() {
+  if (!char || !char.equipped) return;
+
+  var ring = document.getElementById('campCharRing');
+  if (!ring) return;
+
+  var rarityOrder = ['comun','poco_comun','raro','epico','legendario'];
+  var highestRarity = -1;
+  var equippedItems = [];
+
+  Object.entries(char.equipped).forEach(function(entry) {
+    var slot = entry[0], itemId = entry[1];
+    if (!itemId) return;
+    var item = (typeof SHOP_ITEMS !== 'undefined' ? SHOP_ITEMS : [])
+      .find(function(it) { return it.id === itemId; });
+    if (!item) return;
+    equippedItems.push({slot: slot, item: item});
+    var idx = rarityOrder.indexOf(item.rarity);
+    if (idx > highestRarity) highestRarity = idx;
+  });
+
+  ring.classList.remove('eq-raro','eq-epico','eq-legendario');
+  if (highestRarity >= 4) ring.classList.add('eq-legendario');
+  else if (highestRarity >= 3) ring.classList.add('eq-epico');
+  else if (highestRarity >= 2) ring.classList.add('eq-raro');
+
+  var badgesEl = ring.querySelector('.camp-eq-badges');
+  if (!badgesEl) {
+    badgesEl = document.createElement('div');
+    badgesEl.className = 'camp-eq-badges';
+    ring.appendChild(badgesEl);
+  }
+  badgesEl.innerHTML = '';
+
+  equippedItems.forEach(function(entry) {
+    var badge = document.createElement('div');
+    badge.className = 'camp-eq-badge ' + (entry.item.rarity || 'comun');
+    badge.dataset.slot = entry.slot;
+    badge.textContent = entry.item.icon || '⚔️';
+    badge.title = entry.item.name + ' (' + entry.item.rarity + ')';
+    badgesEl.appendChild(badge);
+  });
+
+  var nameEl = document.getElementById('campCharName');
+  if (nameEl) {
+    var nextEl = nameEl.nextElementSibling;
+    var summaryEl = (nextEl && nextEl.classList.contains('camp-eq-summary')) ? nextEl : null;
+    if (!summaryEl && equippedItems.length > 0) {
+      summaryEl = document.createElement('div');
+      summaryEl.className = 'camp-eq-summary';
+      nameEl.parentNode.insertBefore(summaryEl, nameEl.nextSibling);
+    }
+    if (summaryEl) {
+      summaryEl.innerHTML = equippedItems
+        .filter(function(e) { return ['epico','legendario','raro'].includes(e.item.rarity); })
+        .map(function(e) { return '<span class="camp-eq-sum-item ' + e.item.rarity + '">' + (e.item.icon || '') + ' ' + e.item.name + '</span>'; })
+        .join('');
+    }
+  }
 }
 
 function _campRenderCards() {
