@@ -14320,6 +14320,7 @@ function enterZone(zone) {
   ctx = canvas.getContext('2d');
   initGame();
   bindInput();
+  updateCombatBtnIcons();
   running = true; paused = false; lastTs = performance.now();
   rafId = requestAnimationFrame(loop);
 }
@@ -14341,7 +14342,7 @@ function _mkHero(cls, lv, x, y, isMain, charData) {
     atkCd:0, attacking:false, atkTime:0, atkAng:0,
     dashCd:0, dashing:false, dashTime:0, dvx:0, dvy:0, invul:0,
     dashCharges:2, dashMaxCharges:2,
-    spCd:0, spActive:false, spEff:null, spTime:0, spMul:false,
+    spCd:0, spActive:false, spEff:null, spTime:0, spMul:false, ultCd:0,
     hitTime:0, trail:[], goldEarned:0,
     dmgMult:1, rangeMult:1, regenOnKill:0, doubleShot:false,
     dashNoCd:false, dashNoCdRoom:0, _as:'i', _af:0, level:lv,
@@ -14564,10 +14565,11 @@ function updateP(dt) {
   P.trail=P.trail.filter(t=>{t.a-=dt*4;t.t-=dt;return t.t>0;});
   if(P.atkCd>0)P.atkCd-=dt; if(P.dashCd>0){P.dashCd-=dt;if(P.dashCd<=0){P.dashCd=0;P.dashCharges=P.dashMaxCharges||2;}}
   if(P.spCd   >0)P.spCd   -=dt; if(P.invul  >0)P.invul  -=dt;
+  if(P.ultCd  >0)P.ultCd  =Math.max(0,P.ultCd-dt);
   if(P.hitTime>0)P.hitTime -=dt;
   if(P.atkTime>0){P.atkTime-=dt; if(P.atkTime<=0)P.attacking=false;}
   if(P.spTime >0){P.spTime -=dt; if(P.spTime <=0){P.spActive=false;P.spEff=null;}}
-  dashBtnUpd(); spBtnUpd(); hudUpdate();
+  dashBtnUpd(); spBtnUpd(); ultBtnUpd(); hudUpdate();
 }
 
 // ── Attack ───────────────────────────────────────────────────
@@ -14667,6 +14669,112 @@ function doSpecial() {
       dnum(P.x,P.y-40,'¡LLUVIA!','#93c5fd'); break; }
   }
   try{if(navigator.vibrate)navigator.vibrate([30,10,30]);}catch(e){}
+}
+
+function ceFlash(type, dur) {
+  dur = dur || 120;
+  const f = document.getElementById('ceFlash');
+  if (!f) return;
+  f.className = 'flash-' + type;
+  f.style.opacity = '1';
+  setTimeout(function() { f.style.opacity = '0'; f.className = ''; }, dur);
+}
+function screenShake(intensity, duration) {
+  intensity = intensity || 5; duration = duration || 200;
+  const cv = document.getElementById('ceCanvas');
+  if (!cv) return;
+  const start = performance.now();
+  function shake(now) {
+    const elapsed = now - start;
+    if (elapsed >= duration) { cv.style.transform = ''; return; }
+    const prog = 1 - elapsed / duration;
+    const dx = (Math.random() - 0.5) * intensity * prog * 2;
+    const dy = (Math.random() - 0.5) * intensity * prog * 2;
+    cv.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    requestAnimationFrame(shake);
+  }
+  requestAnimationFrame(shake);
+}
+function spawnWolf(x, y) {
+  const wolf = {
+    x:x, y:y, w:24, h:24, hp:999, maxHp:999,
+    spd:200, color:'#4ade80', dmg: P ? Math.floor(P.cd.atk.dmg * 1.5) : 20,
+    gold:0, vx:0, vy:0, hitTime:0, stunTime:0, atkCd:0,
+    dead:false, type:'wolf', isAlly:true,
+    lifeTime:8, atkRange:50, atkRate:1.2
+  };
+  if (!window.allies) window.allies = [];
+  window.allies.push(wolf);
+}
+function doUltimate() {
+  if (!running || paused || !P || P.hp <= 0) return;
+  if (P.ultCd > 0) return;
+  P.ultCd = 20;
+  const clase = (P.cls || '').toLowerCase();
+  ceFlash('ult', 200);
+  screenShake(8, 300);
+  switch (clase) {
+    case 'guerrero':
+      enemies.filter(function(e){ return !e.dead; }).forEach(function(e) {
+        if (Math.hypot(e.x - P.x, e.y - P.y) < 200)
+          hit(e, P.cd.atk.dmg * 5, Math.atan2(e.y - P.y, e.x - P.x));
+      });
+      waveParts(P.x, P.y, 200, '#e74c3c');
+      dnum(P.x, P.y - 50, '¡GIRO DEVASTADOR!', '#ef4444');
+      break;
+    case 'mago':
+      P.spActive = true; P.spEff = 'storm'; P.spTime = 5;
+      dnum(P.x, P.y - 50, '¡TORMENTA ARCANA!', '#c084fc');
+      break;
+    case 'monje':
+      P.spActive = true; P.spEff = 'trance'; P.spTime = 4;
+      P.invul = 4;
+      dnum(P.x, P.y - 50, '¡MODO TRANCE!', '#fbbf24');
+      break;
+    case 'asesino':
+      for (var i = 0; i < 8; i++) {
+        var a = (Math.PI * 2 / 8) * i;
+        projs.push({x:P.x, y:P.y, vx:Math.cos(a)*500, vy:Math.sin(a)*500,
+          dmg:P.cd.atk.dmg*3, r:6, color:'#34d399', life:1.2, owner:'p'});
+      }
+      dnum(P.x, P.y - 50, '¡TORMENTA DE DAGAS!', '#34d399');
+      break;
+    case 'druida':
+      P.spActive = true; P.spEff = 'wolf'; P.spTime = 8;
+      spawnWolf(P.x + 40, P.y);
+      dnum(P.x, P.y - 50, '¡ESPÍRITU LOBO!', '#4ade80');
+      break;
+    case 'barbaro':
+      P.spActive = true; P.spEff = 'rage'; P.spTime = 3;
+      P.invul = 3;
+      dnum(P.x, P.y - 50, '¡RAGE TOTAL!', '#f97316');
+      break;
+    case 'arquero': {
+      projs.push({x:P.x, y:P.y, vx:0, vy:-800,
+        dmg:P.cd.atk.dmg*10, r:10, color:'#fbbf24', life:2,
+        owner:'p', pierce:true, trail:true});
+      dnum(P.x, P.y - 50, '¡FLECHA DEL DESTINO!', '#fbbf24');
+      break;
+    }
+  }
+  try { if (navigator.vibrate) navigator.vibrate([50,30,100,30,150]); } catch(e) {}
+}
+function updateCombatBtnIcons() {
+  const clase = (typeof char !== 'undefined' && char && char.clase) ? char.clase.toLowerCase() : '';
+  const icons = {
+    guerrero: {atk:'⚔️', sp:'🛡️', ult:'🌀'},
+    mago:     {atk:'🔮', sp:'💥', ult:'⚡'},
+    monje:    {atk:'👊', sp:'⚡', ult:'🌀'},
+    asesino:  {atk:'🗡️', sp:'👤', ult:'🌪️'},
+    druida:   {atk:'🌿', sp:'💚', ult:'🐺'},
+    barbaro:  {atk:'🪓', sp:'💢', ult:'🔥'},
+    arquero:  {atk:'🏹', sp:'🌧️', ult:'☄️'},
+  };
+  const ic = icons[clase] || {atk:'⚔️', sp:'★', ult:'🔥'};
+  const a = $$('ceAtkBtn'), s = $$('ceSpecialBtn'), u = $$('ceUltBtn');
+  if (a) a.textContent = ic.atk;
+  if (s) s.textContent = ic.sp;
+  if (u) u.textContent = ic.ult;
 }
 
 // ── Melee helpers ────────────────────────────────────────────
@@ -16342,6 +16450,16 @@ function spBtnUpd() {
   const pct=P.spCd>0?Math.max(0,1-P.spCd/(P.cd.sp.cd||8)):1;
   btn.style.background=`conic-gradient(#fbbf24 ${pct*360}deg,#4a3800 ${pct*360}deg)`;btn.disabled=P.spCd>0;
 }
+function ultBtnUpd() {
+  const btn=$$('ceUltBtn');if(!btn||!P)return;
+  const pct=P.ultCd>0?Math.max(0,1-P.ultCd/20):1;
+  btn.style.background=P.ultCd<=0
+    ?'linear-gradient(135deg,#7c3aed,#4f46e5)'
+    :`conic-gradient(#7c3aed ${pct*360}deg,#1e0a3e ${pct*360}deg)`;
+  if(P.ultCd<=0)btn.classList.add('ready');
+  else btn.classList.remove('ready');
+  btn.disabled=P.ultCd>0;
+}
 
 // ── Arc/wave particle helpers ─────────────────────────────────
 function arcParts(ox,oy,ang,range,col){ for(let i=0;i<7;i++){const a=ang+(Math.random()-.5)*Math.PI*.65,d=range*(.4+Math.random()*.6);parts.push({x:ox+Math.cos(a)*d*.5,y:oy+Math.sin(a)*d*.5,vx:Math.cos(a)*130,vy:Math.sin(a)*130,color:col,life:.45,r:5});} }
@@ -16399,6 +16517,7 @@ function onCanvasClick(){ if(running&&!paused)doAttack(); }
 function onAtkTouch(e){ e.preventDefault();if(running&&!paused)doAttack(); }
 function onDashTouch(e){ e.preventDefault();if(running&&!paused)doDash(); }
 function onSpTouch(e){ e.preventDefault();if(running&&!paused)doSpecial(); }
+function onUltTouch(e){ e.preventDefault();if(running&&!paused)doUltimate(); }
 function onJoyStart(e) {
   e.preventDefault(); const t=e.changedTouches[0];
   joy.active=true;joy.tid=t.identifier;joy.bx=t.clientX;joy.by=t.clientY;joy.dx=0;joy.dy=0;
@@ -16428,6 +16547,7 @@ function bindInput() {
   $$('ceAtkBtn').addEventListener('touchstart',onAtkTouch,{passive:false});
   $$('ceDashBtn').addEventListener('touchstart',onDashTouch,{passive:false});
   $$('ceSpecialBtn').addEventListener('touchstart',onSpTouch,{passive:false});
+  $$('ceUltBtn').addEventListener('touchstart',onUltTouch,{passive:false});
   $$('ceJoystickZone').classList.remove('hide');$$('ceBtnsArea').classList.remove('hide');$$('ceHud').classList.remove('hide');
 }
 function unbindInput() {
@@ -16438,11 +16558,12 @@ function unbindInput() {
   const ab=$$('ceAtkBtn');if(ab)ab.removeEventListener('touchstart',onAtkTouch);
   const db=$$('ceDashBtn');if(db)db.removeEventListener('touchstart',onDashTouch);
   const sb=$$('ceSpecialBtn');if(sb)sb.removeEventListener('touchstart',onSpTouch);
+  const ub=$$('ceUltBtn');if(ub)ub.removeEventListener('touchstart',onUltTouch);
   $$('ceJoystickZone').classList.add('hide');$$('ceBtnsArea').classList.add('hide');$$('ceHud').classList.add('hide');
   keys={};
 }
 
-return { showZoneMap, enterZone, exit, togglePause, showChestScreen, openChest, claimChestReward, restHeal, restContinue, _atk:doAttack, _dash:doDash, _sp:doSpecial };
+return { showZoneMap, enterZone, exit, togglePause, showChestScreen, openChest, claimChestReward, restHeal, restContinue, _atk:doAttack, _dash:doDash, _sp:doSpecial, _ult:doUltimate };
 })();
 
 // ── Backwards-compat stubs ────────────────────────────────────
@@ -23241,13 +23362,26 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 #ceJoystickBase{position:absolute;bottom:28px;left:18px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;opacity:.5;transition:opacity .1s;}
 #ceJoystickKnob{width:44px;height:44px;border-radius:50%;background:rgba(139,92,246,.5);border:2px solid rgba(139,92,246,.8);pointer-events:none;}
 /* Action buttons */
-#ceBtnsArea{position:absolute;bottom:18px;right:14px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:10px;}
-.ce-btn{border-radius:50%;border:none;cursor:pointer;font-size:1.25rem;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none;box-shadow:0 4px 14px rgba(0,0,0,.6);transition:transform .08s,opacity .1s;-webkit-tap-highlight-color:transparent;}
-.ce-btn:active{transform:scale(.88);}
-.ce-btn:disabled{opacity:.45;}
-#ceSpecialBtn{width:54px;height:54px;box-shadow:0 0 16px rgba(251,191,36,.4);}
-#ceAtkBtn{width:70px;height:70px;background:#dc2626;box-shadow:0 0 22px rgba(220,38,38,.55);}
-#ceDashBtn{width:54px;height:54px;box-shadow:0 0 14px rgba(96,165,250,.35);}
+#ceBtnsArea{position:absolute;bottom:18px;right:10px;z-index:10;}
+.ce-btns-grid{display:grid;grid-template-columns:58px 58px;grid-template-rows:58px 74px 50px;gap:8px;align-items:center;justify-items:center;}
+#ceSpecialBtn{grid-column:1;grid-row:1;}
+#ceUltBtn{grid-column:2;grid-row:1;}
+#ceAtkBtn{grid-column:1/3;grid-row:2;width:74px;height:74px;}
+#ceDashBtn{grid-column:1/3;grid-row:3;width:50px;height:50px;}
+.ce-btn{border-radius:50%;border:2px solid rgba(255,255,255,0.15);cursor:pointer;font-size:1.3rem;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none;box-shadow:0 4px 14px rgba(0,0,0,.6);transition:transform .08s,opacity .1s,box-shadow .15s;-webkit-tap-highlight-color:transparent;width:58px;height:58px;}
+.ce-btn:active{transform:scale(.85);}
+.ce-btn:disabled{opacity:.35;}
+.ce-btn-atk{background:#dc2626;box-shadow:0 0 22px rgba(220,38,38,.6);}
+.ce-btn-sp{background:#d97706;box-shadow:0 0 16px rgba(251,191,36,.4);}
+.ce-btn-dash{background:#2563eb;box-shadow:0 0 14px rgba(96,165,250,.4);}
+.ce-btn-ult{background:linear-gradient(135deg,#7c3aed,#4f46e5);box-shadow:0 0 18px rgba(139,92,246,.5);position:relative;}
+.ce-btn-ult.ready::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid #a78bfa;animation:ultReady 1.2s ease-in-out infinite;}
+@keyframes ultReady{0%,100%{transform:scale(1);opacity:0.8;}50%{transform:scale(1.15);opacity:0.3;}}
+#ceFlash{position:absolute;inset:0;pointer-events:none;z-index:50;opacity:0;border-radius:4px;transition:opacity 0.05s;}
+#ceFlash.flash-atk{box-shadow:inset 0 0 60px rgba(220,38,38,0.5);}
+#ceFlash.flash-sp{box-shadow:inset 0 0 60px rgba(251,191,36,0.5);}
+#ceFlash.flash-ult{box-shadow:inset 0 0 80px rgba(139,92,246,0.7);}
+#ceFlash.flash-dmg{box-shadow:inset 0 0 80px rgba(220,38,38,0.6);}
 /* Result screen */
 #ceResultScreen{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background 0.4s ease;display:flex;align-items:center;justify-content:center;z-index:20;}
 #ceResultScreen.active{background:rgba(0,0,0,0.85);}
@@ -23523,6 +23657,7 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
   <!-- Game canvas + HUD + controls -->
   <div id="ceGameContainer" class="hide">
     <canvas id="ceCanvas"></canvas>
+    <div id="ceFlash"></div>
 
     <!-- HUD -->
     <div id="ceHud" class="hide">
@@ -23553,9 +23688,12 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 
     <!-- Action buttons (right side) -->
     <div id="ceBtnsArea" class="hide">
-      <button class="ce-btn" id="ceSpecialBtn" title="Especial (L)">★</button>
-      <button class="ce-btn" id="ceAtkBtn" title="Atacar (J / clic)">⚔</button>
-      <button class="ce-btn" id="ceDashBtn" title="Dash (K / Shift)">⇒</button>
+      <div class="ce-btns-grid">
+        <button class="ce-btn ce-btn-sp"   id="ceSpecialBtn"  title="Especial">★</button>
+        <button class="ce-btn ce-btn-ult"  id="ceUltBtn"      title="Ultimate">🔥</button>
+        <button class="ce-btn ce-btn-atk"  id="ceAtkBtn"      title="Atacar">⚔</button>
+        <button class="ce-btn ce-btn-dash" id="ceDashBtn"     title="Dash">⇒</button>
+      </div>
     </div>
 
     <!-- Victory / defeat result -->
