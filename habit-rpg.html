@@ -14617,12 +14617,19 @@ function doDash() {
   if(joy.active){dx=joy.dx;dy=joy.dy;}
   if(!dx&&!dy)dx=P.fd;
   const dl=Math.hypot(dx,dy);
-  P.dashing=true;P.dashTime=.18;P.dvx=(dx/dl)*780;P.dvy=(dy/dl)*780;P.invul=.3;
+  P.dashing=true;P.dashTime=.22;P.dvx=(dx/dl)*900;P.dvy=(dy/dl)*900;P.invul=.4;
   if(!P.dashNoCd){
     P.dashCharges=Math.max(0,(P.dashCharges!==undefined?P.dashCharges:1)-1);
     if(P.dashCharges===0)P.dashCd=1.0;
   }
   try{if(navigator.vibrate)navigator.vibrate(10);}catch(e){}
+  ceFlash('atk',60);
+  for(var _di=0;_di<6;_di++){
+    (function(i){setTimeout(function(){
+      if(P)parts.push({x:P.x,y:P.y,vx:(Math.random()-.5)*80,vy:(Math.random()-.5)*80,
+        life:.3,r:4,color:(P.cd&&P.cd.color)||'#60a5fa'});
+    },i*20);}(_di));
+  }
 }
 
 // ── Special ──────────────────────────────────────────────────
@@ -14790,8 +14797,14 @@ function arcHit(ox,oy,ang,range,arc,dmg) {
 function hit(e,dmg,kbAng) {
   if(e.dead)return;
   e.hp-=dmg; e.hitTime=.15;
-  e.vx+=Math.cos(kbAng)*160; e.vy+=Math.sin(kbAng)*160;
+  const kbForce=e.isBoss?80:220;
+  e.vx=Math.cos(kbAng)*kbForce; e.vy=Math.sin(kbAng)*kbForce;
   dnum(e.x,e.y-e.h/2,Math.round(dmg),'#fff');
+  if(!e.isBoss&&running){
+    running=false;
+    setTimeout(function(){running=true;rafId=requestAnimationFrame(loop);},60);
+  }
+  ceFlash('atk',80); screenShake(3,150);
   if(e.hp<=0)killEnemy(e);
 }
 function killEnemy(e) {
@@ -14815,23 +14828,47 @@ function updateEnemies(dt) {
     e.vx*=Math.max(0,1-dt*8); e.vy*=Math.max(0,1-dt*8);
     if(e.stunTime>0){ e.x+=e.vx*dt; e.y+=e.vy*dt; }
     else {
-      const dx=P.x-e.x,dy=P.y-e.y,dist=Math.hypot(dx,dy);
-      if(dist>18){e.x+=(dx/dist)*e.spd*dt+e.vx*dt;e.y+=(dy/dist)*e.spd*dt+e.vy*dt;}
-      else{e.x+=e.vx*dt;e.y+=e.vy*dt;}
-      // Shooter fires at player
-      if(e.type==='shooter'&&e.shootCd!==undefined){
-        e.shootCd-=dt;
-        if(e.shootCd<=0){
-          e.shootCd=2.5+Math.random();
-          const ang=Math.atan2(P.y-e.y,P.x-e.x);
-          projs.push({x:e.x,y:e.y,vx:Math.cos(ang)*210,vy:Math.sin(ang)*210,dmg:e.dmg,r:6,color:'#f87171',life:3.5,owner:'e'});
+      const dx=P.x-e.x,dy=P.y-e.y;
+      const d=Math.hypot(dx,dy);
+      if(e.type==='fast'){
+        const zigzag=Math.sin(Date.now()*0.008+e.x)*60;
+        const perpX=-dy/d,perpY=dx/d;
+        e.x+=((dx/d)*e.spd+perpX*zigzag)*dt+e.vx*dt;
+        e.y+=((dy/d)*e.spd+perpY*zigzag)*dt+e.vy*dt;
+      } else if(e.type==='tank'){
+        if(d<120&&!e.charging){e.charging=true;e.chargeTimer=0.8;}
+        if(e.charging){
+          e.chargeTimer-=dt;
+          if(e.chargeTimer>0){e.hitTime=0.05;}
+          else{e.vx=(dx/d)*e.spd*3;e.vy=(dy/d)*e.spd*3;e.charging=false;}
         }
+        if(d>18){e.x+=(dx/d)*e.spd*0.6*dt+e.vx*dt;e.y+=(dy/d)*e.spd*0.6*dt+e.vy*dt;}
+      } else if(e.type==='shooter'){
+        const preferredDist=180;
+        const distFactor=d<preferredDist?-0.8:1.0;
+        if(d>30){e.x+=(dx/d)*e.spd*distFactor*dt+e.vx*dt;e.y+=(dy/d)*e.spd*distFactor*dt+e.vy*dt;}
+        if(e.shootCd!==undefined){
+          e.shootCd-=dt;
+          if(e.shootCd<=0){
+            e.shootCd=1.8+Math.random()*0.8;
+            const leadTime=d/250;
+            const aimX=P.x+(P.vx||0)*leadTime;
+            const aimY=P.y+(P.vy||0)*leadTime;
+            const ang=Math.atan2(aimY-e.y,aimX-e.x);
+            projs.push({x:e.x,y:e.y,vx:Math.cos(ang)*280,vy:Math.sin(ang)*280,dmg:e.dmg,r:6,color:'#f87171',life:3,owner:'e'});
+          }
+        }
+      } else {
+        if(d>18){e.x+=(dx/d)*e.spd*dt+e.vx*dt;e.y+=(dy/d)*e.spd*dt+e.vy*dt;}
       }
     }
     e.x=clamp(e.x,roomX+e.w/2,roomX+roomW-e.w/2);
     e.y=clamp(e.y,roomY+e.h/2,roomY+roomH-e.h/2);
     if(P.invul<=0&&P.hp>0&&Math.hypot(P.x-e.x,P.y-e.y)<(e.w/2+20)&&e.atkCd<=0){
-      e.atkCd=1.2; P.hp-=e.dmg; P.hitTime=.25; P.invul=.5;
+      e.atkCd=1.2; P.hp-=e.dmg; P.hitTime=.25; P.invul=0.8;
+      ceFlash('dmg',200); screenShake(6,250);
+      const ang2=Math.atan2(P.y-e.y,P.x-e.x);
+      P.dvx=Math.cos(ang2)*300;P.dvy=Math.sin(ang2)*300;P.dashTime=.12;P.dashing=true;
       dnum(P.x,P.y-40,e.dmg,'#f87171');
       try{if(navigator.vibrate)navigator.vibrate(40);}catch(v){}
       if(P.hp<=0){P.hp=0;onDeath();} hudUpdate();
