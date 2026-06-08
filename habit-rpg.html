@@ -23427,7 +23427,8 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 .chest-card[data-rarity="raro"]::after{background:#48f;box-shadow:0 0 10px #48f;}
 .chest-card[data-rarity="epico"]::after{background:#c4f;box-shadow:0 0 14px #c4f;}
 .chest-card[data-rarity="legendario"]::after{background:linear-gradient(90deg,#f80,#ff0,#f80);box-shadow:0 0 18px rgba(255,200,0,1);animation:legendShimmer 1.5s infinite;}
-.chest-card.facedown{cursor:pointer;background:linear-gradient(135deg,#1a1040,#2a1860);border-color:rgba(139,92,246,0.5);}
+.chest-card.facedown{cursor:pointer;background:linear-gradient(135deg,#1a1040,#2a1860) !important;border-color:rgba(139,92,246,0.5) !important;}
+.chest-card.facedown::after{display:none !important;}
 .chest-card.facedown .card-front{display:none;}
 .chest-card.facedown .card-back{display:flex;flex-direction:column;align-items:center;gap:4px;}
 .chest-card:not(.facedown) .card-back{display:none;}
