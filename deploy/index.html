@@ -4521,6 +4521,65 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   87%  { transform: translateY(-1px)  translateX(-.5px); }
   100% { transform: translateY(0px)   translateX(0px);   }
 }
+@keyframes heroLookLeft {
+  0%,100% { transform: scaleX(1); }
+  50%      { transform: scaleX(-1); }
+}
+@keyframes heroLookRight {
+  0%,100% { transform: scaleX(1); }
+  50%      { transform: scaleX(0.95) translateX(3px); }
+}
+@keyframes heroBlink {
+  0%,90%,100% { transform: scaleY(1); }
+  95%          { transform: scaleY(0.05); }
+}
+@keyframes heroNod {
+  0%,100% { transform: rotate(0deg); }
+  25%      { transform: rotate(-8deg); }
+  75%      { transform: rotate(5deg); }
+}
+@keyframes heroIdle {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  25%      { transform: translateY(-3px) rotate(-2deg); }
+  75%      { transform: translateY(2px) rotate(1deg); }
+}
+@keyframes heroShiver {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-2px) rotate(-1deg); }
+  75%      { transform: translateX(2px) rotate(1deg); }
+}
+.camp-class-activity {
+  position: absolute;
+  top: -22px; right: -10px;
+  font-size: 1.2rem;
+  animation: actFloat 2.8s ease-in-out infinite;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+  pointer-events: none; z-index: 30;
+}
+.camp-comp-activity {
+  position: absolute;
+  top: -14px; right: -6px;
+  font-size: 0.9rem;
+  animation: actFloat 3.2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  pointer-events: none; z-index: 30;
+}
+@keyframes actFloat {
+  0%,100% { transform: translateY(0) rotate(-8deg); }
+  50%      { transform: translateY(-8px) rotate(8deg); }
+}
+.camp-act-spark {
+  position: absolute;
+  font-size: 0.65rem;
+  pointer-events: none;
+  animation: sparkRise 2s ease-out infinite;
+  opacity: 0;
+}
+@keyframes sparkRise {
+  0%   { opacity:0; transform: translateY(0) scale(0.5); }
+  20%  { opacity:0.9; }
+  100% { opacity:0; transform: translateY(-35px) scale(0.2); }
+}
 /* Apply to main hero ring and companion images */
 .camp-char-avatar-ring {
   animation: campSitBreath 4s ease-in-out infinite !important;
@@ -12658,6 +12717,8 @@ function _campRenderChar() {
   ring.className = 'camp-char-avatar-ring ' + sm.cls;
   if (stateEl) { stateEl.className = 'camp-char-state-label ' + sm.cls; stateEl.textContent = sm.label; }
   updateCampEquipDisplay();
+  applyCampActivities();
+  startCampBlink();
 }
 
 function updateCampEquipDisplay() {
@@ -12719,6 +12780,81 @@ function updateCampEquipDisplay() {
         .join('');
     }
   }
+}
+
+function getCampActivity(clase) {
+  var map = {
+    guerrero: { icon:'⚔️', sparks:['✨','💥'], anim:'heroShiver' },
+    mago:     { icon:'📖', sparks:['✨','⭐','💫'], anim:'heroNod' },
+    monje:    { icon:'☯️', sparks:['💨','🌟'], anim:'heroNod' },
+    asesino:  { icon:'🗡️', sparks:['💨','🌑'], anim:'heroIdle' },
+    druida:   { icon:'🌿', sparks:['🍃','✨','🌱'], anim:'heroNod' },
+    barbaro:  { icon:'🍖', sparks:['💨'], anim:'heroShiver' },
+    arquero:  { icon:'🏹', sparks:['💨','🪶'], anim:'heroIdle' },
+  };
+  return map[(clase||'').toLowerCase()] || { icon:'🔥', sparks:['✨'], anim:'heroIdle' };
+}
+
+function applyCampActivities() {
+  var mainWrap = document.querySelector('.camp-char-wrap');
+  var mainRing = document.getElementById('campHeroAnimWrap');
+  if (mainWrap && mainRing) {
+    var clase = (char && (char.class || char.clase)) || 'guerrero';
+    var act = getCampActivity(clase);
+
+    mainWrap.querySelectorAll('.camp-class-activity,.camp-act-spark').forEach(function(e){ e.remove(); });
+
+    var obj = document.createElement('div');
+    obj.className = 'camp-class-activity';
+    obj.textContent = act.icon;
+    mainWrap.style.position = 'relative';
+    mainWrap.appendChild(obj);
+
+    act.sparks.forEach(function(s, i) {
+      var sp = document.createElement('div');
+      sp.className = 'camp-act-spark';
+      sp.textContent = s;
+      sp.style.cssText = 'left:'+(35+Math.random()*30)+'%;top:'+(10+Math.random()*25)+'%;animation-delay:'+(i*0.7)+'s;';
+      mainWrap.appendChild(sp);
+    });
+
+    mainRing.style.animation = 'heroBreath 2.2s ease-in-out infinite, ' + act.anim + ' ' + (3+Math.random()) + 's ease-in-out infinite';
+  }
+
+  document.querySelectorAll('.camp-comp-slot').forEach(function(slot, i) {
+    slot.querySelectorAll('.camp-comp-activity,.camp-act-spark').forEach(function(e){ e.remove(); });
+    var comp = char && char.companions && char.companions[i];
+    if (!comp) return;
+    var compClase = comp.class || comp.clase || 'guerrero';
+    var act = getCampActivity(compClase);
+
+    var obj = document.createElement('div');
+    obj.className = 'camp-comp-activity';
+    obj.textContent = act.icon;
+    slot.style.position = 'relative';
+    slot.appendChild(obj);
+
+    act.sparks.slice(0, 1).forEach(function(s, j) {
+      var sp = document.createElement('div');
+      sp.className = 'camp-act-spark';
+      sp.textContent = s;
+      sp.style.cssText = 'left:'+(30+Math.random()*40)+'%;top:'+(10+Math.random()*20)+'%;animation-delay:'+(j*0.9)+'s;';
+      slot.appendChild(sp);
+    });
+  });
+}
+
+function startCampBlink() {
+  var wrap = document.getElementById('campHeroAnimWrap');
+  if (!wrap) return;
+  function doBlink() {
+    wrap.style.animation = 'heroBreath 2.2s ease-in-out infinite, heroBlink 0.15s ease';
+    setTimeout(function() {
+      wrap.style.animation = 'heroBreath 2.2s ease-in-out infinite';
+      setTimeout(doBlink, 3000 + Math.random()*4000);
+    }, 200);
+  }
+  setTimeout(doBlink, 2000 + Math.random()*3000);
 }
 
 function _campRenderCards() {
