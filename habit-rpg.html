@@ -11326,7 +11326,7 @@ function addXP(amount, cat, label) {
   if (Array.isArray(char.companions)) {
     char.companions.forEach(function(c) {
       if (!c) return;
-      c.xp = (c.xp || 0) + Math.floor(finalAmt * 0.5);
+      c.xp = (c.xp || 0) + Math.floor(finalAmt * 0.75);
       while (c.level < 99 && c.xp >= xpToNext(c.level)) { c.xp -= xpToNext(c.level); c.level++; }
     });
   }
