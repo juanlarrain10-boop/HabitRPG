@@ -14730,9 +14730,10 @@ function renderZoneMapVisual() {
   grid.className = 'czm-map-grid';
   layout.forEach(function(rowData, rowIdx) {
     var rowEl = document.createElement('div');
-    rowEl.className = 'czm-map-row row-' + rowData.side;
-    rowEl.style.cssText = 'display:flex;gap:16px;position:relative;z-index:2;width:100%;' +
-      (rowData.side==='left' ? 'justify-content:flex-start;padding-left:20px;' : 'justify-content:flex-end;padding-right:20px;');
+    rowEl.className = 'czm-map-row';
+    var connector = document.createElement('div');
+    connector.className = 'czm-row-connector';
+    rowEl.appendChild(connector);
     rowData.zones.forEach(function(zoneId) {
       var zone = (typeof ZONES !== 'undefined' ? ZONES : []).find(function(z){return z.id===zoneId;});
       if (!zone) return;
@@ -24403,7 +24404,12 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 /* ── Mapa de zonas visual ── */
 #ceZoneMap {
   position: absolute; inset: 0;
-  background: #060810;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(20,60,20,0.4) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 30%, rgba(40,20,60,0.3) 0%, transparent 35%),
+    radial-gradient(ellipse at 30% 70%, rgba(60,20,10,0.4) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 90%, rgba(10,5,30,0.5) 0%, transparent 40%),
+    #060810;
   display: flex; flex-direction: column;
   overflow: hidden;
 }
@@ -24434,9 +24440,20 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
   align-items: center; position: relative;
   padding-bottom: 20px;
 }
-.czm-map-row { display: flex; width: 100%; justify-content: center; position: relative; }
-.czm-map-row.row-left  { justify-content: flex-start; padding-left: 16px; }
-.czm-map-row.row-right { justify-content: flex-end;   padding-right: 16px; }
+.czm-map-row {
+  display: flex; width: 100%;
+  justify-content: space-between;
+  padding: 0 12px;
+  position: relative; z-index: 2;
+}
+.czm-row-connector {
+  position: absolute;
+  top: 50%; left: 80px; right: 80px;
+  height: 2px;
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-50%);
+  z-index: 1;
+}
 .czm-node {
   position: relative; display: flex; flex-direction: column;
   align-items: center; gap: 6px; cursor: pointer;
@@ -24472,8 +24489,10 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
   font-size: 1.5rem; border-radius: inherit;
 }
 .czm-path-v {
-  width: 3px; height: 40px; background: rgba(255,255,255,0.1);
-  margin: 0 auto; border-radius: 2px; position: relative; overflow: hidden;
+  width: 2px; height: 30px;
+  background: rgba(255,255,255,0.15);
+  margin: 0 auto; border-radius: 2px;
+  position: relative; overflow: hidden;
 }
 .czm-path-v.unlocked { background: rgba(255,255,255,0.2); }
 .czm-path-v::after {
