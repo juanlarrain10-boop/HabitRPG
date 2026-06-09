@@ -1954,6 +1954,7 @@ h2, h3 { font-family: var(--pxfont); }
 }
 
 /* ── Maniquí central ── */
+.equip-body { display: none !important; }
 .equip-mannequin {
   position: relative;
   width: 280px; height: 320px;
@@ -7577,7 +7578,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
       </div>
       <button class="equip-close" onclick="closeEquipScreen()">✕</button>
     </div>
-    <div class="equip-body">
+    <div class="equip-body" id="equipBody" style="display:none">
       <!-- Left column: head / torso / legs / feet -->
       <div class="equip-slots-col" id="equipSlotsLeft"></div>
       <!-- Center: character preview + stats -->
@@ -21687,11 +21688,15 @@ function openEquipScreen(preSelectSlot) {
 
 function closeEquipScreen() {
   document.getElementById('equipOverlay').classList.add('hide');
+  var equipBody = document.getElementById('equipBody');
+  if (equipBody) equipBody.style.display = 'none';
 }
 
 function renderEquipMannequin() {
   var screen = document.querySelector('.equip-screen');
   if (!screen) return;
+  var equipBody = document.getElementById('equipBody');
+  if (equipBody) equipBody.style.display = 'none';
 
   var oldBody = screen.querySelector('.equip-body');
   if (oldBody) oldBody.remove();
