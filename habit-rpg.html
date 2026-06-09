@@ -4785,6 +4785,9 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   display: flex; align-items: center; justify-content: center;
   position: relative;
   transition: box-shadow .5s;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 .camp-char-avatar-ring.state-brillante {
   box-shadow: 0 0 0 3px #10b981, 0 0 32px rgba(16,185,129,.65), 0 0 64px rgba(16,185,129,.3);
@@ -12056,11 +12059,11 @@ function renderCampParty() {
       var compEl;
       if (sitSprComp && sitSprComp.complete && sitSprComp.naturalWidth > 0) {
         var compCanvas = document.createElement('canvas');
-        compCanvas.width = 76; compCanvas.height = 76;
-        compCanvas.style.cssText = 'width:76px;height:76px;image-rendering:pixelated;display:block;';
+        compCanvas.width = 130; compCanvas.height = 130;
+        compCanvas.style.cssText = 'width:130px;height:130px;image-rendering:pixelated;display:block;';
         var compCtx = compCanvas.getContext('2d');
         compCtx.imageSmoothingEnabled = false;
-        compCtx.drawImage(sitSprComp, 0, 0, 76, 76);
+        compCtx.drawImage(sitSprComp, 0, 0, 130, 130);
         compEl = compCanvas;
       } else {
         compEl = _partyClassSprite(cls, sex);
@@ -12094,7 +12097,7 @@ function renderCampParty() {
 
   // Center hero ring outline + rarity filter
   var ring = document.getElementById('campCharRing');
-  if (ring) ring.style.outline = active === 0 ? '3px solid #ffd700' : '';
+  if (ring) ring.style.outline = '';
   var svgWrap = document.getElementById('campCharSvg');
   if (svgWrap) {
     if (active === 0) {
@@ -24832,8 +24835,8 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 /* ═══ PARTY SYSTEM ═══════════════════════════════════════════ */
 /* Camp: 3 heroes around campfire */
 .camp-party-scene{display:flex;align-items:flex-end;justify-content:center;gap:24px;width:100%;min-height:180px;padding-bottom:60px;}
-.camp-comp-slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;padding-bottom:20px;flex-shrink:0;width:84px;}
-.camp-comp-img{width:90px;height:90px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.15);image-rendering:pixelated;image-rendering:crisp-edges;}
+.camp-comp-slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;padding-bottom:20px;flex-shrink:0;width:140px;}
+.camp-comp-img{width:130px;height:130px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.15);image-rendering:pixelated;image-rendering:crisp-edges;}
 .camp-comp-img.cp-active{border-color:#ffd700;box-shadow:0 0 12px #ffd70055;}
 .camp-comp-img.cp-locked{filter:brightness(.12) saturate(0);border-color:rgba(255,255,255,.05);}
 .camp-comp-img.aura-fire{box-shadow:0 0 14px rgba(255,80,20,.8),0 0 6px rgba(255,80,20,.4);}
