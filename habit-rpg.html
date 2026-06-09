@@ -8409,6 +8409,10 @@ function _loadSpr(key, src) {
       const _ccOv = document.getElementById('charCreateOverlay');
       if (_ccOv && !_ccOv.classList.contains('hide')) ccUpdatePreview();
     }
+    if (key.includes('_sit')) {
+      if (typeof _campRenderChar === 'function') _campRenderChar();
+      if (typeof renderCampParty === 'function') renderCampParty();
+    }
   };
   img.onerror = () => _spriteCache.set(key, null);
   img.src = src;
