@@ -1826,6 +1826,47 @@ h2, h3 { font-family: var(--pxfont); }
   font-size: .65rem; color: var(--dim); margin-bottom: 8px; }
 .inv-cap-bar .cap-count { font-weight: 800; color: var(--txt); }
 .inv-empty { text-align: center; color: var(--dim); font-size: .8rem; padding: 20px 0; }
+/* ── Inventory layout with mini mannequin ── */
+.inv-layout {
+  display: flex; gap: 10px; height: 100%;
+}
+.inv-mannequin-side {
+  width: 110px; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 8px 0;
+}
+.inv-mini-sprite {
+  width: 90px; height: 90px; margin: 0 auto;
+  border-radius: 14px; overflow: hidden;
+  background: rgba(139,92,246,0.1);
+  border: 2px solid rgba(139,92,246,0.3);
+  image-rendering: pixelated;
+  display: flex; align-items: center; justify-content: center;
+}
+.inv-mini-slots {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.inv-mini-slot {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 6px; border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer; transition: all 0.15s;
+  font-size: 0.7rem;
+}
+.inv-mini-slot:hover { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.4); }
+.inv-mini-slot.has-item { border-color: rgba(139,92,246,0.35); }
+.inv-mini-slot.rarity-raro       { border-color: rgba(34,197,94,0.4); }
+.inv-mini-slot.rarity-epico      { border-color: rgba(139,92,246,0.6); }
+.inv-mini-slot.rarity-legendario { border-color: rgba(245,158,11,0.7); }
+.inv-mini-slot-icon  { font-size: 0.9rem; flex-shrink: 0; }
+.inv-mini-slot-info  { flex: 1; overflow: hidden; }
+.inv-mini-slot-name  { font-size: 0.58rem; color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inv-mini-slot-label { font-size: 0.52rem; color: var(--dim); }
+.inv-items-side {
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 8px;
+}
 /* ── dmg-crit float ─────────────────────── */
 .dmg-crit { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,.6); font-size: 1.05rem !important; }
 /* ── Combat avatar pixel canvas ─────────── */
@@ -17531,6 +17572,53 @@ function renderShopFilterRow() {
 
 let invCat = 'all';
 function renderInventoryTab(grid) {
+  // Layout: two columns — mannequin left, items right
+  grid.style.padding = '8px';
+  grid.style.overflow = 'hidden';
+  grid.innerHTML = '';
+  var sideEl = document.createElement('div');
+  sideEl.className = 'inv-layout';
+  var mannequinSide = document.createElement('div');
+  mannequinSide.className = 'inv-mannequin-side';
+  var spriteWrap = document.createElement('div');
+  spriteWrap.className = 'inv-mini-sprite';
+  var spriteCanvas = buildPixelAvatar(char.avatar, char.class || char.clase, char.equipped, 90);
+  if (spriteCanvas) spriteWrap.appendChild(spriteCanvas);
+  mannequinSide.appendChild(spriteWrap);
+  var MINI_SLOTS = [
+    {slot:'head',      icon:'⛑️', label:'Cabeza'},
+    {slot:'weapon',    icon:'⚔️', label:'Arma'},
+    {slot:'armor',     icon:'🥋', label:'Torso'},
+    {slot:'leftHand',  icon:'🛡️', label:'Mano Izq'},
+    {slot:'legs',      icon:'🦵', label:'Piernas'},
+    {slot:'cape',      icon:'🧣', label:'Capa'},
+    {slot:'feet',      icon:'👢', label:'Pies'},
+    {slot:'accessory', icon:'💍', label:'Accesorio'},
+  ];
+  var slotsEl = document.createElement('div');
+  slotsEl.className = 'inv-mini-slots';
+  MINI_SLOTS.forEach(function(def) {
+    var itemId = char.equipped && char.equipped[def.slot];
+    var item = itemId ? (SHOP_ITEMS||[]).find(function(i){return i.id===itemId;}) : null;
+    var slotEl = document.createElement('div');
+    slotEl.className = 'inv-mini-slot' + (item ? ' has-item' : '') + (item ? ' rarity-'+(item.rarity||'') : '');
+    slotEl.innerHTML = '<span class="inv-mini-slot-icon">' + (item ? item.icon : def.icon) + '</span>' +
+      '<div class="inv-mini-slot-info">' +
+        '<div class="inv-mini-slot-name">' + (item ? item.name : '—') + '</div>' +
+        '<div class="inv-mini-slot-label">' + def.label + '</div>' +
+      '</div>';
+    if (item) {
+      slotEl.onclick = (function(s){ return function(){ shopUnequip(s); renderShopGrid(); }; })(def.slot);
+    }
+    slotsEl.appendChild(slotEl);
+  });
+  mannequinSide.appendChild(slotsEl);
+  sideEl.appendChild(mannequinSide);
+  var itemsSide = document.createElement('div');
+  itemsSide.className = 'inv-items-side';
+  sideEl.appendChild(itemsSide);
+  grid.appendChild(sideEl);
+
   const allInv = char.inventory || [];
   const cap = 50;
   const usedSlots = allInv.length;
@@ -17603,7 +17691,7 @@ function renderInventoryTab(grid) {
     </div>`;
   }
 
-  grid.innerHTML = `
+  itemsSide.innerHTML = `
     <div class="inv-cap-bar">
       <span>Inventario <span class="cap-count">${usedSlots} / ${cap}</span> slots</span>
       ${usedSlots >= cap ? '<span style="color:#f87171;font-weight:800">¡LLENO!</span>' : ''}
