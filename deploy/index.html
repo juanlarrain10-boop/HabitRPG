@@ -7276,9 +7276,9 @@ button:active:not(:disabled), .btn:active:not(:disabled),
           <span class="cnb-label">Aventura</span>
           <span class="cnb-sub">Combatir</span>
         </button>
-        <button class="camp-nav-btn" onclick="openProfile()">
-          <span class="cnb-icon">👤</span>
-          <span class="cnb-label">Perfil</span>
+        <button class="camp-nav-btn" onclick="openEquipScreen()">
+          <span class="cnb-icon">⚔️</span>
+          <span class="cnb-label">Equipo</span>
           <span class="cnb-sub" id="cnbProfileSub">Nv.1</span>
         </button>
       </div>
@@ -12786,6 +12786,12 @@ function _campRenderChar() {
   updateCampEquipDisplay();
   applyCampActivities();
   startCampBlink();
+  var ring = document.getElementById('campCharRing');
+  if (ring && !ring._equipHandler) {
+    ring._equipHandler = true;
+    ring.style.cursor = 'pointer';
+    ring.addEventListener('click', function() { openEquipScreen(); });
+  }
 }
 
 function updateCampEquipDisplay() {
