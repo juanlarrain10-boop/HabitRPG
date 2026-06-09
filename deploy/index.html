@@ -8439,6 +8439,11 @@ function preloadSprites() {
   _loadSpr('class_druida_f',   'deploy/personajes/druidaf.png');
   _loadSpr('class_barbaro_f',  'deploy/personajes/barbara.png');
   _loadSpr('class_arquero_f',  'deploy/personajes/arquera.png');
+  // Sitting variants for camp screen
+  _loadSpr('class_asesino_sit',  'deploy/personajes/asesino sentado.png');
+  _loadSpr('class_guerrero_sit', 'deploy/personajes/guerrero sentado.png');
+  _loadSpr('class_mago_sit',     'deploy/personajes/mago sentado.png');
+  _loadSpr('class_druida_sit',   'deploy/personajes/druida sentado.png');
 }
 
 // ── HISTORIA ─────────────────────────────────
@@ -12028,18 +12033,31 @@ function renderCampParty() {
       var htIdx   = isMain ? 0 : (comp.hairTint || 0);
       var auraKey = isMain ? (char.avatar && char.avatar.customAura || '') : (comp.aura || '');
 
-      var img = _partyClassSprite(cls, sex);
       var rf  = rarityToFilter(getHighestRarity(equip));
       var htDeg = (htIdx && typeof HAIR_TINTS !== 'undefined' && HAIR_TINTS[htIdx]) ? HAIR_TINTS[htIdx].deg : 0;
       var htStr = htDeg ? 'hue-rotate(' + htDeg + 'deg)' : '';
       var combinedFilter = [htStr, rf].filter(Boolean).join(' ');
-      if (combinedFilter) img.style.filter = combinedFilter;
+      var sitKeyComp = 'class_' + (cls || '').toLowerCase() + '_sit';
+      var sitSprComp = _spriteCache.get(sitKeyComp);
+      var compEl;
+      if (sitSprComp && sitSprComp.complete && sitSprComp.naturalWidth > 0) {
+        var compCanvas = document.createElement('canvas');
+        compCanvas.width = 76; compCanvas.height = 76;
+        compCanvas.style.cssText = 'width:76px;height:76px;image-rendering:pixelated;display:block;';
+        var compCtx = compCanvas.getContext('2d');
+        compCtx.imageSmoothingEnabled = false;
+        compCtx.drawImage(sitSprComp, 0, 0, 76, 76);
+        compEl = compCanvas;
+      } else {
+        compEl = _partyClassSprite(cls, sex);
+      }
+      if (combinedFilter) compEl.style.filter = combinedFilter;
       if (auraKey) imgDiv.classList.add(auraKey);
       var glowDiv = document.createElement('div');
       glowDiv.className = 'camp-hero-glow';
       imgDiv.style.position = 'relative';
       imgDiv.appendChild(glowDiv);
-      imgDiv.appendChild(img);
+      imgDiv.appendChild(compEl);
     }
     el.appendChild(imgDiv);
 
@@ -12786,7 +12804,20 @@ function _campRenderChar() {
     var animWrap = document.createElement('div');
     animWrap.className = 'hero-anim-wrap';
     animWrap.id = 'campHeroAnimWrap';
-    animWrap.appendChild(buildPixelAvatar(char.avatar, char.class, char.equipped, 132));
+    var clase = char.class || char.clase || '';
+    var sitKey = 'class_' + clase.toLowerCase() + '_sit';
+    var sitSprite = _spriteCache.get(sitKey);
+    if (sitSprite && sitSprite.complete && sitSprite.naturalWidth > 0) {
+      var canvas = document.createElement('canvas');
+      canvas.width = 132; canvas.height = 132;
+      canvas.style.imageRendering = 'pixelated';
+      var ctx2 = canvas.getContext('2d');
+      ctx2.imageSmoothingEnabled = false;
+      ctx2.drawImage(sitSprite, 0, 0, 132, 132);
+      animWrap.appendChild(canvas);
+    } else {
+      animWrap.appendChild(buildPixelAvatar(char.avatar, char.class || char.clase, char.equipped, 132));
+    }
     svgWrap.appendChild(animWrap);
     // First-open-today greeting
     var todayStr = new Date().toDateString();
