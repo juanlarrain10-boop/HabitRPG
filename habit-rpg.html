@@ -14719,75 +14719,80 @@ function showZoneMap() {
 function renderZoneMapVisual() {
   var list = document.getElementById('ceZoneList');
   if (!list) return;
+
   var charLv = (typeof char !== 'undefined' && char) ? (char.nivel || char.level || 1) : 1;
-  var layout = [
-    { side:'left',  zones:['forest','swamp']  },
-    { side:'right', zones:['cave','ruins']    },
-    { side:'left',  zones:['temple','castle'] },
-    { side:'right', zones:['volcano','abyss'] },
-  ];
-  var grid = document.createElement('div');
-  grid.className = 'czm-map-grid';
-  layout.forEach(function(rowData, rowIdx) {
-    var rowEl = document.createElement('div');
-    rowEl.className = 'czm-map-row';
-    var connector = document.createElement('div');
-    connector.className = 'czm-row-connector';
-    rowEl.appendChild(connector);
-    rowData.zones.forEach(function(zoneId) {
-      var zone = (typeof ZONES !== 'undefined' ? ZONES : []).find(function(z){return z.id===zoneId;});
-      if (!zone) return;
-      var meta = (typeof ZONE_META !== 'undefined' && ZONE_META[zoneId])
-        ? ZONE_META[zoneId]
-        : {emoji:'⚔️', accent:'#94a3b8', bg:'linear-gradient(135deg,#1a1a2e,#0d0d17)'};
-      var locked = charLv < zone.req;
-      var node = document.createElement('div');
-      node.className = 'czm-node';
-      var bubble = document.createElement('div');
-      bubble.className = 'czm-node-bubble' + (locked ? ' locked' : '');
-      bubble.style.background = meta.bg;
-      bubble.style.borderColor = locked ? 'rgba(255,255,255,0.08)' : meta.accent;
-      if (!locked) bubble.style.boxShadow = '0 4px 20px rgba(0,0,0,0.5),0 0 0 1px ' + meta.accent + '40';
-      bubble.innerHTML = '<div class="czm-node-emoji">' + meta.emoji + '</div>' +
-        '<div class="czm-node-level">Nv.' + zone.req + '</div>';
-      if (locked) {
-        var fog = document.createElement('div');
-        fog.className = 'czm-node-fog';
-        fog.innerHTML = '🔒';
-        bubble.appendChild(fog);
-      }
-      var name = document.createElement('div');
-      name.className = 'czm-node-name' + (locked ? ' locked' : '');
-      name.textContent = zone.name;
-      node.appendChild(bubble);
-      node.appendChild(name);
-      if (!locked) {
-        var rewards = document.createElement('div');
-        rewards.className = 'czm-node-rewards';
-        rewards.innerHTML =
-          '<span class="czm-reward-badge" style="color:#fbbf24">⭐' + zone.xp + '</span>' +
-          '<span class="czm-reward-badge" style="color:#fcd34d">🪙' + zone.gold + '</span>';
-        node.appendChild(rewards);
-        node.onclick = (function(z,m){return function(){openCombatZoneDetail(z,m);};})(zone, meta);
-      }
-      rowEl.appendChild(node);
-    });
-    grid.appendChild(rowEl);
-    if (rowIdx < layout.length - 1) {
-      var pathEl = document.createElement('div');
-      pathEl.style.cssText = 'width:100%;display:flex;align-items:center;justify-content:center;height:36px;position:relative;z-index:2;';
-      var line = document.createElement('div');
-      line.className = 'czm-path-v unlocked';
-      pathEl.appendChild(line);
-      var arrow = document.createElement('div');
-      arrow.style.cssText = 'position:absolute;font-size:0.8rem;color:rgba(255,255,255,0.3);animation:indFloat 2s infinite;';
-      arrow.textContent = '▼';
-      pathEl.appendChild(arrow);
-      grid.appendChild(pathEl);
-    }
-  });
+
+  list.style.cssText = 'position:relative; width:100%; height:100%; min-height:500px;';
   list.innerHTML = '';
-  list.appendChild(grid);
+
+  var zonePositions = {
+    forest:  { x: 72, y: 12 },
+    swamp:   { x: 18, y: 44 },
+    cave:    { x: 28, y: 20 },
+    ruins:   { x: 62, y: 32 },
+    temple:  { x: 82, y: 88 },
+    castle:  { x: 55, y: 65 },
+    volcano: { x: 85, y: 88 },
+    abyss:   { x: 10, y: 80 },
+  };
+
+  (typeof ZONES !== 'undefined' ? ZONES : []).forEach(function(zone) {
+    var pos = zonePositions[zone.id];
+    if (!pos) return;
+
+    var meta = (typeof ZONE_META !== 'undefined' && ZONE_META[zone.id])
+      ? ZONE_META[zone.id]
+      : { emoji:'⚔️', accent:'#94a3b8', bg:'linear-gradient(135deg,#1a1a2e,#0d0d17)' };
+
+    var locked = charLv < zone.req;
+
+    var node = document.createElement('div');
+    node.style.cssText = 'position:absolute;' +
+      'left:' + pos.x + '%;top:' + pos.y + '%;' +
+      'transform:translate(-50%,-50%);' +
+      'display:flex;flex-direction:column;align-items:center;gap:4px;' +
+      'cursor:' + (locked ? 'not-allowed' : 'pointer') + ';' +
+      'z-index:3;';
+
+    var bubble = document.createElement('div');
+    bubble.style.cssText = 'width:56px;height:56px;border-radius:16px;' +
+      'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+      'background:' + (locked ? 'rgba(10,8,20,0.85)' : meta.bg) + ';' +
+      'border:2px solid ' + (locked ? 'rgba(255,255,255,0.1)' : meta.accent) + ';' +
+      'box-shadow:0 4px 16px rgba(0,0,0,0.6)' + (locked ? '' : ',0 0 12px ' + meta.accent + '60') + ';' +
+      'position:relative;overflow:hidden;' +
+      'backdrop-filter:blur(4px);';
+
+    if (locked) {
+      bubble.innerHTML = '<div style="font-size:1.4rem">🔒</div>' +
+        '<div style="font-size:0.45rem;color:rgba(255,255,255,0.5);font-weight:800">Nv.' + zone.req + '</div>';
+    } else {
+      bubble.innerHTML = '<div style="font-size:1.6rem">' + meta.emoji + '</div>' +
+        '<div style="font-size:0.45rem;color:rgba(255,255,255,0.8);font-weight:800">Nv.' + zone.req + '</div>';
+      var pulse = document.createElement('div');
+      pulse.style.cssText = 'position:absolute;inset:-4px;border-radius:18px;' +
+        'border:2px solid ' + meta.accent + ';opacity:0.4;' +
+        'animation:legendaryPulse 2s ease-in-out infinite;';
+      bubble.appendChild(pulse);
+    }
+
+    var label = document.createElement('div');
+    label.style.cssText = 'font-size:0.58rem;font-weight:800;color:' +
+      (locked ? 'rgba(255,255,255,0.3)' : '#fff') + ';' +
+      'text-align:center;max-width:70px;line-height:1.2;' +
+      'text-shadow:0 1px 6px rgba(0,0,0,1),0 0 10px rgba(0,0,0,1);' +
+      'background:rgba(0,0,0,0.5);padding:2px 4px;border-radius:4px;';
+    label.textContent = zone.name;
+
+    node.appendChild(bubble);
+    node.appendChild(label);
+
+    if (!locked) {
+      node.onclick = (function(z, m) { return function() { openCombatZoneDetail(z, m); }; })(zone, meta);
+    }
+
+    list.appendChild(node);
+  });
 }
 
 function openCombatZoneDetail(zone, meta) {
@@ -24404,14 +24409,15 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 /* ── Mapa de zonas visual ── */
 #ceZoneMap {
   position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse at 20% 10%, rgba(20,60,20,0.4) 0%, transparent 40%),
-    radial-gradient(ellipse at 80% 30%, rgba(40,20,60,0.3) 0%, transparent 35%),
-    radial-gradient(ellipse at 30% 70%, rgba(60,20,10,0.4) 0%, transparent 40%),
-    radial-gradient(ellipse at 70% 90%, rgba(10,5,30,0.5) 0%, transparent 40%),
-    #060810;
+  background: url('mapa_mundo.jpg') center center / cover no-repeat;
   display: flex; flex-direction: column;
   overflow: hidden;
+}
+#ceZoneMap::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 0;
 }
 .czm-header {
   padding: 16px 20px 10px;
@@ -24429,11 +24435,9 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 }
 .czm-scroll {
   flex: 1; overflow-y: auto; overflow-x: hidden;
-  padding: 20px 16px;
-  background:
-    radial-gradient(ellipse at 20% 20%, rgba(30,60,30,0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(60,20,20,0.3) 0%, transparent 50%),
-    #060810;
+  padding: 0;
+  background: transparent;
+  position: relative; z-index: 1;
 }
 .czm-map-grid {
   display: flex; flex-direction: column; gap: 0;
