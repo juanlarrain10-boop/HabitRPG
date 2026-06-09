@@ -4808,6 +4808,16 @@ body.tod-night   .tod-bg { background: radial-gradient(ellipse at 50% 100%,rgba(
   50%      { box-shadow: 0 0 0 4px #ef4444, 0 0 44px rgba(239,68,68,.75), 0 0 80px rgba(239,68,68,.38); }
 }
 #campCharSvg { image-rendering: pixelated; image-rendering: crisp-edges; }
+.camp-char-avatar-ring.is-sitting {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  animation: campSitBreath 4s ease-in-out infinite !important;
+}
+.camp-char-avatar-ring.is-sitting #campCharSvg {
+  width: 180px !important;
+  height: 180px !important;
+}
 
 /* Tinte de rareza en el anillo del héroe */
 .camp-char-avatar-ring.eq-raro {
@@ -12819,8 +12829,10 @@ function _campRenderChar() {
       ctx2.imageSmoothingEnabled = false;
       ctx2.drawImage(sitSprite, 0, 0, 132, 132);
       animWrap.appendChild(canvas);
+      document.getElementById('campCharRing').classList.add('is-sitting');
     } else {
       animWrap.appendChild(buildPixelAvatar(char.avatar, char.class || char.clase, char.equipped, 132));
+      document.getElementById('campCharRing').classList.remove('is-sitting');
     }
     svgWrap.appendChild(animWrap);
     // First-open-today greeting
