@@ -14699,73 +14699,119 @@ function hex2rgb(h,d){ const n=parseInt(h.replace('#',''),16); return `rgb(${cla
 
 // ── Zone map ─────────────────────────────────────────────────
 const ZONE_META = {
-  forest:{ emoji:'🌲', accent:'#4ade80', bg:'linear-gradient(160deg,#071a07 0%,#0e2e0e 60%,#041204 100%)', deco:'🌿🍃🌲', enemies:'Goblins · Lobos · Arqueros' },
-  cave:  { emoji:'🦇', accent:'#fb923c', bg:'linear-gradient(160deg,#130d07 0%,#1e1208 60%,#0e0905 100%)', deco:'💎🦇⛏️', enemies:'Esqueletos · Ogros · Tiradores' },
-  ruins: { emoji:'🏛️', accent:'#fbbf24', bg:'linear-gradient(160deg,#17140e 0%,#1e1a10 60%,#120f0a 100%)', deco:'🏺⚱️🏛️', enemies:'Espectros · Golems · Guardianes' },
-  castle:{ emoji:'🏰', accent:'#a78bfa', bg:'linear-gradient(160deg,#0a0a1f 0%,#131328 60%,#080815 100%)', deco:'⚔️🔮🏰', enemies:'Caballeros · Brujos · Lich' },
-  abyss: { emoji:'🌑', accent:'#f87171', bg:'linear-gradient(160deg,#1a0303 0%,#280505 60%,#110202 100%)', deco:'☄️👁️🌑', enemies:'Demonios · Sombras · Entidades' },
+  forest:  { emoji:'🌲', accent:'#4ade80', bg:'linear-gradient(135deg,#0d2010,#1a3a1a)', deco:'🌿🍃🌲', desc:'Criaturas del bosque',    enemyTypes:'Goblins, Lobos, Tiradores' },
+  swamp:   { emoji:'🌿', accent:'#22c55e', bg:'linear-gradient(135deg,#0a1a0a,#142a14)', deco:'🌿💧🐸', desc:'Bestias del pantano',    enemyTypes:'Ranas, Serpientes, El Bufón' },
+  cave:    { emoji:'🗿', accent:'#a78bfa', bg:'linear-gradient(135deg,#0f0a18,#1a1228)', deco:'💎🦇🗿', desc:'Guardianes de la cueva', enemyTypes:'Murciélagos, Ogros, Trolls' },
+  ruins:   { emoji:'🏛️', accent:'#fbbf24', bg:'linear-gradient(135deg,#1a1508,#2a2010)', deco:'🏛️💀🔮', desc:'Espectros antiguos',     enemyTypes:'Esqueletos, Espectros, Magos' },
+  temple:  { emoji:'🐍', accent:'#f59e0b', bg:'linear-gradient(135deg,#1a1200,#2a1e00)', deco:'🐍🔥⚱️', desc:'Guardianes del templo', enemyTypes:'Serpientes, Sacerdotes, Dios Serpiente' },
+  castle:  { emoji:'🏰', accent:'#818cf8', bg:'linear-gradient(135deg,#0d0d20,#1a1a35)', deco:'🏰👑⚡', desc:'Muertos del castillo',   enemyTypes:'Caballeros, Vampiros, Rey Maldito' },
+  volcano: { emoji:'🌋', accent:'#f97316', bg:'linear-gradient(135deg,#1a0500,#2a0a00)', deco:'🌋🔥💥', desc:'Criaturas del fuego',   enemyTypes:'Elementales, Dragones, Señor del Fuego' },
+  abyss:   { emoji:'🕳️', accent:'#ef4444', bg:'linear-gradient(135deg,#1a0505,#2a0808)', deco:'💀👁️🌑', desc:'Entidades del abismo',  enemyTypes:'Demonios, Sombras, Dios del Abismo' },
 };
 let _czDetailZone = null;
 function showZoneMap() {
-  const lv = (typeof char !== 'undefined') ? char.level : 1;
   $$('combatOverlay').classList.remove('hide');
   $$('ceZoneMap').classList.remove('hide');
   $$('ceGameContainer').classList.add('hide');
-  const list = $$('ceZoneList'); list.innerHTML = '';
-  // Path connector + zone cards
-  ZONES.forEach(function(z, idx) {
-    const locked = lv < z.req;
-    const meta = ZONE_META[z.id] || { emoji:'⚔️', accent:'#94a3b8', bg:'linear-gradient(135deg,#111,#222)', deco:'', enemies:'' };
-    const isCurrent = !locked && (idx === 0 || lv >= ZONES[idx-1].req);
-    // Path connector before each zone except first
-    if (idx > 0) {
-      const path = document.createElement('div');
-      path.className = 'czm-path-seg' + (locked ? ' czm-path-locked' : '');
-      list.appendChild(path);
+  renderZoneMapVisual();
+}
+
+function renderZoneMapVisual() {
+  var list = document.getElementById('ceZoneList');
+  if (!list) return;
+  var charLv = (typeof char !== 'undefined' && char) ? (char.nivel || char.level || 1) : 1;
+  var layout = [
+    { side:'left',  zones:['forest','swamp']  },
+    { side:'right', zones:['cave','ruins']    },
+    { side:'left',  zones:['temple','castle'] },
+    { side:'right', zones:['volcano','abyss'] },
+  ];
+  var grid = document.createElement('div');
+  grid.className = 'czm-map-grid';
+  layout.forEach(function(rowData, rowIdx) {
+    var rowEl = document.createElement('div');
+    rowEl.className = 'czm-map-row row-' + rowData.side;
+    rowEl.style.cssText = 'display:flex;gap:16px;position:relative;z-index:2;width:100%;' +
+      (rowData.side==='left' ? 'justify-content:flex-start;padding-left:20px;' : 'justify-content:flex-end;padding-right:20px;');
+    rowData.zones.forEach(function(zoneId) {
+      var zone = (typeof ZONES !== 'undefined' ? ZONES : []).find(function(z){return z.id===zoneId;});
+      if (!zone) return;
+      var meta = (typeof ZONE_META !== 'undefined' && ZONE_META[zoneId])
+        ? ZONE_META[zoneId]
+        : {emoji:'⚔️', accent:'#94a3b8', bg:'linear-gradient(135deg,#1a1a2e,#0d0d17)'};
+      var locked = charLv < zone.req;
+      var node = document.createElement('div');
+      node.className = 'czm-node';
+      var bubble = document.createElement('div');
+      bubble.className = 'czm-node-bubble' + (locked ? ' locked' : '');
+      bubble.style.background = meta.bg;
+      bubble.style.borderColor = locked ? 'rgba(255,255,255,0.08)' : meta.accent;
+      if (!locked) bubble.style.boxShadow = '0 4px 20px rgba(0,0,0,0.5),0 0 0 1px ' + meta.accent + '40';
+      bubble.innerHTML = '<div class="czm-node-emoji">' + meta.emoji + '</div>' +
+        '<div class="czm-node-level">Nv.' + zone.req + '</div>';
+      if (locked) {
+        var fog = document.createElement('div');
+        fog.className = 'czm-node-fog';
+        fog.innerHTML = '🔒';
+        bubble.appendChild(fog);
+      }
+      var name = document.createElement('div');
+      name.className = 'czm-node-name' + (locked ? ' locked' : '');
+      name.textContent = zone.name;
+      node.appendChild(bubble);
+      node.appendChild(name);
+      if (!locked) {
+        var rewards = document.createElement('div');
+        rewards.className = 'czm-node-rewards';
+        rewards.innerHTML =
+          '<span class="czm-reward-badge" style="color:#fbbf24">⭐' + zone.xp + '</span>' +
+          '<span class="czm-reward-badge" style="color:#fcd34d">🪙' + zone.gold + '</span>';
+        node.appendChild(rewards);
+        node.onclick = (function(z,m){return function(){openCombatZoneDetail(z,m);};})(zone, meta);
+      }
+      rowEl.appendChild(node);
+    });
+    grid.appendChild(rowEl);
+    if (rowIdx < layout.length - 1) {
+      var pathEl = document.createElement('div');
+      pathEl.style.cssText = 'width:100%;display:flex;align-items:center;justify-content:center;height:36px;position:relative;z-index:2;';
+      var line = document.createElement('div');
+      line.className = 'czm-path-v unlocked';
+      pathEl.appendChild(line);
+      var arrow = document.createElement('div');
+      arrow.style.cssText = 'position:absolute;font-size:0.8rem;color:rgba(255,255,255,0.3);animation:indFloat 2s infinite;';
+      arrow.textContent = '▼';
+      pathEl.appendChild(arrow);
+      grid.appendChild(pathEl);
     }
-    const card = document.createElement('div');
-    card.className = 'czm-zone-card' + (locked ? ' czm-zone-locked' : '') + (isCurrent ? ' czm-zone-current' : '');
-    card.style.cssText = `--zaccent:${meta.accent};background:${meta.bg};`;
-    card.innerHTML = `
-      <div class="czm-zc-icon">${meta.emoji}</div>
-      <div class="czm-zc-body">
-        <div class="czm-zc-name">${z.name}</div>
-        <div class="czm-zc-sub">Jefe: ${z.boss}</div>
-        <div class="czm-zc-deco">${meta.deco}</div>
-      </div>
-      <div class="czm-zc-right">
-        ${locked
-          ? `<div class="czm-zc-lock">🔒</div><div class="czm-zc-req">Nv.${z.req}</div>`
-          : `<div class="czm-zc-xp">⭐${z.xp} XP</div><div class="czm-zc-gold">🪙${z.gold}/kill</div>`}
-        ${isCurrent ? '<div class="czm-zc-marker">▶ Aquí</div>' : ''}
-      </div>
-      ${locked ? '<div class="czm-zc-overlay"></div>' : ''}
-    `;
-    if (!locked) {
-      card.addEventListener('click', function(){ openCombatZoneDetail(z, meta); });
-    }
-    list.appendChild(card);
   });
+  list.innerHTML = '';
+  list.appendChild(grid);
 }
-function openCombatZoneDetail(z, meta) {
-  _czDetailZone = z;
-  const overlay = $$('ceZoneDetail'); if (!overlay) return;
-  const lv = (typeof char !== 'undefined') ? char.level : 1;
-  overlay.classList.remove('hide');
-  const m = meta || ZONE_META[z.id] || {};
-  $$('czdIcon').textContent = m.emoji || '⚔️';
-  $$('czdIcon').style.color = m.accent || '#fff';
-  $$('czdName').textContent = z.name;
-  $$('czdBoss').textContent = '💀 Jefe: ' + z.boss;
-  $$('czdStats').innerHTML = `<span>🏰 ${ROOMS_PER_ZONE} salas</span><span>👾 ${m.enemies||''}</span><span>📊 Nv.${z.req}+</span>`;
-  $$('czdRewards').innerHTML = `<span>⭐ ${z.xp} XP</span><span>🪙 ${z.gold} oro/kill</span>`;
-  const eb = $$('czdEnterBtn');
-  if (eb) { eb.style.borderColor = m.accent||'#8b5cf6'; eb.onclick = function(){ closeCombatZoneDetail(); enterZone(z); }; }
+
+function openCombatZoneDetail(zone, meta) {
+  if (!meta) meta = (typeof ZONE_META !== 'undefined' && ZONE_META[zone.id])
+    ? ZONE_META[zone.id] : {emoji:'⚔️', accent:'#94a3b8'};
+  document.getElementById('czdIcon').textContent = meta.emoji || '⚔️';
+  document.getElementById('czdName').textContent = zone.name;
+  document.getElementById('czdBoss').textContent = '👹 Jefe: ' + zone.boss;
+  document.getElementById('czdStats').innerHTML =
+    '<div class="czd-stat">💀 ' + zone.eHp + ' HP</div>' +
+    '<div class="czd-stat">⚔️ ' + zone.eDmg + ' DMG</div>' +
+    '<div class="czd-stat">💨 ' + zone.eSpd + ' SPD</div>' +
+    '<div class="czd-stat">👾 ' + zone.cnt + '+ enemigos</div>';
+  document.getElementById('czdRewards').innerHTML =
+    '<div class="czd-reward" style="color:#fbbf24">⭐ +' + zone.xp + ' XP</div>' +
+    '<div class="czd-reward" style="color:#fcd34d">🪙 ' + zone.gold + '/kill</div>';
+  var enterBtn = document.getElementById('czdEnterBtn');
+  enterBtn.style.background = 'linear-gradient(135deg,' + (meta.accent||'#7c3aed') + ',' + (meta.accent||'#4f46e5') + '99)';
+  enterBtn.onclick = function() { closeCombatZoneDetail(); if (typeof enterZone==='function') enterZone(zone); };
+  document.getElementById('ceZoneDetail').classList.remove('hide');
 }
+
 function closeCombatZoneDetail(e) {
-  if (e && e.target !== $$('ceZoneDetail')) return;
-  const overlay = $$('ceZoneDetail'); if (overlay) overlay.classList.add('hide');
-  _czDetailZone = null;
+  if (e && e.target !== document.getElementById('ceZoneDetail')) return;
+  document.getElementById('ceZoneDetail').classList.add('hide');
 }
 
 // ── Enter zone ───────────────────────────────────────────────
@@ -24354,55 +24400,131 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 #ceJoystickZone.hide,#ceBtnsArea.hide,
 #ceResultScreen.hide,#cePauseMenu.hide,#ceUpgradeScreen.hide,#ceChestScreen.hide,
 #ceZoneDetail.hide{display:none !important;}
-/* Zone map — fantasy illustrated */
-#ceZoneMap{position:absolute;inset:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#050810 0%,#0a0e1a 40%,#060912 100%);overflow:hidden;}
-#ceZoneMap .czm-header{text-align:center;padding:18px 20px 8px;flex-shrink:0;}
-.czm-title{font-size:1.45rem;font-weight:900;color:#c4b5fd;letter-spacing:3px;text-shadow:0 0 18px rgba(196,181,253,.5);}
-.czm-sub{color:#64748b;font-size:.78rem;margin-top:4px;}
-.czm-scroll{flex:1;overflow-y:auto;padding:10px 16px 8px;}
-#ceZoneList{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;max-width:480px;margin:0 auto;}
-/* Zone cards */
-.czm-zone-card{width:100%;border-radius:14px;border:1.5px solid rgba(255,255,255,.08);padding:14px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s;position:relative;overflow:hidden;user-select:none;}
-.czm-zone-card:not(.czm-zone-locked):hover{transform:scale(1.02);border-color:var(--zaccent,#8b5cf6);box-shadow:0 0 18px rgba(var(--zaccent,139,92,246),.3);}
-.czm-zone-card:not(.czm-zone-locked):active{transform:scale(.98);}
-.czm-zone-locked{cursor:default;}
-.czm-zone-current{border-color:var(--zaccent,#8b5cf6) !important;box-shadow:0 0 22px rgba(255,255,255,.12);}
-.czm-zc-icon{font-size:2rem;flex-shrink:0;width:44px;text-align:center;filter:drop-shadow(0 0 8px var(--zaccent,#fff));}
-.czm-zc-body{flex:1;min-width:0;}
-.czm-zc-name{font-size:.98rem;font-weight:800;color:#e2e8f0;}
-.czm-zc-sub{font-size:.68rem;color:#94a3b8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.czm-zc-deco{font-size:.75rem;margin-top:4px;opacity:.65;}
-.czm-zc-right{text-align:right;flex-shrink:0;}
-.czm-zc-lock{font-size:1.3rem;}
-.czm-zc-req{font-size:.68rem;color:#f87171;font-weight:700;margin-top:2px;}
-.czm-zc-xp{font-size:.7rem;color:#fbbf24;font-weight:700;}
-.czm-zc-gold{font-size:.68rem;color:#94a3b8;margin-top:2px;}
-.czm-zc-marker{font-size:.62rem;color:var(--zaccent,#4ade80);margin-top:4px;font-weight:700;animation:markerBlink 1.4s ease-in-out infinite;}
-.czm-zc-overlay{position:absolute;inset:0;background:rgba(0,0,0,.58);border-radius:14px;pointer-events:none;}
-@keyframes markerBlink{0%,100%{opacity:1;}50%{opacity:.4;}}
-/* Path segments */
-.czm-path-seg{width:3px;height:28px;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));border-radius:2px;margin:1px auto;position:relative;}
-.czm-path-locked{background:linear-gradient(180deg,rgba(255,255,255,.05),transparent);}
-.czm-path-seg::after{content:'·';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(255,255,255,.25);font-size:14px;}
+/* ── Mapa de zonas visual ── */
+#ceZoneMap {
+  position: absolute; inset: 0;
+  background: #060810;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.czm-header {
+  padding: 16px 20px 10px;
+  background: rgba(0,0,0,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+}
+.czm-title {
+  font-size: 1.1rem; font-weight: 800; color: #fff;
+  letter-spacing: 0.04em;
+}
+.czm-sub {
+  font-size: 0.7rem; color: rgba(180,160,220,0.7);
+  margin-top: 2px;
+}
+.czm-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 20px 16px;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(30,60,30,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(60,20,20,0.3) 0%, transparent 50%),
+    #060810;
+}
+.czm-map-grid {
+  display: flex; flex-direction: column; gap: 0;
+  align-items: center; position: relative;
+  padding-bottom: 20px;
+}
+.czm-map-row { display: flex; width: 100%; justify-content: center; position: relative; }
+.czm-map-row.row-left  { justify-content: flex-start; padding-left: 16px; }
+.czm-map-row.row-right { justify-content: flex-end;   padding-right: 16px; }
+.czm-node {
+  position: relative; display: flex; flex-direction: column;
+  align-items: center; gap: 6px; cursor: pointer;
+  transition: transform 0.2s; z-index: 2;
+}
+.czm-node:active { transform: scale(0.92); }
+.czm-node-bubble {
+  width: 72px; height: 72px; border-radius: 20px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border: 2px solid rgba(255,255,255,0.15);
+  position: relative; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  transition: all 0.2s;
+}
+.czm-node:hover .czm-node-bubble { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+.czm-node-bubble.locked  { filter: grayscale(0.8) brightness(0.4); cursor: not-allowed; }
+.czm-node-bubble.current { box-shadow: 0 0 0 3px #fff, 0 0 20px rgba(255,255,255,0.4); }
+.czm-node-emoji { font-size: 2rem; line-height: 1; }
+.czm-node-level { font-size: 0.5rem; font-weight: 800; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 0.06em; }
+.czm-node-name  { font-size: 0.62rem; font-weight: 700; color: rgba(255,255,255,0.85); text-align: center; max-width: 80px; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+.czm-node-name.locked { color: rgba(255,255,255,0.3); }
+.czm-current-indicator {
+  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+  font-size: 1rem; animation: indFloat 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(255,220,0,0.8)); z-index: 10;
+}
+@keyframes indFloat { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-5px);} }
+.czm-node-fog {
+  position: absolute; inset: 0;
+  background: rgba(10,8,20,0.75);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; border-radius: inherit;
+}
+.czm-path-v {
+  width: 3px; height: 40px; background: rgba(255,255,255,0.1);
+  margin: 0 auto; border-radius: 2px; position: relative; overflow: hidden;
+}
+.czm-path-v.unlocked { background: rgba(255,255,255,0.2); }
+.czm-path-v::after {
+  content: ''; position: absolute; left: 0; top: -100%; width: 100%; height: 40%;
+  background: linear-gradient(180deg,transparent,rgba(255,255,255,0.5),transparent);
+  animation: pathShimmerV 2s infinite;
+}
+@keyframes pathShimmerV { 0%{top:-100%} 100%{top:200%} }
+.czm-node-rewards { display: flex; gap: 4px; }
+.czm-reward-badge { font-size: 0.52rem; font-weight: 700; padding: 2px 5px; border-radius: 6px; background: rgba(0,0,0,0.5); }
 /* Zone detail popup */
-#ceZoneDetail{position:absolute;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:20;padding:20px;}
-#ceZoneDetail.hide{display:none !important;}
-.czd-box{background:linear-gradient(160deg,#0f1122,#1a1a2e);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:24px 20px;width:100%;max-width:360px;text-align:center;}
-.czd-box .czd-icon{font-size:3rem;margin-bottom:8px;display:block;filter:drop-shadow(0 0 12px currentColor);}
-.czd-box .czd-name{font-size:1.3rem;font-weight:900;color:#e2e8f0;margin-bottom:4px;}
-.czd-box .czd-boss-line{font-size:.78rem;color:#94a3b8;margin-bottom:12px;}
-.czd-stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
-.czd-stats span{background:rgba(255,255,255,.07);border-radius:20px;padding:4px 10px;font-size:.72rem;color:#c4b5fd;}
-.czd-rewards{display:flex;gap:10px;justify-content:center;margin-bottom:16px;}
-.czd-rewards span{font-size:.8rem;font-weight:700;color:#fbbf24;}
-.czd-actions{display:flex;gap:10px;justify-content:center;}
-.czd-close-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#94a3b8;padding:9px 18px;cursor:pointer;font-size:.85rem;}
-.czd-enter-btn{background:rgba(139,92,246,.25);border:2px solid #8b5cf6;border-radius:8px;color:#fff;padding:9px 22px;cursor:pointer;font-size:.9rem;font-weight:700;transition:background .15s;}
-.czd-enter-btn:hover{background:rgba(139,92,246,.45);}
+#ceZoneDetail {
+  position: absolute; inset: 0; z-index: 20;
+  background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.czd-box {
+  width: 100%; max-width: 340px;
+  background: linear-gradient(160deg,#12101f,#0a0814);
+  border-radius: 24px; padding: 24px 20px;
+  border: 1px solid rgba(139,92,246,0.3);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+  text-align: center;
+}
+#czdIcon  { font-size: 3rem; display: block; margin-bottom: 8px; }
+#czdName  { font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+#czdBoss  { font-size: 0.78rem; color: rgba(220,180,255,0.8); margin-bottom: 12px; }
+#czdStats {
+  display: flex; gap: 8px; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 12px;
+}
+.czd-stat { font-size: 0.72rem; padding: 4px 10px; border-radius: 10px; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8); font-weight: 700; }
+#czdRewards { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.czd-reward { font-size: 0.8rem; font-weight: 800; padding: 6px 12px; border-radius: 10px; background: rgba(255,255,255,0.06); }
+.czd-btns { display: flex; gap: 8px; }
+.czd-btn-close {
+  flex: 1; padding: 10px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent; color: rgba(255,255,255,0.6);
+  cursor: pointer; font-size: 0.85rem;
+}
+#czdEnterBtn {
+  flex: 2; padding: 10px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg,#7c3aed,#4f46e5);
+  color: #fff; font-weight: 800; cursor: pointer; font-size: 0.9rem;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.4);
+}
 /* Zone map footer */
-.czm-footer{padding:10px 16px 14px;flex-shrink:0;text-align:center;}
-.cezm-close{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#64748b;font-size:.85rem;padding:9px 28px;cursor:pointer;}
-.cezm-close:hover{background:rgba(255,255,255,.12);color:#94a3b8;}
+.czm-footer { padding: 10px 16px; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; }
+.cezm-close { width: 100%; padding: 10px; border-radius: 12px; border: none; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); font-size: 0.85rem; cursor: pointer; }
 /* Party portrait HUD */
 #cePartyHud{position:absolute;top:52px;left:10px;display:flex;flex-direction:column;gap:5px;z-index:12;pointer-events:all;}
 .ce-party-port{width:38px;height:38px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.2);position:relative;cursor:pointer;transition:transform .12s,border-color .12s;background:#111;}
@@ -24712,14 +24834,14 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
     <!-- Zone detail popup -->
     <div id="ceZoneDetail" class="hide" onclick="closeCombatZoneDetail(event)">
       <div class="czd-box">
-        <span class="czd-icon" id="czdIcon">⚔️</span>
-        <div class="czd-name" id="czdName"></div>
-        <div class="czd-boss-line" id="czdBoss"></div>
-        <div class="czd-stats" id="czdStats"></div>
-        <div class="czd-rewards" id="czdRewards"></div>
-        <div class="czd-actions">
-          <button class="czd-close-btn" onclick="closeCombatZoneDetail()">✕ Cerrar</button>
-          <button class="czd-enter-btn" id="czdEnterBtn">⚔ Entrar en la zona</button>
+        <span id="czdIcon">⚔️</span>
+        <div id="czdName"></div>
+        <div id="czdBoss"></div>
+        <div id="czdStats"></div>
+        <div id="czdRewards"></div>
+        <div class="czd-btns">
+          <button class="czd-btn-close" onclick="closeCombatZoneDetail()">✕ Cerrar</button>
+          <button id="czdEnterBtn">⚔ Entrar</button>
         </div>
       </div>
     </div>
