@@ -7149,7 +7149,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
         <div class="gold-count" id="goldCount">🪙 0</div>
         <button class="gold-shop-btn" id="goldShopBtn">Tienda →</button>
       </div>
-      <div class="equipped-section" id="equippedSection"></div>
+      <div class="equipped-section" id="equippedSection" style="display:none"></div>
     </div>
 
     <div>
@@ -12888,10 +12888,7 @@ function updateCampEquipDisplay() {
       nameEl.parentNode.insertBefore(summaryEl, nameEl.nextSibling);
     }
     if (summaryEl) {
-      summaryEl.innerHTML = equippedItems
-        .filter(function(e) { return ['epico','legendario','raro'].includes(e.item.rarity); })
-        .map(function(e) { return '<span class="camp-eq-sum-item ' + e.item.rarity + '">' + (e.item.icon || '') + ' ' + e.item.name + '</span>'; })
-        .join('');
+      summaryEl.style.display = 'none';
     }
   }
 }
