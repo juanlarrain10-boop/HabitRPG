@@ -29,7 +29,6 @@
       padding-bottom: 32px;
     }
 
-    /* HEADER */
     header {
       background: var(--green-dark);
       color: white;
@@ -43,7 +42,6 @@
     header h1 { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.3px; }
     header p  { font-size: 0.78rem; opacity: 0.75; margin-top: 2px; }
 
-    /* NAV */
     nav {
       background: var(--white);
       display: flex;
@@ -84,7 +82,6 @@
     .section { display: none; }
     .section.active { display: block; }
 
-    /* CARD */
     .card {
       background: var(--white);
       border-radius: 14px;
@@ -102,7 +99,6 @@
       gap: 7px;
     }
 
-    /* FORM */
     .form-group { margin-bottom: 15px; }
     label {
       display: block;
@@ -132,7 +128,6 @@
     }
     textarea { resize: vertical; min-height: 68px; }
 
-    /* CANASTA OPTIONS */
     .canasta-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -158,7 +153,6 @@
     }
     .span2 { grid-column: span 2; }
 
-    /* PAPAS GRID */
     .papas-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -172,7 +166,6 @@
     .papas-grid .rc-name { font-size: 0.82rem; }
     .papas-grid .rc-price { font-size: 0.7rem; }
 
-    /* TOTAL PREVIEW */
     .total-preview {
       background: var(--green-pale);
       border-radius: 10px;
@@ -185,7 +178,6 @@
     .total-preview .tp-label { font-weight: 700; color: var(--green-dark); font-size: 0.9rem; }
     .total-preview .tp-amount { font-size: 1.4rem; font-weight: 900; color: var(--green-dark); }
 
-    /* BUTTONS */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -205,7 +197,6 @@
     .btn-danger { background: transparent; color: var(--danger); padding: 5px 9px; font-size: 0.82rem; }
     .btn-block { width: 100%; }
 
-    /* TABLE */
     .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -2px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
     th {
@@ -228,7 +219,6 @@
       border-top: 2px solid var(--green-light);
     }
 
-    /* BADGES */
     .badge {
       display: inline-block;
       padding: 2px 9px;
@@ -250,17 +240,99 @@
       gap: 7px;
     }
     .ing-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 2px 6px;
       padding: 8px 12px;
       background: var(--bg);
       border-radius: 8px;
     }
-    .ing-name { font-size: 0.84rem; font-weight: 500; }
-    .ing-qty  { font-size: 0.84rem; font-weight: 800; color: var(--green-dark); margin-left: 6px; white-space: nowrap; }
+    .ing-name { font-size: 0.84rem; font-weight: 600; }
+    .ing-unit-price { font-size: 0.68rem; color: var(--muted); display: block; }
+    .ing-qty { font-size: 0.84rem; font-weight: 800; color: var(--green-dark); text-align: right; white-space: nowrap; }
+    .ing-cost-total { font-size: 0.68rem; color: var(--muted); display: block; text-align: right; }
     .ing-item.adjusted { background: #fff8e1; }
-    .ing-sub  { font-size: 0.7rem; font-weight: 500; color: #b45309; display: block; }
+    .ing-sub { font-size: 0.68rem; font-weight: 500; color: #b45309; display: block; text-align: right; }
+
+    .cost-summary {
+      background: var(--green-pale);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cost-summary .cs-label { font-weight: 700; color: var(--green-dark); font-size: 0.9rem; }
+    .cost-summary .cs-value { font-size: 1.2rem; font-weight: 900; color: var(--green-dark); }
+
+    /* CUSTOM BUILDER */
+    .custom-builder {
+      border: 2px dashed var(--green-light);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 4px;
+    }
+    .custom-builder h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 12px;
+    }
+    .custom-add-row {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 10px;
+      align-items: flex-start;
+    }
+    .custom-add-row select { flex: 1; min-width: 0; }
+    .custom-add-row input[type="number"] { width: 80px; flex-shrink: 0; }
+    .custom-add-row .btn { flex-shrink: 0; padding: 10px 14px; font-size: 1rem; }
+    .custom-item {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: 5px;
+      font-size: 0.82rem;
+    }
+    .ci-name { font-weight: 600; }
+    .ci-qty  { color: var(--muted); text-align: right; white-space: nowrap; }
+    .ci-cost { color: var(--green-dark); font-weight: 700; text-align: right; white-space: nowrap; }
+    .ci-del  { color: var(--danger); cursor: pointer; background: none; border: none; font-size: 1rem; padding: 0 3px; line-height: 1; }
+    .custom-summary {
+      background: var(--green-pale);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 8px;
+    }
+    .csr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 0.84rem;
+    }
+    .csr:last-child { margin-bottom: 0; }
+    .csr-label { color: var(--green-mid); font-weight: 600; }
+    .csr-value { font-weight: 800; color: var(--green-dark); }
+    .csr.big .csr-label { color: var(--green-dark); font-size: 0.88rem; }
+    .csr.big .csr-value { font-size: 1.05rem; }
+    .precio-final-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    .precio-final-row label { font-size: 0.82rem; font-weight: 700; color: var(--green-dark); white-space: nowrap; margin: 0; flex-shrink: 0; }
+    .precio-final-row span { color: var(--muted); font-weight: 700; flex-shrink: 0; }
+    .precio-final-row input { flex: 1; min-width: 0; padding: 8px 10px; }
 
     /* MODS */
     .mod-item {
@@ -288,16 +360,27 @@
       text-align: center;
     }
     .sum-card.big { grid-column: span 2; background: var(--green-dark); }
+    .sum-card.accent { background: #e8f5e9; }
     .sum-label { font-size: 0.73rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
     .sum-card.big .sum-label { color: rgba(255,255,255,.65); }
+    .sum-card.accent .sum-label { color: var(--green-mid); }
     .sum-value { font-size: 1.2rem; font-weight: 900; color: var(--green-dark); }
     .sum-card.big .sum-value { color: white; font-size: 1.6rem; }
+    .sum-card.accent .sum-value { color: var(--green-dark); }
+    .sum-section-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin: 16px 0 8px;
+    }
 
     .split-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 12px;
+      margin-top: 4px;
     }
     .split-person {
       background: var(--green-pale);
@@ -315,7 +398,6 @@
     }
     .vega-row span { color: var(--muted); font-size: 1rem; flex-shrink: 0; font-weight: 700; }
 
-    /* EMPTY */
     .empty {
       text-align: center;
       padding: 38px 20px;
@@ -342,6 +424,53 @@
       .section { display: block !important; }
       .card { box-shadow: none; border: 1px solid #ddd; }
     }
+
+    /* CIERRE DE SEMANA */
+    .cierre-result {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .cierre-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      font-size: 0.86rem;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .cierre-row:last-child { border-bottom: none; }
+    .cierre-row-label { color: var(--muted); font-weight: 600; }
+    .cierre-row-value { font-weight: 800; color: var(--green-dark); }
+    .cierre-row.highlight { padding: 9px 0; }
+    .cierre-row.highlight .cierre-row-label { color: var(--text); font-size: 0.9rem; font-weight: 700; }
+    .cierre-row.highlight .cierre-row-value { font-size: 1.05rem; }
+    .cierre-sep { height: 1px; background: var(--border); margin: 6px 0; }
+    .cierre-deuda {
+      background: var(--green-dark);
+      border-radius: 14px;
+      padding: 22px 16px;
+      text-align: center;
+      margin-top: 12px;
+    }
+    .cierre-deuda.negativo { background: #c62828; }
+    .cierre-deuda.cero     { background: var(--muted); }
+    .cierre-deuda-label {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .cierre-deuda-monto { font-size: 2.2rem; font-weight: 900; color: white; }
+    .cierre-deuda-nota  { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 6px; }
+    .cierre-breakdown {
+      background: var(--green-pale);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
@@ -363,6 +492,9 @@
   </button>
   <button onclick="showTab('resumen')">
     <span class="icon">💰</span>Resumen
+  </button>
+  <button onclick="showTab('cierre')">
+    <span class="icon">🧾</span>Cierre
   </button>
 </nav>
 
@@ -421,15 +553,33 @@
             <input type="radio" name="canasta" id="c-personalizada" value="personalizada">
             <label for="c-personalizada">
               <span class="rc-name">✏️ Personalizada</span>
-              <span class="rc-price">Precio manual</span>
+              <span class="rc-price">Constructor de caja</span>
             </label>
           </div>
         </div>
       </div>
 
-      <div class="form-group hidden" id="wrap-precio-custom">
-        <label for="inp-precio-custom">Precio canasta personalizada ($)</label>
-        <input type="number" id="inp-precio-custom" placeholder="Ej: 20000" min="0">
+      <!-- PERSONALIZADA BUILDER -->
+      <div class="form-group hidden" id="wrap-personalizada">
+        <div class="custom-builder">
+          <h3>🏗️ Constructor de canasta personalizada</h3>
+          <div class="custom-add-row">
+            <select id="custom-producto">
+              <option value="">Elegir producto...</option>
+            </select>
+            <input type="number" id="custom-cantidad" placeholder="Cant." min="0.1" step="0.1">
+            <button class="btn btn-secondary" onclick="addCustomItem()">+</button>
+          </div>
+          <div id="custom-items-list">
+            <p style="font-size:0.8rem;color:var(--muted);text-align:center;padding:8px 0;">Agrega productos a la canasta</p>
+          </div>
+          <div id="custom-summary" class="custom-summary hidden"></div>
+          <div id="wrap-precio-final" class="precio-final-row hidden">
+            <label>Precio final:</label>
+            <span>$</span>
+            <input type="number" id="inp-precio-custom" placeholder="0" min="0" oninput="onPrecioFinalChange()">
+          </div>
+        </div>
       </div>
 
       <div class="form-group hidden" id="wrap-mods">
@@ -454,7 +604,7 @@
   <!-- ── COMPRA ── -->
   <div id="tab-compra" class="section">
     <div class="card">
-      <h2>🛒 Lista de compra</h2>
+      <h2>🛒 Lista de compra — La Vega</h2>
       <div class="print-row">
         <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir</button>
       </div>
@@ -476,38 +626,16 @@
   <div id="tab-resumen" class="section">
     <div class="card">
       <h2>💰 Resumen financiero</h2>
-      <div class="sum-grid" id="sum-grid"></div>
+      <div id="resumen-container"></div>
     </div>
 
     <div class="card">
-      <h2>🏪 Costo estimado La Vega</h2>
+      <h2>🏪 Costo real La Vega</h2>
       <div class="form-group">
-        <label for="inp-vega">Total gastado en la compra</label>
+        <label for="inp-vega">Total gastado (si difiere del estimado)</label>
         <div class="vega-row">
           <span>$</span>
-          <input type="number" id="inp-vega" placeholder="0" min="0" oninput="renderResumen()">
-        </div>
-      </div>
-      <div id="ganancia-wrap" class="hidden">
-        <div class="sum-grid">
-          <div class="sum-card">
-            <div class="sum-label">Ganancia bruta</div>
-            <div class="sum-value" id="val-ganancia">$0</div>
-          </div>
-          <div class="sum-card">
-            <div class="sum-label">Margen</div>
-            <div class="sum-value" id="val-margen">0%</div>
-          </div>
-        </div>
-        <div class="split-grid">
-          <div class="split-person">
-            <div class="split-name">👤 Juan</div>
-            <div class="split-amount" id="split-juan">$0</div>
-          </div>
-          <div class="split-person">
-            <div class="split-name">👤 Amalia</div>
-            <div class="split-amount" id="split-amalia">$0</div>
-          </div>
+          <input type="number" id="inp-vega" placeholder="Dejar vacío para usar estimado" min="0" oninput="renderResumen()">
         </div>
       </div>
     </div>
@@ -516,6 +644,44 @@
       <button class="btn btn-danger btn-block" onclick="limpiarSemana()">
         🗑️ Limpiar todos los pedidos de esta semana
       </button>
+    </div>
+  </div>
+
+  <!-- ── CIERRE ── -->
+  <div id="tab-cierre" class="section">
+    <div class="card">
+      <h2>🧾 Resumen del día</h2>
+      <div id="cierre-resumen-container"></div>
+    </div>
+
+    <div class="card">
+      <h2>📥 Datos de cierre</h2>
+      <div class="form-group">
+        <label for="inp-cierre-vega">Costo real La Vega</label>
+        <div class="vega-row">
+          <span>$</span>
+          <input type="number" id="inp-cierre-vega" placeholder="Vacío = usar estimado automático" min="0" oninput="renderCierre()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inp-cierre-amalia-cobro">Amalia ya cobró directamente de sus clientes</label>
+        <div class="vega-row">
+          <span>$</span>
+          <input type="number" id="inp-cierre-amalia-cobro" placeholder="0" min="0" oninput="renderCierre()">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label for="inp-cierre-amalia-compras">Compras personales de Amalia a descontar de su parte</label>
+        <div class="vega-row">
+          <span>$</span>
+          <input type="number" id="inp-cierre-amalia-compras" placeholder="0" min="0" oninput="renderCierre()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>💸 Liquidación final — Amalia</h2>
+      <div id="cierre-liquidacion-container"></div>
     </div>
   </div>
 
@@ -585,6 +751,57 @@ const PAPAS = {
   '20kg': { con: 18000, sin: 22000 },
 };
 
+/* precios en La Vega (por unidad de compra) */
+const PRECIOS_VEGA = {
+  'Tomate':           { precio: 1000, unidadVega: 'kg'      },
+  'Palta':            { precio: 4000, unidadVega: 'kg'      },
+  'Cebolla':          { precio: 750,  unidadVega: 'kg'      },
+  'Zanahoria':        { precio: 400,  unidadVega: 'kg'      },
+  'Lechuga costina':  { precio: 875,  unidadVega: 'u'       },
+  'Lechuga española': { precio: 1000, unidadVega: 'u'       },
+  'Pimentón verde':   { precio: 400,  unidadVega: 'u'       },
+  'Pimentón rojo':    { precio: 1000, unidadVega: 'u'       },
+  'Brócoli':          { precio: 667,  unidadVega: 'u'       },
+  'Coliflor':         { precio: 1000, unidadVega: 'u'       },
+  'Acelga':           { precio: 1500, unidadVega: 'kg'      },
+  'Espinaca':         { precio: 1000, unidadVega: 'kg'      },
+  'Ajo':              { precio: 100,  unidadVega: 'cabeza'  },
+  'Cebollín':         { precio: 500,  unidadVega: 'u'       },
+  'Cilantro':         { precio: 800,  unidadVega: 'atado'   },
+  'Plátano':          { precio: 1000, unidadVega: 'kg'      },
+  'Limón':            { precio: 389,  unidadVega: 'kg'      },
+  'Naranja':          { precio: 1000, unidadVega: 'kg'      },
+  'Manzana':          { precio: 1000, unidadVega: 'kg'      },
+  'Frutilla':         { precio: 1000, unidadVega: 'kg'      },
+  'Arándanos':        { precio: 7500, unidadVega: 'kg'      },
+  'Piña':             { precio: 2000, unidadVega: 'u'       },
+};
+
+const PRODUCTOS_VEGA = [
+  { nombre: 'Tomate',           unidad: 'kg'      },
+  { nombre: 'Palta',            unidad: 'kg'      },
+  { nombre: 'Cebolla',          unidad: 'kg'      },
+  { nombre: 'Zanahoria',        unidad: 'kg'      },
+  { nombre: 'Lechuga costina',  unidad: 'u'       },
+  { nombre: 'Lechuga española', unidad: 'u'       },
+  { nombre: 'Pimentón verde',   unidad: 'u'       },
+  { nombre: 'Pimentón rojo',    unidad: 'u'       },
+  { nombre: 'Brócoli',          unidad: 'u'       },
+  { nombre: 'Coliflor',         unidad: 'u'       },
+  { nombre: 'Acelga',           unidad: 'kg'      },
+  { nombre: 'Espinaca',         unidad: 'kg'      },
+  { nombre: 'Ajo',              unidad: 'cabezas' },
+  { nombre: 'Cebollín',         unidad: 'u'       },
+  { nombre: 'Cilantro',         unidad: 'atado'   },
+  { nombre: 'Plátano',          unidad: 'kg'      },
+  { nombre: 'Limón',            unidad: 'kg'      },
+  { nombre: 'Naranja',          unidad: 'kg'      },
+  { nombre: 'Manzana',          unidad: 'kg'      },
+  { nombre: 'Frutilla',         unidad: 'kg'      },
+  { nombre: 'Arándanos',        unidad: 'kg'      },
+  { nombre: 'Piña',             unidad: 'u'       },
+];
+
 const MODS_RULES = [
   { keywords: ['sin ajo'],                                ing: 'Ajo'             },
   { keywords: ['sin cebolla'],                            ing: 'Cebolla'         },
@@ -616,8 +833,36 @@ function getModSubtractions(text) {
   return removed;
 }
 
+/* calcula costo Vega de un ingrediente */
+function calcIngCosto(nombre, cantidad, unidad) {
+  const pv = PRECIOS_VEGA[nombre];
+  if (!pv) return 0;
+  let qty = cantidad;
+  if (unidad === 'g' && pv.unidadVega === 'kg') qty = cantidad / 1000;
+  return Math.round(qty * pv.precio);
+}
+
+/* costo Vega total estimado de todos los pedidos */
+function calcCostoVegaTotal() {
+  let total = 0;
+  for (const p of pedidos) {
+    if (!p.canasta) continue;
+    const removed = getModSubtractions(p.mods);
+    const ingredientes = p.canasta === 'personalizada'
+      ? (p.ingredientesCustom || [])
+      : (CANASTAS[p.canasta]?.ingredientes || []);
+    for (const ing of ingredientes) {
+      if (!removed.has(ing.nombre)) {
+        total += calcIngCosto(ing.nombre, ing.cantidad, ing.unidad);
+      }
+    }
+  }
+  return total;
+}
+
 /* ── STATE ────────────────────────────────────────────────────── */
-let pedidos = JSON.parse(localStorage.getItem('verdurin-pedidos') || '[]');
+let pedidos     = JSON.parse(localStorage.getItem('verdurin-pedidos') || '[]');
+let customItems = [];
 
 function save() {
   localStorage.setItem('verdurin-pedidos', JSON.stringify(pedidos));
@@ -637,16 +882,118 @@ function save() {
   document.querySelectorAll('input[name="canasta"]').forEach(r =>
     r.addEventListener('change', onCanastaChange)
   );
-  document.getElementById('inp-precio-custom').addEventListener('input', updatePreview);
 
+  initCustomProductoSelect();
   renderPapasGrid();
   renderAll();
 })();
 
+/* ── CUSTOM BUILDER ───────────────────────────────────────────── */
+function initCustomProductoSelect() {
+  const sel = document.getElementById('custom-producto');
+  sel.innerHTML = '<option value="">Elegir producto...</option>' +
+    PRODUCTOS_VEGA.map(p => {
+      const pv = PRECIOS_VEGA[p.nombre];
+      const precioStr = pv ? ` — ${fmt(pv.precio)}/${pv.unidadVega}` : '';
+      return `<option value="${p.nombre}">${p.nombre} (${p.unidad})${precioStr}</option>`;
+    }).join('');
+}
+
+function addCustomItem() {
+  const nombre   = document.getElementById('custom-producto').value;
+  const cantidad = parseFloat(document.getElementById('custom-cantidad').value);
+  if (!nombre || !cantidad || cantidad <= 0) {
+    alert('Selecciona un producto y una cantidad válida.');
+    return;
+  }
+  const prod = PRODUCTOS_VEGA.find(p => p.nombre === nombre);
+  customItems.push({ nombre, cantidad, unidad: prod.unidad });
+  document.getElementById('custom-cantidad').value = '';
+  document.getElementById('custom-producto').value = '';
+
+  const costoVega = customItems.reduce((s, it) => s + calcIngCosto(it.nombre, it.cantidad, it.unidad), 0);
+  const sugerido  = Math.ceil((costoVega * 2) / 500) * 500;
+  document.getElementById('inp-precio-custom').value = sugerido;
+
+  renderCustomBuilder();
+}
+
+function removeCustomItem(idx) {
+  customItems.splice(idx, 1);
+  if (customItems.length) {
+    const costoVega = customItems.reduce((s, it) => s + calcIngCosto(it.nombre, it.cantidad, it.unidad), 0);
+    const sugerido  = Math.ceil((costoVega * 2) / 500) * 500;
+    document.getElementById('inp-precio-custom').value = sugerido;
+  } else {
+    document.getElementById('inp-precio-custom').value = '';
+  }
+  renderCustomBuilder();
+}
+
+function onPrecioFinalChange() {
+  if (!customItems.length) { updatePreview(); return; }
+  const costoVega   = customItems.reduce((s, it) => s + calcIngCosto(it.nombre, it.cantidad, it.unidad), 0);
+  const precioFinal = parseInt(document.getElementById('inp-precio-custom').value) || 0;
+  const ganancia    = precioFinal - costoVega;
+  const el = document.querySelector('#custom-summary .csr.big .csr-value');
+  if (el) {
+    el.textContent = fmt(ganancia);
+    el.style.color = ganancia >= 0 ? 'var(--green-dark)' : 'var(--danger)';
+  }
+  updatePreview();
+}
+
+function renderCustomBuilder() {
+  const listEl = document.getElementById('custom-items-list');
+  const sumEl  = document.getElementById('custom-summary');
+  const wrapPF = document.getElementById('wrap-precio-final');
+
+  if (!customItems.length) {
+    listEl.innerHTML = '<p style="font-size:0.8rem;color:var(--muted);text-align:center;padding:8px 0;">Agrega productos a la canasta</p>';
+    sumEl.classList.add('hidden');
+    wrapPF.classList.add('hidden');
+    updatePreview();
+    return;
+  }
+
+  listEl.innerHTML = customItems.map((it, i) => {
+    const costo = calcIngCosto(it.nombre, it.cantidad, it.unidad);
+    return `
+      <div class="custom-item">
+        <span class="ci-name">${esc(it.nombre)}</span>
+        <span class="ci-qty">${fmtCant(it.cantidad, it.unidad)}</span>
+        <span class="ci-cost">${fmt(costo)}</span>
+        <button class="ci-del" onclick="removeCustomItem(${i})">✕</button>
+      </div>`;
+  }).join('');
+
+  const costoVega   = customItems.reduce((s, it) => s + calcIngCosto(it.nombre, it.cantidad, it.unidad), 0);
+  const sugerido    = Math.ceil((costoVega * 2) / 500) * 500;
+  const precioFinal = parseInt(document.getElementById('inp-precio-custom').value) || sugerido;
+  const ganancia    = precioFinal - costoVega;
+
+  sumEl.innerHTML = `
+    <div class="csr">
+      <span class="csr-label">Costo Vega estimado</span>
+      <span class="csr-value">${fmt(costoVega)}</span>
+    </div>
+    <div class="csr">
+      <span class="csr-label">Precio sugerido (+100%)</span>
+      <span class="csr-value">${fmt(sugerido)}</span>
+    </div>
+    <div class="csr big">
+      <span class="csr-label">Ganancia con precio elegido</span>
+      <span class="csr-value" style="color:${ganancia >= 0 ? 'var(--green-dark)' : 'var(--danger)'}">${fmt(ganancia)}</span>
+    </div>`;
+  sumEl.classList.remove('hidden');
+  wrapPF.classList.remove('hidden');
+  updatePreview();
+}
+
 /* ── CANASTA CHANGE ───────────────────────────────────────────── */
 function onCanastaChange() {
   const v = selCanasta();
-  document.getElementById('wrap-precio-custom').classList.toggle('hidden', v !== 'personalizada');
+  document.getElementById('wrap-personalizada').classList.toggle('hidden', v !== 'personalizada');
   document.getElementById('wrap-mods').classList.toggle('hidden', v === 'ninguna');
   renderPapasGrid();
   updatePreview();
@@ -661,8 +1008,7 @@ function selPapas() {
 }
 
 function tieneCanasta() {
-  const v = selCanasta();
-  return v !== 'ninguna';
+  return selCanasta() !== 'ninguna';
 }
 
 /* ── PAPAS GRID ───────────────────────────────────────────────── */
@@ -701,14 +1047,14 @@ function updatePreview() {
 }
 
 function calcTotal(canasta, papas, precioCustom) {
-  canasta     = canasta     ?? selCanasta();
-  papas       = papas       ?? selPapas();
+  canasta      = canasta      ?? selCanasta();
+  papas        = papas        ?? selPapas();
   precioCustom = precioCustom ?? (parseInt(document.getElementById('inp-precio-custom').value) || 0);
 
   let t = 0;
-  if (canasta === 'basica')         t += 16900;
-  else if (canasta === 'completa')  t += 24900;
-  else if (canasta === 'premium')   t += 34900;
+  if (canasta === 'basica')             t += 16900;
+  else if (canasta === 'completa')      t += 24900;
+  else if (canasta === 'premium')       t += 34900;
   else if (canasta === 'personalizada') t += precioCustom;
 
   if (papas !== 'ninguna') {
@@ -728,15 +1074,15 @@ function agregarPedido() {
   const precioCustom = parseInt(document.getElementById('inp-precio-custom').value) || 0;
   const mods         = document.getElementById('inp-mods').value.trim();
 
-  if (canasta === 'personalizada' && !precioCustom) {
-    alert('Ingresa el precio de la canasta personalizada.');
-    return;
+  if (canasta === 'personalizada') {
+    if (!customItems.length) { alert('Agrega al menos un producto a la canasta personalizada.'); return; }
+    if (!precioCustom) { alert('Ingresa el precio final de la canasta personalizada.'); return; }
   }
 
   let precioCanasta = 0;
-  if (canasta === 'basica')          precioCanasta = 16900;
-  else if (canasta === 'completa')   precioCanasta = 24900;
-  else if (canasta === 'premium')    precioCanasta = 34900;
+  if (canasta === 'basica')             precioCanasta = 16900;
+  else if (canasta === 'completa')      precioCanasta = 24900;
+  else if (canasta === 'premium')       precioCanasta = 34900;
   else if (canasta === 'personalizada') precioCanasta = precioCustom;
 
   let precioPapas = 0;
@@ -747,11 +1093,12 @@ function agregarPedido() {
   pedidos.push({
     id: Date.now(),
     nombre,
-    canasta:       canasta !== 'ninguna' ? canasta : null,
+    canasta:            canasta !== 'ninguna' ? canasta : null,
     precioCanasta,
-    papas:         papas !== 'ninguna' ? papas : null,
+    papas:              papas !== 'ninguna' ? papas : null,
     precioPapas,
     mods,
+    ingredientesCustom: canasta === 'personalizada' ? [...customItems] : undefined,
     total: precioCanasta + precioPapas,
   });
 
@@ -762,12 +1109,17 @@ function agregarPedido() {
 }
 
 function resetForm() {
+  customItems = [];
   document.getElementById('inp-nombre').value = '';
   document.getElementById('inp-mods').value = '';
   document.getElementById('inp-precio-custom').value = '';
   document.querySelector('input[name="canasta"][value="ninguna"]').checked = true;
-  document.getElementById('wrap-precio-custom').classList.add('hidden');
+  document.getElementById('wrap-personalizada').classList.add('hidden');
   document.getElementById('wrap-mods').classList.add('hidden');
+  document.getElementById('custom-items-list').innerHTML =
+    '<p style="font-size:0.8rem;color:var(--muted);text-align:center;padding:8px 0;">Agrega productos a la canasta</p>';
+  document.getElementById('custom-summary').classList.add('hidden');
+  document.getElementById('wrap-precio-final').classList.add('hidden');
   renderPapasGrid();
   updatePreview();
 }
@@ -784,6 +1136,7 @@ function renderAll() {
   renderPedidos();
   renderCompra();
   renderResumen();
+  renderCierre();
 }
 
 /* ── RENDER PEDIDOS ───────────────────────────────────────────── */
@@ -848,11 +1201,10 @@ function renderPedidos() {
 
 /* ── RENDER COMPRA ────────────────────────────────────────────── */
 function renderCompra() {
-  const conCanasta = pedidos.filter(p => p.canasta && CANASTAS[p.canasta]);
+  const conCanasta = pedidos.filter(p => p.canasta && (CANASTAS[p.canasta] || p.canasta === 'personalizada'));
   const conPapas   = pedidos.filter(p => p.papas);
   const conMods    = pedidos.filter(p => p.mods);
 
-  // Ingredients
   const el = document.getElementById('compra-container');
   if (!conCanasta.length) {
     el.innerHTML = `<div class="empty"><div class="ei">🛒</div>
@@ -861,7 +1213,10 @@ function renderCompra() {
     const map = {};
     for (const p of conCanasta) {
       const removed = getModSubtractions(p.mods);
-      for (const ing of CANASTAS[p.canasta].ingredientes) {
+      const ingredientes = p.canasta === 'personalizada'
+        ? (p.ingredientesCustom || [])
+        : CANASTAS[p.canasta].ingredientes;
+      for (const ing of ingredientes) {
         const key = `${ing.nombre}||${ing.unidad}`;
         if (!map[key]) map[key] = { nombre: ing.nombre, unidad: ing.unidad, cant: 0, subs: 0 };
         if (removed.has(ing.nombre)) {
@@ -871,22 +1226,44 @@ function renderCompra() {
         }
       }
     }
+
     const ings = Object.values(map).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
     const totalAjustes = ings.filter(i => i.subs > 0).length;
+
+    let costoTotal = 0;
+    for (const i of ings) {
+      if (i.cant > 0) costoTotal += calcIngCosto(i.nombre, i.cant, i.unidad);
+    }
+
     el.innerHTML = `
       <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
-        Basado en ${conCanasta.length} canasta${conCanasta.length !== 1 ? 's' : ''} estándar.
+        Basado en ${conCanasta.length} canasta${conCanasta.length !== 1 ? 's' : ''}.
         ${totalAjustes ? `<span style="color:#b45309"> · ${totalAjustes} ingrediente${totalAjustes !== 1 ? 's' : ''} ajustado${totalAjustes !== 1 ? 's' : ''} por modificaciones.</span>` : ''}
       </p>
       <div class="ing-grid">
-        ${ings.filter(i => i.cant > 0 || i.subs > 0).map(i => `
+        ${ings.filter(i => i.cant > 0 || i.subs > 0).map(i => {
+          const pv      = PRECIOS_VEGA[i.nombre];
+          const unitStr = pv ? `${fmt(pv.precio)}/${pv.unidadVega}` : '';
+          const costo   = i.cant > 0 ? calcIngCosto(i.nombre, i.cant, i.unidad) : 0;
+          return `
           <div class="ing-item ${i.subs > 0 ? 'adjusted' : ''}">
-            <span class="ing-name">${i.nombre}</span>
-            <span class="ing-qty">
-              ${i.cant > 0 ? fmtCant(i.cant, i.unidad) : '<span style="color:var(--muted);font-weight:500">—</span>'}
+            <div>
+              <span class="ing-name">${i.nombre}</span>
+              ${unitStr ? `<span class="ing-unit-price">${unitStr}</span>` : ''}
+            </div>
+            <div>
+              ${i.cant > 0
+                ? `<span class="ing-qty">${fmtCant(i.cant, i.unidad)}</span>
+                   <span class="ing-cost-total">${fmt(costo)}</span>`
+                : `<span class="ing-qty" style="color:var(--muted);font-weight:500">—</span>`}
               ${i.subs > 0 ? `<span class="ing-sub">−${fmtCant(i.subs, i.unidad)} (mod)</span>` : ''}
-            </span>
-          </div>`).join('')}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="cost-summary">
+        <span class="cs-label">Costo estimado Vega</span>
+        <span class="cs-value">${fmt(costoTotal)}</span>
       </div>`;
   }
 
@@ -922,8 +1299,11 @@ function renderCompra() {
     cardMods.classList.remove('hidden');
     document.getElementById('mods-lista').innerHTML =
       conMods.map(p => {
-        const removed = getModSubtractions(p.mods);
-        const ingNames = p.canasta ? CANASTAS[p.canasta].ingredientes.map(i => i.nombre) : [];
+        const removed  = getModSubtractions(p.mods);
+        const ingredientes = p.canasta === 'personalizada'
+          ? (p.ingredientesCustom || [])
+          : (p.canasta ? CANASTAS[p.canasta]?.ingredientes || [] : []);
+        const ingNames    = ingredientes.map(i => i.nombre);
         const autoHandled = [...removed].filter(r => ingNames.includes(r));
         return `
           <div class="mod-item">
@@ -945,38 +1325,219 @@ function renderCompra() {
 function renderResumen() {
   const totalCanastas = pedidos.reduce((s, p) => s + p.precioCanasta, 0);
   const totalPapas    = pedidos.reduce((s, p) => s + p.precioPapas,   0);
-  const totalGeneral  = totalCanastas + totalPapas;
+  const totalIngreso  = totalCanastas + totalPapas;
 
-  document.getElementById('sum-grid').innerHTML = `
-    <div class="sum-card">
-      <div class="sum-label">Canastas (${pedidos.filter(p=>p.canasta).length})</div>
-      <div class="sum-value">${fmt(totalCanastas)}</div>
+  const costoVegaEstimado = calcCostoVegaTotal();
+  const costoVegaReal     = parseInt(document.getElementById('inp-vega')?.value) || 0;
+  const costoVega         = costoVegaReal > 0 ? costoVegaReal : costoVegaEstimado;
+  const usandoEstimado    = costoVegaReal === 0;
+
+  const gananciaCanastas = totalCanastas - costoVega;
+  const gananciaPapas    = totalPapas;
+  const gananciaTotal    = gananciaCanastas + gananciaPapas;
+  const mitad            = Math.round(gananciaTotal / 2);
+  const margen           = totalIngreso > 0 ? Math.round((gananciaTotal / totalIngreso) * 100) : 0;
+
+  const nCanastas = pedidos.filter(p => p.canasta).length;
+  const nPapas    = pedidos.filter(p => p.papas).length;
+
+  document.getElementById('resumen-container').innerHTML = `
+    <div class="sum-section-title">Ingresos</div>
+    <div class="sum-grid">
+      <div class="sum-card">
+        <div class="sum-label">Canastas (${nCanastas})</div>
+        <div class="sum-value">${fmt(totalCanastas)}</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-label">Papas (${nPapas})</div>
+        <div class="sum-value">${fmt(totalPapas)}</div>
+      </div>
+      <div class="sum-card big">
+        <div class="sum-label">TOTAL INGRESO</div>
+        <div class="sum-value">${fmt(totalIngreso)}</div>
+      </div>
     </div>
-    <div class="sum-card">
-      <div class="sum-label">Papas (${pedidos.filter(p=>p.papas).length})</div>
-      <div class="sum-value">${fmt(totalPapas)}</div>
+
+    <div class="sum-section-title">Costo La Vega</div>
+    <div class="sum-grid">
+      <div class="sum-card big" style="background:#fff3e0;">
+        <div class="sum-label" style="color:rgba(0,0,0,0.5);">
+          COSTO VEGA${usandoEstimado ? ' (estimado)' : ' (real ingresado)'}
+        </div>
+        <div class="sum-value" style="color:#bf360c;">${fmt(costoVega)}</div>
+      </div>
     </div>
-    <div class="sum-card big">
-      <div class="sum-label">TOTAL A COBRAR</div>
-      <div class="sum-value">${fmt(totalGeneral)}</div>
-    </div>`;
 
-  const costoVega = parseInt(document.getElementById('inp-vega').value) || 0;
-  const wrapG = document.getElementById('ganancia-wrap');
+    <div class="sum-section-title">Ganancias</div>
+    <div class="sum-grid">
+      <div class="sum-card ${gananciaCanastas >= 0 ? 'accent' : ''}">
+        <div class="sum-label">Ganancia canastas</div>
+        <div class="sum-value" style="${gananciaCanastas < 0 ? 'color:var(--danger)' : ''}">${fmt(gananciaCanastas)}</div>
+      </div>
+      <div class="sum-card accent">
+        <div class="sum-label">Ingreso papas</div>
+        <div class="sum-value">${fmt(gananciaPapas)}</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-label">Margen</div>
+        <div class="sum-value">${margen}%</div>
+      </div>
+      <div class="sum-card big" style="background:var(--green-dark);">
+        <div class="sum-label" style="color:rgba(255,255,255,.65)">GANANCIA TOTAL</div>
+        <div class="sum-value" style="color:white;font-size:1.6rem">${fmt(gananciaTotal)}</div>
+      </div>
+    </div>
 
-  if (costoVega > 0) {
-    const ganancia = totalGeneral - costoVega;
-    const margen   = totalGeneral ? Math.round((ganancia / totalGeneral) * 100) : 0;
-    const mitad    = Math.round(ganancia / 2);
+    ${gananciaTotal !== 0 ? `
+    <div class="sum-section-title">División 50/50</div>
+    <div class="split-grid">
+      <div class="split-person">
+        <div class="split-name">Juan</div>
+        <div class="split-amount">${fmt(mitad)}</div>
+      </div>
+      <div class="split-person">
+        <div class="split-name">Amalia</div>
+        <div class="split-amount">${fmt(mitad)}</div>
+      </div>
+    </div>` : ''}
 
-    wrapG.classList.remove('hidden');
-    document.getElementById('val-ganancia').textContent = fmt(ganancia);
-    document.getElementById('val-margen').textContent   = `${margen}%`;
-    document.getElementById('split-juan').textContent   = fmt(mitad);
-    document.getElementById('split-amalia').textContent = fmt(mitad);
-  } else {
-    wrapG.classList.add('hidden');
+    ${usandoEstimado && costoVegaEstimado > 0 ? `
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:12px;text-align:center;">
+      Ingresa el costo real de La Vega abajo para ajustar el cálculo.
+    </p>` : ''}`;
+}
+
+/* ── RENDER CIERRE ────────────────────────────────────────────── */
+function renderCierre() {
+  const totalCanastas = pedidos.reduce((s, p) => s + p.precioCanasta, 0);
+  const totalPapas    = pedidos.reduce((s, p) => s + p.precioPapas,   0);
+  const totalIngreso  = totalCanastas + totalPapas;
+
+  const costoVegaEstimado = calcCostoVegaTotal();
+  const costoVegaReal     = parseInt(document.getElementById('inp-cierre-vega')?.value) || 0;
+  const costoVega         = costoVegaReal > 0 ? costoVegaReal : costoVegaEstimado;
+  const usandoEstimado    = costoVegaReal === 0;
+
+  const gananciaCanastas = totalCanastas - costoVega;
+  const gananciaPapas    = totalPapas;
+  const gananciaTotal    = gananciaCanastas + gananciaPapas;
+  const mitad            = Math.round(gananciaTotal / 2);
+  const margen           = totalIngreso > 0 ? Math.round((gananciaTotal / totalIngreso) * 100) : 0;
+
+  const yaCobro = parseInt(document.getElementById('inp-cierre-amalia-cobro')?.value)   || 0;
+  const compras = parseInt(document.getElementById('inp-cierre-amalia-compras')?.value) || 0;
+
+  // Lo que Juan le debe a Amalia = su parte - lo que ya tiene en mano - compras personales
+  const juanDebeAmalia = mitad - yaCobro - compras;
+
+  const resEl = document.getElementById('cierre-resumen-container');
+  const liqEl = document.getElementById('cierre-liquidacion-container');
+
+  if (!pedidos.length) {
+    resEl.innerHTML = `<div class="empty"><div class="ei">🧾</div>
+      <p>Agrega pedidos para ver el cierre del día.</p></div>`;
+    liqEl.innerHTML = '';
+    return;
   }
+
+  const nCanastas = pedidos.filter(p => p.canasta).length;
+  const nPapas    = pedidos.filter(p => p.papas).length;
+
+  resEl.innerHTML = `
+    <div class="cierre-result">
+      <div class="cierre-row">
+        <span class="cierre-row-label">Ingreso canastas (${nCanastas})</span>
+        <span class="cierre-row-value">${fmt(totalCanastas)}</span>
+      </div>
+      <div class="cierre-row">
+        <span class="cierre-row-label">Ingreso papas (${nPapas})</span>
+        <span class="cierre-row-value">${fmt(totalPapas)}</span>
+      </div>
+      <div class="cierre-row highlight">
+        <span class="cierre-row-label">Total ingreso del día</span>
+        <span class="cierre-row-value">${fmt(totalIngreso)}</span>
+      </div>
+      <div class="cierre-sep"></div>
+      <div class="cierre-row">
+        <span class="cierre-row-label">Costo La Vega${usandoEstimado ? ' (estimado)' : ' (real)'}</span>
+        <span class="cierre-row-value" style="color:#bf360c">−${fmt(costoVega)}</span>
+      </div>
+      <div class="cierre-sep"></div>
+      <div class="cierre-row">
+        <span class="cierre-row-label">Ganancia canastas</span>
+        <span class="cierre-row-value" style="${gananciaCanastas < 0 ? 'color:var(--danger)' : ''}">${fmt(gananciaCanastas)}</span>
+      </div>
+      <div class="cierre-row">
+        <span class="cierre-row-label">Ganancia papas</span>
+        <span class="cierre-row-value">${fmt(gananciaPapas)}</span>
+      </div>
+      <div class="cierre-row">
+        <span class="cierre-row-label">Margen real</span>
+        <span class="cierre-row-value">${margen}%</span>
+      </div>
+      <div class="cierre-row highlight">
+        <span class="cierre-row-label">Ganancia total del día</span>
+        <span class="cierre-row-value" style="${gananciaTotal < 0 ? 'color:var(--danger)' : ''}">${fmt(gananciaTotal)}</span>
+      </div>
+      <div class="cierre-sep"></div>
+      <div class="cierre-row">
+        <span class="cierre-row-label">Le toca a Juan (50%)</span>
+        <span class="cierre-row-value">${fmt(mitad)}</span>
+      </div>
+      <div class="cierre-row">
+        <span class="cierre-row-label">Le toca a Amalia (50%)</span>
+        <span class="cierre-row-value">${fmt(mitad)}</span>
+      </div>
+    </div>
+    ${usandoEstimado && costoVegaEstimado > 0 ? `
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:10px;text-align:center;">
+      Ingresa el costo real de La Vega arriba para ajustar el cálculo.
+    </p>` : ''}`;
+
+  // Liquidación Amalia
+  const tieneAjustes = yaCobro > 0 || compras > 0;
+  const esDeuda = juanDebeAmalia > 0;
+  const esCero  = juanDebeAmalia === 0;
+
+  let breakdownHTML = '';
+  if (tieneAjustes) {
+    breakdownHTML = `
+      <div class="cierre-breakdown">
+        <div class="cierre-row">
+          <span class="cierre-row-label">Le corresponde (50% ganancia)</span>
+          <span class="cierre-row-value">${fmt(mitad)}</span>
+        </div>
+        ${yaCobro > 0 ? `<div class="cierre-row">
+          <span class="cierre-row-label">Menos: ya cobró de sus clientes</span>
+          <span class="cierre-row-value" style="color:var(--muted)">−${fmt(yaCobro)}</span>
+        </div>` : ''}
+        ${compras > 0 ? `<div class="cierre-row">
+          <span class="cierre-row-label">Menos: compras personales</span>
+          <span class="cierre-row-value" style="color:var(--muted)">−${fmt(compras)}</span>
+        </div>` : ''}
+      </div>`;
+  }
+
+  let notaHTML = '';
+  if (!esCero) {
+    if (esDeuda) {
+      notaHTML = yaCobro > 0
+        ? `<div class="cierre-deuda-nota">Amalia ya tiene ${fmt(yaCobro)} · Juan transfiere ${fmt(juanDebeAmalia)}</div>`
+        : `<div class="cierre-deuda-nota">Juan transfiere ${fmt(juanDebeAmalia)} a Amalia</div>`;
+    } else {
+      notaHTML = `<div class="cierre-deuda-nota">Amalia transfiere ${fmt(Math.abs(juanDebeAmalia))} a Juan</div>`;
+    }
+  }
+
+  liqEl.innerHTML = `
+    ${breakdownHTML}
+    <div class="cierre-deuda${esCero ? ' cero' : (!esDeuda ? ' negativo' : '')}">
+      <div class="cierre-deuda-label">
+        ${esCero ? 'Todo cuadrado' : esDeuda ? 'Juan le debe a Amalia' : 'Amalia le debe a Juan'}
+      </div>
+      <div class="cierre-deuda-monto">${fmt(Math.abs(juanDebeAmalia))}</div>
+      ${notaHTML}
+    </div>`;
 }
 
 /* ── LIMPIAR ──────────────────────────────────────────────────── */
@@ -985,13 +1546,16 @@ function limpiarSemana() {
   if (!confirm(`¿Eliminar los ${pedidos.length} pedidos de esta semana?`)) return;
   pedidos = [];
   document.getElementById('inp-vega').value = '';
+  document.getElementById('inp-cierre-vega').value = '';
+  document.getElementById('inp-cierre-amalia-cobro').value = '';
+  document.getElementById('inp-cierre-amalia-compras').value = '';
   save();
   renderAll();
 }
 
 /* ── NAV ──────────────────────────────────────────────────────── */
 function showTab(tab) {
-  const tabs = ['pedidos', 'agregar', 'compra', 'resumen'];
+  const tabs = ['pedidos', 'agregar', 'compra', 'resumen', 'cierre'];
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById(`tab-${tab}`).classList.add('active');
