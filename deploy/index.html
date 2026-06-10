@@ -15136,7 +15136,12 @@ function updateP(dt) {
     else { P.x+=P.dvx*dt; P.y+=P.dvy*dt; }
   } else {
     let spd=P.spd; if(P.spActive&&P.spEff==='frenzy')spd*=(P.cd.sp.sm||1);
-    P.x+=mx*spd*dt; P.y+=my*spd*dt;
+    const targetVx=mx*spd, targetVy=my*spd;
+    const accel=mx!==0||my!==0?12:18;
+    P.vx=P.vx!==undefined?P.vx:0; P.vy=P.vy!==undefined?P.vy:0;
+    P.vx+=(targetVx-P.vx)*Math.min(1,accel*dt);
+    P.vy+=(targetVy-P.vy)*Math.min(1,accel*dt);
+    P.x+=P.vx*dt; P.y+=P.vy*dt;
   }
   P.x=clamp(P.x,roomX+P.w/2,roomX+roomW-P.w/2);
   P.y=clamp(P.y,roomY+P.h/2,roomY+roomH-P.h/2);
@@ -15437,6 +15442,7 @@ function hit(e,dmg,kbAng) {
   e.hp-=dmg; e.hitTime=.15;
   const kbForce=e.isBoss?80:220;
   e.vx=Math.cos(kbAng)*kbForce; e.vy=Math.sin(kbAng)*kbForce;
+  e._shakeTime=0.12; e._shakeIntensity=4;
   var isCritHit=!!(P&&P._lastCrit);
   if(isCritHit){dnum(e.x,e.y-e.h/2,'⚡'+Math.floor(dmg),'#fbbf24',true);}
   else{dnum(e.x,e.y-e.h/2,Math.round(dmg),'#fff');}
@@ -15453,8 +15459,23 @@ function hit(e,dmg,kbAng) {
   ceFlash('atk',80); screenShake(3,150);
   if(e.hp<=0)killEnemy(e);
 }
+function spawnDeathEffect(e) {
+  const colors = [e.color || '#ff4444', '#fff', '#ffaa00'];
+  for (let i = 0; i < 12; i++) {
+    const ang = (Math.PI * 2 / 12) * i;
+    const spd = 80 + Math.random() * 140;
+    parts.push({x:e.x,y:e.y,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,
+      life:0.5+Math.random()*0.3,maxLife:0.8,r:3+Math.random()*4,
+      color:colors[Math.floor(Math.random()*colors.length)]});
+  }
+  parts.push({x:e.x,y:e.y,vx:0,vy:0,life:0.15,maxLife:0.15,r:e.w*1.5,color:'#ffffff',alpha:true});
+  dnum(e.x, e.y-30, '+'+( e.gold||1)+'🪙', '#fbbf24', false);
+  screenShake(3, 100);
+  try { navigator.vibrate(20); } catch(v) {}
+}
 function killEnemy(e) {
   e.dead=true; e.hp=0;
+  spawnDeathEffect(e);
   const pCount=e.isBoss?28:12, pR=e.isBoss?7:4, pSpd=e.isBoss?250:120;
   for(let i=0;i<pCount;i++){const a=(i/pCount)*Math.PI*2,spd=80+Math.random()*pSpd;parts.push({x:e.x,y:e.y,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,color:e.color,life:e.isBoss?1.2:.7,r:pR});}
   const drops=Math.ceil(e.gold/2);
@@ -15470,6 +15491,7 @@ function updateEnemies(dt) {
     if(e.dead)continue;
     if(e.isBoss){ updateBoss(e,dt); continue; }
     if(e.hitTime>0)e.hitTime-=dt; if(e.atkCd>0)e.atkCd-=dt;
+    if(e._shakeTime>0)e._shakeTime-=dt;
     if(e.stunTime>0){e.stunTime-=dt;e.vx*=.85;e.vy*=.85;}
     e.vx*=Math.max(0,1-dt*8); e.vy*=Math.max(0,1-dt*8);
     if(e.stunTime>0){ e.x+=e.vx*dt; e.y+=e.vy*dt; }
@@ -17339,6 +17361,9 @@ function drawEnemies() {
   for(const e of enemies){
     if(e.dead)continue;
     ctx.save();
+    if(e._shakeTime>0){
+      ctx.translate((Math.random()-.5)*e._shakeIntensity*2,(Math.random()-.5)*e._shakeIntensity*2);
+    }
     if(e.isBoss){
       if(e.enraged){
         ctx.save();ctx.filter='none';
