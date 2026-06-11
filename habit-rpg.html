@@ -14731,6 +14731,7 @@ const WALL_T = 16;
 
 let canvas, ctx, rafId = null, running = false, paused = false, lastTs = 0;
 let P, enemies, projs, coins, parts, dnums;
+let combatAnimTime = 0;
 let ambParts = [], ambTimer = 0;
 let keys = {}, currentZone, victoryPending = false;
 let pendingWave = [];
@@ -15013,6 +15014,7 @@ function loop(ts) {
 }
 
 function update(dt) {
+  combatAnimTime += dt;
   updateP(dt); updateCombatAI(dt); updateEnemies(dt); updateProjs(dt);
   updateCoins(dt); updateParts(dt); updateDnums(dt);
   if(window.dashGhosts){window.dashGhosts=window.dashGhosts.filter(function(g){return g.life>0;});window.dashGhosts.forEach(function(g){g.life-=dt;});}
@@ -17233,6 +17235,124 @@ function drawDashGhosts() {
     ctx.restore();
   }
 }
+// ═══ COMBAT SPRITES ══════════════════════════════════════════
+const CSPRITES = {
+guerrero: {
+  colors:{H:'#8a8a9a',h:'#6a6a7a',S:'#f4c89c',E:'#1a1a1a',A:'#c0392b',a:'#8e2419',B:'#3a2a1a'},
+  idle:[['     HHHH       ','    HHHHHH      ','    HhSSh       ','    hSESEh      ','     SSSS       ','    AAAAAA      ','   AaAAAAaA     ','   AaAAAAaA     ','   A AAAA A     ','     AAAA       ','     aAAa       ','     A  A       ','    BB  BB      '],['                ','     HHHH       ','    HHHHHH      ','    HhSSh       ','    hSESEh      ','     SSSS       ','    AAAAAA      ','   AaAAAAaA     ','   AaAAAAaA     ','   A AAAA A     ','     aAAa       ','     A  A       ','    BB  BB      ']],
+  walk:[['     HHHH       ','    HHHHHH      ','    HhSSh       ','    hSESEh      ','     SSSS       ','    AAAAAA      ','   AaAAAAaA     ','   AaAAAAaA     ','   A AAAA A     ','     AAAA       ','     aAAa       ','    A    A      ','   BB     BB    '],['     HHHH       ','    HHHHHH      ','    HhSSh       ','    hSESEh      ','     SSSS       ','    AAAAAA      ','   AaAAAAaA     ','   AaAAAAaA     ','   A AAAA A     ','     AAAA       ','     aAAa       ','      AA        ','     BBBB       ']],
+  weaponAnchor:{x:12,y:5},
+},
+mago: {
+  colors:{P:'#7a3aed',p:'#5a2ab0',S:'#f4c89c',E:'#00e5ff',B:'#2a1a3a'},
+  idle:[['       P        ','      PPP       ','     PPPPP      ','    PPPPPPP     ','   PpPPPPPpP    ','     pSSp       ','     SESE       ','     SSSS       ','    PPPPPP      ','   PpPPPPpP     ','   P PPPP P     ','     PPPP       ','     pPPp       ','    BB  BB      '],['                ','       P        ','      PPP       ','     PPPPP      ','    PPPPPPP     ','   PpPPPPPpP    ','     pSSp       ','     SESE       ','     SSSS       ','    PPPPPP      ','   PpPPPPpP     ','   P PPPP P     ','     pPPp       ','    BB  BB      ']],
+  walk:[['       P        ','      PPP       ','     PPPPP      ','    PPPPPPP     ','   PpPPPPPpP    ','     pSSp       ','     SESE       ','     SSSS       ','    PPPPPP      ','   PpPPPPpP     ','   P PPPP P     ','    P    P      ','   BB     BB    '],['       P        ','      PPP       ','     PPPPP      ','    PPPPPPP     ','   PpPPPPPpP    ','     pSSp       ','     SESE       ','     SSSS       ','    PPPPPP      ','   PpPPPPpP     ','   P PPPP P     ','      PP        ','     BBBB       ']],
+  weaponAnchor:{x:13,y:4},
+},
+monje: {
+  colors:{S:'#f4c89c',E:'#1a1a1a',V:'#cc4422',G:'#f39c12',g:'#c87f0a',W:'#fff8e8',B:'#5a4030'},
+  idle:[['     VVVV       ','    VSSSSV      ','    SSESES      ','     SSSS       ','   W GGGG W     ','  WW GgGG WW    ','     GGGG       ','     GGGG       ','     gGGg       ','     G  G       ','     G  G       ','    BB  BB      '],['                ','     VVVV       ','    VSSSSV      ','    SSESES      ','     SSSS       ','  W  GGGG  W    ',' WW  GgGG  WW   ','     GGGG       ','     GGGG       ','     gGGg       ','     G  G       ','    BB  BB      ']],
+  walk:[['     VVVV       ','    VSSSSV      ','    SSESES      ','     SSSS       ','   W GGGG W     ','  WW GgGG WW    ','     GGGG       ','     GGGG       ','     gGGg       ','    G    G      ','   BB     BB    ','                '],['     VVVV       ','    VSSSSV      ','    SSESES      ','     SSSS       ','   W GGGG W     ','  WW GgGG WW    ','     GGGG       ','     GGGG       ','     gGGg       ','      GG        ','     BBBB       ','                ']],
+  weaponAnchor:{x:12,y:5},
+},
+asesino: {
+  colors:{C:'#1e3a2a',c:'#102418',F:'#f8f8f8',E:'#ffd700',A:'#1a2e22',a:'#0e1c14',B:'#0a140e'},
+  idle:[['     CCCC       ','    CCCCCC      ','   CcFFFFcC     ','   cFEFFEFc     ','    FFFFFF      ','    AAAAAA      ','   AaAAAAaA     ','   AaAAAAaA     ','   A AAAA A     ','     AAAA       ','     aAAa       ','     A  A       ','    BB  BB      '],['                ','     CCCC       ','    CCCCCC      ','   CcFFFFcC     ','   cFEFFEFc     ','    FFFFFF      ','    AAAAAA      ','   AaAAAAaA     ','   AaAAAAaA     ','   A AAAA A     ','     aAAa       ','     A  A       ','    BB  BB      ']],
+  walk:[['     CCCC       ','    CCCCCC      ','   CcFFFFcC     ','   cFEFFEFc     ','    FFFFFF      ','    AAAAAA      ','   AaAAAAaA     ','   AaAAAAaA     ','   A AAAA A     ','     AAAA       ','     aAAa       ','    A    A      ','   BB     BB    '],['     CCCC       ','    CCCCCC      ','   CcFFFFcC     ','   cFEFFEFc     ','    FFFFFF      ','    AAAAAA      ','   AaAAAAaA     ','   AaAAAAaA     ','   A AAAA A     ','     AAAA       ','     aAAa       ','      AA        ','     BBBB       ']],
+  weaponAnchor:{x:12,y:5},
+},
+druida: {
+  colors:{L:'#4ade80',S:'#f4c89c',E:'#1a1a1a',V:'#27ae60',v:'#1a7a42',B:'#3a2a1a'},
+  idle:[['    L LL L      ','    LLLLLL      ','     SSSS       ','    SESES       ','     SSSS       ','    VVVVVV      ','   VvVVVVvV     ','   VvVVVVvV     ','   V VVVV V     ','     VVVV       ','     vVVv       ','     V  V       ','    BB  BB      '],['                ','    L LL L      ','    LLLLLL      ','     SSSS       ','    SESES       ','     SSSS       ','    VVVVVV      ','   VvVVVVvV     ','   VvVVVVvV     ','   V VVVV V     ','     vVVv       ','     V  V       ','    BB  BB      ']],
+  walk:[['    L LL L      ','    LLLLLL      ','     SSSS       ','    SESES       ','     SSSS       ','    VVVVVV      ','   VvVVVVvV     ','   VvVVVVvV     ','   V VVVV V     ','     VVVV       ','     vVVv       ','    V    V      ','   BB     BB    '],['    L LL L      ','    LLLLLL      ','     SSSS       ','    SESES       ','     SSSS       ','    VVVVVV      ','   VvVVVVvV     ','   VvVVVVvV     ','   V VVVV V     ','     VVVV       ','     vVVv       ','      VV        ','     BBBB       ']],
+  weaponAnchor:{x:13,y:3},
+},
+barbaro: {
+  colors:{K:'#d8d8e8',M:'#6a4a2a',S:'#e8a87a',E:'#1a1a1a',P:'#8a5a30',p:'#5a3a1e',B:'#3a2818'},
+  idle:[['  K        K    ','  KK MMMM KK    ','   KMMMMMMK     ','    MSSSSM      ','    SESES       ','     SSSS       ','    PPPPPP      ','   PpPPPPpP     ','   PpPPPPpP     ','   P PPPP P     ','     PPPP       ','     pPPp       ','     P  P       ','    BB  BB      '],['                ','  K        K    ','  KK MMMM KK    ','   KMMMMMMK     ','    MSSSSM      ','    SESES       ','     SSSS       ','    PPPPPP      ','   PpPPPPpP     ','   PpPPPPpP     ','   P PPPP P     ','     pPPp       ','     P  P       ','    BB  BB      ']],
+  walk:[['  K        K    ','  KK MMMM KK    ','   KMMMMMMK     ','    MSSSSM      ','    SESES       ','     SSSS       ','    PPPPPP      ','   PpPPPPpP     ','   PpPPPPpP     ','   P PPPP P     ','     PPPP       ','     pPPp       ','    P    P      ','   BB     BB    '],['  K        K    ','  KK MMMM KK    ','   KMMMMMMK     ','    MSSSSM      ','    SESES       ','     SSSS       ','    PPPPPP      ','   PpPPPPpP     ','   PpPPPPpP     ','   P PPPP P     ','     PPPP       ','     pPPp       ','      PP        ','     BBBB       ']],
+  weaponAnchor:{x:12,y:3},
+},
+arquero: {
+  colors:{C:'#2a6a3a',c:'#1a4a26',S:'#f4c89c',E:'#1a1a1a',L:'#6a8a4a',l:'#4a6a30',Q:'#7a4a2a',q:'#fbbf24',B:'#2a1e12'},
+  idle:[['     CCCC   q   ','    CCCCCC  Q   ','    cSSSSc  Q   ','    SESES   Q   ','     SSSS       ','    LLLLLL      ','   LlLLLLlL     ','   LlLLLLlL     ','   L LLLL L     ','     LLLL       ','     lLLl       ','     L  L       ','    BB  BB      '],['                ','     CCCC   q   ','    CCCCCC  Q   ','    cSSSSc  Q   ','    SESES   Q   ','     SSSS       ','    LLLLLL      ','   LlLLLLlL     ','   LlLLLLlL     ','   L LLLL L     ','     lLLl       ','     L  L       ','    BB  BB      ']],
+  walk:[['     CCCC   q   ','    CCCCCC  Q   ','    cSSSSc  Q   ','    SESES   Q   ','     SSSS       ','    LLLLLL      ','   LlLLLLlL     ','   LlLLLLlL     ','   L LLLL L     ','     LLLL       ','     lLLl       ','    L    L      ','   BB     BB    '],['     CCCC   q   ','    CCCCCC  Q   ','    cSSSSc  Q   ','    SESES   Q   ','     SSSS       ','    LLLLLL      ','   LlLLLLlL     ','   LlLLLLlL     ','   L LLLL L     ','     LLLL       ','     lLLl       ','      LL        ','     BBBB       ']],
+  weaponAnchor:{x:11,y:4},
+},
+};
+const CWEAPONS = {
+  sword:  {rows:['G','G','G','G','M'],colors:{G:'#d8d8e8',M:'#7a5a30'}},
+  staff:  {rows:['O','T','T','T','T','T'],colors:{T:'#9a6a3a',O:'#66f0ff'}},
+  dagger: {rows:['D','D','M'],colors:{D:'#c8c8d8',M:'#3a3a4a'}},
+  axe:    {rows:['XX','Xx','T ','T ','T '],colors:{X:'#9a9aaa',x:'#6a6a7a',T:'#7a5a30'}},
+  bow:    {rows:['A ','A ','A ','A '],colors:{A:'#9a6a3a'}},
+  nature: {rows:['F','T','T','T','T'],colors:{T:'#8a5a2a',F:'#7aff9a'}},
+  fist:   {rows:['W'],colors:{W:'#fff8e8'}},
+};
+function getWeaponType(item,clase){
+  if(!item){return{guerrero:'sword',mago:'staff',monje:'fist',asesino:'dagger',druida:'nature',barbaro:'axe',arquero:'bow'}[clase]||'sword';}
+  var ic=item.icon||'';
+  if(ic.includes('🗡'))return'dagger';if(ic.includes('⚔'))return'sword';
+  if(ic.includes('🪄')||ic.includes('⚡'))return'staff';
+  if(ic.includes('🪓')||ic.includes('🔨'))return'axe';
+  if(ic.includes('🏹')||ic.includes('🌬'))return'bow';
+  if(ic.includes('🌿')||ic.includes('🌳')||ic.includes('🌲')||ic.includes('🦉'))return'nature';
+  if(ic.includes('🥢')||ic.includes('⛓')||ic.includes('⭐'))return'fist';
+  return{guerrero:'sword',mago:'staff',monje:'fist',asesino:'dagger',druida:'nature',barbaro:'axe',arquero:'bow'}[clase]||'sword';
+}
+function getEquipGlow(equipped){
+  if(!equipped||typeof SHOP_ITEMS==='undefined')return null;
+  var order=['comun','poco_comun','raro','epico','legendario'],highest=-1;
+  Object.values(equipped).forEach(function(id){if(!id)return;var item=SHOP_ITEMS.find(function(i){return i.id===id;});if(!item)return;var idx=order.indexOf(item.rarity);if(idx>highest)highest=idx;});
+  if(highest>=4)return'#fbbf24';if(highest>=3)return'#c084fc';if(highest>=2)return'#60a5fa';return null;
+}
+function drawCombatHero(ctx,hero,animTime){
+  var clase=(hero.cls||hero.clase||'guerrero').toLowerCase();
+  var spr=CSPRITES[clase]||CSPRITES.guerrero;
+  var moving=Math.abs(hero.vx||0)>20||Math.abs(hero.vy||0)>20;
+  var frames=moving?spr.walk:spr.idle;
+  var frameIdx=Math.floor(animTime*(moving?6:2))%frames.length;
+  var rows=frames[frameIdx];
+  var pxSize=hero.w/16;
+  ctx.save(); ctx.imageSmoothingEnabled=false;
+  var glow=getEquipGlow(hero.equipped||(typeof char!=='undefined'?char.equipped:null));
+  if(glow){ctx.shadowColor=glow;ctx.shadowBlur=8;}
+  rows.forEach(function(row,y){[...row].forEach(function(ch,x){if(ch===' '||!spr.colors[ch])return;ctx.fillStyle=spr.colors[ch];ctx.fillRect((x-8)*pxSize,(y-7)*pxSize,pxSize+0.5,pxSize+0.5);});});
+  ctx.shadowBlur=0;
+  var equipped=hero.equipped||(typeof char!=='undefined'?char.equipped:null);
+  var weaponItem=equipped&&equipped.weapon&&typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(function(i){return i.id===equipped.weapon;}):null;
+  var wType=getWeaponType(weaponItem,clase);
+  var weapon=CWEAPONS[wType];
+  if(weapon&&wType!=='fist'){
+    var anchor=spr.weaponAnchor||{x:12,y:5};
+    var wOffX=0,wOffY=0;
+    if(hero.attacking&&hero.atkTime>0){var atkProg=1-(hero.atkTime/0.25);wOffX=Math.sin(atkProg*Math.PI)*3*pxSize;wOffY=-Math.sin(atkProg*Math.PI)*1*pxSize;}
+    var wGlow=null;
+    if(weaponItem){var wr=weaponItem.rarity;if(wr==='legendario')wGlow='#fbbf24';else if(wr==='epico')wGlow='#c084fc';else if(wr==='raro')wGlow='#60a5fa';}
+    if(wGlow){ctx.shadowColor=wGlow;ctx.shadowBlur=6;}
+    weapon.rows.forEach(function(row,y){[...row].forEach(function(ch,x){if(ch===' '||!weapon.colors[ch])return;ctx.fillStyle=weapon.colors[ch];ctx.fillRect((anchor.x-8+x)*pxSize+wOffX,(anchor.y-7+y)*pxSize+wOffY,pxSize+0.5,pxSize+0.5);});});
+    ctx.shadowBlur=0;
+  }
+  ctx.restore();
+}
+const CENEMIES = {
+  basic:{colors:{G:'#5a9a3a',g:'#3a6a24',E:'#ff2222',T:'#8a6a3a',P:'#6a4a2a',D:'#fff'},frames:[['   G     G      ','   GG   GG      ','    GGGGG       ','   GGGGGGG      ','   GEGGGEG   T  ','   GGGGGGG   T  ','    GDDDG   TT  ','    GGGGG   T   ','   GgGGGgG      ','   G GGG G      ','     PPP        ','   GG   GG      '],['                ','   G     G   T  ','   GG   GG   T  ','    GGGGG   TT  ','   GGGGGGG  T   ','   GEGGGEG      ','   GGGGGGG      ','    GDDDG       ','    GGGGG       ','   GgGGGgG      ','     PPP        ','   GG   GG      ']]},
+  fast:{colors:{W:'#8a8a9a',w:'#5a5a6a',E:'#ffcc00',D:'#fff',N:'#1a1a1a'},frames:[['  W          W  ','  WW        WW  ','   WWWWWWWWWW   ','  WEWWWWWWWWEW  ','  WWWWWWWWWWWW  ','   WWNWWWWWW    ','   WDWWWWWWWww  ','    WWWWWWWWWww ','   WW WW WW WW  ','  WW  WW  WW WW '],['  W          W  ','  WW        WW  ','   WWWWWWWWWW   ','  WEWWWWWWWWEW  ','  WWWWWWWWWWWW  ','   WWNWWWWWW    ','   WDWWWWWWWww  ','    WWWWWWWWWww ','  WW  WW WW  WW ',' WW  WW   WW  WW']]},
+  shooter:{colors:{B:'#e8e8d8',b:'#b8b8a8',E:'#22ddff',A:'#9a6a3a'},frames:[['     BBBB       ','    BBBBBB      ','    BEBBEB   A  ','    BBBBBB   A  ','     Bbbb    A  ','     BBBB    A  ','    bBBBBb   A  ','   b BBBB b  A  ','     B  B       ','     B  B       ','     b  b       ','    bb  bb      '],['                ','     BBBB    A  ','    BBBBBB   A  ','    BEBBEB   A  ','    BBBBBB   A  ','     Bbbb    A  ','     BBBB    A  ','    bBBBBb      ','   b BBBB b     ','     B  B       ','     b  b       ','    bb  bb      ']]},
+  tank:{colors:{O:'#7a8a4a',o:'#5a6a34',E:'#ff4422',D:'#fff',P:'#5a4a2a',M:'#8a7a5a'},frames:[['    OOOOOO      ','   OOOOOOOO     ','   OEOOOOEO  M  ','   OOOOOOOO  MM ','    ODDDDO   MM ','   OOOOOOOO  M  ','  OoOOOOOOoO M  ','  OoOOOOOOoO M  ','  OoOOOOOOoO M  ','  O OOOOOO O    ','    PPPPPP      ','   OO    OO     ','  OOO    OOO    '],['                ','    OOOOOO   M  ','   OOOOOOOO  MM ','   OEOOOOEO  MM ','   OOOOOOOO  M  ','    ODDDDO   M  ','   OOOOOOOO  M  ','  OoOOOOOOoO M  ','  OoOOOOOOoO    ','  O OOOOOO O    ','    PPPPPP      ','   OO    OO     ','  OOO    OOO    ']]},
+};
+function drawCombatEnemy(ctx,e,animTime){
+  var spr=CENEMIES[e.type]||CENEMIES.basic;
+  var frameIdx=Math.floor(animTime*3+(e.x*0.01))%spr.frames.length;
+  var rows=spr.frames[frameIdx];
+  var pxSize=e.w/16;
+  ctx.save(); ctx.imageSmoothingEnabled=false;
+  var flashing=e.hitTime>0;
+  rows.forEach(function(row,y){[...row].forEach(function(ch,x){if(ch===' '||!spr.colors[ch])return;ctx.fillStyle=flashing?'#ffffff':spr.colors[ch];ctx.fillRect(e.x+(x-8)*pxSize,e.y+(y-6)*pxSize,pxSize+0.5,pxSize+0.5);});});
+  ctx.restore();
+}
+// ═══ END COMBAT SPRITES ══════════════════════════════════════
+
 function drawPlayer() {
   if(!P||P.hp<=0)return;
   ctx.save();
@@ -17245,22 +17365,7 @@ function drawPlayer() {
   const rarFilt=typeof rarityToFilter!=='undefined'?rarityToFilter(typeof getHighestRarity!=='undefined'?getHighestRarity(P.equipped):null):'';
   if(rarFilt) ctx.filter=(P.hitTime>0?'brightness(8) ':'')+rarFilt;
   else if(P.hitTime>0) ctx.filter='brightness(8)';
-  if(img&&img.complete&&img.naturalWidth>0){
-    ctx.drawImage(img,-P.w/2,-P.h/2,P.w,P.h);
-  } else {
-    // Fallback: sprites generados por código
-    const s=P.w/16,ox=-P.w/2,oy=-P.h/2,f=P._af||0,st=P._as||'i';
-    switch(P.cls){
-      case 'guerrero': sprGuerrero(ctx,ox,oy,s,f,st); break;
-      case 'mago':     sprMago(ctx,ox,oy,s,f,st); break;
-      case 'monje':    sprMonje(ctx,ox,oy,s,f,st); break;
-      case 'asesino':  sprAsesino(ctx,ox,oy,s,f,st); break;
-      case 'druida':   sprDruida(ctx,ox,oy,s,f,st); break;
-      case 'barbaro':  sprBarbaro(ctx,ox,oy,s,f,st); break;
-      case 'arquero':  sprArquero(ctx,ox,oy,s,f,st); break;
-      default:         sprGuerrero(ctx,ox,oy,s,f,st);
-    }
-  }
+  drawCombatHero(ctx, P, combatAnimTime);
   ctx.restore();
   if(P.attacking&&P.atkTime>0)drawAtkArc();
 }
@@ -17293,21 +17398,7 @@ function drawCombatCompanions() {
     if (c.hitTime > 0) ctx.filter = 'brightness(8)';
     const sk = c.sex === 'F' ? 'class_'+c.cls+'_f' : 'class_'+c.cls;
     const img = typeof _spriteCache !== 'undefined' ? _spriteCache.get(sk) : null;
-    if (img && img.complete && img.naturalWidth > 0) {
-      ctx.drawImage(img, -c.w/2, -c.h/2, c.w, c.h);
-    } else {
-      const s=c.w/16, ox=-c.w/2, oy=-c.h/2, f=c._af||0, st=c._as||'i';
-      switch(c.cls){
-        case 'guerrero': sprGuerrero(ctx,ox,oy,s,f,st);break;
-        case 'mago':     sprMago(ctx,ox,oy,s,f,st);break;
-        case 'monje':    sprMonje(ctx,ox,oy,s,f,st);break;
-        case 'asesino':  sprAsesino(ctx,ox,oy,s,f,st);break;
-        case 'druida':   sprDruida(ctx,ox,oy,s,f,st);break;
-        case 'barbaro':  sprBarbaro(ctx,ox,oy,s,f,st);break;
-        case 'arquero':  sprArquero(ctx,ox,oy,s,f,st);break;
-        default:         sprGuerrero(ctx,ox,oy,s,f,st);
-      }
-    }
+    drawCombatHero(ctx, c, combatAnimTime);
     ctx.restore();
     // Attack arc visual
     if (c.attacking && c.atkTime > 0) {
@@ -17374,14 +17465,8 @@ function drawEnemies() {
       if(e.hitTime>0)ctx.filter='brightness(8)';
       drawBoss(ctx,e,ZONES.indexOf(currentZone),e._af||0);
     } else {
-      if(e.hitTime>0)ctx.filter='brightness(8)';
-      switch(e.type){
-        case 'fast':    drawWolf(ctx,e,e._af||0); break;
-        case 'shooter': drawSkeleton(ctx,e,e._af||0); break;
-        case 'tank':    drawOgre(ctx,e,e._af||0); break;
-        default:        drawGoblin(ctx,e,e._af||0);
-      }
-      if(e.stunTime>0){ctx.filter='none';ctx.globalAlpha=.35;ctx.fillStyle='#4488ff';ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h);ctx.globalAlpha=1;}
+      drawCombatEnemy(ctx, e, combatAnimTime);
+      if(e.stunTime>0){ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#4488ff';ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h);ctx.globalAlpha=1;ctx.restore();}
     }
     ctx.restore();
     if(!e.isBoss){
