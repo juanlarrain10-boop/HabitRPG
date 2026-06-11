@@ -22074,8 +22074,25 @@ function renderEquipCharLeft() {
   container.innerHTML = '';
   var spriteEl = document.createElement('div');
   spriteEl.className = 'equip-char-sprite';
-  var canvas = buildPixelAvatar(char.avatar, char.class || char.clase, char.equipped, 92);
-  if (canvas) spriteEl.appendChild(canvas);
+  var canvas = document.createElement('canvas');
+  canvas.width = 92; canvas.height = 92;
+  canvas.style.imageRendering = 'pixelated';
+  var cx = canvas.getContext('2d');
+  cx.imageSmoothingEnabled = false;
+  var previewHero = {
+    cls: (char.class || char.clase || 'guerrero').toLowerCase(),
+    clase: (char.class || char.clase || 'guerrero').toLowerCase(),
+    equipped: char.equipped,
+    w: 84, h: 84,
+    vx: 0, vy: 0,
+    attacking: false, atkTime: 0,
+    fd: 1
+  };
+  cx.save();
+  cx.translate(46, 50);
+  if (typeof drawCombatHero === 'function') drawCombatHero(cx, previewHero, 0);
+  cx.restore();
+  spriteEl.appendChild(canvas);
   container.appendChild(spriteEl);
   EQUIP_SLOT_LAYOUT.forEach(function(def) {
     var itemId = char.equipped && char.equipped[def.slot];
