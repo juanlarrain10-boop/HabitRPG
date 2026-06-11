@@ -15412,21 +15412,41 @@ function doUltimate() {
   try { if (navigator.vibrate) navigator.vibrate([50,30,100,30,150]); } catch(e) {}
 }
 function updateCombatBtnIcons() {
-  const clase = (typeof char !== 'undefined' && char && char.clase) ? char.clase.toLowerCase() : '';
-  const icons = {
+  var _cls = (typeof char !== 'undefined' && char) ? (char.class || char.clase || '') : '';
+  var clase = _cls.toLowerCase();
+  var icons = {
     guerrero: {atk:'⚔️', sp:'🛡️', ult:'🌀'},
     mago:     {atk:'🔮', sp:'💥', ult:'⚡'},
-    monje:    {atk:'👊', sp:'⚡', ult:'🌀'},
+    monje:    {atk:'👊', sp:'💨', ult:'🧘'},
     asesino:  {atk:'🗡️', sp:'👤', ult:'🌪️'},
     druida:   {atk:'🌿', sp:'💚', ult:'🐺'},
     barbaro:  {atk:'🪓', sp:'💢', ult:'🔥'},
     arquero:  {atk:'🏹', sp:'🌧️', ult:'☄️'},
   };
-  const ic = icons[clase] || {atk:'⚔️', sp:'★', ult:'🔥'};
-  const a = $$('ceAtkBtn'), s = $$('ceSpecialBtn'), u = $$('ceUltBtn');
+  var skillNames = {
+    guerrero: {sp:'Aturdir',   ult:'Giro'},
+    mago:     {sp:'Explosión', ult:'Tormenta'},
+    monje:    {sp:'Haste',     ult:'Trance'},
+    asesino:  {sp:'Sombra',    ult:'Dagas'},
+    druida:   {sp:'Curar',     ult:'Lobo'},
+    barbaro:  {sp:'Frenesí',   ult:'Rage'},
+    arquero:  {sp:'Lluvia',    ult:'Flecha'},
+  };
+  var ic = icons[clase] || {atk:'⚔️', sp:'★', ult:'🔥'};
+  var sn = skillNames[clase] || {sp:'Especial', ult:'Ultimate'};
+  var a = $$('ceAtkBtn'), s = $$('ceSpecialBtn'), u = $$('ceUltBtn');
   if (a) a.textContent = ic.atk;
   if (s) s.textContent = ic.sp;
   if (u) u.textContent = ic.ult;
+  function setSkillLabel(btnId, label) {
+    var btn = document.getElementById(btnId);
+    if (!btn) return;
+    var lbl = btn.querySelector('.ce-btn-label');
+    if (!lbl) { lbl = document.createElement('div'); lbl.className = 'ce-btn-label'; btn.appendChild(lbl); }
+    lbl.textContent = label;
+  }
+  setSkillLabel('ceSpecialBtn', sn.sp);
+  setSkillLabel('ceUltBtn', sn.ult);
 }
 
 // ── Melee helpers ────────────────────────────────────────────
@@ -17569,6 +17589,7 @@ function switchCombatHero(newSlot) {
   activeCombatSlot = newSlot;
   P = combatHeroes[newSlot];
   hudUpdate();
+  updateCombatBtnIcons();
 }
 
 // ── HUD helpers ──────────────────────────────────────────────
@@ -18286,12 +18307,14 @@ function shopEquip(id) {
   char.equipped[item.slot] = id;
   _triggerEquipFlash();
   saveChar(); renderChar(); renderShopGrid();
+  if (typeof renderEquipMannequin === 'function') renderEquipMannequin();
 }
 
 function shopUnequip(slot) {
   if (!char.equipped) return;
   char.equipped[slot] = null;
   saveChar(); renderChar(); renderShopGrid();
+  if (typeof renderEquipMannequin === 'function') renderEquipMannequin();
 }
 
 function _triggerEquipFlash() {
@@ -24776,7 +24799,8 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
 #ceUltBtn{grid-column:2;grid-row:1;}
 #ceAtkBtn{grid-column:1/3;grid-row:2;width:74px;height:74px;}
 #ceDashBtn{grid-column:1/3;grid-row:3;width:50px;height:50px;}
-.ce-btn{border-radius:50%;border:2px solid rgba(255,255,255,0.15);cursor:pointer;font-size:1.3rem;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none;box-shadow:0 4px 14px rgba(0,0,0,.6);transition:transform .08s,opacity .1s,box-shadow .15s;-webkit-tap-highlight-color:transparent;width:58px;height:58px;}
+.ce-btn{border-radius:50%;border:2px solid rgba(255,255,255,0.15);cursor:pointer;font-size:1.3rem;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none;box-shadow:0 4px 14px rgba(0,0,0,.6);transition:transform .08s,opacity .1s,box-shadow .15s;-webkit-tap-highlight-color:transparent;width:58px;height:58px;position:relative;overflow:visible;}
+.ce-btn-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:0.5rem;font-weight:700;color:rgba(255,255,255,0.7);white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,0.9);pointer-events:none;}
 .ce-btn:active{transform:scale(.85);}
 .ce-btn:disabled{opacity:.35;}
 .ce-btn-atk{background:#dc2626;box-shadow:0 0 22px rgba(220,38,38,.6);}
