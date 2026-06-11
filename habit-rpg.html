@@ -1964,181 +1964,213 @@ h2, h3 { font-family: var(--pxfont); }
 .rarity-text-legendario { color:#fbbf24; }
 
 /* ── EQUIP SCREEN ────────────────────────── */
-/* ── Equip Screen rediseñado ── */
+/* Overlay */
 .equip-overlay {
   position: fixed; inset: 0; z-index: 2800;
-  background: rgba(0,0,0,0.92);
-  display: flex; align-items: flex-start; justify-content: center;
-  overflow-y: auto; padding: 0;
-}
-.equip-overlay.hide { display:none; }
-.equip-screen {
-  width: 100%; max-width: 480px;
-  background: linear-gradient(160deg, #0f0d1e 0%, #08060f 100%);
-  border-bottom: 1px solid rgba(139,92,246,0.2);
-  min-height: 100vh;
+  background: linear-gradient(160deg, #0d0b18 0%, #060410 100%);
   display: flex; flex-direction: column;
+  overflow: hidden;
 }
+.equip-overlay.hide { display: none; }
+
+/* Header */
 .equip-head {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 16px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  background: rgba(0,0,0,0.3);
-  position: sticky; top: 0; z-index: 10;
-}
-.equip-head-title { font-size: 1.1rem; font-weight: 800; color: var(--txt); }
-.equip-head-sub   { font-size: 0.7rem; color: var(--dim); margin-top: 2px; }
-.equip-close {
-  width: 36px; height: 36px; border-radius: 50%; border: none;
-  background: rgba(255,255,255,0.08); color: var(--txt);
-  font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-
-/* ── Maniquí central ── */
-.equip-body { display: none !important; }
-.equip-mannequin {
-  position: relative;
-  width: 280px; height: 320px;
-  margin: 16px auto;
+  padding: 14px 16px 10px;
+  background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(139,92,246,0.2);
   flex-shrink: 0;
 }
+.equip-head-title { font-size: 1.05rem; font-weight: 800; color: #fff; }
+.equip-head-sub { font-size: 0.65rem; color: rgba(180,160,220,0.6); margin-top: 1px; }
+.equip-close {
+  width: 34px; height: 34px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.08); color: #fff;
+  font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
 
-/* Sprite del personaje en el centro */
-.equip-mannequin-sprite {
+/* Cuerpo scrollable */
+.equip-content {
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+
+/* ── SECCIÓN PERSONAJE (arriba) ── */
+.equip-char-section {
+  display: flex; gap: 12px;
+  padding: 16px;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(139,92,246,0.12) 0%, transparent 60%),
+    rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Personaje + slots a la izquierda */
+.equip-char-left {
+  position: relative;
+  width: 150px; height: 200px;
+  flex-shrink: 0;
+}
+.equip-char-sprite {
   position: absolute;
   left: 50%; top: 50%;
   transform: translate(-50%, -50%);
-  width: 100px; height: 100px;
-  border-radius: 16px;
-  overflow: hidden;
-  background: rgba(139,92,246,0.1);
+  width: 96px; height: 96px;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(139,92,246,0.15), rgba(0,0,0,0.3));
   border: 2px solid rgba(139,92,246,0.3);
-  box-shadow: 0 0 30px rgba(139,92,246,0.2);
-  image-rendering: pixelated;
+  box-shadow: 0 0 24px rgba(139,92,246,0.2), inset 0 0 20px rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; image-rendering: pixelated;
   z-index: 2;
 }
 
-/* Slots posicionados alrededor del sprite */
-.equip-mslot {
+/* Slots mini alrededor */
+.equip-cslot {
   position: absolute;
-  width: 56px; height: 56px;
-  border-radius: 12px;
-  border: 2px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.04);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 2px; cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 3;
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; cursor: pointer;
+  transition: all 0.2s; z-index: 3;
+  backdrop-filter: blur(2px);
 }
-.equip-mslot:hover {
-  border-color: rgba(139,92,246,0.6);
-  background: rgba(139,92,246,0.12);
-  transform: scale(1.08);
+.equip-cslot:active { transform: scale(0.9); }
+.equip-cslot.active {
+  border-color: #a78bfa !important;
+  box-shadow: 0 0 12px rgba(139,92,246,0.6);
+  background: rgba(139,92,246,0.2);
 }
-.equip-mslot.active {
-  border-color: var(--purp2) !important;
-  background: rgba(139,92,246,0.2) !important;
-  box-shadow: 0 0 16px rgba(139,92,246,0.4);
-}
-.equip-mslot.has-item { border-color: rgba(139,92,246,0.4); }
-.equip-mslot.rarity-raro       { border-color: rgba(34,197,94,0.6); }
-.equip-mslot.rarity-epico      { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 12px rgba(139,92,246,0.3); }
-.equip-mslot.rarity-legendario { border-color: rgba(245,158,11,0.9); box-shadow: 0 0 16px rgba(245,158,11,0.4); animation: legendaryPulse 3s ease-in-out infinite; }
+.equip-cslot.has-item { border-color: rgba(139,92,246,0.4); }
+.equip-cslot.rarity-raro       { border-color: rgba(34,197,94,0.6); }
+.equip-cslot.rarity-epico      { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 8px rgba(139,92,246,0.3); }
+.equip-cslot.rarity-legendario { border-color: rgba(245,158,11,0.9); box-shadow: 0 0 10px rgba(245,158,11,0.4); }
+.equip-cslot-empty { opacity: 0.4; font-size: 0.85rem; }
 
-.equip-mslot-icon  { font-size: 1.3rem; line-height: 1; }
-.equip-mslot-label { font-size: 0.48rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; text-align: center; }
-.equip-mslot-name  { font-size: 0.52rem; color: var(--txt); text-align: center; line-height: 1.2; font-weight: 600; max-width: 52px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+/* Posiciones de slots (150x200 area) */
+.equip-cslot[data-slot="head"]      { left: 56px; top: 2px; }
+.equip-cslot[data-slot="armor"]     { left: 6px;  top: 60px; }
+.equip-cslot[data-slot="leftHand"]  { left: 6px;  top: 104px; }
+.equip-cslot[data-slot="legs"]      { left: 6px;  top: 148px; }
+.equip-cslot[data-slot="weapon"]    { right: 6px; top: 60px; left: auto; }
+.equip-cslot[data-slot="cape"]      { right: 6px; top: 104px; left: auto; }
+.equip-cslot[data-slot="accessory"] { right: 6px; top: 148px; left: auto; }
+.equip-cslot[data-slot="feet"]      { left: 56px; bottom: 2px; top: auto; }
 
-/* Posiciones de cada slot alrededor del sprite */
-.equip-mslot[data-slot="head"]      { left: 112px; top:  18px; }
-.equip-mslot[data-slot="armor"]     { left: 112px; top: 132px; }
-.equip-mslot[data-slot="legs"]      { left: 112px; top: 218px; }
-.equip-mslot[data-slot="feet"]      { left: 112px; top: 256px; }
-.equip-mslot[data-slot="weapon"]    { left: 208px; top:  90px; }
-.equip-mslot[data-slot="leftHand"]  { left:  16px; top:  90px; }
-.equip-mslot[data-slot="cape"]      { left:  16px; top: 168px; }
-.equip-mslot[data-slot="accessory"] { left: 208px; top: 168px; }
-
-/* Líneas conectoras SVG */
-.equip-mannequin-lines {
-  position: absolute; inset: 0;
-  pointer-events: none; z-index: 1;
-  opacity: 0.25;
-}
-
-/* Stats mini debajo del maniquí */
-.equip-stats-row {
-  display: flex; gap: 6px; flex-wrap: wrap;
-  justify-content: center;
-  padding: 0 16px 12px;
-}
-.equip-stat-chip {
-  display: flex; align-items: center; gap: 4px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 20px; padding: 4px 10px;
-  font-size: 0.7rem; font-weight: 700; color: var(--txt);
-}
-.equip-stat-chip span { opacity: 0.6; font-size: 0.62rem; }
-
-/* Panel de inventario */
-.equip-inv-panel {
+/* Stats a la derecha */
+.equip-char-stats {
   flex: 1;
-  background: rgba(0,0,0,0.2);
-  border-top: 1px solid rgba(255,255,255,0.07);
-  padding: 12px;
+  display: flex; flex-direction: column;
+  gap: 6px; justify-content: center;
 }
-.equip-inv-header {
+.equip-stat-line {
   display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 10px; border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.equip-stat-label {
+  font-size: 0.72rem; color: rgba(200,200,220,0.8);
+  display: flex; align-items: center; gap: 5px;
+}
+.equip-stat-value {
+  font-size: 0.85rem; font-weight: 800; color: #fff;
+}
+.equip-stat-value.bonus { color: #4ade80; }
+
+/* ── SECCIÓN INVENTARIO (abajo) ── */
+.equip-inv-section {
+  flex: 1;
+  padding: 12px 16px;
+}
+.equip-inv-tabs {
+  display: flex; gap: 6px; margin-bottom: 10px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.equip-inv-tabs::-webkit-scrollbar { display: none; }
+.equip-inv-tab {
+  font-size: 0.7rem; font-weight: 700;
+  padding: 6px 12px; border-radius: 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(200,200,220,0.7);
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: all 0.15s;
+}
+.equip-inv-tab.active {
+  background: rgba(139,92,246,0.2);
+  border-color: rgba(139,92,246,0.5);
+  color: #c4b5fd;
+}
+.equip-inv-cap {
+  font-size: 0.65rem; color: rgba(150,150,180,0.6);
   margin-bottom: 10px;
 }
-.equip-inv-title {
-  font-size: 0.8rem; font-weight: 700; color: var(--dim);
-  text-transform: uppercase; letter-spacing: 0.06em;
-}
-.equip-inv-shop-btn {
-  font-size: 0.72rem; padding: 4px 10px; border-radius: 8px;
-  background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
-  color: var(--purp2); cursor: pointer;
-}
 .equip-inv-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 8px;
 }
 
-/* Cards de inventario mejoradas */
-.equip-inv-card {
+/* Card de item */
+.einv-card {
   background: rgba(255,255,255,0.04);
   border: 1.5px solid rgba(255,255,255,0.1);
   border-radius: 12px; padding: 10px;
   cursor: pointer; transition: all 0.2s;
   position: relative;
 }
-.equip-inv-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
-.equip-inv-card.is-equipped {
-  border-color: var(--gold);
-  background: rgba(245,158,11,0.08);
+.einv-card:active { transform: scale(0.97); }
+.einv-card.rarity-raro       { border-color: rgba(34,197,94,0.5); }
+.einv-card.rarity-epico      { border-color: rgba(139,92,246,0.6); }
+.einv-card.rarity-legendario { border-color: rgba(245,158,11,0.7); box-shadow: 0 0 10px rgba(245,158,11,0.15); }
+.einv-card.equipped {
+  border-color: rgba(245,158,11,0.6);
+  background: rgba(245,158,11,0.06);
 }
-.equip-inv-card.rarity-raro       { border-color: rgba(34,197,94,0.5); }
-.equip-inv-card.rarity-epico      { border-color: rgba(139,92,246,0.7); }
-.equip-inv-card.rarity-legendario { border-color: rgba(245,158,11,0.8); box-shadow: 0 0 12px rgba(245,158,11,0.2); }
+.einv-card-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.einv-card-icon {
+  font-size: 1.5rem; flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+}
+.einv-card-info { flex: 1; min-width: 0; }
+.einv-card-name { font-size: 0.74rem; font-weight: 700; color: #fff; line-height: 1.2; }
+.einv-card-rarity { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; font-weight: 700; }
+.einv-card-rarity.comun      { color: #9ca3af; }
+.einv-card-rarity.poco_comun { color: #4ade80; }
+.einv-card-rarity.raro       { color: #4ade80; }
+.einv-card-rarity.epico      { color: #a78bfa; }
+.einv-card-rarity.legendario { color: #fbbf24; }
+.einv-card-stats { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+.einv-stat {
+  font-size: 0.58rem; padding: 2px 6px; border-radius: 6px;
+  background: rgba(255,255,255,0.06); color: rgba(200,200,220,0.8);
+}
+.einv-stat.up   { color: #4ade80; background: rgba(74,222,128,0.12); }
+.einv-stat.down { color: #f87171; background: rgba(248,113,113,0.12); }
+.einv-card-actions { display: flex; gap: 6px; }
+.einv-btn {
+  flex: 1; padding: 6px; border-radius: 8px; border: none;
+  font-size: 0.68rem; font-weight: 700; cursor: pointer;
+  transition: transform 0.1s;
+}
+.einv-btn:active { transform: scale(0.94); }
+.einv-btn.equip   { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: #fff; }
+.einv-btn.unequip { background: rgba(245,158,11,0.18); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.einv-btn.sell    { background: rgba(255,255,255,0.06); color: rgba(200,200,220,0.7); flex: 0 0 auto; padding: 6px 10px; }
+.einv-btn.use     { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+.einv-empty {
+  text-align: center; padding: 40px 20px;
+  color: rgba(150,150,180,0.5); font-size: 0.85rem;
+}
+.einv-empty-icon { font-size: 2.5rem; margin-bottom: 8px; opacity: 0.4; }
 
-.inv-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.inv-card-icon { font-size: 1.6rem; }
-.inv-card-info { flex: 1; }
-.inv-card-name { font-size: 0.75rem; font-weight: 700; color: var(--txt); line-height: 1.2; }
-.inv-card-rarity { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
-.inv-card-stats { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
-.inv-card-stat { font-size: 0.62rem; padding: 2px 5px; border-radius: 6px; background: rgba(255,255,255,0.06); color: var(--dim); }
-.inv-card-btn {
-  width: 100%; padding: 6px; border-radius: 8px; border: none;
-  font-size: 0.72rem; font-weight: 700; cursor: pointer;
-  transition: all 0.15s;
-}
-.inv-card-btn.equip   { background: linear-gradient(135deg,var(--purp),#4f46e5); color:#fff; }
-.inv-card-btn.unequip { background: rgba(245,158,11,0.15); color:var(--gold); border:1px solid rgba(245,158,11,0.3); }
-.inv-card-btn:active  { transform: scale(0.95); }
 /* Open equip screen button in char panel */
 .open-equip-btn {
   width:100%; padding:7px 12px; border-radius:10px; margin-top:8px;
@@ -2147,24 +2179,6 @@ h2, h3 { font-family: var(--pxfont); }
   transition:all .14s; display:flex; align-items:center; justify-content:center; gap:6px;
 }
 .open-equip-btn:hover { border-color:var(--purp2); color:var(--purp2); background:var(--purpg); }
-
-/* ── EQUIPPED SLOTS display ──────────────── */
-.equipped-section { margin-top: 10px; }
-.equipped-title {
-  font-size: .57rem; font-weight: 800; text-transform: uppercase;
-  letter-spacing: .1em; color: var(--dim); margin-bottom: 6px;
-}
-.equipped-slots { display: flex; gap: 6px; flex-wrap: wrap; }
-.eq-slot {
-  display: flex; align-items: center; gap: 4px;
-  background: var(--s2); border: 1px solid var(--bd2);
-  border-radius: 8px; padding: 4px 8px;
-  font-size: .63rem; font-weight: 700; color: var(--dim);
-  cursor: pointer; transition: all .13s;
-}
-.eq-slot.has-item { border-color: rgba(139,92,246,.4); color: var(--purp2); background: var(--purpg); }
-.eq-slot:hover { background: var(--s3); }
-.eq-slot-icon { font-size: .82rem; }
 
 /* ── GM PANEL ───────────────────────────── */
 .gm-fab {
@@ -7623,35 +7637,7 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 </div>
 
 <!-- ── EQUIPMENT SCREEN ───────────────────────────────────────────────────── -->
-<div class="equip-overlay hide" id="equipOverlay">
-  <div class="equip-screen">
-    <div class="equip-head">
-      <div>
-        <div class="equip-head-title">⚔️ Equipamiento</div>
-        <div class="equip-head-sub">Haz clic en un slot para ver y cambiar tu equipo</div>
-      </div>
-      <button class="equip-close" onclick="closeEquipScreen()">✕</button>
-    </div>
-    <div class="equip-body" id="equipBody" style="display:none">
-      <!-- Left column: head / torso / legs / feet -->
-      <div class="equip-slots-col" id="equipSlotsLeft"></div>
-      <!-- Center: character preview + stats -->
-      <div class="equip-center">
-        <div class="equip-preview" id="equipPreview"></div>
-        <div class="equip-stats-mini" id="equipStatsMini"></div>
-      </div>
-      <!-- Right column: weapon / leftHand / cape / accessory -->
-      <div class="equip-slots-col" id="equipSlotsRight"></div>
-    </div>
-    <div class="equip-inv-panel">
-      <div class="equip-inv-header">
-        <div class="equip-inv-title" id="equipInvTitle">— Selecciona un slot —</div>
-        <button class="equip-inv-shop-btn" onclick="closeEquipScreen();openShop()">Ir a tienda →</button>
-      </div>
-      <div class="equip-inv-grid" id="equipInvGrid"></div>
-    </div>
-  </div>
-</div>
+<div class="equip-overlay hide" id="equipOverlay"></div>
 
 <!-- ── GM PANEL ── -->
 <!-- TIME OF DAY BACKGROUND -->
@@ -9648,7 +9634,6 @@ const SHOP_CATS = [
   { id:'capa',       label:'Capas',       icon:'🧥' },
   { id:'accesorio',  label:'Accesorios',  icon:'💎' },
   { id:'pocion',     label:'Pociones',    icon:'⚗️' },
-  { id:'inventario', label:'Inventario',  icon:'🎒' },
   { id:'forja',      label:'Forja',       icon:'🔨' },
 ];
 
@@ -22028,116 +22013,255 @@ document.getElementById('defuseCloseBtn').addEventListener('click', closeDefuse)
 // EQUIPMENT SCREEN (WoW-style)
 // ═══════════════════════════════════════════
 
-let _equipActiveSlot = null;
+var _equipSelSlot = null;
+var _invFilterCat = 'todo';
+
+var EQUIP_SLOT_LAYOUT = [
+  { slot:'head',      icon:'⛑️', label:'Cabeza' },
+  { slot:'armor',     icon:'🥋', label:'Torso' },
+  { slot:'leftHand',  icon:'🛡️', label:'Mano Izq' },
+  { slot:'legs',      icon:'🦵', label:'Piernas' },
+  { slot:'weapon',    icon:'⚔️', label:'Arma' },
+  { slot:'cape',      icon:'🧣', label:'Capa' },
+  { slot:'accessory', icon:'💍', label:'Accesorio' },
+  { slot:'feet',      icon:'👢', label:'Pies' },
+];
+
+function renderEquipUnified() {
+  var overlay = document.getElementById('equipOverlay');
+  if (!overlay) return;
+  overlay.innerHTML =
+    '<div class="equip-head">' +
+      '<div>' +
+        '<div class="equip-head-title">🎒 Inventario y Equipo</div>' +
+        '<div class="equip-head-sub">Toca un item para equiparlo</div>' +
+      '</div>' +
+      '<button class="equip-close" onclick="closeEquipScreen()">✕</button>' +
+    '</div>' +
+    '<div class="equip-content">' +
+      '<div class="equip-char-section">' +
+        '<div class="equip-char-left" id="equipCharLeft"></div>' +
+        '<div class="equip-char-stats" id="equipCharStats"></div>' +
+      '</div>' +
+      '<div class="equip-inv-section">' +
+        '<div class="equip-inv-tabs" id="equipInvTabs"></div>' +
+        '<div class="equip-inv-cap" id="equipInvCap"></div>' +
+        '<div class="equip-inv-grid" id="equipInvGrid"></div>' +
+      '</div>' +
+    '</div>';
+  renderEquipCharLeft();
+  renderEquipCharStats();
+  renderEquipInvTabs();
+  renderEquipInvGrid();
+}
+
+function renderEquipCharLeft() {
+  var container = document.getElementById('equipCharLeft');
+  if (!container) return;
+  container.innerHTML = '';
+  var spriteEl = document.createElement('div');
+  spriteEl.className = 'equip-char-sprite';
+  var canvas = buildPixelAvatar(char.avatar, char.class || char.clase, char.equipped, 92);
+  if (canvas) spriteEl.appendChild(canvas);
+  container.appendChild(spriteEl);
+  EQUIP_SLOT_LAYOUT.forEach(function(def) {
+    var itemId = char.equipped && char.equipped[def.slot];
+    var item = itemId && typeof SHOP_ITEMS !== 'undefined'
+      ? SHOP_ITEMS.find(function(i){return i.id===itemId;}) : null;
+    var rarity = item ? (item.rarity||'') : '';
+    var slot = document.createElement('div');
+    slot.className = 'equip-cslot' + (item?' has-item':'') +
+      (rarity?' rarity-'+rarity:'') +
+      (_equipSelSlot===def.slot?' active':'');
+    slot.dataset.slot = def.slot;
+    slot.innerHTML = item
+      ? item.icon
+      : '<span class="equip-cslot-empty">' + def.icon + '</span>';
+    slot.title = item ? item.name : def.label;
+    slot.onclick = (function(s){ return function(){ selectEquipSlot(s); }; })(def.slot);
+    container.appendChild(slot);
+  });
+}
+
+function renderEquipCharStats() {
+  var container = document.getElementById('equipCharStats');
+  if (!container) return;
+  var totals = {atk:0, def:0, critChance:0, hpRegen:0, evasion:0};
+  if (char.equipped) {
+    Object.values(char.equipped).forEach(function(id) {
+      if (!id || typeof SHOP_ITEMS === 'undefined') return;
+      var item = SHOP_ITEMS.find(function(i){return i.id===id;});
+      if (!item || !item.combatStats) return;
+      Object.keys(item.combatStats).forEach(function(k) {
+        if (totals[k] !== undefined) totals[k] += item.combatStats[k];
+      });
+    });
+  }
+  var statDefs = [
+    { key:'atk', icon:'⚔️', label:'Ataque' },
+    { key:'def', icon:'🛡️', label:'Defensa' },
+    { key:'critChance', icon:'🎯', label:'Crítico', suffix:'%' },
+    { key:'hpRegen', icon:'💚', label:'Regen' },
+    { key:'evasion', icon:'💨', label:'Evasión', suffix:'%' },
+  ];
+  container.innerHTML = statDefs.map(function(s) {
+    var val = totals[s.key] || 0;
+    return '<div class="equip-stat-line">' +
+      '<span class="equip-stat-label">' + s.icon + ' ' + s.label + '</span>' +
+      '<span class="equip-stat-value' + (val>0?' bonus':'') + '">' +
+        (val>0?'+':'') + val + (s.suffix||'') +
+      '</span>' +
+    '</div>';
+  }).join('');
+}
+
+function renderEquipInvTabs() {
+  var container = document.getElementById('equipInvTabs');
+  if (!container) return;
+  var cats = [
+    {id:'todo', label:'Todo'},
+    {id:'arma', label:'Armas'},
+    {id:'armadura', label:'Armaduras'},
+    {id:'accesorio', label:'Accesorios'},
+    {id:'pocion', label:'Pociones'},
+  ];
+  container.innerHTML = cats.map(function(c) {
+    return '<button class="equip-inv-tab' + (_invFilterCat===c.id?' active':'') + '" ' +
+      'onclick="setInvFilter(\'' + c.id + '\')">' + c.label + '</button>';
+  }).join('');
+}
+
+function renderEquipInvGrid() {
+  var grid = document.getElementById('equipInvGrid');
+  var capEl = document.getElementById('equipInvCap');
+  if (!grid) return;
+  var inv = char.inventory || [];
+  if (capEl) capEl.textContent = 'Inventario ' + inv.length + ' / 50 slots';
+  var items = [];
+  inv.forEach(function(entry) {
+    var id = typeof entry === 'string' ? entry : entry.id;
+    var item = typeof SHOP_ITEMS !== 'undefined'
+      ? SHOP_ITEMS.find(function(i){return i.id===id;}) : null;
+    if (item) items.push(item);
+  });
+  var filtered = items.filter(function(item) {
+    if (_equipSelSlot) return item.slot === _equipSelSlot;
+    if (_invFilterCat === 'todo') return true;
+    if (_invFilterCat === 'arma') return item.slot === 'weapon' || item.slot === 'leftHand';
+    if (_invFilterCat === 'armadura') return ['armor','head','legs','feet','cape'].includes(item.slot);
+    if (_invFilterCat === 'accesorio') return item.slot === 'accessory';
+    if (_invFilterCat === 'pocion') return item.slot === 'consumable' || item.cat === 'pocion';
+    return true;
+  });
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="einv-empty">' +
+      '<div class="einv-empty-icon">📦</div>' +
+      (_equipSelSlot ? 'No tienes items para este slot' : 'Inventario vacío') +
+    '</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(function(item) {
+    var isEquipped = char.equipped && char.equipped[item.slot] === item.id;
+    var rarity = item.rarity || 'comun';
+    var statsHtml = '';
+    if (item.combatStats) {
+      var equippedItem = char.equipped && char.equipped[item.slot]
+        ? SHOP_ITEMS.find(function(i){return i.id===char.equipped[item.slot];}) : null;
+      statsHtml = Object.keys(item.combatStats).map(function(k) {
+        var val = item.combatStats[k];
+        var icons = {atk:'⚔️',def:'🛡️',critChance:'🎯',hpRegen:'💚',evasion:'💨'};
+        var cls = '';
+        if (equippedItem && equippedItem.combatStats && !isEquipped) {
+          var diff = val - (equippedItem.combatStats[k]||0);
+          if (diff > 0) cls = ' up';
+          else if (diff < 0) cls = ' down';
+        }
+        return '<span class="einv-stat' + cls + '">' + (icons[k]||k) + ' +' + val + '</span>';
+      }).join('');
+    }
+    var actionsHtml = '';
+    if (item.slot === 'consumable' || item.cat === 'pocion') {
+      actionsHtml = '<button class="einv-btn use" onclick="useInvItem(\'' + item.id + '\')">Usar</button>' +
+                    '<button class="einv-btn sell" onclick="sellInvItem(\'' + item.id + '\')">💰</button>';
+    } else if (isEquipped) {
+      actionsHtml = '<button class="einv-btn unequip" onclick="invUnequip(\'' + item.slot + '\')">Quitar</button>';
+    } else {
+      actionsHtml = '<button class="einv-btn equip" onclick="invEquip(\'' + item.id + '\')">Equipar</button>' +
+                    '<button class="einv-btn sell" onclick="sellInvItem(\'' + item.id + '\')">💰</button>';
+    }
+    var rarityLabels = {comun:'Común',poco_comun:'Poco común',raro:'Raro',epico:'Épico',legendario:'Legendario'};
+    return '<div class="einv-card rarity-' + rarity + (isEquipped?' equipped':'') + '">' +
+      '<div class="einv-card-head">' +
+        '<div class="einv-card-icon">' + (item.icon||'⚔️') + '</div>' +
+        '<div class="einv-card-info">' +
+          '<div class="einv-card-name">' + item.name + '</div>' +
+          '<div class="einv-card-rarity ' + rarity + '">' + (rarityLabels[rarity]||rarity) +
+            (isEquipped?' · Equipado':'') + '</div>' +
+        '</div>' +
+      '</div>' +
+      (statsHtml ? '<div class="einv-card-stats">' + statsHtml + '</div>' : '') +
+      '<div class="einv-card-actions">' + actionsHtml + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function selectEquipSlot(slot) {
+  _equipSelSlot = (_equipSelSlot === slot) ? null : slot;
+  renderEquipCharLeft();
+  renderEquipInvGrid();
+}
+
+function setInvFilter(cat) {
+  _invFilterCat = cat;
+  _equipSelSlot = null;
+  renderEquipInvTabs();
+  renderEquipInvGrid();
+}
+
+function invEquip(id) {
+  if (typeof shopEquip === 'function') shopEquip(id);
+  else {
+    var item = SHOP_ITEMS.find(function(i){return i.id===id;});
+    if (item) { char.equipped[item.slot] = id; if(typeof saveChar==='function')saveChar(); }
+  }
+  renderEquipUnified();
+}
+
+function invUnequip(slot) {
+  if (typeof shopUnequip === 'function') shopUnequip(slot);
+  else { char.equipped[slot] = null; if(typeof saveChar==='function')saveChar(); }
+  renderEquipUnified();
+}
+
+function useInvItem(id) {
+  if (typeof shopUseConsumable === 'function') shopUseConsumable(id);
+  else if (typeof useConsumable === 'function') useConsumable(id);
+  renderEquipUnified();
+}
+
+function sellInvItem(id) {
+  if (typeof shopSell === 'function') shopSell(id);
+  else if (typeof sellItem === 'function') sellItem(id);
+  renderEquipUnified();
+}
+
+function renderEquipMannequin() {
+  renderEquipUnified();
+}
 
 function openEquipScreen(preSelectSlot) {
   if (!char.equipped) char.equipped = {};
-  ['head','legs','feet','leftHand','cape'].forEach(s => { if (!(s in char.equipped)) char.equipped[s] = null; });
+  ['head','armor','legs','feet','leftHand','cape','accessory','weapon'].forEach(function(s) {
+    if (!(s in char.equipped)) char.equipped[s] = null;
+  });
+  _equipSelSlot = preSelectSlot || null;
+  _invFilterCat = 'todo';
   document.getElementById('equipOverlay').classList.remove('hide');
-  _renderEquipSlotCols();
-  _renderEquipPreview();
-  _renderEquipStats();
-  if (preSelectSlot) {
-    _equipActiveSlot = null;
-    equipScreenSelectSlot(preSelectSlot);
-  } else {
-    _equipActiveSlot = null;
-    document.getElementById('equipInvTitle').textContent = '— Selecciona un slot —';
-    document.getElementById('equipInvGrid').innerHTML = '';
-  }
-  renderEquipMannequin();
+  renderEquipUnified();
 }
 
 function closeEquipScreen() {
   document.getElementById('equipOverlay').classList.add('hide');
-  var equipBody = document.getElementById('equipBody');
-  if (equipBody) equipBody.style.display = 'none';
-}
-
-function renderEquipMannequin() {
-  var screen = document.querySelector('.equip-screen');
-  if (!screen) return;
-  var equipBody = document.getElementById('equipBody');
-  if (equipBody) equipBody.style.display = 'none';
-
-  var oldBody = screen.querySelector('.equip-body');
-  if (oldBody) oldBody.remove();
-  var oldMannequin = screen.querySelector('#equipMannequin');
-  if (oldMannequin) oldMannequin.remove();
-  var oldStats = screen.querySelector('.equip-stats-row');
-  if (oldStats) oldStats.remove();
-
-  var mannequin = document.createElement('div');
-  mannequin.className = 'equip-mannequin';
-  mannequin.id = 'equipMannequin';
-
-  mannequin.innerHTML = '<svg class="equip-mannequin-lines" viewBox="0 0 280 320">' +
-    '<line x1="140" y1="160" x2="140" y2="46"  stroke="white" stroke-width="1" stroke-dasharray="3,3"/>' +
-    '<line x1="140" y1="160" x2="140" y2="160" stroke="white" stroke-width="1" stroke-dasharray="3,3"/>' +
-    '<line x1="140" y1="160" x2="140" y2="246" stroke="white" stroke-width="1" stroke-dasharray="3,3"/>' +
-    '<line x1="140" y1="160" x2="140" y2="284" stroke="white" stroke-width="1" stroke-dasharray="3,3"/>' +
-    '<line x1="140" y1="160" x2="236" y2="118" stroke="white" stroke-width="1" stroke-dasharray="3,3"/>' +
-    '<line x1="140" y1="160" x2="44"  y2="118" stroke="white" stroke-width="1" stroke-dasharray="3,3"/>' +
-    '<line x1="140" y1="160" x2="44"  y2="196" stroke="white" stroke-width="1" stroke-dasharray="3,3"/>' +
-    '<line x1="140" y1="160" x2="236" y2="196" stroke="white" stroke-width="1" stroke-dasharray="3,3"/>' +
-    '</svg>';
-
-  var spriteEl = document.createElement('div');
-  spriteEl.className = 'equip-mannequin-sprite';
-  spriteEl.id = 'equipMannequinSprite';
-  var canvas = buildPixelAvatar(char.avatar, char.class || char.clase, char.equipped, 100);
-  if (canvas) spriteEl.appendChild(canvas);
-  mannequin.appendChild(spriteEl);
-
-  var SLOT_DEFS = [
-    { slot:'head',      label:'Cabeza',    icon:'⛑️' },
-    { slot:'armor',     label:'Torso',     icon:'🥋' },
-    { slot:'legs',      label:'Piernas',   icon:'🦵' },
-    { slot:'feet',      label:'Pies',      icon:'👢' },
-    { slot:'weapon',    label:'Arma',      icon:'⚔️' },
-    { slot:'leftHand',  label:'Mano Izq',  icon:'🛡️' },
-    { slot:'cape',      label:'Capa',      icon:'🧣' },
-    { slot:'accessory', label:'Accesorio', icon:'💍' },
-  ];
-
-  SLOT_DEFS.forEach(function(def) {
-    var itemId = char.equipped && char.equipped[def.slot];
-    var item = itemId ? (SHOP_ITEMS||[]).find(function(i){return i.id===itemId;}) : null;
-    var rarity = (item && item.rarity) || '';
-
-    var slot = document.createElement('div');
-    slot.className = 'equip-mslot' + (item ? ' has-item' : '') + (rarity ? ' rarity-'+rarity : '');
-    slot.dataset.slot = def.slot;
-    var nameHtml = item
-      ? '<div class="equip-mslot-name">'+item.name+'</div>'
-      : '<div class="equip-mslot-label">'+def.label+'</div>';
-    slot.innerHTML = '<div class="equip-mslot-icon">'+(item ? item.icon : def.icon)+'</div>' + nameHtml;
-    slot.onclick = (function(s){return function(){equipScreenSelectSlot(s);};})(def.slot);
-    mannequin.appendChild(slot);
-  });
-
-  var head = screen.querySelector('.equip-head');
-  head.insertAdjacentElement('afterend', mannequin);
-
-  var statsRow = document.createElement('div');
-  statsRow.className = 'equip-stats-row';
-  mannequin.insertAdjacentElement('afterend', statsRow);
-
-  var statLabels = {atk:'⚔️ ATK', def:'🛡️ DEF', critChance:'🎯 CRIT', hpRegen:'💚 REG', evasion:'💨 EVA'};
-  var totals = {atk:0, def:0, critChance:0, hpRegen:0, evasion:0};
-  Object.values(char.equipped||{}).forEach(function(id) {
-    if (!id) return;
-    var item = (SHOP_ITEMS||[]).find(function(i){return i.id===id;});
-    if (!item || !item.combatStats) return;
-    Object.entries(item.combatStats).forEach(function(kv) {
-      if (totals[kv[0]] !== undefined) totals[kv[0]] += kv[1];
-    });
-  });
-  var chips = Object.entries(totals)
-    .filter(function(kv){return kv[1]>0;})
-    .map(function(kv){return '<div class="equip-stat-chip">'+(statLabels[kv[0]]||kv[0])+' <span>+'+kv[1]+'</span></div>';})
-    .join('');
-  statsRow.innerHTML = chips || '<div class="equip-stat-chip" style="opacity:0.4">Sin equipo</div>';
 }
 
 function updateMannequinActiveSlot(slot) {
