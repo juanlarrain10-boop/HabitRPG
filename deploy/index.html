@@ -1998,68 +1998,48 @@ h2, h3 { font-family: var(--pxfont); }
 
 /* ── SECCIÓN PERSONAJE (arriba) ── */
 .equip-char-section {
-  display: flex; gap: 12px;
+  display: flex; flex-direction: column; gap: 12px;
   padding: 16px;
-  background:
-    radial-gradient(ellipse at 30% 20%, rgba(139,92,246,0.12) 0%, transparent 60%),
-    rgba(0,0,0,0.2);
+  background: radial-gradient(ellipse at 50% 30%, rgba(139,92,246,0.12) 0%, transparent 60%), rgba(0,0,0,0.2);
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-
-/* Personaje + slots a la izquierda */
-.equip-char-left {
-  position: relative;
-  width: 150px; height: 200px;
-  flex-shrink: 0;
+.equip-char-top {
+  display: flex; gap: 14px; align-items: center;
 }
 .equip-char-sprite {
-  position: absolute;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  width: 96px; height: 96px;
-  border-radius: 14px;
-  background:
-    radial-gradient(circle at 50% 30%, rgba(139,92,246,0.15), rgba(0,0,0,0.3));
+  width: 120px; height: 120px; flex-shrink: 0;
+  border-radius: 16px;
+  background: radial-gradient(circle at 50% 35%, rgba(139,92,246,0.15), rgba(0,0,0,0.4));
   border: 2px solid rgba(139,92,246,0.3);
-  box-shadow: 0 0 24px rgba(139,92,246,0.2), inset 0 0 20px rgba(0,0,0,0.4);
+  box-shadow: 0 0 28px rgba(139,92,246,0.2), inset 0 0 24px rgba(0,0,0,0.4);
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; image-rendering: pixelated;
-  z-index: 2;
 }
-
-/* Slots mini alrededor */
-.equip-cslot {
-  position: absolute;
-  width: 38px; height: 38px;
+/* Fila de slots horizontal */
+.equip-slots-row {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  justify-content: center;
+}
+.equip-srow-slot {
+  width: 44px; height: 44px;
   border-radius: 10px;
-  border: 1.5px solid rgba(255,255,255,0.15);
-  background: rgba(0,0,0,0.5);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; cursor: pointer;
-  transition: all 0.2s; z-index: 3;
-  backdrop-filter: blur(2px);
+  font-size: 1.2rem; cursor: pointer;
+  transition: all 0.15s; position: relative;
 }
-.equip-cslot:active { transform: scale(0.9); }
-.equip-cslot.active {
-  border-color: #a78bfa !important;
-  box-shadow: 0 0 12px rgba(139,92,246,0.6);
-  background: rgba(139,92,246,0.2);
+.equip-srow-slot:active { transform: scale(0.9); }
+.equip-srow-slot.active { border-color: #a78bfa !important; background: rgba(139,92,246,0.2); box-shadow: 0 0 10px rgba(139,92,246,0.5); }
+.equip-srow-slot.has-item { border-color: rgba(139,92,246,0.4); }
+.equip-srow-slot.rarity-raro { border-color: rgba(34,197,94,0.6); }
+.equip-srow-slot.rarity-epico { border-color: rgba(139,92,246,0.8); }
+.equip-srow-slot.rarity-legendario { border-color: rgba(245,158,11,0.9); }
+.equip-srow-slot-empty { opacity: 0.35; font-size: 0.95rem; }
+.equip-srow-slot-label {
+  position: absolute; bottom: -13px; left: 50%; transform: translateX(-50%);
+  font-size: 0.42rem; color: rgba(180,180,200,0.6); white-space: nowrap;
 }
-.equip-cslot.has-item { border-color: rgba(139,92,246,0.4); }
-.equip-cslot.rarity-raro       { border-color: rgba(34,197,94,0.6); }
-.equip-cslot.rarity-epico      { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 8px rgba(139,92,246,0.3); }
-.equip-cslot.rarity-legendario { border-color: rgba(245,158,11,0.9); box-shadow: 0 0 10px rgba(245,158,11,0.4); }
-.equip-cslot-empty { opacity: 0.4; font-size: 0.85rem; }
-
-/* Posiciones de slots (150x200 area) */
-.equip-cslot[data-slot="head"]      { left: 56px; top: 2px; }
-.equip-cslot[data-slot="armor"]     { left: 6px;  top: 60px; }
-.equip-cslot[data-slot="leftHand"]  { left: 6px;  top: 104px; }
-.equip-cslot[data-slot="legs"]      { left: 6px;  top: 148px; }
-.equip-cslot[data-slot="weapon"]    { right: 6px; top: 60px; left: auto; }
-.equip-cslot[data-slot="cape"]      { right: 6px; top: 104px; left: auto; }
-.equip-cslot[data-slot="accessory"] { right: 6px; top: 148px; left: auto; }
-.equip-cslot[data-slot="feet"]      { left: 56px; bottom: 2px; top: auto; }
 
 /* Stats a la derecha */
 .equip-char-stats {
@@ -22052,10 +22032,7 @@ function renderEquipUnified() {
       '<button class="equip-close" onclick="closeEquipScreen()">✕</button>' +
     '</div>' +
     '<div class="equip-content">' +
-      '<div class="equip-char-section">' +
-        '<div class="equip-char-left" id="equipCharLeft"></div>' +
-        '<div class="equip-char-stats" id="equipCharStats"></div>' +
-      '</div>' +
+      '<div class="equip-char-section"></div>' +
       '<div class="equip-inv-section">' +
         '<div class="equip-inv-tabs" id="equipInvTabs"></div>' +
         '<div class="equip-inv-cap" id="equipInvCap"></div>' +
@@ -22063,19 +22040,22 @@ function renderEquipUnified() {
       '</div>' +
     '</div>';
   renderEquipCharLeft();
-  renderEquipCharStats();
   renderEquipInvTabs();
   renderEquipInvGrid();
 }
 
 function renderEquipCharLeft() {
-  var container = document.getElementById('equipCharLeft');
-  if (!container) return;
-  container.innerHTML = '';
-  var spriteEl = document.createElement('div');
-  spriteEl.className = 'equip-char-sprite';
+  var section = document.querySelector('.equip-char-section');
+  if (!section) return;
+  section.innerHTML =
+    '<div class="equip-char-top">' +
+      '<div class="equip-char-sprite" id="equipCharSprite"></div>' +
+      '<div class="equip-char-stats" id="equipCharStats"></div>' +
+    '</div>' +
+    '<div class="equip-slots-row" id="equipSlotsRow"></div>';
+  var spriteEl = document.getElementById('equipCharSprite');
   var canvas = document.createElement('canvas');
-  canvas.width = 92; canvas.height = 92;
+  canvas.width = 110; canvas.height = 110;
   canvas.style.imageRendering = 'pixelated';
   var cx = canvas.getContext('2d');
   cx.imageSmoothingEnabled = false;
@@ -22083,34 +22063,32 @@ function renderEquipCharLeft() {
     cls: (char.class || char.clase || 'guerrero').toLowerCase(),
     clase: (char.class || char.clase || 'guerrero').toLowerCase(),
     equipped: char.equipped,
-    w: 84, h: 84,
+    w: 100, h: 100,
     vx: 0, vy: 0,
     attacking: false, atkTime: 0,
     fd: 1
   };
   cx.save();
-  cx.translate(46, 50);
+  cx.translate(55, 60);
   if (typeof drawCombatHero === 'function') drawCombatHero(cx, previewHero, 0);
   cx.restore();
   spriteEl.appendChild(canvas);
-  container.appendChild(spriteEl);
+  var slotsRow = document.getElementById('equipSlotsRow');
   EQUIP_SLOT_LAYOUT.forEach(function(def) {
     var itemId = char.equipped && char.equipped[def.slot];
     var item = itemId && typeof SHOP_ITEMS !== 'undefined'
       ? SHOP_ITEMS.find(function(i){return i.id===itemId;}) : null;
     var rarity = item ? (item.rarity||'') : '';
     var slot = document.createElement('div');
-    slot.className = 'equip-cslot' + (item?' has-item':'') +
+    slot.className = 'equip-srow-slot' + (item?' has-item':'') +
       (rarity?' rarity-'+rarity:'') +
       (_equipSelSlot===def.slot?' active':'');
-    slot.dataset.slot = def.slot;
-    slot.innerHTML = item
-      ? item.icon
-      : '<span class="equip-cslot-empty">' + def.icon + '</span>';
-    slot.title = item ? item.name : def.label;
+    slot.innerHTML = (item ? item.icon : '<span class="equip-srow-slot-empty">'+def.icon+'</span>') +
+      '<span class="equip-srow-slot-label">'+def.label+'</span>';
     slot.onclick = (function(s){ return function(){ selectEquipSlot(s); }; })(def.slot);
-    container.appendChild(slot);
+    slotsRow.appendChild(slot);
   });
+  renderEquipCharStats();
 }
 
 function renderEquipCharStats() {
