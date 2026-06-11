@@ -14895,7 +14895,7 @@ function resizeCanvas() {
 function _mkHero(cls, lv, x, y, isMain, charData) {
   const cd = CLS[cls] || CLS.guerrero;
   const maxHp = isMain ? (80 + lv * 10) : (70 + lv * 8);
-  const sz = isMain ? 36 : 26;
+  const sz = isMain ? 44 : 26;
   return { x, y, w:sz, h:sz, facing:0, fd:1, hp:maxHp, maxHp, spd:cd.spd*(isMain?1:0.85), cls, cd,
     atkCd:0, attacking:false, atkTime:0, atkAng:0,
     dashCd:0, dashing:false, dashTime:0, dvx:0, dvy:0, invul:0,
@@ -14982,11 +14982,11 @@ function spawnRoomEnemies(room) {
   const allEnemies = [];
   for (let i = 0; i < cnt; i++) {
     const type = rc.types[i % rc.types.length];
-    let w=28, h=28, hp, spd, dmg, gold;
+    let w=36, h=36, hp, spd, dmg, gold;
     switch(type) {
-      case 'fast':    w=20;h=20;hp=Math.ceil(z.eHp*lm*rc.hm*.7);spd=z.eSpd*rc.sm*1.6;dmg=Math.ceil(z.eDmg*.8);gold=Math.ceil(z.gold*rc.gm*.9);break;
+      case 'fast':    w=28;h=28;hp=Math.ceil(z.eHp*lm*rc.hm*.7);spd=z.eSpd*rc.sm*1.6;dmg=Math.ceil(z.eDmg*.8);gold=Math.ceil(z.gold*rc.gm*.9);break;
       case 'shooter': hp=Math.ceil(z.eHp*lm*rc.hm*.9);spd=z.eSpd*rc.sm*.65;dmg=Math.ceil(z.eDmg*.6);gold=Math.ceil(z.gold*rc.gm*1.2);break;
-      case 'tank':    w=36;h=36;hp=Math.ceil(z.eHp*lm*rc.hm*2);spd=z.eSpd*rc.sm*.45;dmg=Math.ceil(z.eDmg*1.6);gold=Math.ceil(z.gold*rc.gm*2);break;
+      case 'tank':    w=48;h=48;hp=Math.ceil(z.eHp*lm*rc.hm*2);spd=z.eSpd*rc.sm*.45;dmg=Math.ceil(z.eDmg*1.6);gold=Math.ceil(z.gold*rc.gm*2);break;
       default:        hp=Math.ceil(z.eHp*lm*rc.hm);spd=z.eSpd*rc.sm+(Math.random()-.5)*12;dmg=z.eDmg;gold=Math.ceil(z.gold*rc.gm);
     }
     let ex, ey; const edge = i % 4;
@@ -15453,10 +15453,6 @@ function hit(e,dmg,kbAng) {
     parts.push({x:e.x,y:e.y,vx:Math.cos(_ia)*180,vy:Math.sin(_ia)*180,
       life:.25,maxLife:.25,r:isCritHit?6:4,
       color:isCritHit?'#fbbf24':((P&&P.cd&&P.cd.color)||'#fff')});
-  }
-  if(!e.isBoss&&running){
-    running=false;
-    setTimeout(function(){running=true;rafId=requestAnimationFrame(loop);},60);
   }
   ceFlash('atk',80); screenShake(3,150);
   if(e.hp<=0)killEnemy(e);
@@ -17306,34 +17302,73 @@ function getEquipGlow(equipped){
   Object.values(equipped).forEach(function(id){if(!id)return;var item=SHOP_ITEMS.find(function(i){return i.id===id;});if(!item)return;var idx=order.indexOf(item.rarity);if(idx>highest)highest=idx;});
   if(highest>=4)return'#fbbf24';if(highest>=3)return'#c084fc';if(highest>=2)return'#60a5fa';return null;
 }
-function drawCombatHero(ctx,hero,animTime){
-  var clase=(hero.cls||hero.clase||'guerrero').toLowerCase();
-  var spr=CSPRITES[clase]||CSPRITES.guerrero;
-  var moving=Math.abs(hero.vx||0)>20||Math.abs(hero.vy||0)>20;
-  var frames=moving?spr.walk:spr.idle;
-  var frameIdx=Math.floor(animTime*(moving?6:2))%frames.length;
-  var rows=frames[frameIdx];
-  var pxSize=hero.w/16;
-  ctx.save(); ctx.imageSmoothingEnabled=false;
-  var glow=getEquipGlow(hero.equipped||(typeof char!=='undefined'?char.equipped:null));
-  if(glow){ctx.shadowColor=glow;ctx.shadowBlur=8;}
-  rows.forEach(function(row,y){[...row].forEach(function(ch,x){if(ch===' '||!spr.colors[ch])return;ctx.fillStyle=spr.colors[ch];ctx.fillRect((x-8)*pxSize,(y-7)*pxSize,pxSize+0.5,pxSize+0.5);});});
-  ctx.shadowBlur=0;
-  var equipped=hero.equipped||(typeof char!=='undefined'?char.equipped:null);
-  var weaponItem=equipped&&equipped.weapon&&typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(function(i){return i.id===equipped.weapon;}):null;
-  var wType=getWeaponType(weaponItem,clase);
-  var weapon=CWEAPONS[wType];
-  if(weapon&&wType!=='fist'){
-    var anchor=spr.weaponAnchor||{x:12,y:5};
-    var wOffX=0,wOffY=0;
-    if(hero.attacking&&hero.atkTime>0){var atkProg=1-(hero.atkTime/0.25);wOffX=Math.sin(atkProg*Math.PI)*3*pxSize;wOffY=-Math.sin(atkProg*Math.PI)*1*pxSize;}
-    var wGlow=null;
-    if(weaponItem){var wr=weaponItem.rarity;if(wr==='legendario')wGlow='#fbbf24';else if(wr==='epico')wGlow='#c084fc';else if(wr==='raro')wGlow='#60a5fa';}
-    if(wGlow){ctx.shadowColor=wGlow;ctx.shadowBlur=6;}
-    weapon.rows.forEach(function(row,y){[...row].forEach(function(ch,x){if(ch===' '||!weapon.colors[ch])return;ctx.fillStyle=weapon.colors[ch];ctx.fillRect((anchor.x-8+x)*pxSize+wOffX,(anchor.y-7+y)*pxSize+wOffY,pxSize+0.5,pxSize+0.5);});});
-    ctx.shadowBlur=0;
+const _sprCanvasCache = new Map();
+function getCachedSprite(cacheKey, rows, colors, pxSize, glowColor) {
+  if (_sprCanvasCache.has(cacheKey)) return _sprCanvasCache.get(cacheKey);
+  var c = document.createElement('canvas');
+  var pad = glowColor ? 12 : 0;
+  c.width = 16 * pxSize + pad*2;
+  c.height = rows.length * pxSize + pad*2;
+  var cx = c.getContext('2d');
+  cx.imageSmoothingEnabled = false;
+  if (glowColor) { cx.shadowColor = glowColor; cx.shadowBlur = 8; }
+  rows.forEach(function(row, y) {
+    [...row].forEach(function(ch, x) {
+      if (ch === ' ' || !colors[ch]) return;
+      cx.fillStyle = colors[ch];
+      cx.fillRect(pad + x*pxSize, pad + y*pxSize, pxSize+0.5, pxSize+0.5);
+    });
+  });
+  _sprCanvasCache.set(cacheKey, c);
+  return c;
+}
+function drawHeroWeapon(ctx, hero, spr, pxSize) {
+  var clase = (hero.cls||hero.clase||'guerrero').toLowerCase();
+  var equipped = hero.equipped||(typeof char!=='undefined'?char.equipped:null);
+  var weaponItem = equipped&&equipped.weapon&&typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(function(i){return i.id===equipped.weapon;}):null;
+  var wType = getWeaponType(weaponItem, clase);
+  var weapon = CWEAPONS[wType];
+  if (!weapon || wType === 'fist') return;
+  var anchor = spr.weaponAnchor||{x:12,y:5};
+  var wOffX=0, wOffY=0, wRot=0;
+  if (hero.attacking&&hero.atkTime>0) {
+    var atkProg=1-(hero.atkTime/0.25);
+    wOffX=Math.sin(atkProg*Math.PI)*4*pxSize;
+    wRot=Math.sin(atkProg*Math.PI)*0.6;
   }
+  var wGlow=null;
+  if (weaponItem) { var wr=weaponItem.rarity; if(wr==='legendario')wGlow='#fbbf24'; else if(wr==='epico')wGlow='#c084fc'; else if(wr==='raro')wGlow='#60a5fa'; }
+  ctx.save();
+  ctx.translate((anchor.x-8)*pxSize+wOffX, (anchor.y-7)*pxSize+wOffY);
+  ctx.rotate(wRot);
+  if (wGlow) { ctx.shadowColor=wGlow; ctx.shadowBlur=8; }
+  weapon.rows.forEach(function(row,y){[...row].forEach(function(ch,x){if(ch===' '||!weapon.colors[ch])return;ctx.fillStyle=weapon.colors[ch];ctx.fillRect(x*pxSize*1.5,y*pxSize*1.5,pxSize*1.5+0.5,pxSize*1.5+0.5);});});
   ctx.restore();
+}
+function drawCombatHero(ctx, hero, animTime) {
+  var clase = (hero.cls||hero.clase||'guerrero').toLowerCase();
+  var spr = CSPRITES[clase]||CSPRITES.guerrero;
+  var moving = Math.abs(hero.vx||0)>20||Math.abs(hero.vy||0)>20;
+  var frames = moving ? spr.walk : spr.idle;
+  var frameIdx = Math.floor(animTime*(moving?6:2))%frames.length;
+  var pxSize = Math.ceil(hero.w/16);
+  var glow = getEquipGlow(hero.equipped||(typeof char!=='undefined'?char.equipped:null));
+  // Armor tint
+  var equipped = hero.equipped||(typeof char!=='undefined'?char.equipped:null);
+  var armorItem = equipped&&equipped.armor&&typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(function(i){return i.id===equipped.armor;}):null;
+  var armorTint = '';
+  if (armorItem) { if(armorItem.rarity==='legendario')armorTint='leg'; else if(armorItem.rarity==='epico')armorTint='epi'; else if(armorItem.rarity==='raro')armorTint='rar'; }
+  var useColors = spr.colors;
+  if (armorTint) {
+    var TORSO_LETTER = {guerrero:'A',asesino:'A',mago:'P',barbaro:'P',monje:'G',druida:'V',arquero:'L'}[clase]||'A';
+    var ARMOR_COLORS = {leg:'#b8860b',epi:'#7c3aed',rar:'#2563eb'};
+    useColors = Object.assign({}, spr.colors);
+    useColors[TORSO_LETTER] = ARMOR_COLORS[armorTint];
+  }
+  var key = clase+'_'+(moving?'w':'i')+frameIdx+'_'+pxSize+'_'+(glow||'')+'_'+armorTint;
+  var cached = getCachedSprite(key, frames[frameIdx], useColors, pxSize, glow);
+  ctx.drawImage(cached, -cached.width/2, -cached.height/2);
+  drawHeroWeapon(ctx, hero, spr, pxSize);
 }
 const CENEMIES = {
   basic:{colors:{G:'#5a9a3a',g:'#3a6a24',E:'#ff2222',T:'#8a6a3a',P:'#6a4a2a',D:'#fff'},frames:[['   G     G      ','   GG   GG      ','    GGGGG       ','   GGGGGGG      ','   GEGGGEG   T  ','   GGGGGGG   T  ','    GDDDG   TT  ','    GGGGG   T   ','   GgGGGgG      ','   G GGG G      ','     PPP        ','   GG   GG      '],['                ','   G     G   T  ','   GG   GG   T  ','    GGGGG   TT  ','   GGGGGGG  T   ','   GEGGGEG      ','   GGGGGGG      ','    GDDDG       ','    GGGGG       ','   GgGGGgG      ','     PPP        ','   GG   GG      ']]},
@@ -17341,15 +17376,16 @@ const CENEMIES = {
   shooter:{colors:{B:'#e8e8d8',b:'#b8b8a8',E:'#22ddff',A:'#9a6a3a'},frames:[['     BBBB       ','    BBBBBB      ','    BEBBEB   A  ','    BBBBBB   A  ','     Bbbb    A  ','     BBBB    A  ','    bBBBBb   A  ','   b BBBB b  A  ','     B  B       ','     B  B       ','     b  b       ','    bb  bb      '],['                ','     BBBB    A  ','    BBBBBB   A  ','    BEBBEB   A  ','    BBBBBB   A  ','     Bbbb    A  ','     BBBB    A  ','    bBBBBb      ','   b BBBB b     ','     B  B       ','     b  b       ','    bb  bb      ']]},
   tank:{colors:{O:'#7a8a4a',o:'#5a6a34',E:'#ff4422',D:'#fff',P:'#5a4a2a',M:'#8a7a5a'},frames:[['    OOOOOO      ','   OOOOOOOO     ','   OEOOOOEO  M  ','   OOOOOOOO  MM ','    ODDDDO   MM ','   OOOOOOOO  M  ','  OoOOOOOOoO M  ','  OoOOOOOOoO M  ','  OoOOOOOOoO M  ','  O OOOOOO O    ','    PPPPPP      ','   OO    OO     ','  OOO    OOO    '],['                ','    OOOOOO   M  ','   OOOOOOOO  MM ','   OEOOOOEO  MM ','   OOOOOOOO  M  ','    ODDDDO   M  ','   OOOOOOOO  M  ','  OoOOOOOOoO M  ','  OoOOOOOOoO    ','  O OOOOOO O    ','    PPPPPP      ','   OO    OO     ','  OOO    OOO    ']]},
 };
-function drawCombatEnemy(ctx,e,animTime){
-  var spr=CENEMIES[e.type]||CENEMIES.basic;
-  var frameIdx=Math.floor(animTime*3+(e.x*0.01))%spr.frames.length;
-  var rows=spr.frames[frameIdx];
-  var pxSize=e.w/16;
-  ctx.save(); ctx.imageSmoothingEnabled=false;
-  var flashing=e.hitTime>0;
-  rows.forEach(function(row,y){[...row].forEach(function(ch,x){if(ch===' '||!spr.colors[ch])return;ctx.fillStyle=flashing?'#ffffff':spr.colors[ch];ctx.fillRect(e.x+(x-8)*pxSize,e.y+(y-6)*pxSize,pxSize+0.5,pxSize+0.5);});});
-  ctx.restore();
+function drawCombatEnemy(ctx, e, animTime) {
+  var spr = CENEMIES[e.type]||CENEMIES.basic;
+  var frameIdx = Math.floor(animTime*3+(e.x*0.01))%spr.frames.length;
+  var pxSize = Math.ceil(e.w/16);
+  var flashing = e.hitTime>0;
+  var colors = spr.colors;
+  if (flashing) { colors={}; Object.keys(spr.colors).forEach(function(k){colors[k]='#ffffff';}); }
+  var key = 'e_'+(e.type||'basic')+'_'+frameIdx+'_'+pxSize+(flashing?'_f':'');
+  var cached = getCachedSprite(key, spr.frames[frameIdx], colors, pxSize, null);
+  ctx.drawImage(cached, e.x-cached.width/2, e.y-cached.height/2);
 }
 // ═══ END COMBAT SPRITES ══════════════════════════════════════
 
