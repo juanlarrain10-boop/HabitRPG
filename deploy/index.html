@@ -22280,6 +22280,7 @@ function renderEquipMannequin() {
 }
 
 function openEquipScreen(preSelectSlot) {
+  if (typeof _sprCanvasCache !== 'undefined') _sprCanvasCache.clear();
   if (!char.equipped) char.equipped = {};
   ['head','armor','legs','feet','leftHand','cape','accessory','weapon'].forEach(function(s) {
     if (!(s in char.equipped)) char.equipped[s] = null;
