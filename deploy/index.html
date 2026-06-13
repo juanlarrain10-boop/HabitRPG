@@ -6899,6 +6899,107 @@ button:active:not(:disabled), .btn:active:not(:disabled),
   to   { opacity:0; transform:translateY(-90px) scale(.3); }
 }
 /* ── END EXPEDICIÓN NARRATIVA ── */
+
+/* ── RAID BOSS ── */
+#raidOverlay {
+  position: fixed; inset: 0; z-index: 2700;
+  background: linear-gradient(160deg, #14081a 0%, #08040c 100%);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+#raidOverlay.hide { display: none; }
+.raid-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(245,158,11,0.2); flex-shrink: 0;
+}
+.raid-head-title { font-size: 1.05rem; font-weight: 800; color: #fff; }
+.raid-close {
+  width: 34px; height: 34px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.08); color: #fff; font-size: 1rem; cursor: pointer;
+}
+#raidContent { flex: 1; overflow-y: auto; padding: 16px; }
+.raid-loading, .raid-empty { text-align: center; padding: 60px 20px; color: rgba(200,200,220,0.6); }
+.raid-empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.raid-empty-title { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+.raid-empty-sub { font-size: 0.8rem; color: rgba(200,200,220,0.6); margin-bottom: 16px; }
+.raid-btn {
+  padding: 10px 20px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg,#f59e0b,#dc2626); color: #fff;
+  font-weight: 800; cursor: pointer;
+}
+.raid-boss-card {
+  border-radius: 20px; padding: 20px; text-align: center;
+  margin-bottom: 16px; position: relative; overflow: hidden;
+  border: 2px solid rgba(245,158,11,0.4);
+}
+.raid-boss-card.theme-metal  { background: radial-gradient(ellipse at 50% 30%, rgba(120,130,150,0.3), rgba(20,20,30,0.6)); }
+.raid-boss-card.theme-shadow { background: radial-gradient(ellipse at 50% 30%, rgba(80,40,120,0.3), rgba(15,10,25,0.6)); }
+.raid-boss-card.theme-fire   { background: radial-gradient(ellipse at 50% 30%, rgba(200,80,30,0.3), rgba(30,10,5,0.6)); }
+.raid-season-tag {
+  font-size: 0.68rem; color: #fbbf24; font-weight: 700;
+  margin-bottom: 10px; letter-spacing: 0.05em;
+}
+.raid-boss-emoji { font-size: 4rem; line-height: 1; margin-bottom: 8px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6)); }
+.raid-boss-name { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 14px; }
+.raid-hp-bar-wrap {
+  position: relative; height: 24px; border-radius: 12px;
+  background: rgba(0,0,0,0.5); overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1); margin-bottom: 6px;
+}
+.raid-hp-bar {
+  position: absolute; right: 0; top: 0; height: 100%;
+  background: linear-gradient(90deg, #dc2626, #ef4444);
+  transition: width 0.5s ease;
+}
+.raid-hp-text {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
+.raid-pct { font-size: 0.85rem; font-weight: 800; color: #fbbf24; }
+.raid-milestones { display: flex; gap: 8px; margin-bottom: 16px; }
+.raid-milestone {
+  flex: 1; text-align: center; padding: 10px 4px;
+  border-radius: 12px; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08); opacity: 0.5;
+}
+.raid-milestone.reached { opacity: 1; border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.1); }
+.raid-milestone-pct { font-size: 0.7rem; font-weight: 800; color: #fff; }
+.raid-milestone-icon { font-size: 1.3rem; margin-top: 4px; }
+.raid-mycontrib {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-radius: 12px; margin-bottom: 16px;
+  background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3);
+}
+.raid-mycontrib span { font-size: 0.8rem; color: rgba(220,200,255,0.8); }
+.raid-mycontrib strong { font-size: 1.1rem; color: #c4b5fd; }
+.raid-section-title { font-size: 0.85rem; font-weight: 800; color: #fff; margin: 16px 0 10px; }
+.raid-items { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+.raid-item {
+  flex-shrink: 0; width: 90px; text-align: center; padding: 12px 8px;
+  border-radius: 12px; background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.1);
+}
+.raid-item.rarity-epico { border-color: rgba(139,92,246,0.6); }
+.raid-item.rarity-legendario { border-color: rgba(245,158,11,0.8); box-shadow: 0 0 12px rgba(245,158,11,0.2); }
+.raid-item-icon { font-size: 1.8rem; margin-bottom: 6px; }
+.raid-item-name { font-size: 0.6rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 4px; }
+.raid-item-tag { font-size: 0.5rem; color: #fbbf24; text-transform: uppercase; }
+.raid-ranking { display: flex; flex-direction: column; gap: 6px; }
+.raid-rank-empty { text-align: center; padding: 20px; color: rgba(200,200,220,0.4); font-size: 0.8rem; }
+.raid-rank-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+}
+.raid-rank-row.me { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); }
+.raid-rank-medal { font-size: 0.85rem; font-weight: 800; min-width: 24px; }
+.raid-rank-name { flex: 1; font-size: 0.78rem; color: #fff; }
+.raid-rank-dmg { font-size: 0.78rem; font-weight: 800; color: #fbbf24; }
+.raid-info {
+  margin-top: 16px; padding: 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.72rem; color: rgba(200,200,220,0.7); line-height: 1.5;
+}
 </style>
 </head>
 <body>
@@ -13684,6 +13785,7 @@ function toggleMorning(i, rowEl) {
       mState.xpAwarded = true;
       mState.xpAmount  = xpAmt;
       addXP(xpAmt, item.cat, item.label);
+      if (typeof dealRaidDamage === 'function') dealRaidDamage(raidDamageForHabit());
       floatXP(xpAmt, item.cat, rowEl, true);
       _habitFlash(rowEl, item.cat);
       try { SFX.habitCat(item.cat); } catch(e) { SFX.habitDone(); }
@@ -13875,6 +13977,7 @@ function toggleMission(i, rowEl) {
       m.xpAwarded = true;
       m.xpAmount  = xpAmt;
       addXP(xpAmt, m.cat, m.label);
+      if (typeof dealRaidDamage === 'function') dealRaidDamage(raidDamageForHabit());
       floatXP(xpAmt, m.cat, rowEl, true);
       _habitFlash(rowEl, m.cat);
       checkDruidaBonus();
@@ -15969,6 +16072,7 @@ function restContinue() {
 function onDeath(){ setTimeout(()=>showResult(false),1200); }
 function showResult(won) {
   running = false; unbindInput();
+  try { if (typeof dealRaidDamage === 'function') dealRaidDamage(raidDamageForDungeon(won, !!(currentZone && currentZone.boss))); } catch(e) {}
   const rs = $$('ceResultScreen');
   rs.classList.remove('hide');
 
@@ -24595,6 +24699,209 @@ function _guildCopyCode() {
 }
 
 // ═══════════════════════════════════════════
+// RAID BOSS POR TEMPORADAS
+// Sistema cooperativo asíncrono: el gremio derrota un boss común
+// sumando daño con hábitos completados + dungeons ganados
+// ═══════════════════════════════════════════
+
+var _raidSeason = null;
+var _raidProgress = null;
+var _raidContribs = [];
+var _raidPendingDamage = 0;
+
+async function loadRaidData() {
+  if (!sbClient || !char.guildId) return;
+  try {
+    var seasonRes = await sbClient
+      .from('hrpg_raid_seasons')
+      .select('*')
+      .eq('active', true)
+      .order('starts_at', { ascending: false })
+      .limit(1)
+      .single();
+    if (seasonRes.error || !seasonRes.data) { _raidSeason = null; return; }
+    _raidSeason = seasonRes.data;
+
+    var progRes = await sbClient
+      .from('hrpg_raid_progress')
+      .select('*')
+      .eq('guild_id', char.guildId)
+      .eq('season_id', _raidSeason.id)
+      .maybeSingle();
+    _raidProgress = progRes.data || { damage_total: 0, milestones_claimed: [] };
+
+    var contRes = await sbClient
+      .from('hrpg_raid_contributions')
+      .select('*')
+      .eq('guild_id', char.guildId)
+      .eq('season_id', _raidSeason.id)
+      .order('damage_dealt', { ascending: false });
+    _raidContribs = contRes.data || [];
+  } catch(e) {
+    console.warn('loadRaidData error', e);
+  }
+}
+
+async function dealRaidDamage(amount) {
+  if (!sbClient || !char.guildId || !_raidSeason) {
+    _raidPendingDamage += amount;
+    return;
+  }
+  var totalDmg = amount + _raidPendingDamage;
+  _raidPendingDamage = 0;
+  try {
+    await sbClient.rpc('hrpg_add_raid_damage', {
+      p_guild_id: char.guildId,
+      p_season_id: _raidSeason.id,
+      p_user_id: sbUser.id,
+      p_display_name: char.name || char.nombre || 'Aventurero',
+      p_char_class: char.class || char.clase || 'guerrero',
+      p_damage: totalDmg
+    });
+    if (_raidProgress) _raidProgress.damage_total += totalDmg;
+  } catch(e) {
+    console.warn('dealRaidDamage error', e);
+    _raidPendingDamage += totalDmg;
+  }
+}
+
+function raidDamageForHabit() {
+  var lv = char.nivel || char.level || 1;
+  return Math.floor(1000 * (1 + lv * 0.1));
+}
+function raidDamageForDungeon(won, isBoss) {
+  var lv = char.nivel || char.level || 1;
+  var base = isBoss ? 20000 : 5000;
+  return Math.floor(base * (1 + lv * 0.1) * (won ? 1 : 0.3));
+}
+
+async function openRaidScreen() {
+  var overlay = document.getElementById('raidOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('hide');
+  document.getElementById('raidContent').innerHTML =
+    '<div class="raid-loading">⚔️ Cargando evento...</div>';
+  await loadRaidData();
+  renderRaidScreen();
+}
+
+function closeRaidScreen() {
+  var overlay = document.getElementById('raidOverlay');
+  if (overlay) overlay.classList.add('hide');
+}
+
+function renderRaidScreen() {
+  var content = document.getElementById('raidContent');
+  if (!content) return;
+
+  if (!char.guildId) {
+    content.innerHTML =
+      '<div class="raid-empty">' +
+        '<div class="raid-empty-icon">🛡️</div>' +
+        '<div class="raid-empty-title">Únete a un gremio</div>' +
+        '<div class="raid-empty-sub">Los eventos de Raid Boss son cooperativos. Necesitas un gremio para participar.</div>' +
+        '<button class="raid-btn" onclick="closeRaidScreen();openGuild()">Ver Gremios</button>' +
+      '</div>';
+    return;
+  }
+
+  if (!_raidSeason) {
+    content.innerHTML =
+      '<div class="raid-empty">' +
+        '<div class="raid-empty-icon">🌙</div>' +
+        '<div class="raid-empty-title">No hay evento activo</div>' +
+        '<div class="raid-empty-sub">Pronto comenzará una nueva temporada. ¡Prepárate!</div>' +
+      '</div>';
+    return;
+  }
+
+  var s = _raidSeason;
+  var dmgDone = _raidProgress ? _raidProgress.damage_total : 0;
+  var pct = Math.min(100, (dmgDone / s.total_hp) * 100);
+  var hpLeft = Math.max(0, s.total_hp - dmgDone);
+
+  var now = new Date();
+  var ends = new Date(s.ends_at);
+  var daysLeft = Math.max(0, Math.ceil((ends - now) / (1000*60*60*24)));
+
+  var myContrib = _raidContribs.find(function(c){ return c.user_id === sbUser.id; });
+  var myDmg = myContrib ? myContrib.damage_dealt : 0;
+
+  function fmt(n) {
+    if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n/1000).toFixed(0) + 'K';
+    return String(n);
+  }
+
+  var html = '';
+
+  html += '<div class="raid-boss-card theme-' + (s.theme||'metal') + '">' +
+    '<div class="raid-season-tag">⏳ Temporada · ' + daysLeft + ' días restantes</div>' +
+    '<div class="raid-boss-emoji">' + s.boss_emoji + '</div>' +
+    '<div class="raid-boss-name">' + s.boss_name + '</div>' +
+    '<div class="raid-hp-bar-wrap">' +
+      '<div class="raid-hp-bar" style="width:' + (100-pct) + '%"></div>' +
+      '<div class="raid-hp-text">' + fmt(hpLeft) + ' / ' + fmt(s.total_hp) + ' HP</div>' +
+    '</div>' +
+    '<div class="raid-pct">' + pct.toFixed(1) + '% derrotado</div>' +
+  '</div>';
+
+  var milestones = [25, 50, 75, 100];
+  var claimed = _raidProgress && _raidProgress.milestones_claimed ? _raidProgress.milestones_claimed : [];
+  html += '<div class="raid-milestones">';
+  milestones.forEach(function(m) {
+    var reached = pct >= m;
+    html += '<div class="raid-milestone ' + (reached?'reached':'') + '">' +
+      '<div class="raid-milestone-pct">' + m + '%</div>' +
+      '<div class="raid-milestone-icon">' + (reached ? '🎁' : '🔒') + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="raid-mycontrib">' +
+    '<span>Tu daño este evento</span>' +
+    '<strong>' + fmt(myDmg) + '</strong>' +
+  '</div>';
+
+  if (s.reward_items && s.reward_items.length) {
+    html += '<div class="raid-section-title">🏆 Items Exclusivos del Evento</div>';
+    html += '<div class="raid-items">';
+    s.reward_items.forEach(function(item) {
+      html += '<div class="raid-item rarity-' + (item.rarity||'epico') + '">' +
+        '<div class="raid-item-icon">' + (item.icon||'⚔️') + '</div>' +
+        '<div class="raid-item-name">' + item.name + '</div>' +
+        '<div class="raid-item-tag">Evento</div>' +
+      '</div>';
+    });
+    html += '</div>';
+  }
+
+  html += '<div class="raid-section-title">⚔️ Ranking del Gremio</div>';
+  html += '<div class="raid-ranking">';
+  if (_raidContribs.length === 0) {
+    html += '<div class="raid-rank-empty">Aún nadie ha contribuido. ¡Sé el primero!</div>';
+  } else {
+    _raidContribs.slice(0, 10).forEach(function(c, i) {
+      var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1) + '.';
+      var isMe = c.user_id === sbUser.id;
+      html += '<div class="raid-rank-row ' + (isMe?'me':'') + '">' +
+        '<span class="raid-rank-medal">' + medal + '</span>' +
+        '<span class="raid-rank-name">' + (c.display_name||'Aventurero') + (isMe?' (Tú)':'') + '</span>' +
+        '<span class="raid-rank-dmg">' + fmt(c.damage_dealt) + '</span>' +
+      '</div>';
+    });
+  }
+  html += '</div>';
+
+  html += '<div class="raid-info">' +
+    '💡 Completa hábitos y gana dungeons para hacer daño al boss. ' +
+    'El daño se suma al total del gremio.' +
+  '</div>';
+
+  content.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
 // ── Skill tree removed ──
 const SKILL_TREE_DATA = {};
 const LIFE_TREE_DATA = {};
@@ -24650,6 +24957,14 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
   </div>
 </div>
 
+<!-- ── RAID BOSS OVERLAY ── -->
+<div class="hide" id="raidOverlay">
+  <div class="raid-head">
+    <div class="raid-head-title">⚔️ Evento Raid Boss</div>
+    <button class="raid-close" onclick="closeRaidScreen()">✕</button>
+  </div>
+  <div id="raidContent"></div>
+</div>
 
 <!-- ── MENU FAB ── -->
 <button class="fab-menu" id="fabMenu" onclick="openThrone()">
@@ -24697,6 +25012,10 @@ setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSup
     <button class="more-item" onclick="openGuild()">
       <span class="more-item-icon">⚔️</span>
       <span class="more-item-label">Gremio</span>
+    </button>
+    <button class="more-item" onclick="openRaidScreen(); closeMoreDrawer()">
+      <span class="more-item-icon">🔥</span>
+      <span class="more-item-label">Evento</span>
     </button>
   </div>
 </div>
