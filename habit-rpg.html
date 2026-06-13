@@ -17403,7 +17403,7 @@ function getCachedSprite(cacheKey, rows, colors, pxSize, glowColor) {
   cx.imageSmoothingEnabled = false;
   if (glowColor) { cx.shadowColor = glowColor; cx.shadowBlur = 8; }
   rows.forEach(function(row, y) {
-    [...row].forEach(function(ch, x) {
+    row.split('').forEach(function(ch, x) {
       if (ch === ' ' || !colors[ch]) return;
       cx.fillStyle = colors[ch];
       cx.fillRect(pad + x*pxSize, pad + y*pxSize, pxSize+0.5, pxSize+0.5);
@@ -17440,7 +17440,9 @@ function drawCombatHero(ctx, hero, animTime) {
   var spr = CSPRITES[clase]||CSPRITES.guerrero;
   var moving = Math.abs(hero.vx||0)>20||Math.abs(hero.vy||0)>20;
   var frames = moving ? spr.walk : spr.idle;
+  if (!frames || !frames.length) { console.warn('Sin frames para', clase); return; }
   var frameIdx = Math.floor(animTime*(moving?6:2))%frames.length;
+  if (!frames[frameIdx]) frameIdx = 0;
   var pxSize = Math.ceil(hero.w/30);
   var glow = getEquipGlow(hero.equipped||(typeof char!=='undefined'?char.equipped:null));
   // Armor tint
@@ -22159,7 +22161,8 @@ function renderEquipCharLeft() {
     '<div class="equip-slots-row" id="equipSlotsRow"></div>';
   var spriteEl = document.getElementById('equipCharSprite');
   var canvas = document.createElement('canvas');
-  canvas.width = 110; canvas.height = 110;
+  canvas.width = 130; canvas.height = 130;
+  canvas.style.width = '110px'; canvas.style.height = '110px';
   canvas.style.imageRendering = 'pixelated';
   var cx = canvas.getContext('2d');
   cx.imageSmoothingEnabled = false;
@@ -22167,14 +22170,16 @@ function renderEquipCharLeft() {
     cls: (char.class || char.clase || 'guerrero').toLowerCase(),
     clase: (char.class || char.clase || 'guerrero').toLowerCase(),
     equipped: char.equipped,
-    w: 100, h: 100,
+    w: 90, h: 90,
     vx: 0, vy: 0,
     attacking: false, atkTime: 0,
     fd: 1
   };
   cx.save();
-  cx.translate(55, 60);
-  if (typeof drawCombatHero === 'function') drawCombatHero(cx, previewHero, 0);
+  cx.translate(65, 68);
+  try {
+    if (typeof drawCombatHero === 'function') drawCombatHero(cx, previewHero, 0);
+  } catch(e) { console.error('drawCombatHero falló:', e); }
   cx.restore();
   spriteEl.appendChild(canvas);
   var slotsRow = document.getElementById('equipSlotsRow');
