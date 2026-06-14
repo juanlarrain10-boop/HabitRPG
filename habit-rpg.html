@@ -8148,6 +8148,10 @@ button:active:not(:disabled), .btn:active:not(:disabled),
 <footer class="footer">Auto-guardado en el navegador · HabitRPG Etapa 1</footer>
 
 <script>
+window.onerror = function(msg, src, line, col, err) {
+  console.error('[FATAL ERROR] línea ' + line + ': ' + msg, err);
+};
+console.log('[STEP 1] Script iniciado');
 // ═══════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════
@@ -11486,9 +11490,11 @@ function saveDay() {
   if (cur === todayKey()) { try { guildSyncProgress(); } catch(e){} }
 }
 
+console.log('[STEP 2] Antes de loadChar');
 let char = loadChar();
 let cur  = todayKey();
 let day  = loadDay(cur);
+console.log('[STEP 3] char/cur/day cargados, clase:', char && (char.class||char.clase||'guerrero'));
 
 // Set startDate on first run
 if (!char.startDate) {
@@ -14751,6 +14757,7 @@ function vibrate(pattern) { try { if (navigator.vibrate) navigator.vibrate(patte
 // ═══════════════════════════════════════════════════════════════
 //  CE — Hades-style real-time combat  (Part 1 — motor base)
 // ═══════════════════════════════════════════════════════════════
+console.log('[STEP 3b] Antes de CE IIFE');
 var CE = (function () {
 'use strict';
 
@@ -17322,7 +17329,8 @@ function drawDashGhosts() {
   }
 }
 // ═══ COMBAT SPRITES ══════════════════════════════════════════
-const CSPRITES = {
+console.log('[STEP 4] Llegó a CSPRITES');
+var CSPRITES = {
 guerrero: {
   colors:{'#':'#0a0a12','H':'#a8a8bc','h':'#7a7a8e','j':'#5a5a6e','S':'#f8d0a8','s':'#d8a878','E':'#1a1a2a','e':'#ffffff','A':'#d84838','a':'#a82e22','q':'#781e16','G':'#e8c850','g':'#b89830','B':'#4a3424','b':'#322014'},
   idle:[['          ########            ','         #HHHHHHHH#           ','        #HHHHHHHHHH#          ','        #HhHHHHHHhH#          ','        #Hh#####jhH#          ','        #H#SSSSSS#H#          ','         #SsSSSSsS#           ','         #SE#SS#ES#           ','         #Se#SS#eS#           ','         #SSSSSSSS#           ','          #SsSSsS#            ','        ##GAAAAAAG##          ','       #AAaAAAAAAaAA#         ','      #AaAAAAAAAAAAaA#        ','      #Aa#AAAAAAAA#aA#        ','      #A##AaAAAAaA##A#        ','      #A# #AAAAAA# #A#        ','      #s#  #AAAA#  #s#        ','      ###  #aAAa#  ###        ','           #AAAA#             ','           #qAAq#             ','           #A##A#             ','           #A##A#             ','          #BB##BB#            ','          #bB##Bb#            ','          ###  ###            '],['                              ','          ########            ','         #HHHHHHHH#           ','        #HHHHHHHHHH#          ','        #HhHHHHHHhH#          ','        #Hh#####jhH#          ','        #H#SSSSSS#H#          ','         #SsSSSSsS#           ','         #SE#SS#ES#           ','         #Se#SS#eS#           ','         #SSSSSSSS#           ','          #SsSSsS#            ','        ##GAAAAAAG##          ','       #AAaAAAAAAaAA#         ','      #AaAAAAAAAAAAaA#        ','      #Aa#AAAAAAAA#aA#        ','      #A##AaAAAAaA##A#        ','      #A# #AAAAAA# #A#        ','      #s#  #AAAA#  #s#        ','      ###  #aAAa#  ###        ','           #AAAA#             ','           #qAAq#             ','           #A##A#             ','          #BB##BB#            ','          ###  ###            ']],
@@ -17366,6 +17374,8 @@ arquero: {
   weaponAnchor:{x:23,y:9},
 },
 };
+window.CSPRITES = CSPRITES;
+console.log('[STEP 5] CSPRITES definido:', typeof CSPRITES, Object.keys(CSPRITES).join(','));
 const CWEAPONS = {
   sword:  {rows:['G','G','G','G','M'],colors:{G:'#d8d8e8',M:'#7a5a30'}},
   staff:  {rows:['O','T','T','T','T','T'],colors:{T:'#9a6a3a',O:'#66f0ff'}},
@@ -17375,6 +17385,7 @@ const CWEAPONS = {
   nature: {rows:['F','T','T','T','T'],colors:{T:'#8a5a2a',F:'#7aff9a'}},
   fist:   {rows:['W'],colors:{W:'#fff8e8'}},
 };
+window.CWEAPONS = CWEAPONS;
 function getWeaponType(item,clase){
   if(!item){return{guerrero:'sword',mago:'staff',monje:'fist',asesino:'dagger',druida:'nature',barbaro:'axe',arquero:'bow'}[clase]||'sword';}
   var ic=item.icon||'';
@@ -17839,6 +17850,8 @@ function unbindInput() {
   keys={};
 }
 
+window.drawCombatHero = drawCombatHero;
+window.getCachedSprite = getCachedSprite;
 return { showZoneMap, enterZone, exit, togglePause, showChestScreen, openChest, claimChestReward, restHeal, restContinue, _atk:doAttack, _dash:doDash, _sp:doSpecial, _ult:doUltimate };
 })();
 
@@ -22161,43 +22174,46 @@ function renderEquipCharLeft() {
     '<div class="equip-slots-row" id="equipSlotsRow"></div>';
   var spriteEl = document.getElementById('equipCharSprite');
   var canvas = document.createElement('canvas');
-  canvas.width = 130; canvas.height = 130;
-  canvas.style.width = '110px'; canvas.style.height = '110px';
-  canvas.style.imageRendering = 'pixelated';
+  canvas.width = 110;
+  canvas.height = 110;
+  canvas.style.cssText = 'width:110px;height:110px;image-rendering:pixelated;display:block;';
   var cx = canvas.getContext('2d');
   cx.imageSmoothingEnabled = false;
-  var previewHero = {
-    cls: (char.class || char.clase || 'guerrero').toLowerCase(),
-    clase: (char.class || char.clase || 'guerrero').toLowerCase(),
-    equipped: char.equipped,
-    w: 90, h: 90,
-    vx: 0, vy: 0,
-    attacking: false, atkTime: 0,
-    fd: 1
-  };
-  cx.save();
+
+  // TEST 1: pintar un cuadro rojo garantizado para ver si el canvas funciona
+  cx.fillStyle = '#ff0000';
+  cx.fillRect(10, 10, 40, 40);
+  console.log('[TEST] cuadro rojo pintado en canvas');
+
+  // TEST 2: intentar dibujar el sprite directamente con CSPRITES vía window
   try {
     var clase = (char.class || char.clase || 'guerrero').toLowerCase();
-    var spr = CSPRITES[clase] || CSPRITES.guerrero;
-    console.log('[DEBUG] clase:', clase, 'spr existe:', !!spr, 'idle frames:', spr && spr.idle ? spr.idle.length : 'NO');
-    var rows = spr.idle[0];
-    console.log('[DEBUG] primera fila:', JSON.stringify(rows[0]), 'total filas:', rows.length);
-    var pxSize = 3;
-    var offX = 65 - (30*pxSize)/2;
-    var offY = 68 - (rows.length*pxSize)/2;
-    var pintados = 0;
-    rows.forEach(function(row, y) {
-      row.split('').forEach(function(ch, x) {
-        if (ch === ' ' || !spr.colors[ch]) return;
-        cx.fillStyle = spr.colors[ch];
-        cx.fillRect(offX + x*pxSize, offY + y*pxSize, pxSize+0.5, pxSize+0.5);
-        pintados++;
-      });
-    });
-    console.log('[DEBUG] píxeles pintados:', pintados);
-  } catch(e) { console.error('[DEBUG] error:', e); }
-  cx.restore();
+    var spr = window.CSPRITES ? window.CSPRITES[clase] : null;
+    console.log('[TEST] window.CSPRITES existe:', !!window.CSPRITES, 'clase:', clase, 'spr:', !!spr);
+    if (spr && spr.idle && spr.idle[0]) {
+      var rows = spr.idle[0];
+      var px = 3;
+      var pintados = 0;
+      for (var y = 0; y < rows.length; y++) {
+        var row = rows[y];
+        for (var x = 0; x < row.length; x++) {
+          var ch = row.charAt(x);
+          if (ch === ' ' || !spr.colors[ch]) continue;
+          cx.fillStyle = spr.colors[ch];
+          cx.fillRect(60 + x*px - 45, y*px + 5, px, px);
+          pintados++;
+        }
+      }
+      console.log('[TEST] sprite pintado, pixeles:', pintados);
+    } else {
+      console.log('[TEST] NO hay sprite para dibujar');
+    }
+  } catch(e) {
+    console.error('[TEST] error dibujando sprite:', e);
+  }
+
   spriteEl.appendChild(canvas);
+  console.log('[TEST] canvas agregado al DOM, parent:', spriteEl.id, 'canvas en DOM:', document.body.contains(canvas));
   var slotsRow = document.getElementById('equipSlotsRow');
   EQUIP_SLOT_LAYOUT.forEach(function(def) {
     var itemId = char.equipped && char.equipped[def.slot];
