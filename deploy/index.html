@@ -22189,26 +22189,14 @@ function renderEquipCharLeft() {
     fd: 1
   };
   cx.save();
+  cx.translate(65, 68);
   try {
-    var clase = (char.class || char.clase || 'guerrero').toLowerCase();
-    var spr = CSPRITES[clase] || CSPRITES.guerrero;
-    console.log('[DEBUG] clase:', clase, 'spr existe:', !!spr, 'idle frames:', spr && spr.idle ? spr.idle.length : 'NO');
-    var rows = spr.idle[0];
-    console.log('[DEBUG] primera fila:', JSON.stringify(rows[0]), 'total filas:', rows.length);
-    var pxSize = 3;
-    var offX = 65 - (30*pxSize)/2;
-    var offY = 68 - (rows.length*pxSize)/2;
-    var pintados = 0;
-    rows.forEach(function(row, y) {
-      row.split('').forEach(function(ch, x) {
-        if (ch === ' ' || !spr.colors[ch]) return;
-        cx.fillStyle = spr.colors[ch];
-        cx.fillRect(offX + x*pxSize, offY + y*pxSize, pxSize+0.5, pxSize+0.5);
-        pintados++;
-      });
-    });
-    console.log('[DEBUG] píxeles pintados:', pintados);
-  } catch(e) { console.error('[DEBUG] error:', e); }
+    if (typeof window.drawCombatHero === 'function') {
+      window.drawCombatHero(cx, previewHero, 0);
+    } else {
+      console.error('[equip] drawCombatHero no disponible en window');
+    }
+  } catch(e) { console.error('[equip] drawCombatHero falló:', e); }
   cx.restore();
   spriteEl.appendChild(canvas);
   var slotsRow = document.getElementById('equipSlotsRow');
