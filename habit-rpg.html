@@ -11506,7 +11506,7 @@ if (!char.startDate) {
 // XP / LEVELING
 // ═══════════════════════════════════════════
 
-function xpToNext(level) { return 200 + level * 8; }
+function xpToNext(level) { return Math.floor(150 + level * 20 + Math.pow(level, 1.5) * 4); }
 
 function addGold(amount) {
   char.gold = (char.gold || 0) + amount;
@@ -11528,8 +11528,8 @@ function addXP(amount, cat, label) {
   if (Array.isArray(char.companions)) {
     char.companions.forEach(function(c) {
       if (!c) return;
-      c.xp = (c.xp || 0) + Math.floor(finalAmt * 0.75);
-      while (c.level < 99 && c.xp >= xpToNext(c.level)) { c.xp -= xpToNext(c.level); c.level++; }
+      c.xp = (c.xp || 0) + finalAmt;
+      while (c.level < 999 && c.xp >= xpToNext(c.level)) { c.xp -= xpToNext(c.level); c.level++; }
     });
   }
   saveChar();
@@ -11593,9 +11593,9 @@ function getEquipBonus(cat) {
 }
 
 function statValue(cat) {
-  const base  = Math.min(99, 1 + Math.floor((char.statXP[cat] || 0) / 25));
+  const base  = Math.min(999, 1 + Math.floor((char.statXP[cat] || 0) / 25));
   const bonus = getEquipBonus(cat);
-  return Math.min(99, base + bonus);
+  return Math.min(999, base + bonus);
 }
 
 // ═══════════════════════════════════════════
@@ -23640,7 +23640,7 @@ function generateHeroCard() {
       const col = i % 2, row = Math.floor(i / 2);
       const sx = 80 + col * (cW + 40);
       const sy = sY + row * 92;
-      const lv = statValue ? statValue(key) : Math.min(99, 1 + Math.floor((char.statXP?.[key] || 0) / 25));
+      const lv = statValue ? statValue(key) : Math.min(999, 1 + Math.floor((char.statXP?.[key] || 0) / 25));
 
       // Card background
       ctx.fillStyle = 'rgba(255,255,255,0.055)';
