@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>HabitRPG</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#7c3aed">
@@ -21609,9 +21609,10 @@ const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 //   -- Enable realtime for guild messages:
 //   alter publication supabase_realtime add table hrpg_guild_messages;
 
-let sbClient = null;
-let sbUser   = null;
-let authMode = 'login';
+let sbClient   = null;
+let sbUser     = null;
+let authMode   = 'login';
+let _authBound = false;
 
 // ── Diagnostic log ring-buffer ────────────────
 const _diagLogs = [];
@@ -21712,6 +21713,20 @@ async function initAuth() {
     document.getElementById('authEmail').disabled  = true;
     document.getElementById('authPass').disabled   = true;
     document.getElementById('authSubmit').disabled = true;
+    // Reintentar cada 500ms hasta que el SDK cargue
+    var _retry = setInterval(function() {
+      if (typeof supabase !== 'undefined') {
+        initSupabase();
+        if (sbClient) {
+          clearInterval(_retry);
+          document.getElementById('authEmail').disabled  = false;
+          document.getElementById('authPass').disabled   = false;
+          document.getElementById('authSubmit').disabled = false;
+          _authUpdateNetWarn();
+          _bindAuthStateChange();
+        }
+      }
+    }, 500);
     return;
   }
 
@@ -21747,7 +21762,13 @@ async function initAuth() {
     showAuthForm();
   }
 
-  sbClient.auth.onAuthStateChange((event) => {
+  _bindAuthStateChange();
+}
+
+function _bindAuthStateChange() {
+  if (!sbClient || _authBound) return;
+  _authBound = true;
+  sbClient.auth.onAuthStateChange(function(event, sess) {
     _log('authStateChange: ' + event);
     if (event === 'SIGNED_OUT') {
       sbUser = null;
@@ -21755,6 +21776,12 @@ async function initAuth() {
       char = loadChar(); day = loadDay(cur);
       updateAuthChip();
       showAuthOverlay();
+    } else if (event === 'SIGNED_IN') {
+      // Fallback: si el login no actualizó la UI (fallo en onUserLoggedIn), lo hace aquí
+      if (sess && sess.user && !sbUser) {
+        sbUser = sess.user;
+        if (typeof onUserLoggedIn === 'function') onUserLoggedIn(false);
+      }
     }
   });
 }
@@ -25225,10 +25252,11 @@ try { checkAndShowMentorLetter(); } catch(e) {}
 try { renderCampScreen(); } catch(e) {}
 
 // ── Start: check auth session or go guest ──
-initAuth();
-
-// Safari safety net: re-run initSupabase after 500ms in case SDK wasn't ready on first call
-setTimeout(() => { if (!sbClient) { _log('safety-net 500ms: reintentando initSupabase'); initSupabase(); } }, 500);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() { initAuth(); });
+} else {
+  initAuth();
+}
 </script>
 
 <!-- ── PWA INSTALL BANNER ── -->
