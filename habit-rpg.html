@@ -17377,25 +17377,175 @@ arquero: {
 window.CSPRITES = CSPRITES;
 console.log('[STEP 5] CSPRITES definido:', typeof CSPRITES, Object.keys(CSPRITES).join(','));
 const CWEAPONS = {
-  sword:  {rows:['G','G','G','G','M'],colors:{G:'#d8d8e8',M:'#7a5a30'}},
-  staff:  {rows:['O','T','T','T','T','T'],colors:{T:'#9a6a3a',O:'#66f0ff'}},
-  dagger: {rows:['D','D','M'],colors:{D:'#c8c8d8',M:'#3a3a4a'}},
-  axe:    {rows:['XX','Xx','T ','T ','T '],colors:{X:'#9a9aaa',x:'#6a6a7a',T:'#7a5a30'}},
-  bow:    {rows:['A ','A ','A ','A '],colors:{A:'#9a6a3a'}},
-  nature: {rows:['F','T','T','T','T'],colors:{T:'#8a5a2a',F:'#7aff9a'}},
-  fist:   {rows:['W'],colors:{W:'#fff8e8'}},
+sword: {
+  w: 6, h: 14,
+  rows: [
+    '  AA  ',
+    '  AA  ',
+    '  Aa  ',
+    '  AA  ',
+    '  Aa  ',
+    '  AA  ',
+    '  Aa  ',
+    '  AA  ',
+    ' GGGG ',
+    '  MM  ',
+    '  Mm  ',
+    '  MM  ',
+    '  GG  ',
+  ],
+  colors: { A:'#e8e8f0', a:'#a8a8c0', M:'#7a5a30', m:'#5a3e1e', G:'#e8c850' }
+},
+dagger: {
+  w: 5, h: 10,
+  rows: [
+    '  A  ',
+    ' AAA ',
+    ' AaA ',
+    ' AAA ',
+    '  A  ',
+    ' GGG ',
+    '  M  ',
+    '  m  ',
+    ' GOG ',
+    ' GGG ',
+  ],
+  colors: { A:'#d0d0e0', a:'#9090a8', M:'#3a3a4a', m:'#2a2a36', G:'#8a8a9a', O:'#1a1a24' }
+},
+axe: {
+  w: 8, h: 13,
+  rows: [
+    '    M   ',
+    'AAA M   ',
+    'AAAAM   ',
+    'AAAAAM  ',
+    'aAAAM   ',
+    'AAA M   ',
+    '    M   ',
+    '    M   ',
+    '    m   ',
+    '    M   ',
+    '    m   ',
+    '    M   ',
+    '   GMG  ',
+  ],
+  colors: { A:'#c8c8d8', a:'#8a8a9c', M:'#7a5a30', m:'#5a3e1e', G:'#6a4a28' }
+},
+mace: {
+  w: 8, h: 13,
+  rows: [
+    ' AAAAA  ',
+    ' AAAAA  ',
+    ' AaaaA  ',
+    ' AAAAA  ',
+    ' GGGGG  ',
+    '   M    ',
+    '   m    ',
+    '   M    ',
+    '   m    ',
+    '   M    ',
+    '   m    ',
+    '  GMG   ',
+    '  GGG   ',
+  ],
+  colors: { A:'#a8a8b8', a:'#787888', M:'#7a5a30', m:'#5a3e1e', G:'#888898' }
+},
+staff: {
+  w: 6, h: 15,
+  rows: [
+    ' GOG  ',
+    'GOOOG ',
+    'GOAOG ',
+    'GOOOG ',
+    ' GOG  ',
+    '  M   ',
+    '  m   ',
+    '  M   ',
+    '  m   ',
+    '  M   ',
+    '  m   ',
+    '  M   ',
+    '  m   ',
+    '  M   ',
+    '  G   ',
+  ],
+  colors: { O:'#66e0ff', A:'#ffffff', G:'#3a9ad0', M:'#9a6a3a', m:'#6a4a28' }
+},
+bow: {
+  w: 7, h: 14,
+  rows: [
+    '  AA   ',
+    ' Aa A  ',
+    ' A  A  ',
+    'A   a  ',
+    'A   A  ',
+    'A   A  ',
+    'M   A  ',
+    'M   A  ',
+    'A   A  ',
+    'A   A  ',
+    'A   a  ',
+    ' A  A  ',
+    ' Aa A  ',
+    '  AA   ',
+  ],
+  colors: { A:'#9a6a3a', a:'#7a4e26', M:'#d8d0c0' }
+},
+nature: {
+  w: 6, h: 15,
+  rows: [
+    '  F   ',
+    ' FFF  ',
+    'FFAFF ',
+    ' FFF  ',
+    '  F   ',
+    '  M   ',
+    '  m   ',
+    '  M   ',
+    '  m   ',
+    '  M   ',
+    '  L   ',
+    '  M   ',
+    '  m   ',
+    '  M   ',
+    '  m   ',
+  ],
+  colors: { F:'#5af89a', A:'#2a8a4a', M:'#8a5a2a', m:'#6a4020', L:'#7aff9a' }
+},
+fist: { w:0, h:0, rows: [], colors: {} },
 };
 window.CWEAPONS = CWEAPONS;
-function getWeaponType(item,clase){
-  if(!item){return{guerrero:'sword',mago:'staff',monje:'fist',asesino:'dagger',druida:'nature',barbaro:'axe',arquero:'bow'}[clase]||'sword';}
-  var ic=item.icon||'';
-  if(ic.includes('🗡'))return'dagger';if(ic.includes('⚔'))return'sword';
-  if(ic.includes('🪄')||ic.includes('⚡'))return'staff';
-  if(ic.includes('🪓')||ic.includes('🔨'))return'axe';
-  if(ic.includes('🏹')||ic.includes('🌬'))return'bow';
-  if(ic.includes('🌿')||ic.includes('🌳')||ic.includes('🌲')||ic.includes('🦉'))return'nature';
-  if(ic.includes('🥢')||ic.includes('⛓')||ic.includes('⭐'))return'fist';
-  return{guerrero:'sword',mago:'staff',monje:'fist',asesino:'dagger',druida:'nature',barbaro:'axe',arquero:'bow'}[clase]||'sword';
+function getWeaponType(item, clase) {
+  if (!item) {
+    return { guerrero:'sword', mago:'staff', monje:'fist', asesino:'dagger',
+             druida:'nature', barbaro:'axe', arquero:'bow' }[clase] || 'sword';
+  }
+  var ic = item.icon || '';
+  var nm = (item.name || '').toLowerCase();
+  var id = (item.id || '').toLowerCase();
+  var hay = function(s){ return ic.indexOf(s) >= 0; };
+  var nmHas = function(s){ return nm.indexOf(s) >= 0 || id.indexOf(s) >= 0; };
+
+  if (nmHas('daga') || nmHas('kunai') || nmHas('cuchill') || nmHas('estilete')) return 'dagger';
+  if (nmHas('espada') || nmHas('sable') || nmHas('hoja') || nmHas('katana') || nmHas('mandoble')) return 'sword';
+  if (nmHas('hacha') || nmHas('segur')) return 'axe';
+  if (nmHas('mazo') || nmHas('martillo') || nmHas('maza') || nmHas('garrote')) return 'mace';
+  if (nmHas('baston') || nmHas('bastón') || nmHas('vara') || nmHas('cetro') || nmHas('grimorio')) return 'staff';
+  if (nmHas('arco') || nmHas('ballesta')) return 'bow';
+  if (nmHas('totem') || nmHas('tótem') || nmHas('naturaleza') || nmHas('raiz') || nmHas('raíz')) return 'nature';
+  if (nmHas('garra') || nmHas('puño') || nmHas('nudillo') || nmHas('guante')) return 'fist';
+
+  if (hay('🗡')) return 'dagger';
+  if (hay('⚔') || hay('🔪')) return 'sword';
+  if (hay('🪓')) return 'axe';
+  if (hay('🔨') || hay('⚒') || hay('🏏')) return 'mace';
+  if (hay('🪄') || hay('🔮') || hay('📖') || hay('⚡')) return 'staff';
+  if (hay('🏹') || hay('🎯')) return 'bow';
+  if (hay('🌿') || hay('🌳') || hay('🌲') || hay('🍃') || hay('🦉')) return 'nature';
+  if (hay('🥊') || hay('👊') || hay('✋') || hay('🤚')) return 'fist';
+
+  return { guerrero:'sword', mago:'staff', monje:'fist', asesino:'dagger',
+           druida:'nature', barbaro:'axe', arquero:'bow' }[clase] || 'sword';
 }
 function getEquipGlow(equipped){
   if(!equipped||typeof SHOP_ITEMS==='undefined')return null;
@@ -17424,26 +17574,39 @@ function getCachedSprite(cacheKey, rows, colors, pxSize, glowColor) {
   return c;
 }
 function drawHeroWeapon(ctx, hero, spr, pxSize) {
-  var clase = (hero.cls||hero.clase||'guerrero').toLowerCase();
-  var equipped = hero.equipped||(typeof char!=='undefined'?char.equipped:null);
-  var weaponItem = equipped&&equipped.weapon&&typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(function(i){return i.id===equipped.weapon;}):null;
+  var clase = (hero.cls || hero.clase || 'guerrero').toLowerCase();
+  var equipped = hero.equipped || (typeof char !== 'undefined' ? char.equipped : null);
+  var weaponItem = equipped && equipped.weapon && typeof SHOP_ITEMS !== 'undefined'
+    ? SHOP_ITEMS.find(function(i){ return i.id === equipped.weapon; }) : null;
   var wType = getWeaponType(weaponItem, clase);
   var weapon = CWEAPONS[wType];
-  if (!weapon || wType === 'fist') return;
-  var anchor = spr.weaponAnchor||{x:12,y:5};
-  var wOffX=0, wOffY=0, wRot=0;
-  if (hero.attacking&&hero.atkTime>0) {
-    var atkProg=1-(hero.atkTime/0.25);
-    wOffX=Math.sin(atkProg*Math.PI)*4*pxSize;
-    wRot=Math.sin(atkProg*Math.PI)*0.6;
+  if (!weapon || wType === 'fist' || !weapon.rows.length) return;
+
+  var anchor = spr.weaponAnchor || { x: 24, y: 10 };
+  var wOffX = 0, wOffY = 0, wRot = 0;
+  if (hero.attacking && hero.atkTime > 0) {
+    var atkProg = 1 - (hero.atkTime / 0.25);
+    wOffX = Math.sin(atkProg * Math.PI) * 5 * pxSize;
+    wRot  = Math.sin(atkProg * Math.PI) * 0.8;
   }
-  var wGlow=null;
-  if (weaponItem) { var wr=weaponItem.rarity; if(wr==='legendario')wGlow='#fbbf24'; else if(wr==='epico')wGlow='#c084fc'; else if(wr==='raro')wGlow='#60a5fa'; }
+  var wGlow = null;
+  if (weaponItem) {
+    if (weaponItem.rarity === 'legendario') wGlow = '#fbbf24';
+    else if (weaponItem.rarity === 'epico') wGlow = '#c084fc';
+    else if (weaponItem.rarity === 'raro')  wGlow = '#60a5fa';
+  }
   ctx.save();
-  ctx.translate((anchor.x-15)*pxSize+wOffX, (anchor.y-12)*pxSize+wOffY);
+  ctx.translate((anchor.x - 15) * pxSize + wOffX, (anchor.y - 12) * pxSize + wOffY);
   ctx.rotate(wRot);
-  if (wGlow) { ctx.shadowColor=wGlow; ctx.shadowBlur=8; }
-  weapon.rows.forEach(function(row,y){[...row].forEach(function(ch,x){if(ch===' '||!weapon.colors[ch])return;ctx.fillStyle=weapon.colors[ch];ctx.fillRect(x*pxSize*1.5,y*pxSize*1.5,pxSize*1.5+0.5,pxSize*1.5+0.5);});});
+  if (wGlow) { ctx.shadowColor = wGlow; ctx.shadowBlur = 6; }
+  var wpx = pxSize * 1.1;
+  weapon.rows.forEach(function(row, y) {
+    row.split('').forEach(function(ch, x) {
+      if (ch === ' ' || !weapon.colors[ch]) return;
+      ctx.fillStyle = weapon.colors[ch];
+      ctx.fillRect(x * wpx, y * wpx, wpx + 0.5, wpx + 0.5);
+    });
+  });
   ctx.restore();
 }
 function drawCombatHero(ctx, hero, animTime) {
