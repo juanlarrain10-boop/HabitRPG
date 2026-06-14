@@ -11551,7 +11551,7 @@ function addMilestone(type, desc, icon) {
 }
 
 function checkLevelUp() {
-  while (char.level < 99 && char.xp >= xpToNext(char.level)) {
+  while (char.level < 999 && char.xp >= xpToNext(char.level)) {
     char.xp -= xpToNext(char.level);
     char.level++;
     if (!char.levelHistory) char.levelHistory = {};
@@ -11569,7 +11569,7 @@ function checkLevelUp() {
     if ([10,20,30,40,50,60,70,80,90,99].includes(char.level))
       addMilestone('level_milestone', `Nivel ${char.level} alcanzado`, char.level === 99 ? '🌟' : '🏆');
   }
-  if (char.level >= 99) { char.level = 99; char.xp = 0; }
+  if (char.level >= 999) { char.level = 999; char.xp = 0; }
   // Companion unlock triggers
   if (char.level >= 10 && Array.isArray(char.companions) && !char.companions[0]) {
     setTimeout(function(){ try { showCompanionUnlock(0); } catch(e){} }, 1200);
@@ -13445,7 +13445,7 @@ function renderChar() {
 
   document.getElementById('levelBadge').textContent = `Nivel ${char.level}`;
 
-  const isMaxLevel = char.level >= 99;
+  const isMaxLevel = char.level >= 999;
   const next = isMaxLevel ? 1 : xpToNext(char.level);
   const pct  = isMaxLevel ? 100 : Math.min(100, (char.xp / next) * 100);
   const xpFillEl = document.getElementById('xpFill');
@@ -22964,7 +22964,7 @@ function syncCharStrip() {
   const csName = document.getElementById('csName');
   if (!csName) return;
   csName.textContent = char.name || 'Aventurero';
-  const isMax = char.level >= 99;
+  const isMax = char.level >= 999;
   const next  = isMax ? 1 : xpToNext(char.level);
   const pct   = isMax ? 100 : Math.min(100, (char.xp / next) * 100);
   const lvlEl  = document.getElementById('csLevel');
