@@ -22174,31 +22174,46 @@ function renderEquipCharLeft() {
     '<div class="equip-slots-row" id="equipSlotsRow"></div>';
   var spriteEl = document.getElementById('equipCharSprite');
   var canvas = document.createElement('canvas');
-  canvas.width = 130; canvas.height = 130;
-  canvas.style.width = '110px'; canvas.style.height = '110px';
-  canvas.style.imageRendering = 'pixelated';
+  canvas.width = 110;
+  canvas.height = 110;
+  canvas.style.cssText = 'width:110px;height:110px;image-rendering:pixelated;display:block;';
   var cx = canvas.getContext('2d');
   cx.imageSmoothingEnabled = false;
-  var previewHero = {
-    cls: (char.class || char.clase || 'guerrero').toLowerCase(),
-    clase: (char.class || char.clase || 'guerrero').toLowerCase(),
-    equipped: char.equipped,
-    w: 90, h: 90,
-    vx: 0, vy: 0,
-    attacking: false, atkTime: 0,
-    fd: 1
-  };
-  cx.save();
-  cx.translate(65, 68);
+
+  // TEST 1: pintar un cuadro rojo garantizado para ver si el canvas funciona
+  cx.fillStyle = '#ff0000';
+  cx.fillRect(10, 10, 40, 40);
+  console.log('[TEST] cuadro rojo pintado en canvas');
+
+  // TEST 2: intentar dibujar el sprite directamente con CSPRITES vía window
   try {
-    if (typeof window.drawCombatHero === 'function') {
-      window.drawCombatHero(cx, previewHero, 0);
+    var clase = (char.class || char.clase || 'guerrero').toLowerCase();
+    var spr = window.CSPRITES ? window.CSPRITES[clase] : null;
+    console.log('[TEST] window.CSPRITES existe:', !!window.CSPRITES, 'clase:', clase, 'spr:', !!spr);
+    if (spr && spr.idle && spr.idle[0]) {
+      var rows = spr.idle[0];
+      var px = 3;
+      var pintados = 0;
+      for (var y = 0; y < rows.length; y++) {
+        var row = rows[y];
+        for (var x = 0; x < row.length; x++) {
+          var ch = row.charAt(x);
+          if (ch === ' ' || !spr.colors[ch]) continue;
+          cx.fillStyle = spr.colors[ch];
+          cx.fillRect(60 + x*px - 45, y*px + 5, px, px);
+          pintados++;
+        }
+      }
+      console.log('[TEST] sprite pintado, pixeles:', pintados);
     } else {
-      console.error('[equip] drawCombatHero no disponible en window');
+      console.log('[TEST] NO hay sprite para dibujar');
     }
-  } catch(e) { console.error('[equip] drawCombatHero falló:', e); }
-  cx.restore();
+  } catch(e) {
+    console.error('[TEST] error dibujando sprite:', e);
+  }
+
   spriteEl.appendChild(canvas);
+  console.log('[TEST] canvas agregado al DOM, parent:', spriteEl.id, 'canvas en DOM:', document.body.contains(canvas));
   var slotsRow = document.getElementById('equipSlotsRow');
   EQUIP_SLOT_LAYOUT.forEach(function(def) {
     var itemId = char.equipped && char.equipped[def.slot];
