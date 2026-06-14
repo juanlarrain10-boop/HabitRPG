@@ -17515,6 +17515,100 @@ nature: {
 fist: { w:0, h:0, rows: [], colors: {} },
 };
 window.CWEAPONS = CWEAPONS;
+// ── Armor / Helmet / Cape layer data ─────────────────────────
+var ARMOR_LAYERS = {
+  raro: {
+    pieces: [
+      { x:6,  y:11, w:3, h:2, c:'#5a9a8a' },
+      { x:18, y:11, w:3, h:2, c:'#5a9a8a' },
+      { x:6,  y:11, w:1, h:2, c:'#3a7a6a' },
+    ],
+    glow: '#4ade80'
+  },
+  epico: {
+    pieces: [
+      { x:5,  y:11, w:4, h:3, c:'#9a7ad8' },
+      { x:17, y:11, w:4, h:3, c:'#9a7ad8' },
+      { x:5,  y:11, w:1, h:3, c:'#7a5ab8' },
+      { x:11, y:13, w:4, h:4, c:'#8a6ac8' },
+      { x:11, y:13, w:4, h:1, c:'#aa8ae8' },
+      { x:12, y:14, w:2, h:2, c:'#c4b5fd' },
+    ],
+    glow: '#a78bfa'
+  },
+  legendario: {
+    pieces: [
+      { x:4,  y:10, w:5, h:4, c:'#d8a838' },
+      { x:17, y:10, w:5, h:4, c:'#d8a838' },
+      { x:4,  y:10, w:5, h:1, c:'#f8d870' },
+      { x:4,  y:13, w:1, h:1, c:'#a87818' },
+      { x:10, y:12, w:6, h:6, c:'#c8982a' },
+      { x:10, y:12, w:6, h:1, c:'#f8d870' },
+      { x:12, y:14, w:2, h:2, c:'#fff4c0' },
+      { x:11, y:18, w:4, h:1, c:'#d8a838' },
+    ],
+    glow: '#fbbf24'
+  }
+};
+var HELMET_LAYERS = {
+  raro: {
+    pieces: [
+      { x:10, y:2, w:10, h:1, c:'#5a9a8a' },
+      { x:10, y:3, w:1,  h:2, c:'#3a7a6a' },
+    ],
+    glow: '#4ade80'
+  },
+  epico: {
+    pieces: [
+      { x:9,  y:1, w:12, h:2, c:'#9a7ad8' },
+      { x:9,  y:1, w:12, h:1, c:'#aa8ae8' },
+      { x:14, y:0, w:2,  h:2, c:'#c4b5fd' },
+      { x:9,  y:3, w:1,  h:2, c:'#7a5ab8' },
+      { x:20, y:3, w:1,  h:2, c:'#7a5ab8' },
+    ],
+    glow: '#a78bfa'
+  },
+  legendario: {
+    pieces: [
+      { x:8,  y:0, w:14, h:3, c:'#d8a838' },
+      { x:8,  y:0, w:14, h:1, c:'#f8d870' },
+      { x:13, y:-2, w:4, h:2, c:'#f8d870' },
+      { x:14, y:1, w:2,  h:2, c:'#fff4c0' },
+      { x:8,  y:3, w:1,  h:3, c:'#a87818' },
+      { x:21, y:3, w:1,  h:3, c:'#a87818' },
+      { x:10, y:2, w:1,  h:1, c:'#fff4c0' },
+      { x:19, y:2, w:1,  h:1, c:'#fff4c0' },
+    ],
+    glow: '#fbbf24'
+  }
+};
+var CAPE_LAYERS = {
+  raro: {
+    pieces: [
+      { x:7, y:12, w:1, h:8, c:'#3a6a9a' },
+      { x:19,y:12, w:1, h:8, c:'#3a6a9a' },
+    ],
+    glow: '#4ade80'
+  },
+  epico: {
+    pieces: [
+      { x:5, y:11, w:2, h:10, c:'#7a3a9a' },
+      { x:20,y:11, w:2, h:10, c:'#7a3a9a' },
+      { x:5, y:11, w:1, h:10, c:'#9a5aba' },
+    ],
+    glow: '#a78bfa'
+  },
+  legendario: {
+    pieces: [
+      { x:4, y:10, w:3, h:12, c:'#c8982a' },
+      { x:20,y:10, w:3, h:12, c:'#c8982a' },
+      { x:4, y:10, w:1, h:12, c:'#f8d870' },
+      { x:4, y:21, w:3, h:1,  c:'#f8d870' },
+      { x:20,y:21, w:3, h:1,  c:'#f8d870' },
+    ],
+    glow: '#fbbf24'
+  }
+};
 function getWeaponType(item, clase) {
   if (!item) {
     return { guerrero:'sword', mago:'staff', monje:'fist', asesino:'dagger',
@@ -17572,6 +17666,29 @@ function getCachedSprite(cacheKey, rows, colors, pxSize, glowColor) {
   });
   _sprCanvasCache.set(cacheKey, c);
   return c;
+}
+function drawArmorLayers(ctx, hero, pxSize) {
+  var equipped = hero.equipped || (typeof char !== 'undefined' ? char.equipped : null);
+  if (!equipped || typeof SHOP_ITEMS === 'undefined') return;
+  function tierOf(slot) {
+    var id = equipped[slot];
+    if (!id) return null;
+    var item = SHOP_ITEMS.find(function(i){ return i.id === id; });
+    if (!item) return null;
+    var r = item.rarity;
+    if (r === 'legendario' || r === 'epico' || r === 'raro') return r;
+    return null;
+  }
+  function drawLayer(layerSet, tier) {
+    if (!tier || !layerSet[tier]) return;
+    layerSet[tier].pieces.forEach(function(p) {
+      ctx.fillStyle = p.c;
+      ctx.fillRect((p.x - 15) * pxSize, (p.y - 12) * pxSize, p.w * pxSize, p.h * pxSize);
+    });
+  }
+  drawLayer(CAPE_LAYERS, tierOf('cape'));
+  drawLayer(ARMOR_LAYERS, tierOf('armor'));
+  drawLayer(HELMET_LAYERS, tierOf('head'));
 }
 function drawHeroWeapon(ctx, hero, spr, pxSize) {
   var clase = (hero.cls || hero.clase || 'guerrero').toLowerCase();
@@ -17642,6 +17759,7 @@ function drawCombatHero(ctx, hero, animTime) {
   var key = clase+'_'+(moving?'w':'i')+frameIdx+'_'+pxSize+'_'+(glow||'')+'_'+armorTint+'_'+headTint;
   var cached = getCachedSprite(key, frames[frameIdx], useColors, pxSize, glow);
   ctx.drawImage(cached, -cached.width/2, -cached.height/2);
+  drawArmorLayers(ctx, hero, pxSize);
   drawHeroWeapon(ctx, hero, spr, pxSize);
 }
 const CENEMIES = {
