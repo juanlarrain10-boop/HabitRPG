@@ -17461,14 +17461,22 @@ function drawCombatHero(ctx, hero, animTime) {
   var armorItem = equipped&&equipped.armor&&typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(function(i){return i.id===equipped.armor;}):null;
   var armorTint = '';
   if (armorItem) { if(armorItem.rarity==='legendario')armorTint='leg'; else if(armorItem.rarity==='epico')armorTint='epi'; else if(armorItem.rarity==='raro')armorTint='rar'; }
+  var headItem = equipped&&equipped.head&&typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS.find(function(i){return i.id===equipped.head;}):null;
+  var headTint = '';
+  if (headItem) { if(headItem.rarity==='legendario')headTint='leg'; else if(headItem.rarity==='epico')headTint='epi'; else if(headItem.rarity==='raro')headTint='rar'; }
   var useColors = spr.colors;
+  var ARMOR_COLORS = {leg:'#b8860b',epi:'#7c3aed',rar:'#2563eb'};
   if (armorTint) {
     var TORSO_LETTER = {guerrero:'A',asesino:'A',mago:'P',barbaro:'P',monje:'G',druida:'V',arquero:'L'}[clase]||'A';
-    var ARMOR_COLORS = {leg:'#b8860b',epi:'#7c3aed',rar:'#2563eb'};
     useColors = Object.assign({}, spr.colors);
     useColors[TORSO_LETTER] = ARMOR_COLORS[armorTint];
   }
-  var key = clase+'_'+(moving?'w':'i')+frameIdx+'_'+pxSize+'_'+(glow||'')+'_'+armorTint;
+  if (headTint) {
+    var HEAD_LETTER = {guerrero:'H',barbaro:'M',asesino:'C',arquero:'C',mago:'P',monje:'V',druida:'L'}[clase]||'H';
+    if (useColors === spr.colors) useColors = Object.assign({}, spr.colors);
+    useColors[HEAD_LETTER] = ARMOR_COLORS[headTint];
+  }
+  var key = clase+'_'+(moving?'w':'i')+frameIdx+'_'+pxSize+'_'+(glow||'')+'_'+armorTint+'_'+headTint;
   var cached = getCachedSprite(key, frames[frameIdx], useColors, pxSize, glow);
   ctx.drawImage(cached, -cached.width/2, -cached.height/2);
   drawHeroWeapon(ctx, hero, spr, pxSize);
@@ -22174,46 +22182,24 @@ function renderEquipCharLeft() {
     '<div class="equip-slots-row" id="equipSlotsRow"></div>';
   var spriteEl = document.getElementById('equipCharSprite');
   var canvas = document.createElement('canvas');
-  canvas.width = 110;
-  canvas.height = 110;
-  canvas.style.cssText = 'width:110px;height:110px;image-rendering:pixelated;display:block;';
+  canvas.width = 120; canvas.height = 120;
+  canvas.style.cssText = 'width:120px;height:120px;image-rendering:pixelated;display:block;';
   var cx = canvas.getContext('2d');
   cx.imageSmoothingEnabled = false;
-
-  // TEST 1: pintar un cuadro rojo garantizado para ver si el canvas funciona
-  cx.fillStyle = '#ff0000';
-  cx.fillRect(10, 10, 40, 40);
-  console.log('[TEST] cuadro rojo pintado en canvas');
-
-  // TEST 2: intentar dibujar el sprite directamente con CSPRITES vía window
+  var previewHero = {
+    cls: (char.class || char.clase || 'guerrero').toLowerCase(),
+    clase: (char.class || char.clase || 'guerrero').toLowerCase(),
+    equipped: char.equipped,
+    w: 120, h: 120,
+    vx: 0, vy: 0, attacking: false, atkTime: 0, fd: 1
+  };
+  cx.save();
+  cx.translate(60, 64);
   try {
-    var clase = (char.class || char.clase || 'guerrero').toLowerCase();
-    var spr = window.CSPRITES ? window.CSPRITES[clase] : null;
-    console.log('[TEST] window.CSPRITES existe:', !!window.CSPRITES, 'clase:', clase, 'spr:', !!spr);
-    if (spr && spr.idle && spr.idle[0]) {
-      var rows = spr.idle[0];
-      var px = 3;
-      var pintados = 0;
-      for (var y = 0; y < rows.length; y++) {
-        var row = rows[y];
-        for (var x = 0; x < row.length; x++) {
-          var ch = row.charAt(x);
-          if (ch === ' ' || !spr.colors[ch]) continue;
-          cx.fillStyle = spr.colors[ch];
-          cx.fillRect(60 + x*px - 45, y*px + 5, px, px);
-          pintados++;
-        }
-      }
-      console.log('[TEST] sprite pintado, pixeles:', pintados);
-    } else {
-      console.log('[TEST] NO hay sprite para dibujar');
-    }
-  } catch(e) {
-    console.error('[TEST] error dibujando sprite:', e);
-  }
-
+    if (typeof window.drawCombatHero === 'function') window.drawCombatHero(cx, previewHero, 0);
+  } catch(e) { console.error('[equip] sprite:', e); }
+  cx.restore();
   spriteEl.appendChild(canvas);
-  console.log('[TEST] canvas agregado al DOM, parent:', spriteEl.id, 'canvas en DOM:', document.body.contains(canvas));
   var slotsRow = document.getElementById('equipSlotsRow');
   EQUIP_SLOT_LAYOUT.forEach(function(def) {
     var itemId = char.equipped && char.equipped[def.slot];
@@ -22368,6 +22354,7 @@ function setInvFilter(cat) {
 }
 
 function invEquip(id) {
+  if (typeof window.getCachedSprite === 'function' && typeof _sprCanvasCache !== 'undefined') _sprCanvasCache.clear();
   if (typeof shopEquip === 'function') shopEquip(id);
   else {
     var item = SHOP_ITEMS.find(function(i){return i.id===id;});
@@ -22377,6 +22364,7 @@ function invEquip(id) {
 }
 
 function invUnequip(slot) {
+  if (typeof window.getCachedSprite === 'function' && typeof _sprCanvasCache !== 'undefined') _sprCanvasCache.clear();
   if (typeof shopUnequip === 'function') shopUnequip(slot);
   else { char.equipped[slot] = null; if(typeof saveChar==='function')saveChar(); }
   renderEquipUnified();
